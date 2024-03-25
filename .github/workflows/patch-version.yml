@@ -1,0 +1,23 @@
+name: Build Package
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        node-version: 18
+        registry-url: https://npm.pkg.github.com/
+
+    - name: Bump version
+      run: npm version patch
