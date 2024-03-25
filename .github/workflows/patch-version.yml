@@ -21,6 +21,8 @@ jobs:
 
     - name: Bump version
       run: |
+        echo @b2data:registry=https://npm.pkg.github.com > .npmrc
+        echo //npm.pkg.github.com/:_authToken=${{ secrets.REPO_SECRET }} >> .npmrc
         npm version patch
         git push
         git push --tags
