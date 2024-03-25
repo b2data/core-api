@@ -1,4 +1,4 @@
-name: Build Package
+name: Patch Version
 
 on:
   push:
@@ -26,3 +26,5 @@ jobs:
         git config user.email "noreply@b2data.adnl"
         git config user.name "Nikolai Turov"
         npm version patch
+        git push
+        git push --tags
