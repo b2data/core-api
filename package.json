@@ -18,6 +18,9 @@
     "*Api*",
     "*.yaml"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "devDependencies": {
     "swagger-typescript-api": "^13.0.3"
   },
