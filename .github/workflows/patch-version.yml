@@ -22,8 +22,8 @@ jobs:
     - name: Bump version
       run: |
         echo @b2data:registry=https://npm.pkg.github.com > .npmrc
-        echo //npm.pkg.github.com/:_authToken=${{ secrets.REPO_SECRET }} >> .npmrc
-        git config user.email "noreply@b2data.adnl"
+        echo //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }} >> .npmrc
+        git config user.email "noreply@b2data.ton"
         git config user.name "Nikolai Turov"
         npm version patch
         git push
