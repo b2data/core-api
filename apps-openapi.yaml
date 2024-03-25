@@ -1,0 +1,230 @@
+openapi: 3.0.0
+info:
+  title: REST API for Apps
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081
+  - url: http://54.37.199.51
+tags:
+  - name: Apps
+paths:
+  /apps/my:
+    get:
+      tags:
+        - Apps
+      security:
+        - BearerAuth: []
+      summary: Get activated apps
+      description: Available for supper admins
+      operationId: getMyApps
+      responses:
+        "200":
+          $ref: "#/components/responses/AppListData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /apps/activate:
+    post:
+      tags:
+        - Apps
+      security:
+        - BearerAuth: []
+      summary: Activate app
+      description: Available for supper admins
+      operationId: activateApp
+      requestBody:
+        $ref: "#/components/requestBodies/ActivateAppBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/AppData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/AppNotFound"
+        "500":
+          $ref: "#/components/responses/AppRegistrationError"
+  /apps/deactivate/:key:
+    post:
+      tags:
+        - Apps
+      security:
+        - BearerAuth: []
+      summary: Deactivate app
+      description: Available for supper admins
+      operationId: deactivateApp
+      parameters:
+        - $ref: "#/components/parameters/appKeyParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/AppData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/AppNotFound"
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authorization using Auth routes
+    ProviderClientId:
+      type: apiKey
+      name: client-id
+      in: header
+      description: Authorization for providers requests
+    ProviderClientSecret:
+      type: apiKey
+      name: client-secret
+      in: header
+      description: Authorization for providers requests
+    ProviderUserId:
+      type: apiKey
+      name: user-id
+      in: header
+      description: Authorization for providers requests
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - message
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+    SortModel:
+      type: object
+      required:
+        - field
+      properties:
+        field:
+          type: string
+          description: The field for sorting
+        sort:
+          type: string
+          nullable: true
+          enum:
+            - asc
+            - desc
+          description: The sorting order
+    SearchModel:
+      type: object
+      properties:
+        limit:
+          type: number
+          description: Number of return items
+        offset:
+          type: number
+          description: Number of skip items
+        sort:
+          type: array
+          items:
+            $ref: "#/components/schemas/SortModel"
+    App:
+      type: object
+      required:
+        - key
+        - id
+        - secret
+        - createdAt
+      properties:
+        key:
+          type: string
+          description: App unique name
+        id:
+          type: string
+          format: uuid
+          description: Client ID for API requests
+        secret:
+          type: string
+          description: Client Secret for API requests
+        createdAt:
+          type: string
+          format: date-time
+          description: Activation Date
+  requestBodies:
+    EmptyBody:
+      content:
+        application/json:
+          schema:
+            type: object
+    ActivateAppBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - key
+              - name
+              - address
+            properties:
+              key:
+                type: string
+                description: App unique name
+              name:
+                type: string
+                description: Service Name
+              address:
+                type: string
+                description: Service URL Address
+  responses:
+    InvalidData:
+      description: Invalid request data
+    Unauthorized:
+      description: Unauthorized
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: api:403
+            message: You don't have access to this method
+    AppData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/App"
+    AppListData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/App"
+    AppNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: app:404
+            message: App not found
+    AppRegistrationError:
+      description: System error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: app:400-register
+            message: Failure on app registration
+  parameters:
+    appKeyParam:
+      in: path
+      name: key
+      description: App unique name
+      required: true
+      schema:
+        type: string

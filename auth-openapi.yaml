@@ -1,0 +1,317 @@
+openapi: 3.0.0
+info:
+  title: REST API for Auth
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081
+  - url: http://54.37.199.51
+tags:
+  - name: Auth
+    description: Authentication
+paths:
+  /auth/start:
+    post:
+      tags:
+        - Auth
+      summary: Start authentication process
+      operationId: startAuth
+      requestBody:
+        $ref: "#/components/requestBodies/EmptyBody"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - proof
+                properties:
+                  proof:
+                    type: string
+  /auth/verify:
+    post:
+      tags:
+        - Auth
+      summary: Verify authentication wallet
+      operationId: verifyAuth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - proof
+                - account
+              properties:
+                spaceId:
+                  type: string
+                  description: Selected Space ID
+                proof:
+                  type: object
+                  required:
+                    - payload
+                    - signature
+                    - timestamp
+                  properties:
+                    payload:
+                      type: string
+                      description: TON Connect payload
+                    signature:
+                      type: string
+                      description: TON Connect signature
+                    timestamp:
+                      type: number
+                      description: Timestamp of authentication
+                account:
+                  type: object
+                  required:
+                    - address
+                    - chain
+                  properties:
+                    address:
+                      type: string
+                      description: Wallet Address
+                      example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+                    chain:
+                      type: string
+                      description: Blockchain chain
+                    publicKey:
+                      type: string
+                      description: Wallet Public Key
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - accessToken
+                  - refreshToken
+                  - profile
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                  profile:
+                    $ref: "#/components/schemas/User"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                errorCode: auth:404
+                message: The proof has not found
+  /auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Refresh Access Token by Refresh token
+      operationId: refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - accessToken
+                - refreshToken
+              properties:
+                spaceId:
+                  type: string
+                  description: Selected Space ID
+                accessToken:
+                  type: string
+                refreshToken:
+                  type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - accessToken
+                  - refreshToken
+                  - profile
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                  profile:
+                    $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+  /auth/profile:
+    get:
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      summary: Get Profile
+      operationId: getProfile
+      responses:
+        "200":
+          $ref: "#/components/responses/UserData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+    patch:
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      summary: Update Profile
+      operationId: updateProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  description: First Name
+                lastName:
+                  type: string
+                  description: Last Name
+                middleName:
+                  type: string
+                  description: Middle Name
+                avatar:
+                  type: string
+                  description: Avatar
+      responses:
+        "200":
+          $ref: "#/components/responses/UserData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authorization using Auth routes
+    ProviderClientId:
+      type: apiKey
+      name: client-id
+      in: header
+      description: Authorization for providers requests
+    ProviderClientSecret:
+      type: apiKey
+      name: client-secret
+      in: header
+      description: Authorization for providers requests
+    ProviderUserId:
+      type: apiKey
+      name: user-id
+      in: header
+      description: Authorization for providers requests
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - message
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+    SortModel:
+      type: object
+      required:
+        - field
+      properties:
+        field:
+          type: string
+          description: The field for sorting
+        sort:
+          type: string
+          nullable: true
+          enum:
+            - asc
+            - desc
+          description: The sorting order
+    SearchModel:
+      type: object
+      properties:
+        limit:
+          type: number
+          description: Number of return items
+        offset:
+          type: number
+          description: Number of skip items
+        sort:
+          type: array
+          items:
+            $ref: "#/components/schemas/SortModel"
+    User:
+      type: object
+      required:
+        - id
+        - firstName
+      properties:
+        id:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        firstName:
+          type: string
+          description: First Name
+        lastName:
+          type: string
+          description: Last Name
+        middleName:
+          type: string
+          description: Middle Name
+        avatar:
+          type: string
+          description: Avatar
+  requestBodies:
+    EmptyBody:
+      content:
+        application/json:
+          schema:
+            type: object
+  responses:
+    InvalidData:
+      description: Invalid request data
+    Unauthorized:
+      description: Unauthorized
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: api:403
+            message: You don't have access to this method
+    UserData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/User"
+    UserNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: user:404
+            message: User does not exist
