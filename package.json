@@ -1,0 +1,27 @@
+{
+  "name": "@b2data/core-api",
+  "description": "Core API interfaces",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "gen": "npm run gen:auth && npm run gen:providers && npm run gen:apps && npm run gen:dictionary",
+    "gen:auth": "swagger-typescript-api -p auth-openapi.yaml --unwrap-response-data --module-name-first-tag --union-enums -n AuthApi.ts",
+    "gen:providers": "swagger-typescript-api -p providers-openapi.yaml --unwrap-response-data --module-name-first-tag --union-enums -n ProvidersApi.ts",
+    "gen:apps": "swagger-typescript-api -p apps-openapi.yaml --unwrap-response-data --module-name-first-tag --union-enums -n AppsApi.ts",
+    "gen:dictionary": "swagger-typescript-api -p dictionary-openapi.yaml --unwrap-response-data --module-name-first-tag --union-enums -n DictionaryApi.ts"
+  },
+  "license": "MIT",
+  "keywords": [],
+  "author": "Nikolai Turov",
+  "files": [
+    "HttpClient*",
+    "*Api*",
+    "*.yaml"
+  ],
+  "devDependencies": {
+    "swagger-typescript-api": "^13.0.3"
+  },
+  "dependencies": {
+    "typescript": "^5.4.3"
+  }
+}
