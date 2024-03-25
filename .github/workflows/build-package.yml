@@ -27,8 +27,8 @@ jobs:
 
     - name: Build Package
       run: |
-        yarn build
         yarn gen
+        yarn build
     
     - name: Publish NPM Package
       run: |

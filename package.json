@@ -15,7 +15,8 @@
   "author": "Nikolai Turov",
   "files": [
     "HttpClient*",
-    "*Api*",
+    "*Api.ts",
+    "*Api.js",
     "*.yaml"
   ],
   "publishConfig": {
