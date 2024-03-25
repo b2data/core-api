@@ -20,4 +20,7 @@ jobs:
         registry-url: https://npm.pkg.github.com/
 
     - name: Bump version
-      run: npm version patch
+      run: |
+        npm version patch
+        git push
+        git push --tags
