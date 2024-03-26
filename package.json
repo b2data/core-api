@@ -4,7 +4,7 @@
   "version": "1.0.6",
   "scripts": {
     "build": "tsc",
-    "gen": "npm run gen:auth && npm run gen:providers && npm run gen:apps",
+    "gen": "npm run gen:auth && npm run gen:providers && npm run gen:apps && npm run gen:dictionary",
     "gen:auth": "swagger-typescript-api -p auth-openapi.yaml ${npm_package_config_gen} -n AuthApi.ts",
     "gen:providers": "swagger-typescript-api -p providers-openapi.yaml ${npm_package_config_gen} -n ProvidersApi.ts",
     "gen:apps": "swagger-typescript-api -p apps-openapi.yaml ${npm_package_config_gen} -n AppsApi.ts",
