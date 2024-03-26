@@ -1,8 +1,8 @@
-name: Build Package
+name: Publish Package
 
 on:
   push:
-    branches: [ "main" ]
+    tags: [ "*" ]
 
 jobs:
 
@@ -19,17 +19,6 @@ jobs:
         node-version: 18
         registry-url: https://npm.pkg.github.com/
 
-    - name: Install packages
-      run: |
-        echo @b2data:registry=https://npm.pkg.github.com > .npmrc
-        echo //npm.pkg.github.com/:_authToken=${{ secrets.REPO_SECRET }} >> .npmrc
-        yarn install
-
-    - name: Build Package
-      run: |
-        yarn gen
-        yarn build
-    
     - name: Publish NPM Package
       run: |
         npm pack
