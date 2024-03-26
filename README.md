@@ -9,4 +9,4 @@
 - `auth-openapi.yaml` and `AuthApi.ts` describes REST API for Core Auth Methods. It could be also included in other services bellow.
 - `providers-openapi.yaml` and `ProvidersApi.ts` describes REST API for Core Providers Methods. It could be also included in other services bellow.
 - `apps-openapi.yaml` and `AppsApi.ts` describes REST API for Core Apps Methods. It could be also included in other services bellow.
-
+- `dictionary-openapi.yaml` and `DictionaryApi.ts` describes REST API for Dictionary Methods.
