@@ -9,39 +9,6 @@
  * ---------------------------------------------------------------
  */
 
-export interface App {
-  /** App unique name */
-  key: string;
-  /**
-   * Client ID for API requests
-   * @format uuid
-   */
-  id: string;
-  /** Client Secret for API requests */
-  secret: string;
-  /**
-   * Activation Date
-   * @format date-time
-   */
-  createdAt: string;
-}
-
-export interface User {
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  id: string;
-  /** First Name */
-  firstName: string;
-  /** Last Name */
-  lastName?: string;
-  /** Middle Name */
-  middleName?: string;
-  /** Avatar */
-  avatar?: string;
-}
-
 export interface ErrorResponse {
   errorCode: string;
   message: string;
@@ -60,6 +27,22 @@ export interface SearchModel {
   /** Number of skip items */
   offset?: number;
   sort?: SortModel[];
+}
+
+export interface User {
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  id: string;
+  /** First Name */
+  firstName: string;
+  /** Last Name */
+  lastName?: string;
+  /** Middle Name */
+  middleName?: string;
+  /** Avatar */
+  avatar?: string;
 }
 
 export interface Provider {
@@ -516,8 +499,10 @@ export interface Word {
   description?: string;
   /** Word unit */
   unit?: string;
-  /** Word coeff */
-  coeff?: string;
+  /** System unit key */
+  systemUnit?: string;
+  /** Coeff for mapping systemUnit with unit */
+  coeff?: number;
   /** Word photos */
   photos?: string[];
   /** Word videos */
@@ -560,8 +545,10 @@ export interface WordWithData {
   description?: string;
   /** Word unit */
   unit?: string;
-  /** Word coeff */
-  coeff?: string;
+  /** System unit key */
+  systemUnit?: string;
+  /** Coeff for mapping systemUnit with unit */
+  coeff?: number;
   /** Word photos */
   photos?: string[];
   /** Word videos */
@@ -914,69 +901,6 @@ export class Api<SecurityDataType extends unknown> {
     this.http = http;
   }
 
-  apps = {
-    /**
-     * @description Available for supper admins
-     *
-     * @tags Apps
-     * @name GetMyApps
-     * @summary Get activated apps
-     * @request GET:/apps/my
-     * @secure
-     */
-    getMyApps: (params: RequestParams = {}) =>
-      this.http.request<App[], ErrorResponse>({
-        path: `/apps/my`,
-        method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Available for supper admins
-     *
-     * @tags Apps
-     * @name ActivateApp
-     * @summary Activate app
-     * @request POST:/apps/activate
-     * @secure
-     */
-    activateApp: (
-      data: {
-        /** App unique name */
-        key: string;
-        /** Service Name */
-        name: string;
-        /** Service URL Address */
-        address: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<App, ErrorResponse>({
-        path: `/apps/activate`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Available for supper admins
-     *
-     * @tags Apps
-     * @name DeactivateApp
-     * @summary Deactivate app
-     * @request POST:/apps/deactivate/:key
-     * @secure
-     */
-    deactivateApp: (key: string, params: RequestParams = {}) =>
-      this.http.request<App, ErrorResponse>({
-        path: `/apps/deactivate/${key}`,
-        method: "POST",
-        secure: true,
-        ...params,
-      }),
-  };
   auth = {
     /**
      * No description
@@ -2187,7 +2111,9 @@ export class Api<SecurityDataType extends unknown> {
         description?: string;
         /** Word unit */
         unit?: string;
-        /** Word coeff */
+        /** System unit key */
+        systemUnit?: string;
+        /** Coeff for mapping systemUnit with unit */
         coeff?: string;
         /** Word photos */
         photos?: string[];
@@ -2248,6 +2174,8 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         /** Search term */
         searchTerm?: string;
+        /** Return words with unit data */
+        withUnit?: boolean;
         /** Folders ids */
         folders?: string[];
         /** Number of return items */
@@ -2337,6 +2265,10 @@ export class Api<SecurityDataType extends unknown> {
         field: string;
         /** Variant value */
         value: string;
+        /** System unit key */
+        systemUnit?: string;
+        /** Coeff for mapping systemUnit with unit */
+        coeff?: number;
       },
       params: RequestParams = {},
     ) =>
@@ -2378,6 +2310,10 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         /** Variant value */
         value: string;
+        /** System unit key */
+        systemUnit?: string;
+        /** Coeff for mapping systemUnit with unit */
+        coeff?: number;
       },
       params: RequestParams = {},
     ) =>

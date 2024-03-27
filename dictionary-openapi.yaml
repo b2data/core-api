@@ -23,64 +23,6 @@ tags:
     description: "description: This methods requires Authorizations by `client-id` +
       `client-secret` + `user-id`"
 paths:
-  /apps/my:
-    get:
-      tags:
-        - Apps
-      security:
-        - BearerAuth: []
-      summary: Get activated apps
-      description: Available for supper admins
-      operationId: getMyApps
-      responses:
-        "200":
-          $ref: "#/components/responses/AppListData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-  /apps/activate:
-    post:
-      tags:
-        - Apps
-      security:
-        - BearerAuth: []
-      summary: Activate app
-      description: Available for supper admins
-      operationId: activateApp
-      requestBody:
-        $ref: "#/components/requestBodies/ActivateAppBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/AppData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/AppNotFound"
-        "500":
-          $ref: "#/components/responses/AppRegistrationError"
-  /apps/deactivate/:key:
-    post:
-      tags:
-        - Apps
-      security:
-        - BearerAuth: []
-      summary: Deactivate app
-      description: Available for supper admins
-      operationId: deactivateApp
-      parameters:
-        - $ref: "#/components/parameters/appKeyParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/AppData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/AppNotFound"
   /auth/start:
     post:
       tags:
@@ -1052,7 +994,7 @@ paths:
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
-          $ref: "#/components/responses/UnitNotFound"
+          $ref: "#/components/responses/SystemUnitNotFound"
   /users/search:
     post:
       tags:
@@ -1457,51 +1399,28 @@ paths:
         "404":
           $ref: "#/components/responses/WordReferenceNotFound"
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authorization using Auth routes
+    ProviderClientId:
+      type: apiKey
+      name: client-id
+      in: header
+      description: Authorization for providers requests
+    ProviderClientSecret:
+      type: apiKey
+      name: client-secret
+      in: header
+      description: Authorization for providers requests
+    ProviderUserId:
+      type: apiKey
+      name: user-id
+      in: header
+      description: Authorization for providers requests
   schemas:
-    App:
-      type: object
-      required:
-        - key
-        - id
-        - secret
-        - createdAt
-      properties:
-        key:
-          type: string
-          description: App unique name
-        id:
-          type: string
-          format: uuid
-          description: Client ID for API requests
-        secret:
-          type: string
-          description: Client Secret for API requests
-        createdAt:
-          type: string
-          format: date-time
-          description: Activation Date
-    User:
-      type: object
-      required:
-        - id
-        - firstName
-      properties:
-        id:
-          type: string
-          description: Wallet Address
-          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
-        firstName:
-          type: string
-          description: First Name
-        lastName:
-          type: string
-          description: Last Name
-        middleName:
-          type: string
-          description: Middle Name
-        avatar:
-          type: string
-          description: Avatar
     ErrorResponse:
       type: object
       required:
@@ -1540,6 +1459,28 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SortModel"
+    User:
+      type: object
+      required:
+        - id
+        - firstName
+      properties:
+        id:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        firstName:
+          type: string
+          description: First Name
+        lastName:
+          type: string
+          description: Last Name
+        middleName:
+          type: string
+          description: Middle Name
+        avatar:
+          type: string
+          description: Avatar
     Provider:
       type: object
       required:
@@ -2105,9 +2046,12 @@ components:
         unit:
           type: string
           description: Word unit
-        coeff:
+        systemUnit:
           type: string
-          description: Word coeff
+          description: System unit key
+        coeff:
+          type: number
+          description: Coeff for mapping systemUnit with unit
         photos:
           type: array
           description: Word photos
@@ -2168,9 +2112,12 @@ components:
         unit:
           type: string
           description: Word unit
-        coeff:
+        systemUnit:
           type: string
-          description: Word coeff
+          description: System unit key
+        coeff:
+          type: number
+          description: Coeff for mapping systemUnit with unit
         photos:
           type: array
           description: Word photos
@@ -2335,152 +2282,7 @@ components:
           example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
         createdByData:
           $ref: "#/components/schemas/User"
-  parameters:
-    appKeyParam:
-      in: path
-      name: key
-      description: App unique name
-      required: true
-      schema:
-        type: string
-    providerIdParam:
-      in: path
-      name: id
-      description: Provider ID
-      required: true
-      schema:
-        type: string
-        format: uuid
-    walletParam:
-      in: path
-      name: wallet
-      description: Wallet Address
-      required: true
-      schema:
-        type: string
-    complaintIdParam:
-      in: path
-      name: id
-      description: Complaint ID
-      required: true
-      schema:
-        type: string
-        format: uuid
-    fileIdParam:
-      in: path
-      name: id
-      description: File ID
-      required: true
-      schema:
-        type: string
-        format: uuid
-    folderIdParam:
-      in: path
-      name: id
-      description: Folder ID
-      required: true
-      schema:
-        type: string
-        format: uuid
-    filterIdParam:
-      in: path
-      name: filterId
-      description: Filter ID
-      required: true
-      schema:
-        type: string
-        format: uuid
-    folderSearchModeParam:
-      in: query
-      name: mode
-      schema:
-        type: string
-        description: Based on mode different folders may be returned
-        default: public
-        enum:
-          - public
-          - personal
-          - review
-    tagIdParam:
-      in: path
-      name: id
-      description: Tag ID
-      required: true
-      schema:
-        type: string
-        format: uuid
-    unitKeyParam:
-      in: path
-      name: key
-      description: Unit key
-      required: true
-      schema:
-        type: string
-    userIdParam:
-      in: path
-      name: id
-      description: User ID
-      required: true
-      schema:
-        type: string
-    wordIdParam:
-      in: path
-      name: id
-      description: Word ID
-      required: true
-      schema:
-        type: string
-        format: uuid
-    variantIdParam:
-      in: path
-      name: variantId
-      description: Variant ID
-      required: true
-      schema:
-        type: string
-        format: uuid
-    variantFieldParam:
-      in: path
-      name: field
-      description: The characteristic to get its variants
-      required: true
-      schema:
-        type: string
-    wordRefTypeParam:
-      in: path
-      name: type
-      description: Reference type
-      required: true
-      schema:
-        $ref: "#/components/schemas/WordReferenceType"
-    wordRefIdParam:
-      in: path
-      name: refId
-      description: Reference ID
-      required: true
-      schema:
-        type: string
-        format: uuid
   requestBodies:
-    ActivateAppBody:
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - key
-              - name
-              - address
-            properties:
-              key:
-                type: string
-                description: App unique name
-              name:
-                type: string
-                description: Service Name
-              address:
-                type: string
-                description: Service URL Address
     EmptyBody:
       content:
         application/json:
@@ -2847,6 +2649,9 @@ components:
               searchTerm:
                 type: string
                 description: Search term
+              withUnit:
+                type: boolean
+                description: Return words with unit data
               folders:
                 type: array
                 description: Folders ids
@@ -2883,9 +2688,12 @@ components:
               unit:
                 type: string
                 description: Word unit
+              systemUnit:
+                type: string
+                description: System unit key
               coeff:
                 type: string
-                description: Word coeff
+                description: Coeff for mapping systemUnit with unit
               photos:
                 type: array
                 description: Word photos
@@ -2937,6 +2745,12 @@ components:
               value:
                 type: string
                 description: Variant value
+              systemUnit:
+                type: string
+                description: System unit key
+              coeff:
+                type: number
+                description: Coeff for mapping systemUnit with unit
     EditWordVariantBody:
       content:
         application/json:
@@ -2948,39 +2762,26 @@ components:
               value:
                 type: string
                 description: Variant value
+              systemUnit:
+                type: string
+                description: System unit key
+              coeff:
+                type: number
+                description: Coeff for mapping systemUnit with unit
   responses:
-    AppData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/App"
-    AppListData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/App"
-    AppNotFound:
-      description: Not found
+    InvalidData:
+      description: Invalid request data
+    Unauthorized:
+      description: Unauthorized
+    Forbidden:
+      description: Forbidden
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
           example:
-            errorCode: app:404
-            message: App not found
-    AppRegistrationError:
-      description: System error
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            errorCode: app:400-register
-            message: Failure on app registration
+            errorCode: api:403
+            message: You don't have access to this method
     UserData:
       description: Successful operation
       content:
@@ -2996,19 +2797,6 @@ components:
           example:
             errorCode: user:404
             message: User does not exist
-    InvalidData:
-      description: Invalid request data
-    Unauthorized:
-      description: Unauthorized
-    Forbidden:
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            errorCode: api:403
-            message: You don't have access to this method
     ProviderData:
       description: Successful operation
       content:
@@ -3298,15 +3086,15 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Unit"
-    UnitNotFound:
+    SystemUnitNotFound:
       description: Not found
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
           example:
-            errorCode: unit:404
-            message: Unit not found
+            errorCode: systemUnit:404
+            message: System unit not found
     SearchUsersData:
       description: Successful operation
       content:
@@ -3453,24 +3241,122 @@ components:
               value:
                 errorCode: word:404-reference
                 message: Word reference not found
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: Authorization using Auth routes
-    ProviderClientId:
-      type: apiKey
-      name: client-id
-      in: header
-      description: Authorization for providers requests
-    ProviderClientSecret:
-      type: apiKey
-      name: client-secret
-      in: header
-      description: Authorization for providers requests
-    ProviderUserId:
-      type: apiKey
-      name: user-id
-      in: header
-      description: Authorization for providers requests
+  parameters:
+    providerIdParam:
+      in: path
+      name: id
+      description: Provider ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    walletParam:
+      in: path
+      name: wallet
+      description: Wallet Address
+      required: true
+      schema:
+        type: string
+    complaintIdParam:
+      in: path
+      name: id
+      description: Complaint ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    fileIdParam:
+      in: path
+      name: id
+      description: File ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    folderIdParam:
+      in: path
+      name: id
+      description: Folder ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    filterIdParam:
+      in: path
+      name: filterId
+      description: Filter ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    folderSearchModeParam:
+      in: query
+      name: mode
+      schema:
+        type: string
+        description: Based on mode different folders may be returned
+        default: public
+        enum:
+          - public
+          - personal
+          - review
+    tagIdParam:
+      in: path
+      name: id
+      description: Tag ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    unitKeyParam:
+      in: path
+      name: key
+      description: Unit key
+      required: true
+      schema:
+        type: string
+    userIdParam:
+      in: path
+      name: id
+      description: User ID
+      required: true
+      schema:
+        type: string
+    wordIdParam:
+      in: path
+      name: id
+      description: Word ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    variantIdParam:
+      in: path
+      name: variantId
+      description: Variant ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    variantFieldParam:
+      in: path
+      name: field
+      description: The characteristic to get its variants
+      required: true
+      schema:
+        type: string
+    wordRefTypeParam:
+      in: path
+      name: type
+      description: Reference type
+      required: true
+      schema:
+        $ref: "#/components/schemas/WordReferenceType"
+    wordRefIdParam:
+      in: path
+      name: refId
+      description: Reference ID
+      required: true
+      schema:
+        type: string
+        format: uuid
