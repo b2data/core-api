@@ -503,10 +503,10 @@ export interface Word {
   systemUnit?: string;
   /** Coeff for mapping systemUnit with unit */
   coeff?: number;
-  /** Word photos */
-  photos?: string[];
-  /** Word videos */
-  videos?: string[];
+  /** Word main photo */
+  photo?: string;
+  /** Word main video */
+  video?: string;
   /** Word folders */
   folders?: string[];
   /**
@@ -549,10 +549,10 @@ export interface WordWithData {
   systemUnit?: string;
   /** Coeff for mapping systemUnit with unit */
   coeff?: number;
-  /** Word photos */
-  photos?: string[];
-  /** Word videos */
-  videos?: string[];
+  /** Word main photo */
+  photo?: string;
+  /** Word main video */
+  video?: string;
   /** Word folders */
   folders?: string[];
   /**

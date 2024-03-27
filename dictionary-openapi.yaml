@@ -2052,16 +2052,12 @@ components:
         coeff:
           type: number
           description: Coeff for mapping systemUnit with unit
-        photos:
-          type: array
-          description: Word photos
-          items:
-            type: string
-        videos:
-          type: array
-          description: Word videos
-          items:
-            type: string
+        photo:
+          type: string
+          description: Word main photo
+        video:
+          type: string
+          description: Word main video
         folders:
           type: array
           description: Word folders
@@ -2118,16 +2114,12 @@ components:
         coeff:
           type: number
           description: Coeff for mapping systemUnit with unit
-        photos:
-          type: array
-          description: Word photos
-          items:
-            type: string
-        videos:
-          type: array
-          description: Word videos
-          items:
-            type: string
+        photo:
+          type: string
+          description: Word main photo
+        video:
+          type: string
+          description: Word main video
         folders:
           type: array
           description: Word folders
