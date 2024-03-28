@@ -261,7 +261,7 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version 1.0.0
  * @baseUrl http://localhost:8081
  */
-export class Api<SecurityDataType extends unknown> {
+export class AppsApi<SecurityDataType extends unknown> {
   http: HttpClient<SecurityDataType>;
 
   constructor(http: HttpClient<SecurityDataType>) {
@@ -299,6 +299,8 @@ export class Api<SecurityDataType extends unknown> {
       data: {
         /** App unique name */
         key: string;
+        /** App URL */
+        url: string;
         /** Service Name */
         name: string;
         /** Service URL Address */

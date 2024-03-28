@@ -162,12 +162,16 @@ components:
             type: object
             required:
               - key
+              - url
               - name
               - address
             properties:
               key:
                 type: string
                 description: App unique name
+              url:
+                type: string
+                description: App URL
               name:
                 type: string
                 description: Service Name
