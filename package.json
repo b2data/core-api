@@ -5,10 +5,10 @@
   "scripts": {
     "build": "tsc",
     "gen": "npm run gen:auth && npm run gen:providers && npm run gen:apps && npm run gen:dictionary",
-    "gen:auth": "swagger-typescript-api -p auth-openapi.yaml ${npm_package_config_gen} -n AuthApi.ts",
-    "gen:providers": "swagger-typescript-api -p providers-openapi.yaml ${npm_package_config_gen} -n ProvidersApi.ts",
-    "gen:apps": "swagger-typescript-api -p apps-openapi.yaml ${npm_package_config_gen} -n AppsApi.ts",
-    "gen:dictionary": "swagger-typescript-api -p dictionary-openapi.yaml ${npm_package_config_gen} -n DictionaryApi.ts"
+    "gen:auth": "swagger-typescript-api -p auth-openapi.yaml ${npm_package_config_gen} --api-class-name AuthApi -n AuthApi.ts",
+    "gen:providers": "swagger-typescript-api -p providers-openapi.yaml ${npm_package_config_gen} --api-class-name ProvidersApi -n ProvidersApi.ts",
+    "gen:apps": "swagger-typescript-api -p apps-openapi.yaml ${npm_package_config_gen} --api-class-name AppsApi -n AppsApi.ts",
+    "gen:dictionary": "swagger-typescript-api -p dictionary-openapi.yaml ${npm_package_config_gen} --api-class-name DictionaryApi -n DictionaryApi.ts"
   },
   "config": {
     "gen": "--unwrap-response-data --module-name-first-tag --single-http-client --union-enums"
