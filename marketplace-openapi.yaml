@@ -1,0 +1,2243 @@
+openapi: 3.0.0
+info:
+  title: REST API for B2Marketplace
+  version: 1.0.0
+servers:
+  - url: http://localhost:8082
+  - url: http://54.37.199.51:8082/api
+tags:
+  - name: Apps
+  - name: Auth
+  - name: Activities
+  - name: Admin Access
+  - name: Files
+  - name: Folders
+  - name: Providers
+  - name: Tags
+  - name: Products
+  - name: Available Public
+    description: This methods does not require authorization
+  - name: Available Providers
+    description: "description: This methods requires Authorizations by `client-id` +
+      `client-secret` + `user-id`"
+paths:
+  /apps:
+    get:
+      tags:
+        - Apps
+      security:
+        - BearerAuth: []
+      summary: Get activated apps
+      description: Available for everyone for
+      operationId: getApps
+      responses:
+        "200":
+          $ref: "#/components/responses/AppPublicData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /apps/full:
+    get:
+      tags:
+        - Apps
+      security:
+        - BearerAuth: []
+      summary: Get activated apps full data
+      description: Available for supper admins
+      operationId: getAppsFull
+      responses:
+        "200":
+          $ref: "#/components/responses/AppListData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /apps/activate:
+    post:
+      tags:
+        - Apps
+      security:
+        - BearerAuth: []
+      summary: Activate app
+      description: Available for supper admins
+      operationId: activateApp
+      requestBody:
+        $ref: "#/components/requestBodies/ActivateAppBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/AppData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/AppNotFound"
+        "500":
+          $ref: "#/components/responses/AppRegistrationError"
+  /apps/deactivate/:key:
+    post:
+      tags:
+        - Apps
+      security:
+        - BearerAuth: []
+      summary: Deactivate app
+      description: Available for supper admins
+      operationId: deactivateApp
+      parameters:
+        - $ref: "#/components/parameters/appKeyParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/AppData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/AppNotFound"
+  /auth/start:
+    post:
+      tags:
+        - Auth
+      summary: Start authentication process
+      operationId: startAuth
+      requestBody:
+        $ref: "#/components/requestBodies/EmptyBody"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - proof
+                properties:
+                  proof:
+                    type: string
+  /auth/verify:
+    post:
+      tags:
+        - Auth
+      summary: Verify authentication wallet
+      operationId: verifyAuth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - proof
+                - account
+              properties:
+                spaceId:
+                  type: string
+                  description: Selected Space ID
+                proof:
+                  type: object
+                  required:
+                    - payload
+                    - signature
+                    - timestamp
+                  properties:
+                    payload:
+                      type: string
+                      description: TON Connect payload
+                    signature:
+                      type: string
+                      description: TON Connect signature
+                    timestamp:
+                      type: number
+                      description: Timestamp of authentication
+                account:
+                  type: object
+                  required:
+                    - address
+                    - chain
+                  properties:
+                    address:
+                      type: string
+                      description: Wallet Address
+                      example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+                    chain:
+                      type: string
+                      description: Blockchain chain
+                    publicKey:
+                      type: string
+                      description: Wallet Public Key
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - accessToken
+                  - refreshToken
+                  - profile
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                  profile:
+                    $ref: "#/components/schemas/User"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                errorCode: auth:404
+                message: The proof has not found
+  /auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Refresh Access Token by Refresh token
+      operationId: refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - accessToken
+                - refreshToken
+              properties:
+                spaceId:
+                  type: string
+                  description: Selected Space ID
+                accessToken:
+                  type: string
+                refreshToken:
+                  type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - accessToken
+                  - refreshToken
+                  - profile
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                  profile:
+                    $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+  /auth/profile:
+    get:
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      summary: Get Profile
+      operationId: getProfile
+      responses:
+        "200":
+          $ref: "#/components/responses/UserData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+    patch:
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      summary: Update Profile
+      operationId: updateProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  description: First Name
+                lastName:
+                  type: string
+                  description: Last Name
+                middleName:
+                  type: string
+                  description: Middle Name
+                avatar:
+                  type: string
+                  description: Avatar
+      responses:
+        "200":
+          $ref: "#/components/responses/UserData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+  /providers/my:
+    get:
+      tags:
+        - Providers
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+      summary: Get provider data
+      operationId: getProvider
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderData"
+        "404":
+          $ref: "#/components/responses/ProviderNotFound"
+    patch:
+      tags:
+        - Providers
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+      summary: Update provider data
+      operationId: updateProvider
+      requestBody:
+        $ref: "#/components/requestBodies/ProviderRequestBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "404":
+          $ref: "#/components/responses/ProviderNotFound"
+    delete:
+      tags:
+        - Providers
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+      summary: Delete provider
+      operationId: deleteProvider
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderData"
+        "404":
+          $ref: "#/components/responses/ProviderNotFound"
+  /providers/register:
+    post:
+      tags:
+        - Providers
+        - Available Public
+      summary: Register new provider
+      operationId: registerProvider
+      requestBody:
+        $ref: "#/components/requestBodies/ProviderRequestBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderWithSecretData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  /providers/search:
+    post:
+      tags:
+        - Providers
+      security:
+        - BearerAuth: []
+      summary: Search providers
+      operationId: searchProviders
+      description: Required `Admin` access
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProvidersBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProvidersData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/providers/{id}/block":
+    post:
+      tags:
+        - Providers
+      security:
+        - BearerAuth: []
+      summary: Block provider
+      operationId: blockProvider
+      description: Required `Admin` access
+      parameters:
+        - $ref: "#/components/parameters/providerIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EmptyBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProviderNotFound"
+  "/providers/{id}/unblock":
+    post:
+      tags:
+        - Providers
+      security:
+        - BearerAuth: []
+      summary: Unblock provider
+      operationId: unblockProvider
+      description: Required `Admin` access
+      parameters:
+        - $ref: "#/components/parameters/providerIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EmptyBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProviderNotFound"
+  /activities/search:
+    post:
+      tags:
+        - Activities
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Search activities
+      operationId: searchActivities
+      requestBody:
+        $ref: "#/components/requestBodies/SearchActivitiesBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchActivitiesData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /admin-access/check:
+    get:
+      tags:
+        - Admin Access
+      security:
+        - BearerAuth: []
+      summary: Check Admin Access
+      operationId: checkAdminAccess
+      responses:
+        "200":
+          $ref: "#/components/responses/CheckUserAccess"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /admin-access/search:
+    post:
+      tags:
+        - Admin Access
+      security:
+        - BearerAuth: []
+      summary: Search System Admins
+      description: Required `Wallet Admin` access
+      operationId: searchAdminAccess
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchModel"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchAdminAccess"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /admin-access:
+    post:
+      tags:
+        - Admin Access
+      security:
+        - BearerAuth: []
+      summary: Add System Admin
+      description: Required `Wallet Admin` access
+      operationId: addAdminAccess
+      requestBody:
+        $ref: "#/components/requestBodies/CreateAdminAccessBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/AdminAccessData"
+        "400":
+          $ref: "#/components/responses/AdminAccessExist"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/admin-access/{wallet}":
+    delete:
+      tags:
+        - Admin Access
+      security:
+        - BearerAuth: []
+      summary: Delete System Admin
+      description: Required `Wallet Admin` access
+      operationId: deleteAdminAccess
+      parameters:
+        - $ref: "#/components/parameters/walletParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/AdminAccessData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/AdminAccessNotFound"
+  /files:
+    post:
+      tags:
+        - Files
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Upload file
+      operationId: uploadFile
+      requestBody:
+        $ref: "#/components/requestBodies/UploadFileBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/FileData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FileNotFound"
+  "/files/{id}":
+    get:
+      tags:
+        - Files
+        - Available Public
+      summary: Get file
+      operationId: getFile
+      parameters:
+        - $ref: "#/components/parameters/fileIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/FileBinary"
+        "404":
+          $ref: "#/components/responses/FileNotFound"
+    delete:
+      tags:
+        - Files
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Delete file
+      operationId: deleteFile
+      parameters:
+        - $ref: "#/components/parameters/fileIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/FileData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FileNotFound"
+  /folders:
+    post:
+      tags:
+        - Folders
+      security:
+        - BearerAuth: []
+      summary: Create folder
+      operationId: createFolder
+      requestBody:
+        $ref: "#/components/requestBodies/CreateFolderBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/FolderData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ParentFolderNotFound"
+  "/folders/{id}":
+    get:
+      tags:
+        - Folders
+        - Available Public
+      summary: Get full folder data
+      operationId: getFolder
+      parameters:
+        - $ref: "#/components/parameters/folderIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/FolderFullData"
+        "404":
+          $ref: "#/components/responses/FolderNotFound"
+    patch:
+      tags:
+        - Folders
+      security:
+        - BearerAuth: []
+      summary: Update folder
+      description: Available for `creator` or `System Admin`
+      operationId: updateFolder
+      parameters:
+        - $ref: "#/components/parameters/folderIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditFolderBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/FolderData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FolderNotFound"
+    delete:
+      tags:
+        - Folders
+      security:
+        - BearerAuth: []
+      summary: Delete folder
+      description: Available for `creator` or `System Admin`
+      operationId: deleteFolder
+      parameters:
+        - $ref: "#/components/parameters/folderIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/FolderData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FolderNotFound"
+  /folders/search:
+    get:
+      tags:
+        - Folders
+        - Available Public
+      summary: Search folders
+      operationId: searchFolders
+      parameters:
+        - $ref: "#/components/parameters/folderSearchModeParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/FolderTreeData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  /folders/move:
+    put:
+      tags:
+        - Folders
+      security:
+        - BearerAuth: []
+      summary: Change folder order
+      operationId: moveFolder
+      requestBody:
+        $ref: "#/components/requestBodies/MoveFolderBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/FolderData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FolderNotFound"
+  "/folders/{id}/filters":
+    post:
+      tags:
+        - Folders
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Create folder filter
+      operationId: createFolderFilter
+      parameters:
+        - $ref: "#/components/parameters/folderIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/CreateFolderFilterBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/FolderFilterData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FolderNotFound"
+  "/folders/{id}/filters/{filterId}":
+    patch:
+      tags:
+        - Folders
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Update folder filter
+      description: Available for `creator` or `System Admin`
+      operationId: updateFolderFilter
+      parameters:
+        - $ref: "#/components/parameters/folderIdParam"
+        - $ref: "#/components/parameters/filterIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditFolderFilterBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/FolderFilterData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FolderFilterNotFound"
+    delete:
+      tags:
+        - Folders
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Delete folder filter
+      description: Available for `creator` or `System Admin`
+      operationId: deleteFolderFilter
+      parameters:
+        - $ref: "#/components/parameters/folderIdParam"
+        - $ref: "#/components/parameters/filterIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/FolderFilterData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FolderFilterNotFound"
+  /folders/filters/search:
+    post:
+      tags:
+        - Folders
+        - Available Public
+      summary: Search folders filters
+      description: Return all filters values and tags that were created
+      operationId: searchFoldersFilters
+      requestBody:
+        $ref: "#/components/requestBodies/SearchFoldersFiltersBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchFolderFilterData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  "/folders/{id}/filters/move":
+    put:
+      tags:
+        - Folders
+      security:
+        - BearerAuth: []
+      summary: Move folder filter
+      operationId: moveFolderFilter
+      parameters:
+        - $ref: "#/components/parameters/folderIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/MoveFolderFilterBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/FolderFilterData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FolderNotFound"
+  /product/search:
+    post:
+      tags:
+        - Product
+        - Available Public
+      summary: Search products
+      operationId: searchProducts
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProductsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  "/products/{id}":
+    get:
+      tags:
+        - Product
+        - Available Public
+      summary: Get product with full data
+      operationId: getProduct
+      parameters:
+        - $ref: "#/components/parameters/productIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductData"
+        "404":
+          $ref: "#/components/responses/ProductNotFound"
+  /tags/search:
+    post:
+      tags:
+        - Tags
+        - Available Public
+      summary: Search tags
+      operationId: searchTags
+      requestBody:
+        $ref: "#/components/requestBodies/SearchTagsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchTagsData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  /tags:
+    post:
+      tags:
+        - Tags
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Crete tag
+      operationId: createTag
+      requestBody:
+        $ref: "#/components/requestBodies/CreateTagBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/TagData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/tags/{id}":
+    patch:
+      tags:
+        - Tags
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Update tag
+      description: Available for `creator` or `System Admin`
+      operationId: updateTag
+      parameters:
+        - $ref: "#/components/parameters/tagIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateTagBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/TagData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/TagNotFound"
+    delete:
+      tags:
+        - Tags
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Delete tag
+      description: Available for `creator` or `System Admin`
+      operationId: deleteTag
+      parameters:
+        - $ref: "#/components/parameters/tagIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/TagData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/TagNotFound"
+components:
+  schemas:
+    App:
+      type: object
+      required:
+        - key
+        - url
+        - id
+        - secret
+        - createdAt
+      properties:
+        key:
+          type: string
+          description: App unique name
+        url:
+          type: string
+          description: App URL
+        id:
+          type: string
+          format: uuid
+          description: Client ID for API requests
+        secret:
+          type: string
+          description: Client Secret for API requests
+        createdAt:
+          type: string
+          format: date-time
+          description: Activation Date
+    AppPublic:
+      type: object
+      required:
+        - key
+        - url
+      properties:
+        key:
+          type: string
+          description: App unique name
+        url:
+          type: string
+          description: App URL
+    User:
+      type: object
+      required:
+        - id
+        - firstName
+      properties:
+        id:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        firstName:
+          type: string
+          description: First Name
+        lastName:
+          type: string
+          description: Last Name
+        middleName:
+          type: string
+          description: Middle Name
+        avatar:
+          type: string
+          description: Avatar
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - message
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+    SortModel:
+      type: object
+      required:
+        - field
+      properties:
+        field:
+          type: string
+          description: The field for sorting
+        sort:
+          type: string
+          nullable: true
+          enum:
+            - asc
+            - desc
+          description: The sorting order
+    SearchModel:
+      type: object
+      properties:
+        limit:
+          type: number
+          description: Number of return items
+        offset:
+          type: number
+          description: Number of skip items
+        sort:
+          type: array
+          items:
+            $ref: "#/components/schemas/SortModel"
+    Provider:
+      type: object
+      required:
+        - id
+        - name
+        - address
+        - callback
+        - blocked
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Provider ID
+        name:
+          type: string
+          description: Provider Name
+        address:
+          type: string
+          description: Provider URL Address
+        callback:
+          type: string
+          description: Provider Callback Address
+        blocked:
+          type: boolean
+          description: If `true` provider is blocked
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+    ProviderWithSecret:
+      type: object
+      required:
+        - id
+        - secret
+        - name
+        - address
+        - callback
+        - blocked
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Provider ID
+        secret:
+          type: string
+          description: Provider Secret for API requests
+        name:
+          type: string
+          description: Provider Name
+        address:
+          type: string
+          description: Provider URL Address
+        callback:
+          type: string
+          description: Provider Callback Address
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+    ActivityType:
+      type: string
+      description: Activity Type
+      enum:
+        - tagCreated
+        - tagUpdated
+        - tagDeleted
+        - folderCreated
+        - folderUpdated
+        - folderMoved
+        - folderDeleted
+        - folderFilterCreated
+        - folderFilterUpdated
+        - folderFilterMoved
+        - folderFilterDeleted
+    ActivityLog:
+      type: object
+      required:
+        - id
+        - type
+        - userId
+        - artefactId
+        - data
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Artefact ID
+        type:
+          $ref: "#/components/schemas/ActivityType"
+        userId:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        artefactId:
+          type: string
+          format: uuid
+          description: Artefact ID
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        data:
+          type: object
+          description: Activity Data depends on type
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+    AdminAccess:
+      type: object
+      required:
+        - wallet
+        - createdAt
+      properties:
+        wallet:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        userData:
+          $ref: "#/components/schemas/User"
+    File:
+      type: object
+      required:
+        - id
+        - name
+        - mimeType
+        - size
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: File ID
+        name:
+          type: string
+          description: File name
+        mimeType:
+          type: string
+          description: File mime type
+        size:
+          type: number
+          description: File size in bytes
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+    Folder:
+      type: object
+      required:
+        - id
+        - name
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Folder ID
+        parentId:
+          type: string
+          nullable: true
+          format: uuid
+          description: Folder parent ID
+        name:
+          type: string
+          description: Folder name
+        order:
+          type: number
+          description: Folder order
+        isPublic:
+          type: boolean
+          description: If `true` - shows everyone, if `null` - on review to make public,
+            if `false` - shows only for creator
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+    FolderFormulaOperator:
+      type: string
+      description: Formula operator
+      enum:
+        - equal
+        - not_equal
+    FolderFilter:
+      type: object
+      required:
+        - id
+        - folderId
+        - field
+        - operator
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Filter ID
+        folder:
+          type: string
+          format: uuid
+          description: Folder ID
+        field:
+          type: string
+          description: Formula attribute
+        operator:
+          $ref: "#/components/schemas/FolderFormulaOperator"
+        value:
+          type: string
+          description: Formula value
+        unit:
+          type: string
+          description: Formula unit
+        order:
+          type: number
+          description: Filter order
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+    FolderTreeItem:
+      type: object
+      required:
+        - id
+        - name
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Folder ID
+        parentId:
+          type: string
+          nullable: true
+          format: uuid
+          description: Folder parent ID
+        name:
+          type: string
+          description: Folder name
+        order:
+          type: number
+          description: Folder order
+        isPublic:
+          type: boolean
+          description: If `true` - shows everyone, if `null` - on review to make public,
+            if `false` - shows only for creator
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/FolderTreeItem"
+    FolderFullData:
+      type: object
+      required:
+        - id
+        - name
+        - createdBy
+        - createdAt
+        - updatedAt
+        - filters
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Folder ID
+        parentId:
+          type: string
+          nullable: true
+          format: uuid
+          description: Folder parent ID
+        name:
+          type: string
+          description: Folder name
+        order:
+          type: number
+          description: Folder order
+        isPublic:
+          type: boolean
+          description: If `true` - shows everyone, if `null` - on review to make public,
+            if `false` - shows only for creator
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        createdByData:
+          $ref: "#/components/schemas/User"
+        filters:
+          type: array
+          items:
+            $ref: "#/components/schemas/FolderFilter"
+    Product:
+      type: object
+      required:
+        - id
+        - externalId
+        - name
+        - description
+        - photos
+        - videos
+        - providerId
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Product ID
+        externalId:
+          type: string
+          format: uuid
+          description: Product External ID form Provider
+        name:
+          type: string
+          description: Product name
+        description:
+          type: string
+          description: Product description
+        photos:
+          type: array
+          items:
+            type: string
+          description: Product photos
+        videos:
+          type: array
+          items:
+            type: string
+          description: Product videos
+        createdBy:
+          type: string
+          description: Wallet Address
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+    Tag:
+      type: object
+      required:
+        - id
+        - field
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Tag ID
+        field:
+          type: string
+          description: Tag name
+        value:
+          type: string
+          description: Tag value
+        color:
+          type: string
+          description: Tag color
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+  parameters:
+    appKeyParam:
+      in: path
+      name: key
+      description: App unique name
+      required: true
+      schema:
+        type: string
+    providerIdParam:
+      in: path
+      name: id
+      description: Provider ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    walletParam:
+      in: path
+      name: wallet
+      description: Wallet Address
+      required: true
+      schema:
+        type: string
+    fileIdParam:
+      in: path
+      name: id
+      description: File ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    folderIdParam:
+      in: path
+      name: id
+      description: Folder ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    filterIdParam:
+      in: path
+      name: filterId
+      description: Filter ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    folderSearchModeParam:
+      in: query
+      name: mode
+      schema:
+        type: string
+        description: Based on mode different folders may be returned
+        default: public
+        enum:
+          - public
+          - personal
+          - review
+    productIdParam:
+      in: path
+      name: id
+      description: Product ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    tagIdParam:
+      in: path
+      name: id
+      description: Tag ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+  requestBodies:
+    ActivateAppBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - key
+              - name
+              - address
+            properties:
+              key:
+                type: string
+                description: App unique name
+              name:
+                type: string
+                description: Service Name
+              address:
+                type: string
+                description: Service URL Address
+    EmptyBody:
+      content:
+        application/json:
+          schema:
+            type: object
+    SearchProvidersBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              isBlocked:
+                type: boolean
+                description: Filter by blocked status
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    ProviderRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - address
+              - callback
+            properties:
+              name:
+                type: string
+                description: Provider Name
+              address:
+                type: string
+                description: Provider URL Address
+              callback:
+                type: string
+                description: Provider Callback Address
+    SearchActivitiesBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              artefactId:
+                type: string
+                format: uuid
+                description: Artefact ID
+              providerId:
+                type: string
+                format: uuid
+                description: Provider ID
+              types:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityType"
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    CreateAdminAccessBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - wallet
+            properties:
+              wallet:
+                type: string
+                description: Wallet Address
+                example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+    UploadFileBody:
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: If set and file exists then file content will be overwritten
+              files:
+                type: string
+                format: binary
+    CreateFolderBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+                description: Folder name
+              parentId:
+                type: string
+                nullable: true
+                format: uuid
+                description: Folder parent ID
+              order:
+                type: number
+                description: Folder order
+    EditFolderBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Folder name
+    MoveFolderBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: Folder ID
+              parentId:
+                type: string
+                nullable: true
+                format: uuid
+                description: Folder patent ID
+              afterId:
+                type: string
+                format: uuid
+                description: Should move after folder ID
+              beforeId:
+                type: string
+                format: uuid
+                description: Should move before folder ID
+    MakePublicFolderBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              shouldCancel:
+                type: boolean
+                description: Available for `System Admin` and used to cancel user public request
+    CreateFolderFilterBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - field
+              - operator
+              - value
+            properties:
+              field:
+                type: string
+                description: Formula attribute
+              operator:
+                $ref: "#/components/schemas/FolderFormulaOperator"
+              value:
+                type: string
+                description: Formula value
+              unit:
+                type: string
+                description: Formula unit
+              order:
+                type: number
+                description: Filter order
+    EditFolderFilterBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              field:
+                type: string
+                description: Formula attribute
+              operator:
+                $ref: "#/components/schemas/FolderFormulaOperator"
+              value:
+                type: string
+                description: Formula value
+              unit:
+                type: string
+                description: Formula unit
+    SearchFoldersFiltersBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              searchTerm:
+                type: string
+                description: Search term
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    MoveFolderFilterBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+              - filterId
+            properties:
+              filterId:
+                type: string
+                format: uuid
+                description: Filter ID
+              afterId:
+                type: string
+                format: uuid
+                description: Should move after folder ID
+              beforeId:
+                type: string
+                format: uuid
+                description: Should move before folder ID
+    SearchProductBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              searchTerm:
+                type: string
+                description: Search term
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    SearchTagsBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              searchTerm:
+                type: string
+                description: Search term
+              ids:
+                type: array
+                description: Tag ids
+                items:
+                  type: string
+                  format: uuid
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    CreateTagBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - field
+            properties:
+              field:
+                type: string
+                description: Tag name
+              value:
+                type: string
+                description: Tag value
+              color:
+                type: string
+                description: Tag color
+    UpdateTagBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              field:
+                type: string
+                description: Tag name
+              value:
+                type: string
+                description: Tag value
+              color:
+                type: string
+                description: Tag color
+  responses:
+    AppData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/App"
+    AppListData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/App"
+    AppPublicData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/AppPublic"
+    AppNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: app:404
+            message: App not found
+    AppRegistrationError:
+      description: System error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: app:400-register
+            message: Failure on app registration
+    UserData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/User"
+    UserNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: user:404
+            message: User does not exist
+    InvalidData:
+      description: Invalid request data
+    Unauthorized:
+      description: Unauthorized
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: api:403
+            message: You don't have access to this method
+    ProviderData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Provider"
+    ProviderWithSecretData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProviderWithSecret"
+    SearchProvidersData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Provider"
+    ProviderNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: provider:404
+            message: Provider not found
+    SearchActivitiesData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLog"
+    CheckUserAccess:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - isAdmin
+              - isWalletAdmin
+            properties:
+              isAdmin:
+                type: boolean
+                description: If `true` user has admin access
+              isWalletAdmin:
+                type: boolean
+                description: If `true` user has wallet admin access
+    SearchAdminAccess:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminAccess"
+    AdminAccessData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AdminAccess"
+    AdminAccessExist:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: admin-access:400-exist
+            message: User has admin access
+    AdminAccessNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: admin-access:404
+            message: User has no admin access
+    FileBinary:
+      description: Successful operation
+      content:
+        text/plain:
+          schema:
+            type: string
+            format: binary
+    FileData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/File"
+    FileNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: file:404
+            message: File not exist
+    FolderData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Folder"
+    FolderFullData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FolderFullData"
+    FolderTreeData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/FolderTreeItem"
+    FolderNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: folder:404
+            message: Folder not found
+    ParentFolderNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: folder:404
+            message: Parent folder not found
+    FolderIsPublic:
+      description: Folder is public
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: folder:400-public
+            message: Folder is public
+    FolderFilterData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FolderFilter"
+    FolderFilterNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            FolderNotFound:
+              value:
+                errorCode: folder:404
+                message: Folder not found
+            FilterNotFound:
+              value:
+                errorCode: folder:404-filter
+                message: Folder filter not found
+    SearchFolderFilterData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: string
+    ProductData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Product"
+    ProductNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: product:404
+            message: Product not found
+    SearchTagsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tag"
+    TagData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Tag"
+    TagNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: tag:404
+            message: Tag not found
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authorization using Auth routes
+    ProviderClientId:
+      type: apiKey
+      name: client-id
+      in: header
+      description: Authorization for providers requests
+    ProviderClientSecret:
+      type: apiKey
+      name: client-secret
+      in: header
+      description: Authorization for providers requests
+    ProviderUserId:
+      type: apiKey
+      name: user-id
+      in: header
+      description: Authorization for providers requests
