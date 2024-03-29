@@ -401,7 +401,18 @@ export class ProvidersApi<SecurityDataType extends unknown> {
      * @request POST:/providers/search
      * @secure
      */
-    searchProviders: (data: SearchModel, params: RequestParams = {}) =>
+    searchProviders: (
+      data: {
+        /** Filter by blocked status */
+        isBlocked?: boolean;
+        /** Number of return items */
+        limit?: number;
+        /** Number of skip items */
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
       this.http.request<
         {
           total: number;
@@ -413,7 +424,6 @@ export class ProvidersApi<SecurityDataType extends unknown> {
         method: "POST",
         body: data,
         secure: true,
-        type: ContentType.Json,
         ...params,
       }),
 

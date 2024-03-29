@@ -79,10 +79,7 @@ paths:
       operationId: searchProviders
       description: Required `Admin` access
       requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SearchModel"
+        $ref: "#/components/requestBodies/SearchProvidersBody"
       responses:
         "200":
           $ref: "#/components/responses/SearchProvidersData"
@@ -278,6 +275,25 @@ components:
         application/json:
           schema:
             type: object
+    SearchProvidersBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              isBlocked:
+                type: boolean
+                description: Filter by blocked status
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
     ProviderRequestBody:
       content:
         application/json:

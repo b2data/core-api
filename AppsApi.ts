@@ -32,6 +32,8 @@ export interface SearchModel {
 export interface App {
   /** App unique name */
   key: string;
+  /** App URL */
+  url: string;
   /**
    * Client ID for API requests
    * @format uuid
@@ -44,6 +46,13 @@ export interface App {
    * @format date-time
    */
   createdAt: string;
+}
+
+export interface AppPublic {
+  /** App unique name */
+  key: string;
+  /** App URL */
+  url: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -270,17 +279,34 @@ export class AppsApi<SecurityDataType extends unknown> {
 
   apps = {
     /**
+     * @description Available for everyone for
+     *
+     * @tags Apps
+     * @name GetApps
+     * @summary Get activated apps
+     * @request GET:/apps
+     * @secure
+     */
+    getApps: (params: RequestParams = {}) =>
+      this.http.request<AppPublic[], ErrorResponse>({
+        path: `/apps`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
      * @description Available for supper admins
      *
      * @tags Apps
-     * @name GetMyApps
-     * @summary Get activated apps
-     * @request GET:/apps/my
+     * @name GetAppsFull
+     * @summary Get activated apps full data
+     * @request GET:/apps/full
      * @secure
      */
-    getMyApps: (params: RequestParams = {}) =>
+    getAppsFull: (params: RequestParams = {}) =>
       this.http.request<App[], ErrorResponse>({
-        path: `/apps/my`,
+        path: `/apps/full`,
         method: "GET",
         secure: true,
         ...params,

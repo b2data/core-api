@@ -8,15 +8,31 @@ servers:
 tags:
   - name: Apps
 paths:
-  /apps/my:
+  /apps:
     get:
       tags:
         - Apps
       security:
         - BearerAuth: []
       summary: Get activated apps
+      description: Available for everyone for
+      operationId: getApps
+      responses:
+        "200":
+          $ref: "#/components/responses/AppPublicData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /apps/full:
+    get:
+      tags:
+        - Apps
+      security:
+        - BearerAuth: []
+      summary: Get activated apps full data
       description: Available for supper admins
-      operationId: getMyApps
+      operationId: getAppsFull
       responses:
         "200":
           $ref: "#/components/responses/AppListData"
@@ -131,6 +147,7 @@ components:
       type: object
       required:
         - key
+        - url
         - id
         - secret
         - createdAt
@@ -138,6 +155,9 @@ components:
         key:
           type: string
           description: App unique name
+        url:
+          type: string
+          description: App URL
         id:
           type: string
           format: uuid
@@ -149,6 +169,18 @@ components:
           type: string
           format: date-time
           description: Activation Date
+    AppPublic:
+      type: object
+      required:
+        - key
+        - url
+      properties:
+        key:
+          type: string
+          description: App unique name
+        url:
+          type: string
+          description: App URL
   requestBodies:
     EmptyBody:
       content:
@@ -206,6 +238,14 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/App"
+    AppPublicData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/AppPublic"
     AppNotFound:
       description: Not found
       content:
