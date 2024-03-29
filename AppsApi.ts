@@ -325,8 +325,6 @@ export class AppsApi<SecurityDataType extends unknown> {
       data: {
         /** App unique name */
         key: string;
-        /** App URL */
-        url: string;
         /** Service Name */
         name: string;
         /** Service URL Address */
