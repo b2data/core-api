@@ -282,10 +282,7 @@ paths:
       operationId: searchProviders
       description: Required `Admin` access
       requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SearchModel"
+        $ref: "#/components/requestBodies/SearchProvidersBody"
       responses:
         "200":
           $ref: "#/components/responses/SearchProvidersData"
@@ -1126,7 +1123,7 @@ paths:
         - Words
         - Available Public
       summary: Search words
-      operationId: searchWords1
+      operationId: searchWords
       requestBody:
         $ref: "#/components/requestBodies/SearchWordsBody"
       responses:
@@ -2079,6 +2076,10 @@ components:
           type: string
           format: date-time
           description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Deleted Date
     WordWithData:
       type: object
       required:
@@ -2141,6 +2142,10 @@ components:
           type: string
           format: date-time
           description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Deleted Date
         createdByData:
           $ref: "#/components/schemas/User"
         tags:
@@ -2280,6 +2285,25 @@ components:
         application/json:
           schema:
             type: object
+    SearchProvidersBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              isBlocked:
+                type: boolean
+                description: Filter by blocked status
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
     ProviderRequestBody:
       content:
         application/json:
@@ -2638,6 +2662,12 @@ components:
           schema:
             type: object
             properties:
+              ids:
+                type: array
+                description: Search by ids
+                items:
+                  type: string
+                  format: uuid
               searchTerm:
                 type: string
                 description: Search term
@@ -2684,7 +2714,7 @@ components:
                 type: string
                 description: System unit key
               coeff:
-                type: string
+                type: number
                 description: Coeff for mapping systemUnit with unit
               photos:
                 type: array

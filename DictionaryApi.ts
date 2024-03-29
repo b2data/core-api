@@ -529,6 +529,11 @@ export interface Word {
    * @format date-time
    */
   updatedAt: string;
+  /**
+   * Deleted Date
+   * @format date-time
+   */
+  deletedAt?: string;
 }
 
 export interface WordWithData {
@@ -575,6 +580,11 @@ export interface WordWithData {
    * @format date-time
    */
   updatedAt: string;
+  /**
+   * Deleted Date
+   * @format date-time
+   */
+  deletedAt?: string;
   createdByData: User;
   tags: Tag[];
   synonyms: WordReferencePreview[];
@@ -1153,7 +1163,18 @@ export class DictionaryApi<SecurityDataType extends unknown> {
      * @request POST:/providers/search
      * @secure
      */
-    searchProviders: (data: SearchModel, params: RequestParams = {}) =>
+    searchProviders: (
+      data: {
+        /** Filter by blocked status */
+        isBlocked?: boolean;
+        /** Number of return items */
+        limit?: number;
+        /** Number of skip items */
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
       this.http.request<
         {
           total: number;
@@ -1165,7 +1186,6 @@ export class DictionaryApi<SecurityDataType extends unknown> {
         method: "POST",
         body: data,
         secure: true,
-        type: ContentType.Json,
         ...params,
       }),
 
@@ -2114,7 +2134,7 @@ export class DictionaryApi<SecurityDataType extends unknown> {
         /** System unit key */
         systemUnit?: string;
         /** Coeff for mapping systemUnit with unit */
-        coeff?: string;
+        coeff?: number;
         /** Word photos */
         photos?: string[];
         /** Word videos */
@@ -2166,12 +2186,14 @@ export class DictionaryApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Words, Available Public
-     * @name SearchWords1
+     * @name SearchWords
      * @summary Search words
      * @request POST:/words/search
      */
-    searchWords1: (
+    searchWords: (
       data: {
+        /** Search by ids */
+        ids?: string[];
         /** Search term */
         searchTerm?: string;
         /** Return words with unit data */
