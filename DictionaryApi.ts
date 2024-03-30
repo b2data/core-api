@@ -2198,6 +2198,8 @@ export class DictionaryApi<SecurityDataType extends unknown> {
         searchTerm?: string;
         /** Return words with unit data */
         withUnit?: boolean;
+        /** Skip deleted words filtration */
+        withDeleted?: boolean;
         /** Folders ids */
         folders?: string[];
         /** Number of return items */

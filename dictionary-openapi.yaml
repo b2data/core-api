@@ -2674,6 +2674,9 @@ components:
               withUnit:
                 type: boolean
                 description: Return words with unit data
+              withDeleted:
+                type: boolean
+                description: Skip deleted words filtration
               folders:
                 type: array
                 description: Folders ids
