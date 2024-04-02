@@ -655,7 +655,31 @@ paths:
       summary: Search folders
       operationId: searchFolders
       parameters:
-        - $ref: "#/components/parameters/folderSearchModeParam"
+        - in: query
+          name: asTree
+          description: Return as tree nodes
+          schema:
+            type: boolean
+        - in: query
+          name: searchTerm
+          description: Search by name
+          schema:
+            type: string
+        - in: query
+          name: parentId
+          description: Search by parentId
+          schema:
+            type: string
+            nullable: true
+            format: uuid
+        - in: query
+          name: ids
+          description: Search by ids
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
       responses:
         "200":
           $ref: "#/components/responses/FolderTreeData"
@@ -1530,17 +1554,6 @@ components:
       schema:
         type: string
         format: uuid
-    folderSearchModeParam:
-      in: query
-      name: mode
-      schema:
-        type: string
-        description: Based on mode different folders may be returned
-        default: public
-        enum:
-          - public
-          - personal
-          - review
     productIdParam:
       in: path
       name: id
