@@ -1658,7 +1658,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
               name: string;
             };
             value: string;
-            "valueData:"?: {
+            valueData?: {
               id: string;
               name: string;
             };

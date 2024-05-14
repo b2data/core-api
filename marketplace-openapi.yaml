@@ -2421,7 +2421,7 @@ components:
                           type: string
                     value:
                       type: string
-                    "valueData:":
+                    valueData:
                       type: object
                       required:
                         - id
