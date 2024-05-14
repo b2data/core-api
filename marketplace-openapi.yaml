@@ -75,7 +75,7 @@ paths:
           $ref: "#/components/responses/AppNotFound"
         "500":
           $ref: "#/components/responses/AppRegistrationError"
-  /apps/deactivate/:key:
+  "/apps/deactivate/{name}":
     post:
       tags:
         - Apps
@@ -85,7 +85,7 @@ paths:
       description: Available for supper admins
       operationId: deactivateApp
       parameters:
-        - $ref: "#/components/parameters/appKeyParam"
+        - $ref: "#/components/parameters/appNameParam"
       responses:
         "200":
           $ref: "#/components/responses/AppData"
@@ -555,7 +555,8 @@ paths:
         - ProviderClientId: []
           ProviderClientSecret: []
           ProviderUserId: []
-      summary: Delete file
+      summary: Delete File
+      description: Delete by file ID or external ID
       operationId: deleteFile
       parameters:
         - $ref: "#/components/parameters/fileIdParam"
@@ -575,6 +576,7 @@ paths:
       security:
         - BearerAuth: []
       summary: Create folder
+      description: Available for `System Admin`
       operationId: createFolder
       requestBody:
         $ref: "#/components/requestBodies/CreateFolderBody"
@@ -609,7 +611,7 @@ paths:
       security:
         - BearerAuth: []
       summary: Update folder
-      description: Available for `creator` or `System Admin`
+      description: Available for `System Admin`
       operationId: updateFolder
       parameters:
         - $ref: "#/components/parameters/folderIdParam"
@@ -632,7 +634,7 @@ paths:
       security:
         - BearerAuth: []
       summary: Delete folder
-      description: Available for `creator` or `System Admin`
+      description: Available for `System Admin`
       operationId: deleteFolder
       parameters:
         - $ref: "#/components/parameters/folderIdParam"
@@ -667,7 +669,21 @@ paths:
             type: string
         - in: query
           name: parentId
-          description: Search by parentId
+          description: Search by parent ID
+          schema:
+            type: string
+            nullable: true
+            format: uuid
+        - in: query
+          name: productId
+          description: Search by product ID
+          schema:
+            type: string
+            nullable: true
+            format: uuid
+        - in: query
+          name: productExternalId
+          description: Search by product external ID
           schema:
             type: string
             nullable: true
@@ -692,6 +708,7 @@ paths:
       security:
         - BearerAuth: []
       summary: Change folder order
+      description: Available for `System Admin`
       operationId: moveFolder
       requestBody:
         $ref: "#/components/requestBodies/MoveFolderBody"
@@ -803,6 +820,21 @@ paths:
           $ref: "#/components/responses/SearchFolderFilterData"
         "400":
           $ref: "#/components/responses/InvalidData"
+  "/folders/{id}/check-reference":
+    get:
+      tags:
+        - Folders
+        - Available Public
+      summary: Check folder filters data for references
+      description: Return data for create tags to make references with the folder
+      operationId: checkFolderReference
+      parameters:
+        - $ref: "#/components/parameters/folderIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/CheckFolderReferenceData"
+        "404":
+          $ref: "#/components/responses/FolderNotFound"
   "/folders/{id}/filters/move":
     put:
       tags:
@@ -829,7 +861,7 @@ paths:
   /product/search:
     post:
       tags:
-        - Product
+        - Products
         - Available Public
       summary: Search products
       operationId: searchProducts
@@ -837,13 +869,34 @@ paths:
         $ref: "#/components/requestBodies/SearchProductsBody"
       responses:
         "200":
-          $ref: "#/components/responses/ProductData"
+          $ref: "#/components/responses/SearchProductData"
         "400":
           $ref: "#/components/responses/InvalidData"
+  /products:
+    post:
+      tags:
+        - Products
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Register new product
+      description: Available for `providers`
+      operationId: registerProduct
+      requestBody:
+        $ref: "#/components/requestBodies/ModifyProductBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductFullData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
   "/products/{id}":
     get:
       tags:
-        - Product
+        - Products
         - Available Public
       summary: Get product with full data
       operationId: getProduct
@@ -851,7 +904,93 @@ paths:
         - $ref: "#/components/parameters/productIdParam"
       responses:
         "200":
+          $ref: "#/components/responses/ProductFullData"
+        "404":
+          $ref: "#/components/responses/ProductNotFound"
+    patch:
+      tags:
+        - Products
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Update product data
+      description: Available for `providers`
+      operationId: updateProduct
+      parameters:
+        - $ref: "#/components/parameters/productIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/ModifyProductBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductFullData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProductNotFound"
+    delete:
+      tags:
+        - Products
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Delete product
+      description: Available for `providers`. Mark that product was deleted.
+      operationId: deleteProduct
+      parameters:
+        - $ref: "#/components/parameters/productIdParam"
+      responses:
+        "200":
           $ref: "#/components/responses/ProductData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProductNotFound"
+  "/products/{id}/block":
+    post:
+      tags:
+        - Product
+      security:
+        - BearerAuth: []
+      summary: Block product
+      description: Available for `System Admin`
+      operationId: blockProduct
+      parameters:
+        - $ref: "#/components/parameters/productIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProductNotFound"
+  "/products/{id}/unblock":
+    post:
+      tags:
+        - Product
+      security:
+        - BearerAuth: []
+      summary: Unblock product
+      description: Available for `System Admin`
+      operationId: unblockProduct
+      parameters:
+        - $ref: "#/components/parameters/productIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/ProductNotFound"
   /tags/search:
@@ -868,86 +1007,13 @@ paths:
           $ref: "#/components/responses/SearchTagsData"
         "400":
           $ref: "#/components/responses/InvalidData"
-  /tags:
-    post:
-      tags:
-        - Tags
-        - Available Providers
-      security:
-        - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
-      summary: Crete tag
-      operationId: createTag
-      requestBody:
-        $ref: "#/components/requestBodies/CreateTagBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/TagData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-  "/tags/{id}":
-    patch:
-      tags:
-        - Tags
-        - Available Providers
-      security:
-        - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
-      summary: Update tag
-      description: Available for `creator` or `System Admin`
-      operationId: updateTag
-      parameters:
-        - $ref: "#/components/parameters/tagIdParam"
-      requestBody:
-        $ref: "#/components/requestBodies/UpdateTagBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/TagData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/TagNotFound"
-    delete:
-      tags:
-        - Tags
-        - Available Providers
-      security:
-        - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
-      summary: Delete tag
-      description: Available for `creator` or `System Admin`
-      operationId: deleteTag
-      parameters:
-        - $ref: "#/components/parameters/tagIdParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/TagData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/TagNotFound"
 components:
   schemas:
     App:
       type: object
       required:
         - key
+        - name
         - url
         - id
         - secret
@@ -955,7 +1021,10 @@ components:
       properties:
         key:
           type: string
-          description: App unique name
+          description: App key
+        name:
+          type: string
+          description: Unique name
         url:
           type: string
           description: App URL
@@ -974,11 +1043,15 @@ components:
       type: object
       required:
         - key
+        - name
         - url
       properties:
         key:
           type: string
-          description: App unique name
+          description: App key
+        name:
+          type: string
+          description: Unique name
         url:
           type: string
           description: App URL
@@ -1178,7 +1251,7 @@ components:
           description: Creation Date
         userData:
           $ref: "#/components/schemas/User"
-    File:
+    FileData:
       type: object
       required:
         - id
@@ -1239,6 +1312,9 @@ components:
         name:
           type: string
           description: Folder name
+        photo:
+          type: string
+          description: Folder photo
         order:
           type: number
           description: Folder order
@@ -1338,6 +1414,9 @@ components:
         name:
           type: string
           description: Folder name
+        photo:
+          type: string
+          description: Folder photo
         order:
           type: number
           description: Folder order
@@ -1387,6 +1466,9 @@ components:
         name:
           type: string
           description: Folder name
+        photo:
+          type: string
+          description: Folder photo
         order:
           type: number
           description: Folder order
@@ -1469,6 +1551,94 @@ components:
           type: string
           format: date-time
           description: Last Updating Date
+        deleteAt:
+          type: string
+          format: date-time
+          description: Delete Date
+    ProductFull:
+      type: object
+      required:
+        - id
+        - externalId
+        - name
+        - description
+        - photos
+        - videos
+        - providerId
+        - createdBy
+        - createdAt
+        - updatedAt
+        - folders
+        - createdByData
+        - providerData
+        - tagsData
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Product ID
+        externalId:
+          type: string
+          format: uuid
+          description: Product External ID form Provider
+        name:
+          type: string
+          description: Product name
+        description:
+          type: string
+          description: Product description
+        photos:
+          type: array
+          items:
+            type: string
+          description: Product photos
+        videos:
+          type: array
+          items:
+            type: string
+          description: Product videos
+        createdBy:
+          type: string
+          description: Wallet Address
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deleteAt:
+          type: string
+          format: date-time
+          description: Delete Date
+        folders:
+          type: array
+          description: Folders to that product linked
+          items:
+            type: string
+            format: uuid
+        createdByData:
+          $ref: "#/components/schemas/User"
+        providerData:
+          type: object
+          required:
+            - id
+            - name
+          properties:
+            id:
+              type: string
+              description: Provider ID
+              format: uuid
+            name:
+              type: string
+              description: Provider name
+        tagsData:
+          $ref: "#/components/schemas/Tag"
     Tag:
       type: object
       required:
@@ -1488,9 +1658,6 @@ components:
         value:
           type: string
           description: Tag value
-        color:
-          type: string
-          description: Tag color
         createdBy:
           type: string
           description: Wallet Address
@@ -1508,10 +1675,10 @@ components:
           format: date-time
           description: Last Updating Date
   parameters:
-    appKeyParam:
+    appNameParam:
       in: path
-      name: key
-      description: App unique name
+      name: name
+      description: Unique name
       required: true
       schema:
         type: string
@@ -1583,10 +1750,10 @@ components:
             properties:
               key:
                 type: string
-                description: App unique name
+                description: App key
               name:
                 type: string
-                description: Service Name
+                description: Service Unique Name
               address:
                 type: string
                 description: Service URL Address
@@ -1683,7 +1850,11 @@ components:
                 type: string
                 format: uuid
                 description: If set and file exists then file content will be overwritten
-              files:
+              externalId:
+                type: string
+                format: uuid
+                description: External file ID
+              file:
                 type: string
                 format: binary
     CreateFolderBody:
@@ -1697,6 +1868,9 @@ components:
               name:
                 type: string
                 description: Folder name
+              photo:
+                type: string
+                description: Folder photo
               parentId:
                 type: string
                 nullable: true
@@ -1714,6 +1888,9 @@ components:
               name:
                 type: string
                 description: Folder name
+              photo:
+                type: string
+                description: Folder photo
     MoveFolderBody:
       content:
         application/json:
@@ -1829,7 +2006,7 @@ components:
                 type: string
                 format: uuid
                 description: Should move before folder ID
-    SearchProductBody:
+    SearchProductsBody:
       content:
         application/json:
           schema:
@@ -1838,6 +2015,11 @@ components:
               searchTerm:
                 type: string
                 description: Search term
+              folders:
+                type: array
+                items:
+                  type: string
+                  format: uuid
               limit:
                 type: number
                 description: Number of return items
@@ -1848,6 +2030,45 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
+    ModifyProductBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              externalId:
+                type: string
+                format: uuid
+                description: Product External ID form Provider
+              name:
+                type: string
+                description: Product name
+              description:
+                type: string
+                description: Product description
+              photos:
+                type: array
+                items:
+                  type: string
+                description: Product photos
+              videos:
+                type: array
+                items:
+                  type: string
+                description: Product videos
+              tags:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    externalId:
+                      type: string
+                      format: uuid
+                      description: Tag External ID form Provider
+                    field:
+                      type: string
+                    value:
+                      type: string
     SearchTagsBody:
       content:
         application/json:
@@ -1863,6 +2084,16 @@ components:
                 items:
                   type: string
                   format: uuid
+              fields:
+                type: array
+                description: Tag field
+                items:
+                  type: string
+              values:
+                type: array
+                description: Tag value
+                items:
+                  type: string
               limit:
                 type: number
                 description: Number of return items
@@ -1873,38 +2104,6 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
-    CreateTagBody:
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - field
-            properties:
-              field:
-                type: string
-                description: Tag name
-              value:
-                type: string
-                description: Tag value
-              color:
-                type: string
-                description: Tag color
-    UpdateTagBody:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              field:
-                type: string
-                description: Tag name
-              value:
-                type: string
-                description: Tag value
-              color:
-                type: string
-                description: Tag color
   responses:
     AppData:
       description: Successful operation
@@ -2095,7 +2294,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/File"
+            $ref: "#/components/schemas/FileData"
     FileNotFound:
       description: Not found
       content:
@@ -2187,12 +2386,121 @@ components:
                 type: number
               items:
                 type: string
+    CheckFolderReferenceData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - canCreate
+              - addData
+              - missedData
+            properties:
+              canCreate:
+                type: boolean
+              addData:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - field
+                    - value
+                  properties:
+                    field:
+                      type: string
+                    fieldData:
+                      type: object
+                      required:
+                        - id
+                        - name
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                    value:
+                      type: string
+                    "valueData:":
+                      type: object
+                      required:
+                        - id
+                        - name
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+              missedData:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - field
+                    - options
+                  properties:
+                    field:
+                      type: string
+                    fieldData:
+                      type: object
+                      required:
+                        - id
+                        - name
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                    options:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - operator
+                          - value
+                        properties:
+                          operator:
+                            $ref: "#/components/schemas/FolderFormulaOperator"
+                          value:
+                            type: string
+                          valueData:
+                            type: object
+                            required:
+                              - id
+                              - name
+                            properties:
+                              id:
+                                type: string
+                              name:
+                                type: string
     ProductData:
       description: Successful operation
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Product"
+    ProductFullData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProductFull"
+    SearchProductData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
     ProductNotFound:
       description: Not found
       content:

@@ -10,8 +10,10 @@
  */
 
 export interface App {
-  /** App unique name */
+  /** App key */
   key: string;
+  /** Unique name */
+  name: string;
   /** App URL */
   url: string;
   /**
@@ -29,8 +31,10 @@ export interface App {
 }
 
 export interface AppPublic {
-  /** App unique name */
+  /** App key */
   key: string;
+  /** Unique name */
+  name: string;
   /** App URL */
   url: string;
 }
@@ -183,7 +187,7 @@ export interface AdminAccess {
   userData?: User;
 }
 
-export interface File {
+export interface FileData {
   /**
    * File ID
    * @format uuid
@@ -230,6 +234,8 @@ export interface Folder {
   parentId?: string | null;
   /** Folder name */
   name: string;
+  /** Folder photo */
+  photo?: string;
   /** Folder order */
   order?: number;
   /** If `true` - shows everyone, if `null` - on review to make public, if `false` - shows only for creator */
@@ -315,6 +321,8 @@ export interface FolderTreeItem {
   parentId?: string | null;
   /** Folder name */
   name: string;
+  /** Folder photo */
+  photo?: string;
   /** Folder order */
   order?: number;
   /** If `true` - shows everyone, if `null` - on review to make public, if `false` - shows only for creator */
@@ -355,6 +363,8 @@ export interface FolderFullData {
   parentId?: string | null;
   /** Folder name */
   name: string;
+  /** Folder photo */
+  photo?: string;
   /** Folder order */
   order?: number;
   /** If `true` - shows everyone, if `null` - on review to make public, if `false` - shows only for creator */
@@ -419,6 +429,67 @@ export interface Product {
    * @format date-time
    */
   updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deleteAt?: string;
+}
+
+export interface ProductFull {
+  /**
+   * Product ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Product External ID form Provider
+   * @format uuid
+   */
+  externalId: string;
+  /** Product name */
+  name: string;
+  /** Product description */
+  description: string;
+  /** Product photos */
+  photos: string[];
+  /** Product videos */
+  videos: string[];
+  /** Wallet Address */
+  createdBy: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deleteAt?: string;
+  /** Folders to that product linked */
+  folders: string[];
+  createdByData: User;
+  providerData: {
+    /**
+     * Provider ID
+     * @format uuid
+     */
+    id: string;
+    /** Provider name */
+    name: string;
+  };
+  tagsData: Tag;
 }
 
 export interface Tag {
@@ -431,8 +502,6 @@ export interface Tag {
   field: string;
   /** Tag value */
   value?: string;
-  /** Tag color */
-  color?: string;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -723,9 +792,9 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      */
     activateApp: (
       data: {
-        /** App unique name */
+        /** App key */
         key: string;
-        /** Service Name */
+        /** Service Unique Name */
         name: string;
         /** Service URL Address */
         address: string;
@@ -746,12 +815,12 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @tags Apps
      * @name DeactivateApp
      * @summary Deactivate app
-     * @request POST:/apps/deactivate/:key
+     * @request POST:/apps/deactivate/{name}
      * @secure
      */
-    deactivateApp: (key: string, params: RequestParams = {}) =>
+    deactivateApp: (name: string, params: RequestParams = {}) =>
       this.http.request<App, ErrorResponse>({
-        path: `/apps/deactivate/${key}`,
+        path: `/apps/deactivate/${name}`,
         method: "POST",
         secure: true,
         ...params,
@@ -1228,12 +1297,17 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
          * @format uuid
          */
         id?: string;
+        /**
+         * External file ID
+         * @format uuid
+         */
+        externalId?: string;
         /** @format binary */
-        files?: File;
+        file?: File;
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<File, ErrorResponse>({
+      this.http.request<FileData, ErrorResponse>({
         path: `/files`,
         method: "POST",
         body: data,
@@ -1258,16 +1332,16 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * No description
+     * @description Delete by file ID or external ID
      *
      * @tags Files, Available Providers
      * @name DeleteFile
-     * @summary Delete file
+     * @summary Delete File
      * @request DELETE:/files/{id}
      * @secure
      */
     deleteFile: (id: string, params: RequestParams = {}) =>
-      this.http.request<File, ErrorResponse>({
+      this.http.request<FileData, ErrorResponse>({
         path: `/files/${id}`,
         method: "DELETE",
         secure: true,
@@ -1276,7 +1350,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
   };
   folders = {
     /**
-     * No description
+     * @description Available for `System Admin`
      *
      * @tags Folders
      * @name CreateFolder
@@ -1288,6 +1362,8 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       data: {
         /** Folder name */
         name: string;
+        /** Folder photo */
+        photo?: string;
         /**
          * Folder parent ID
          * @format uuid
@@ -1322,7 +1398,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `creator` or `System Admin`
+     * @description Available for `System Admin`
      *
      * @tags Folders
      * @name UpdateFolder
@@ -1335,6 +1411,8 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       data: {
         /** Folder name */
         name?: string;
+        /** Folder photo */
+        photo?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -1347,7 +1425,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `creator` or `System Admin`
+     * @description Available for `System Admin`
      *
      * @tags Folders
      * @name DeleteFolder
@@ -1378,10 +1456,20 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         /** Search by name */
         searchTerm?: string;
         /**
-         * Search by parentId
+         * Search by parent ID
          * @format uuid
          */
         parentId?: string | null;
+        /**
+         * Search by product ID
+         * @format uuid
+         */
+        productId?: string | null;
+        /**
+         * Search by product external ID
+         * @format uuid
+         */
+        productExternalId?: string | null;
         /** Search by ids */
         ids?: string[];
       },
@@ -1395,7 +1483,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * No description
+     * @description Available for `System Admin`
      *
      * @tags Folders
      * @name MoveFolder
@@ -1552,6 +1640,54 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       }),
 
     /**
+     * @description Return data for create tags to make references with the folder
+     *
+     * @tags Folders, Available Public
+     * @name CheckFolderReference
+     * @summary Check folder filters data for references
+     * @request GET:/folders/{id}/check-reference
+     */
+    checkFolderReference: (id: string, params: RequestParams = {}) =>
+      this.http.request<
+        {
+          canCreate: boolean;
+          addData: {
+            field: string;
+            fieldData?: {
+              id: string;
+              name: string;
+            };
+            value: string;
+            "valueData:"?: {
+              id: string;
+              name: string;
+            };
+          }[];
+          missedData: {
+            field: string;
+            fieldData?: {
+              id: string;
+              name: string;
+            };
+            options: {
+              /** Formula operator */
+              operator: FolderFormulaOperator;
+              value: string;
+              valueData?: {
+                id: string;
+                name: string;
+              };
+            }[];
+          }[];
+        },
+        ErrorResponse
+      >({
+        path: `/folders/${id}/check-reference`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
      * No description
      *
      * @tags Folders
@@ -1589,17 +1725,35 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         ...params,
       }),
   };
-  product = {
+  products = {
     /**
      * No description
      *
-     * @tags Product, Available Public
+     * @tags Products, Available Public
      * @name SearchProducts
      * @summary Search products
      * @request POST:/product/search
      */
-    searchProducts: (data: any, params: RequestParams = {}) =>
-      this.http.request<Product, any>({
+    searchProducts: (
+      data: {
+        /** Search term */
+        searchTerm?: string;
+        folders?: string[];
+        /** Number of return items */
+        limit?: number;
+        /** Number of skip items */
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: Product[];
+        },
+        any
+      >({
         path: `/product/search`,
         method: "POST",
         body: data,
@@ -1607,17 +1761,158 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       }),
 
     /**
+     * @description Available for `providers`
+     *
+     * @tags Products, Available Providers
+     * @name RegisterProduct
+     * @summary Register new product
+     * @request POST:/products
+     * @secure
+     */
+    registerProduct: (
+      data: {
+        /**
+         * Product External ID form Provider
+         * @format uuid
+         */
+        externalId?: string;
+        /** Product name */
+        name?: string;
+        /** Product description */
+        description?: string;
+        /** Product photos */
+        photos?: string[];
+        /** Product videos */
+        videos?: string[];
+        tags?: {
+          /**
+           * Tag External ID form Provider
+           * @format uuid
+           */
+          externalId?: string;
+          field?: string;
+          value?: string;
+        }[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProductFull, ErrorResponse>({
+        path: `/products`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
      * No description
      *
-     * @tags Product, Available Public
+     * @tags Products, Available Public
      * @name GetProduct
      * @summary Get product with full data
      * @request GET:/products/{id}
      */
     getProduct: (id: string, params: RequestParams = {}) =>
-      this.http.request<Product, ErrorResponse>({
+      this.http.request<ProductFull, ErrorResponse>({
         path: `/products/${id}`,
         method: "GET",
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`
+     *
+     * @tags Products, Available Providers
+     * @name UpdateProduct
+     * @summary Update product data
+     * @request PATCH:/products/{id}
+     * @secure
+     */
+    updateProduct: (
+      id: string,
+      data: {
+        /**
+         * Product External ID form Provider
+         * @format uuid
+         */
+        externalId?: string;
+        /** Product name */
+        name?: string;
+        /** Product description */
+        description?: string;
+        /** Product photos */
+        photos?: string[];
+        /** Product videos */
+        videos?: string[];
+        tags?: {
+          /**
+           * Tag External ID form Provider
+           * @format uuid
+           */
+          externalId?: string;
+          field?: string;
+          value?: string;
+        }[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProductFull, ErrorResponse>({
+        path: `/products/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`. Mark that product was deleted.
+     *
+     * @tags Products, Available Providers
+     * @name DeleteProduct
+     * @summary Delete product
+     * @request DELETE:/products/{id}
+     * @secure
+     */
+    deleteProduct: (id: string, params: RequestParams = {}) =>
+      this.http.request<Product, ErrorResponse>({
+        path: `/products/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+  };
+  product = {
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Product
+     * @name BlockProduct
+     * @summary Block product
+     * @request POST:/products/{id}/block
+     * @secure
+     */
+    blockProduct: (id: string, params: RequestParams = {}) =>
+      this.http.request<Product, ErrorResponse>({
+        path: `/products/${id}/block`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Product
+     * @name UnblockProduct
+     * @summary Unblock product
+     * @request POST:/products/{id}/unblock
+     * @secure
+     */
+    unblockProduct: (id: string, params: RequestParams = {}) =>
+      this.http.request<Product, ErrorResponse>({
+        path: `/products/${id}/unblock`,
+        method: "POST",
+        secure: true,
         ...params,
       }),
   };
@@ -1636,6 +1931,10 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         searchTerm?: string;
         /** Tag ids */
         ids?: string[];
+        /** Tag field */
+        fields?: string[];
+        /** Tag value */
+        values?: string[];
         /** Number of return items */
         limit?: number;
         /** Number of skip items */
@@ -1654,80 +1953,6 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         path: `/tags/search`,
         method: "POST",
         body: data,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Tags, Available Providers
-     * @name CreateTag
-     * @summary Crete tag
-     * @request POST:/tags
-     * @secure
-     */
-    createTag: (
-      data: {
-        /** Tag name */
-        field: string;
-        /** Tag value */
-        value?: string;
-        /** Tag color */
-        color?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<Tag, ErrorResponse>({
-        path: `/tags`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Available for `creator` or `System Admin`
-     *
-     * @tags Tags, Available Providers
-     * @name UpdateTag
-     * @summary Update tag
-     * @request PATCH:/tags/{id}
-     * @secure
-     */
-    updateTag: (
-      id: string,
-      data: {
-        /** Tag name */
-        field?: string;
-        /** Tag value */
-        value?: string;
-        /** Tag color */
-        color?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<Tag, ErrorResponse>({
-        path: `/tags/${id}`,
-        method: "PATCH",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Available for `creator` or `System Admin`
-     *
-     * @tags Tags, Available Providers
-     * @name DeleteTag
-     * @summary Delete tag
-     * @request DELETE:/tags/{id}
-     * @secure
-     */
-    deleteTag: (id: string, params: RequestParams = {}) =>
-      this.http.request<Tag, ErrorResponse>({
-        path: `/tags/${id}`,
-        method: "DELETE",
-        secure: true,
         ...params,
       }),
   };
