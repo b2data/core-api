@@ -62,7 +62,7 @@ paths:
           $ref: "#/components/responses/AppNotFound"
         "500":
           $ref: "#/components/responses/AppRegistrationError"
-  /apps/deactivate/:key:
+  "/apps/deactivate/{name}":
     post:
       tags:
         - Apps
@@ -72,7 +72,7 @@ paths:
       description: Available for supper admins
       operationId: deactivateApp
       parameters:
-        - $ref: "#/components/parameters/appKeyParam"
+        - $ref: "#/components/parameters/appNameParam"
       responses:
         "200":
           $ref: "#/components/responses/AppData"
@@ -147,6 +147,7 @@ components:
       type: object
       required:
         - key
+        - name
         - url
         - id
         - secret
@@ -154,7 +155,10 @@ components:
       properties:
         key:
           type: string
-          description: App unique name
+          description: App key
+        name:
+          type: string
+          description: Unique name
         url:
           type: string
           description: App URL
@@ -173,11 +177,15 @@ components:
       type: object
       required:
         - key
+        - name
         - url
       properties:
         key:
           type: string
-          description: App unique name
+          description: App key
+        name:
+          type: string
+          description: Unique name
         url:
           type: string
           description: App URL
@@ -199,10 +207,10 @@ components:
             properties:
               key:
                 type: string
-                description: App unique name
+                description: App key
               name:
                 type: string
-                description: Service Name
+                description: Service Unique Name
               address:
                 type: string
                 description: Service URL Address
@@ -261,10 +269,10 @@ components:
             errorCode: app:400-register
             message: Failure on app registration
   parameters:
-    appKeyParam:
+    appNameParam:
       in: path
-      name: key
-      description: App unique name
+      name: name
+      description: Unique name
       required: true
       schema:
         type: string

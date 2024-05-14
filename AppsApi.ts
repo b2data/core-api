@@ -30,8 +30,10 @@ export interface SearchModel {
 }
 
 export interface App {
-  /** App unique name */
+  /** App key */
   key: string;
+  /** Unique name */
+  name: string;
   /** App URL */
   url: string;
   /**
@@ -49,8 +51,10 @@ export interface App {
 }
 
 export interface AppPublic {
-  /** App unique name */
+  /** App key */
   key: string;
+  /** Unique name */
+  name: string;
   /** App URL */
   url: string;
 }
@@ -323,9 +327,9 @@ export class AppsApi<SecurityDataType extends unknown> {
      */
     activateApp: (
       data: {
-        /** App unique name */
+        /** App key */
         key: string;
-        /** Service Name */
+        /** Service Unique Name */
         name: string;
         /** Service URL Address */
         address: string;
@@ -346,12 +350,12 @@ export class AppsApi<SecurityDataType extends unknown> {
      * @tags Apps
      * @name DeactivateApp
      * @summary Deactivate app
-     * @request POST:/apps/deactivate/:key
+     * @request POST:/apps/deactivate/{name}
      * @secure
      */
-    deactivateApp: (key: string, params: RequestParams = {}) =>
+    deactivateApp: (name: string, params: RequestParams = {}) =>
       this.http.request<App, ErrorResponse>({
-        path: `/apps/deactivate/${key}`,
+        path: `/apps/deactivate/${name}`,
         method: "POST",
         secure: true,
         ...params,

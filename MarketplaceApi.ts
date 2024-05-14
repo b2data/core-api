@@ -9,6 +9,48 @@
  * ---------------------------------------------------------------
  */
 
+export interface App {
+  /** App unique name */
+  key: string;
+  /** App URL */
+  url: string;
+  /**
+   * Client ID for API requests
+   * @format uuid
+   */
+  id: string;
+  /** Client Secret for API requests */
+  secret: string;
+  /**
+   * Activation Date
+   * @format date-time
+   */
+  createdAt: string;
+}
+
+export interface AppPublic {
+  /** App unique name */
+  key: string;
+  /** App URL */
+  url: string;
+}
+
+export interface User {
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  id: string;
+  /** First Name */
+  firstName: string;
+  /** Last Name */
+  lastName?: string;
+  /** Middle Name */
+  middleName?: string;
+  /** Avatar */
+  avatar?: string;
+}
+
 export interface ErrorResponse {
   errorCode: string;
   message: string;
@@ -27,22 +69,6 @@ export interface SearchModel {
   /** Number of skip items */
   offset?: number;
   sort?: SortModel[];
-}
-
-export interface User {
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  id: string;
-  /** First Name */
-  firstName: string;
-  /** Last Name */
-  lastName?: string;
-  /** Middle Name */
-  middleName?: string;
-  /** Avatar */
-  avatar?: string;
 }
 
 export interface Provider {
@@ -109,17 +135,7 @@ export type ActivityType =
   | "folderFilterCreated"
   | "folderFilterUpdated"
   | "folderFilterMoved"
-  | "folderFilterDeleted"
-  | "wordCreated"
-  | "wordDeleted"
-  | "wordTagsUpdated"
-  | "wordVariantCreated"
-  | "wordVariantUpdated"
-  | "wordVariantDeleted"
-  | "wordVariantVoteCreated"
-  | "wordVariantVoteDeleted"
-  | "wordReferenceCreated"
-  | "wordReferenceDeleted";
+  | "folderFilterDeleted";
 
 export interface ActivityLog {
   /**
@@ -165,56 +181,6 @@ export interface AdminAccess {
    */
   createdAt: string;
   userData?: User;
-}
-
-/** Complaint Status */
-export type ComplaintStatus = "open" | "accepted" | "declined" | "closed";
-
-/** Complaint Type */
-export type ComplaintType = "item" | "variant" | "reference";
-
-export interface Complaint {
-  /**
-   * Complaint ID
-   * @format uuid
-   */
-  id: string;
-  /** Complaint Status */
-  status: ComplaintStatus;
-  /** Complaint Type */
-  type: ComplaintType;
-  /**
-   * Word ID
-   * @format uuid
-   */
-  wordId: string;
-  /**
-   * Word variant ID
-   * @format uuid
-   */
-  variantId?: string;
-  /**
-   * Word reference ID
-   * @format uuid
-   */
-  refId?: string;
-  /** Complaint comment */
-  comment: string;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  wordData?: Word;
-  variantData?: WordVariant;
-  referenceData?: WordReferencePreview;
-  authorData?: User;
-  createdByData?: User;
 }
 
 export interface File {
@@ -417,6 +383,44 @@ export interface FolderFullData {
   filters: FolderFilter[];
 }
 
+export interface Product {
+  /**
+   * Product ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Product External ID form Provider
+   * @format uuid
+   */
+  externalId: string;
+  /** Product name */
+  name: string;
+  /** Product description */
+  description: string;
+  /** Product photos */
+  photos: string[];
+  /** Product videos */
+  videos: string[];
+  /** Wallet Address */
+  createdBy: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+}
+
 export interface Tag {
   /**
    * Tag ID
@@ -425,6 +429,8 @@ export interface Tag {
   id: string;
   /** Tag name */
   field: string;
+  /** Tag value */
+  value?: string;
   /** Tag color */
   color?: string;
   /**
@@ -447,246 +453,6 @@ export interface Tag {
    * @format date-time
    */
   updatedAt: string;
-}
-
-export interface Unit {
-  /** Unique unit key */
-  key: string;
-  /** Localized unit name */
-  name: {
-    ru?: string;
-    en?: string;
-  };
-}
-
-export interface UserWithRating {
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  id: string;
-  /** First Name */
-  firstName: string;
-  /** Last Name */
-  lastName?: string;
-  /** Middle Name */
-  middleName?: string;
-  /** Avatar */
-  avatar?: string;
-  /** Is user access blocked */
-  isBlocked?: boolean;
-  /** Number of words created by user */
-  wordsCreated?: number;
-  /** Number of variants user created */
-  wordsParticipant?: number;
-  /** Number of likes user added */
-  variantsLiked?: number;
-  /** Number of complaints user created */
-  complaintsCreated?: number;
-}
-
-export interface Word {
-  /**
-   * Word ID
-   * @format uuid
-   */
-  id: string;
-  /** Word name */
-  name: string;
-  /** Word short name */
-  shortName?: string;
-  /** Word description */
-  description?: string;
-  /** Word unit */
-  unit?: string;
-  /** System unit key */
-  systemUnit?: string;
-  /** Coeff for mapping systemUnit with unit */
-  coeff?: number;
-  /** Word main photo */
-  photo?: string;
-  /** Word main video */
-  video?: string;
-  /** Word folders */
-  folders?: string[];
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  providerId?: string;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  /**
-   * Deleted Date
-   * @format date-time
-   */
-  deletedAt?: string;
-}
-
-export interface WordWithData {
-  /**
-   * Word ID
-   * @format uuid
-   */
-  id: string;
-  /** Word name */
-  name: string;
-  /** Word short name */
-  shortName?: string;
-  /** Word description */
-  description?: string;
-  /** Word unit */
-  unit?: string;
-  /** System unit key */
-  systemUnit?: string;
-  /** Coeff for mapping systemUnit with unit */
-  coeff?: number;
-  /** Word main photo */
-  photo?: string;
-  /** Word main video */
-  video?: string;
-  /** Word folders */
-  folders?: string[];
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  providerId?: string;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  /**
-   * Deleted Date
-   * @format date-time
-   */
-  deletedAt?: string;
-  createdByData: User;
-  tags: Tag[];
-  synonyms: WordReferencePreview[];
-  translations: WordReferencePreview[];
-}
-
-export interface WordVariant {
-  /**
-   * Variant ID
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Word ID
-   * @format uuid
-   */
-  wordId: string;
-  /** Variant field */
-  field: string;
-  /** Variant value */
-  value: string;
-  /** Users ids who liked the variant */
-  votes?: string[];
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  providerId?: string;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  createdByData?: User;
-}
-
-/** Word Reference Type */
-export type WordReferenceType = "synonym" | "translate";
-
-export interface WordReference {
-  /**
-   * Word ID
-   * @format uuid
-   */
-  wordId: string;
-  /** Word Reference Type */
-  type: WordReferenceType;
-  /**
-   * Word reference ID
-   * @format uuid
-   */
-  refId: string;
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  providerId?: string;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  createdByData?: User;
-}
-
-export interface WordReferencePreview {
-  /**
-   * Word ID
-   * @format uuid
-   */
-  id: string;
-  /** Word name */
-  name: string;
-  /** Word Reference Type */
-  type: WordReferenceType;
-  /** Word description by most liked variant */
-  description?: string;
-  /** Word photo by most liked variant */
-  photo?: string;
-  /** Word video by most liked variant */
-  video?: string;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy: string;
-  createdByData?: User;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -735,7 +501,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "http://localhost:8084";
+  public baseUrl: string = "http://localhost:8082";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -900,9 +666,9 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title REST API for B2Dictionary
+ * @title REST API for B2Marketplace
  * @version 1.0.0
- * @baseUrl http://localhost:8084
+ * @baseUrl http://localhost:8082
  */
 export class MarketplaceApi<SecurityDataType extends unknown> {
   http: HttpClient<SecurityDataType>;
@@ -911,6 +677,86 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     this.http = http;
   }
 
+  apps = {
+    /**
+     * @description Available for everyone for
+     *
+     * @tags Apps
+     * @name GetApps
+     * @summary Get activated apps
+     * @request GET:/apps
+     * @secure
+     */
+    getApps: (params: RequestParams = {}) =>
+      this.http.request<AppPublic[], ErrorResponse>({
+        path: `/apps`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for supper admins
+     *
+     * @tags Apps
+     * @name GetAppsFull
+     * @summary Get activated apps full data
+     * @request GET:/apps/full
+     * @secure
+     */
+    getAppsFull: (params: RequestParams = {}) =>
+      this.http.request<App[], ErrorResponse>({
+        path: `/apps/full`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for supper admins
+     *
+     * @tags Apps
+     * @name ActivateApp
+     * @summary Activate app
+     * @request POST:/apps/activate
+     * @secure
+     */
+    activateApp: (
+      data: {
+        /** App unique name */
+        key: string;
+        /** Service Name */
+        name: string;
+        /** Service URL Address */
+        address: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<App, ErrorResponse>({
+        path: `/apps/activate`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for supper admins
+     *
+     * @tags Apps
+     * @name DeactivateApp
+     * @summary Deactivate app
+     * @request POST:/apps/deactivate/:key
+     * @secure
+     */
+    deactivateApp: (key: string, params: RequestParams = {}) =>
+      this.http.request<App, ErrorResponse>({
+        path: `/apps/deactivate/${key}`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+  };
   auth = {
     /**
      * No description
@@ -1365,125 +1211,6 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         ...params,
       }),
   };
-  complaints = {
-    /**
-     * @description Required `System Admin` access
-     *
-     * @tags Complaints
-     * @name SearchComplaints
-     * @summary Search complaints
-     * @request POST:/complaints/search
-     * @secure
-     */
-    searchComplaints: (
-      data: {
-        statuses?: ComplaintStatus[];
-        types?: ComplaintType[];
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<
-        {
-          total: number;
-          items: Complaint[];
-        },
-        ErrorResponse
-      >({
-        path: `/complaints/search`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Complaints
-     * @name CreateComplaint
-     * @summary Create complaints
-     * @request POST:/complaints
-     * @secure
-     */
-    createComplaint: (
-      data: {
-        /**
-         * Word ID
-         * @format uuid
-         */
-        wordId: string;
-        /**
-         * Word variant ID
-         * @format uuid
-         */
-        variantId?: string;
-        /**
-         * Word reference ID
-         * @format uuid
-         */
-        refId?: string;
-        /** Complaint comment */
-        comment: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<Complaint, any>({
-        path: `/complaints`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Available for `creator` or `System Admin`
-     *
-     * @tags Complaints
-     * @name UpdateComplaint
-     * @summary Edit complaints
-     * @request PATCH:/complaints/{id}
-     * @secure
-     */
-    updateComplaint: (
-      id: string,
-      data: {
-        /** Complaint comment */
-        comment?: string;
-        /** Complaint Status */
-        status?: ComplaintStatus;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<Complaint, ErrorResponse>({
-        path: `/complaints/${id}`,
-        method: "PATCH",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Available for `creator` or `System Admin`
-     *
-     * @tags Complaints
-     * @name DeleteComplaint
-     * @summary Delete complaints
-     * @request DELETE:/complaints/{id}
-     * @secure
-     */
-    deleteComplaint: (id: string, params: RequestParams = {}) =>
-      this.http.request<Complaint, ErrorResponse>({
-        path: `/complaints/${id}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-  };
   files = {
     /**
      * No description
@@ -1551,7 +1278,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name CreateFolder
      * @summary Create folder
      * @request POST:/folders
@@ -1597,7 +1324,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     /**
      * @description Available for `creator` or `System Admin`
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name UpdateFolder
      * @summary Update folder
      * @request PATCH:/folders/{id}
@@ -1622,7 +1349,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     /**
      * @description Available for `creator` or `System Admin`
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name DeleteFolder
      * @summary Delete folder
      * @request DELETE:/folders/{id}
@@ -1646,11 +1373,17 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      */
     searchFolders: (
       query?: {
+        /** Return as tree nodes */
+        asTree?: boolean;
+        /** Search by name */
+        searchTerm?: string;
         /**
-         * Based on mode different folders may be returned
-         * @default "public"
+         * Search by parentId
+         * @format uuid
          */
-        mode?: "public" | "personal" | "review";
+        parentId?: string | null;
+        /** Search by ids */
+        ids?: string[];
       },
       params: RequestParams = {},
     ) =>
@@ -1664,7 +1397,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name MoveFolder
      * @summary Change folder order
      * @request PUT:/folders/move
@@ -1698,31 +1431,6 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       this.http.request<Folder, ErrorResponse>({
         path: `/folders/move`,
         method: "PUT",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Folders, Available Providers
-     * @name MakeFolderPublic
-     * @summary Manage folder public status
-     * @request POST:/folders/{id}/make-public
-     * @secure
-     */
-    makeFolderPublic: (
-      id: string,
-      data: {
-        /** Available for `System Admin` and used to cancel user public request */
-        shouldCancel?: boolean;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<Folder, ErrorResponse>({
-        path: `/folders/${id}/make-public`,
-        method: "POST",
         body: data,
         secure: true,
         ...params,
@@ -1846,7 +1554,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name MoveFolderFilter
      * @summary Move folder filter
      * @request PUT:/folders/{id}/filters/move
@@ -1878,6 +1586,38 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         method: "PUT",
         body: data,
         secure: true,
+        ...params,
+      }),
+  };
+  product = {
+    /**
+     * No description
+     *
+     * @tags Product, Available Public
+     * @name SearchProducts
+     * @summary Search products
+     * @request POST:/product/search
+     */
+    searchProducts: (data: any, params: RequestParams = {}) =>
+      this.http.request<Product, any>({
+        path: `/product/search`,
+        method: "POST",
+        body: data,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Product, Available Public
+     * @name GetProduct
+     * @summary Get product with full data
+     * @request GET:/products/{id}
+     */
+    getProduct: (id: string, params: RequestParams = {}) =>
+      this.http.request<Product, ErrorResponse>({
+        path: `/products/${id}`,
+        method: "GET",
         ...params,
       }),
   };
@@ -1930,6 +1670,8 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       data: {
         /** Tag name */
         field: string;
+        /** Tag value */
+        value?: string;
         /** Tag color */
         color?: string;
       },
@@ -1957,6 +1699,8 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       data: {
         /** Tag name */
         field?: string;
+        /** Tag value */
+        value?: string;
         /** Tag color */
         color?: string;
       },
@@ -1982,461 +1726,6 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     deleteTag: (id: string, params: RequestParams = {}) =>
       this.http.request<Tag, ErrorResponse>({
         path: `/tags/${id}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-  };
-  units = {
-    /**
-     * No description
-     *
-     * @tags Units, Available Public
-     * @name GetSystemUnits
-     * @summary Get system units
-     * @request GET:/units
-     */
-    getSystemUnits: (params: RequestParams = {}) =>
-      this.http.request<Unit[], any>({
-        path: `/units`,
-        method: "GET",
-        ...params,
-      }),
-
-    /**
-     * @description Required `System Admin` access
-     *
-     * @tags Units
-     * @name CreateSystemUnit
-     * @summary Create system unit
-     * @request POST:/units
-     * @secure
-     */
-    createSystemUnit: (data: Unit, params: RequestParams = {}) =>
-      this.http.request<Unit, ErrorResponse>({
-        path: `/units`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Required `System Admin` access
-     *
-     * @tags Units
-     * @name DeleteSystemUnit
-     * @summary Delete system unit
-     * @request DELETE:/units/{key}
-     * @secure
-     */
-    deleteSystemUnit: (key: string, params: RequestParams = {}) =>
-      this.http.request<Unit, ErrorResponse>({
-        path: `/units/${key}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-  };
-  users = {
-    /**
-     * @description Required `System Admin` access
-     *
-     * @tags Users
-     * @name SearchUsers
-     * @summary Search users
-     * @request POST:/users/search
-     * @secure
-     */
-    searchUsers: (
-      data: {
-        /** Part of full name */
-        searchTerm?: string;
-        /** Flag to filter blocked users */
-        isBlocked?: boolean;
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<
-        {
-          total: number;
-          items: UserWithRating[];
-        },
-        ErrorResponse
-      >({
-        path: `/users/search`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Required `System Admin` access
-     *
-     * @tags Users
-     * @name AddUserBlock
-     * @summary Add user block
-     * @request POST:/users/blocked/{id}
-     * @secure
-     */
-    addUserBlock: (id: string, data: object, params: RequestParams = {}) =>
-      this.http.request<UserWithRating, ErrorResponse>({
-        path: `/users/blocked/${id}`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Required `System Admin` access
-     *
-     * @tags Users
-     * @name DeleteUserBlock
-     * @summary Delete user block
-     * @request DELETE:/users/blocked/{id}
-     * @secure
-     */
-    deleteUserBlock: (id: string, params: RequestParams = {}) =>
-      this.http.request<UserWithRating, ErrorResponse>({
-        path: `/users/blocked/${id}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-  };
-  words = {
-    /**
-     * No description
-     *
-     * @tags Words, Available Providers
-     * @name CreateWord
-     * @summary Create word
-     * @request POST:/words
-     * @secure
-     */
-    createWord: (
-      data: {
-        /** Word name */
-        name: string;
-        /** Word short name */
-        shortName?: string;
-        /** Word description */
-        description?: string;
-        /** Word unit */
-        unit?: string;
-        /** System unit key */
-        systemUnit?: string;
-        /** Coeff for mapping systemUnit with unit */
-        coeff?: number;
-        /** Word photos */
-        photos?: string[];
-        /** Word videos */
-        videos?: string[];
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<Word, ErrorResponse>({
-        path: `/words`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Words, Available Public
-     * @name GetWord
-     * @summary Get word full data
-     * @request GET:/words/{id}
-     */
-    getWord: (id: string, params: RequestParams = {}) =>
-      this.http.request<WordWithData, ErrorResponse>({
-        path: `/words/${id}`,
-        method: "GET",
-        ...params,
-      }),
-
-    /**
-     * @description Available for `creator` or `System Admin`
-     *
-     * @tags Words, Available Providers
-     * @name DeleteWord
-     * @summary Delete word
-     * @request DELETE:/words/{id}
-     * @secure
-     */
-    deleteWord: (id: string, params: RequestParams = {}) =>
-      this.http.request<Word, ErrorResponse>({
-        path: `/words/${id}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Words, Available Public
-     * @name SearchWords
-     * @summary Search words
-     * @request POST:/words/search
-     */
-    searchWords: (
-      data: {
-        /** Search by ids */
-        ids?: string[];
-        /** Search term */
-        searchTerm?: string;
-        /** Return words with unit data */
-        withUnit?: boolean;
-        /** Skip deleted words filtration */
-        withDeleted?: boolean;
-        /** Folders ids */
-        folders?: string[];
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<
-        {
-          total: number;
-          items: Word[];
-        },
-        any
-      >({
-        path: `/words/search`,
-        method: "POST",
-        body: data,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Words, Available Providers
-     * @name EditWordTags
-     * @summary Edit word tags
-     * @request PUT:/words/{id}/tags
-     * @secure
-     */
-    editWordTags: (
-      id: string,
-      data: {
-        /** Tags ids */
-        tags: string[];
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<WordWithData, ErrorResponse>({
-        path: `/words/${id}/tags`,
-        method: "PUT",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description The word will get all folders filters value to have references to the folders
-     *
-     * @tags Words, Available Providers
-     * @name AddWordToFolders
-     * @summary Add word to folders
-     * @request POST:/words/{id}/folders
-     * @secure
-     */
-    addWordToFolders: (
-      id: string,
-      data: {
-        /** Folders ids */
-        folders: string[];
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<Word, ErrorResponse>({
-        path: `/words/${id}/folders`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description The word will get all folders filters value to have references to the folders
-     *
-     * @tags Words, Available Providers
-     * @name CrateWordVariant
-     * @summary Create variant for word characteristic
-     * @request POST:/words/{id}/variants
-     * @secure
-     */
-    crateWordVariant: (
-      id: string,
-      data: {
-        /** Variant field */
-        field: string;
-        /** Variant value */
-        value: string;
-        /** System unit key */
-        systemUnit?: string;
-        /** Coeff for mapping systemUnit with unit */
-        coeff?: number;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<WordVariant, ErrorResponse>({
-        path: `/words/${id}/variants`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Words, Available Public
-     * @name SearchWordVariants
-     * @summary Search variants of word characteristic
-     * @request GET:/words/{id}/variants/{field}
-     */
-    searchWordVariants: (id: string, field: string, params: RequestParams = {}) =>
-      this.http.request<WordVariant[], ErrorResponse>({
-        path: `/words/${id}/variants/${field}`,
-        method: "GET",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Words, Available Providers
-     * @name UpdateWordVariant
-     * @summary Update word variant data
-     * @request PATCH:/words/{id}/variants/{variantId}
-     * @secure
-     */
-    updateWordVariant: (
-      id: string,
-      variantId: string,
-      data: {
-        /** Variant value */
-        value: string;
-        /** System unit key */
-        systemUnit?: string;
-        /** Coeff for mapping systemUnit with unit */
-        coeff?: number;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<WordVariant, ErrorResponse>({
-        path: `/words/${id}/variants/${variantId}`,
-        method: "PATCH",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Words, Available Providers
-     * @name DeleteWordVariant
-     * @summary Delete word variant
-     * @request DELETE:/words/{id}/variants/{variantId}
-     * @secure
-     */
-    deleteWordVariant: (id: string, variantId: string, params: RequestParams = {}) =>
-      this.http.request<WordVariant, ErrorResponse>({
-        path: `/words/${id}/variants/${variantId}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Words, Available Providers
-     * @name AddVoteToWordVariant
-     * @summary Add vote to word variant
-     * @request POST:/words/{id}/variants/{variantId}/votes
-     * @secure
-     */
-    addVoteToWordVariant: (id: string, variantId: string, data: object, params: RequestParams = {}) =>
-      this.http.request<WordVariant, ErrorResponse>({
-        path: `/words/${id}/variants/${variantId}/votes`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Words, Available Providers
-     * @name DeleteVoteFromWordVariant
-     * @summary Delete vote from word variant
-     * @request DELETE:/words/{id}/variants/{variantId}/votes
-     * @secure
-     */
-    deleteVoteFromWordVariant: (id: string, variantId: string, params: RequestParams = {}) =>
-      this.http.request<WordVariant, ErrorResponse>({
-        path: `/words/${id}/variants/${variantId}/votes`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Words, Available Providers
-     * @name CreateWordReference
-     * @summary Create word reference
-     * @request POST:/words/{id}/references/{type}/{refId}
-     * @secure
-     */
-    createWordReference: (
-      id: string,
-      type: WordReferenceType,
-      refId: string,
-      data: object,
-      params: RequestParams = {},
-    ) =>
-      this.http.request<WordReference, ErrorResponse>({
-        path: `/words/${id}/references/${type}/${refId}`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Available for `creator` or `System Admin`
-     *
-     * @tags Words, Available Providers
-     * @name DeleteWordReference
-     * @summary Delete word reference
-     * @request DELETE:/words/{id}/references/{type}/{refId}
-     * @secure
-     */
-    deleteWordReference: (id: string, type: WordReferenceType, refId: string, params: RequestParams = {}) =>
-      this.http.request<WordReference, ErrorResponse>({
-        path: `/words/${id}/references/${type}/${refId}`,
         method: "DELETE",
         secure: true,
         ...params,
