@@ -1347,6 +1347,21 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         secure: true,
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags Files, Available Public
+     * @name GetFileInfo
+     * @summary Get file info
+     * @request GET:/files/{id}/info
+     */
+    getFileInfo: (id: string, params: RequestParams = {}) =>
+      this.http.request<FileData, ErrorResponse>({
+        path: `/files/${id}/info`,
+        method: "GET",
+        ...params,
+      }),
   };
   folders = {
     /**

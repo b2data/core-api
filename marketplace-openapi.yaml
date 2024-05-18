@@ -569,6 +569,20 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FileNotFound"
+  "/files/{id}/info":
+    get:
+      tags:
+        - Files
+        - Available Public
+      summary: Get file info
+      operationId: getFileInfo
+      parameters:
+        - $ref: "#/components/parameters/fileIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/FileData"
+        "404":
+          $ref: "#/components/responses/FileNotFound"
   /folders:
     post:
       tags:
