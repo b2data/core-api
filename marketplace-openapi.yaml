@@ -872,7 +872,17 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FolderNotFound"
-  /product/search:
+  /folders/stats:
+    get:
+      tags:
+        - Folders
+        - Available Public
+      summary: Get folders stats
+      operationId: getFoldersStats
+      responses:
+        "200":
+          $ref: "#/components/responses/FoldersStatsData"
+  /products/search:
     post:
       tags:
         - Products
@@ -884,6 +894,36 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SearchProductData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  /products/search/suggester:
+    post:
+      tags:
+        - Products
+        - Available Public
+      summary: Search products name suggester
+      description: Returns 5 suggested names by searchTerm
+      operationId: searchProductSuggester
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProductSuggesterBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProductSuggesterData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  /products/search/filters:
+    post:
+      tags:
+        - Products
+        - Available Public
+      summary: Search products filters
+      description: Returns products available filters
+      operationId: searchProductFilters
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProductFiltersBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProductFiltersData"
         "400":
           $ref: "#/components/responses/InvalidData"
   /products:
@@ -970,7 +1010,7 @@ paths:
   "/products/{id}/block":
     post:
       tags:
-        - Product
+        - Products
       security:
         - BearerAuth: []
       summary: Block product
@@ -990,7 +1030,7 @@ paths:
   "/products/{id}/unblock":
     post:
       tags:
-        - Product
+        - Products
       security:
         - BearerAuth: []
       summary: Unblock product
@@ -1265,6 +1305,40 @@ components:
           description: Creation Date
         userData:
           $ref: "#/components/schemas/User"
+    DictionaryWord:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Word ID
+        name:
+          type: string
+          description: Word name
+        shortName:
+          type: string
+          description: Word short name
+        description:
+          type: string
+          description: Word description
+        unit:
+          type: string
+          description: Word unit
+        systemUnit:
+          type: string
+          description: System unit key
+        coeff:
+          type: number
+          description: Coeff for mapping systemUnit with unit
+        photo:
+          type: string
+          description: Word main photo
+        video:
+          type: string
+          description: Word main video
     FileData:
       type: object
       required:
@@ -1380,11 +1454,15 @@ components:
         field:
           type: string
           description: Formula attribute
+        fieldData:
+          $ref: "#/components/schemas/DictionaryWord"
         operator:
           $ref: "#/components/schemas/FolderFormulaOperator"
         value:
           type: string
           description: Formula value
+        valueData:
+          $ref: "#/components/schemas/DictionaryWord"
         unit:
           type: string
           description: Formula unit
@@ -1557,6 +1635,11 @@ components:
           type: string
           format: uuid
           description: Provider ID
+        providerName:
+          type: string
+          description: Provider Name
+        isBlocked:
+          type: boolean
         createdAt:
           type: string
           format: date-time
@@ -1618,6 +1701,11 @@ components:
           type: string
           format: uuid
           description: Provider ID
+        providerName:
+          type: string
+          description: Provider Name
+        isBlocked:
+          type: boolean
         createdAt:
           type: string
           format: date-time
@@ -1652,7 +1740,46 @@ components:
               type: string
               description: Provider name
         tagsData:
-          $ref: "#/components/schemas/Tag"
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
+    ProductFilter:
+      type: object
+      required:
+        - field
+        - operator
+        - values
+      properties:
+        field:
+          type: string
+        operator:
+          type: string
+          enum:
+            - equal
+            - between
+        values:
+          type: array
+          items:
+            type: string
+    ProductFilterOption:
+      type: object
+      required:
+        - field
+        - values
+      properties:
+        field:
+          type: string
+        fieldData:
+          $ref: "#/components/schemas/DictionaryWord"
+        values:
+          type: array
+          items:
+            type: string
+        valuesData:
+          type: array
+          items:
+            $ref: "#/components/schemas/DictionaryWord"
+            nullable: true
     Tag:
       type: object
       required:
@@ -1669,9 +1796,13 @@ components:
         field:
           type: string
           description: Tag name
+        fieldData:
+          $ref: "#/components/schemas/DictionaryWord"
         value:
           type: string
           description: Tag value
+        valueData:
+          $ref: "#/components/schemas/DictionaryWord"
         createdBy:
           type: string
           description: Wallet Address
@@ -2044,6 +2175,30 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
+              filters:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductFilter"
+    SearchProductSuggesterBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              searchTerm:
+                type: string
+                description: Search term
+    SearchProductFiltersBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              folders:
+                type: array
+                items:
+                  type: string
+                  format: uuid
     ModifyProductBody:
       content:
         application/json:
@@ -2424,27 +2579,11 @@ components:
                     field:
                       type: string
                     fieldData:
-                      type: object
-                      required:
-                        - id
-                        - name
-                      properties:
-                        id:
-                          type: string
-                        name:
-                          type: string
+                      $ref: "#/components/schemas/DictionaryWord"
                     value:
                       type: string
                     valueData:
-                      type: object
-                      required:
-                        - id
-                        - name
-                      properties:
-                        id:
-                          type: string
-                        name:
-                          type: string
+                      $ref: "#/components/schemas/DictionaryWord"
               missedData:
                 type: array
                 items:
@@ -2456,15 +2595,7 @@ components:
                     field:
                       type: string
                     fieldData:
-                      type: object
-                      required:
-                        - id
-                        - name
-                      properties:
-                        id:
-                          type: string
-                        name:
-                          type: string
+                      $ref: "#/components/schemas/DictionaryWord"
                     options:
                       type: array
                       items:
@@ -2478,15 +2609,19 @@ components:
                           value:
                             type: string
                           valueData:
-                            type: object
-                            required:
-                              - id
-                              - name
-                            properties:
-                              id:
-                                type: string
-                              name:
-                                type: string
+                            $ref: "#/components/schemas/DictionaryWord"
+    FoldersStatsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: null
+            additionalProperties:
+              type: object
+              properties:
+                productsCount:
+                  type: number
     ProductData:
       description: Successful operation
       content:
@@ -2515,6 +2650,22 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Product"
+    SearchProductSuggesterData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: string
+    SearchProductFiltersData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/ProductFilterOption"
     ProductNotFound:
       description: Not found
       content:

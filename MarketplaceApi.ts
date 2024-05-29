@@ -187,6 +187,30 @@ export interface AdminAccess {
   userData?: User;
 }
 
+export interface DictionaryWord {
+  /**
+   * Word ID
+   * @format uuid
+   */
+  id: string;
+  /** Word name */
+  name: string;
+  /** Word short name */
+  shortName?: string;
+  /** Word description */
+  description?: string;
+  /** Word unit */
+  unit?: string;
+  /** System unit key */
+  systemUnit?: string;
+  /** Coeff for mapping systemUnit with unit */
+  coeff?: number;
+  /** Word main photo */
+  photo?: string;
+  /** Word main video */
+  video?: string;
+}
+
 export interface FileData {
   /**
    * File ID
@@ -278,10 +302,12 @@ export interface FolderFilter {
   folder?: string;
   /** Formula attribute */
   field: string;
+  fieldData?: DictionaryWord;
   /** Formula operator */
   operator: FolderFormulaOperator;
   /** Formula value */
   value?: string;
+  valueData?: DictionaryWord;
   /** Formula unit */
   unit?: string;
   /** Filter order */
@@ -419,6 +445,9 @@ export interface Product {
    * @format uuid
    */
   providerId: string;
+  /** Provider Name */
+  providerName?: string;
+  isBlocked?: boolean;
   /**
    * Creation Date
    * @format date-time
@@ -462,6 +491,9 @@ export interface ProductFull {
    * @format uuid
    */
   providerId: string;
+  /** Provider Name */
+  providerName?: string;
+  isBlocked?: boolean;
   /**
    * Creation Date
    * @format date-time
@@ -489,7 +521,20 @@ export interface ProductFull {
     /** Provider name */
     name: string;
   };
-  tagsData: Tag;
+  tagsData: Tag[];
+}
+
+export interface ProductFilter {
+  field: string;
+  operator: "equal" | "between";
+  values: string[];
+}
+
+export interface ProductFilterOption {
+  field: string;
+  fieldData?: DictionaryWord;
+  values: string[];
+  valuesData?: (DictionaryWord | null)[];
 }
 
 export interface Tag {
@@ -500,8 +545,10 @@ export interface Tag {
   id: string;
   /** Tag name */
   field: string;
+  fieldData?: DictionaryWord;
   /** Tag value */
   value?: string;
+  valueData?: DictionaryWord;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -1668,30 +1715,18 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
           canCreate: boolean;
           addData: {
             field: string;
-            fieldData?: {
-              id: string;
-              name: string;
-            };
+            fieldData?: DictionaryWord;
             value: string;
-            valueData?: {
-              id: string;
-              name: string;
-            };
+            valueData?: DictionaryWord;
           }[];
           missedData: {
             field: string;
-            fieldData?: {
-              id: string;
-              name: string;
-            };
+            fieldData?: DictionaryWord;
             options: {
               /** Formula operator */
               operator: FolderFormulaOperator;
               value: string;
-              valueData?: {
-                id: string;
-                name: string;
-              };
+              valueData?: DictionaryWord;
             }[];
           }[];
         },
@@ -1739,6 +1774,29 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         secure: true,
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags Folders, Available Public
+     * @name GetFoldersStats
+     * @summary Get folders stats
+     * @request GET:/folders/stats
+     */
+    getFoldersStats: (params: RequestParams = {}) =>
+      this.http.request<
+        Record<
+          string,
+          {
+            productsCount?: number;
+          }
+        >,
+        any
+      >({
+        path: `/folders/stats`,
+        method: "GET",
+        ...params,
+      }),
   };
   products = {
     /**
@@ -1747,7 +1805,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @tags Products, Available Public
      * @name SearchProducts
      * @summary Search products
-     * @request POST:/product/search
+     * @request POST:/products/search
      */
     searchProducts: (
       data: {
@@ -1759,6 +1817,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         /** Number of skip items */
         offset?: number;
         sort?: SortModel[];
+        filters?: ProductFilter[];
       },
       params: RequestParams = {},
     ) =>
@@ -1769,7 +1828,50 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         },
         any
       >({
-        path: `/product/search`,
+        path: `/products/search`,
+        method: "POST",
+        body: data,
+        ...params,
+      }),
+
+    /**
+     * @description Returns 5 suggested names by searchTerm
+     *
+     * @tags Products, Available Public
+     * @name SearchProductSuggester
+     * @summary Search products name suggester
+     * @request POST:/products/search/suggester
+     */
+    searchProductSuggester: (
+      data: {
+        /** Search term */
+        searchTerm?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<string[], any>({
+        path: `/products/search/suggester`,
+        method: "POST",
+        body: data,
+        ...params,
+      }),
+
+    /**
+     * @description Returns products available filters
+     *
+     * @tags Products, Available Public
+     * @name SearchProductFilters
+     * @summary Search products filters
+     * @request POST:/products/search/filters
+     */
+    searchProductFilters: (
+      data: {
+        folders?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProductFilterOption[], any>({
+        path: `/products/search/filters`,
         method: "POST",
         body: data,
         ...params,
@@ -1895,12 +1997,11 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         secure: true,
         ...params,
       }),
-  };
-  product = {
+
     /**
      * @description Available for `System Admin`
      *
-     * @tags Product
+     * @tags Products
      * @name BlockProduct
      * @summary Block product
      * @request POST:/products/{id}/block
@@ -1917,7 +2018,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     /**
      * @description Available for `System Admin`
      *
-     * @tags Product
+     * @tags Products
      * @name UnblockProduct
      * @summary Unblock product
      * @request POST:/products/{id}/unblock
