@@ -3,8 +3,8 @@ info:
   title: REST API for B2Marketplace
   version: 1.0.0
 servers:
-  - url: http://localhost:8082
-  - url: http://54.37.199.51:8082/api
+  - url: https://localhost:8082
+  - url: https://b2p.space/api
 tags:
   - name: Apps
   - name: Auth
@@ -15,6 +15,7 @@ tags:
   - name: Providers
   - name: Tags
   - name: Products
+  - name: Places
   - name: Available Public
     description: This methods does not require authorization
   - name: Available Providers
@@ -882,6 +883,124 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/FoldersStatsData"
+  /places:
+    post:
+      tags:
+        - Places
+      security:
+        - BearerAuth: []
+      summary: Create place
+      description: Available for `System Admin`
+      operationId: createPlace
+      requestBody:
+        $ref: "#/components/requestBodies/CreatePlaceBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/PlaceData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/places/{id}":
+    get:
+      tags:
+        - Places
+        - Available Public
+      summary: Get place info
+      operationId: getPlace
+      parameters:
+        - $ref: "#/components/parameters/placeIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/PlaceData"
+        "404":
+          $ref: "#/components/responses/PlaceNotFound"
+    patch:
+      tags:
+        - Places
+      security:
+        - BearerAuth: []
+      summary: Update place
+      description: Available for `System Admin`
+      operationId: updatePlace
+      parameters:
+        - $ref: "#/components/parameters/placeIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditPlaceBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/PlaceData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/PlaceNotFound"
+    delete:
+      tags:
+        - Places
+      security:
+        - BearerAuth: []
+      summary: Delete place
+      description: Available for `System Admin`
+      operationId: deletePlace
+      parameters:
+        - $ref: "#/components/parameters/placeIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/PlaceData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/PlaceNotFound"
+  /places/search:
+    get:
+      tags:
+        - Places
+        - Available Public
+      summary: Search places
+      operationId: searchPlaces
+      parameters:
+        - in: query
+          name: type
+          description: Places type
+          schema:
+            type: string
+            enum:
+              - pick-up
+              - dispatch
+        - in: query
+          name: searchTerm
+          description: Search by name
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: number
+        - in: query
+          name: offset
+          schema:
+            type: number
+        - in: query
+          name: sort
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/SortModel"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchPlaceData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
   /products/search:
     post:
       tags:
@@ -1047,6 +1166,45 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/ProductNotFound"
+  "/providers/{id}/profile":
+    get:
+      tags:
+        - Providers
+        - Available Public
+      summary: Get provider profile info
+      operationId: gepProviderProfile
+      parameters:
+        - $ref: "#/components/parameters/providerIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderProfileData"
+        "404":
+          $ref: "#/components/responses/ProviderNotFound"
+  /providers/my/profile:
+    put:
+      tags:
+        - Providers
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Create or update provider profile on marketplace
+      description: Available for `providers`
+      operationId: updateProviderProfile
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateProviderProfileBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderProfileData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProviderNotFound"
   /tags/search:
     post:
       tags:
@@ -1590,6 +1748,128 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FolderFilter"
+    Place:
+      type: object
+      required:
+        - id
+        - type
+        - name
+        - lat
+        - long
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Place ID
+        type:
+          type: string
+          enum:
+            - pick-up
+            - dispatch
+          description: Place Type
+        name:
+          type: string
+          description: Place name
+        description:
+          type: string
+          description: Place description
+        photos:
+          type: array
+          items:
+            type: string
+          description: Place photos
+        workHours:
+          $ref: "#/components/schemas/PlaceWorkHours"
+          description: Place working hours
+        color:
+          type: string
+          description: Place color showing on map
+        lat:
+          type: number
+          description: Place latitude coordinate
+        long:
+          type: number
+          description: Place longitude coordinate
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Deleted Date
+    PlaceWorkHours:
+      type: object
+      required:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+        - sat
+        - sun
+      properties:
+        mon:
+          type: array
+          items:
+            type: string
+          example:
+            - HH:MM
+            - HH:MM
+        tue:
+          type: array
+          items:
+            type: string
+          example:
+            - HH:MM
+            - HH:MM
+        wed:
+          type: array
+          items:
+            type: string
+          example:
+            - HH:MM
+            - HH:MM
+        thu:
+          type: array
+          items:
+            type: string
+          example:
+            - HH:MM
+            - HH:MM
+        fri:
+          type: array
+          items:
+            type: string
+          example:
+            - HH:MM
+            - HH:MM
+        sat:
+          type: array
+          items:
+            type: string
+          example:
+            - HH:MM
+            - HH:MM
+        sun:
+          type: array
+          items:
+            type: string
+          example:
+            - HH:MM
+            - HH:MM
     Product:
       type: object
       required:
@@ -1648,7 +1928,7 @@ components:
           type: string
           format: date-time
           description: Last Updating Date
-        deleteAt:
+        deletedAt:
           type: string
           format: date-time
           description: Delete Date
@@ -1714,7 +1994,7 @@ components:
           type: string
           format: date-time
           description: Last Updating Date
-        deleteAt:
+        deletedAt:
           type: string
           format: date-time
           description: Delete Date
@@ -1780,6 +2060,64 @@ components:
           items:
             $ref: "#/components/schemas/DictionaryWord"
             nullable: true
+    ProviderProfile:
+      type: object
+      required:
+        - id
+        - name
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Provider Profile ID (same as Provider ID)
+        name:
+          type: string
+          description: Provider trade name shows in marketplace
+        content:
+          type: string
+          description: Provider Profile context shows
+        photos:
+          type: array
+          items:
+            type: string
+          description: Provider Profile photos
+        video:
+          type: string
+          description: Provider Profile intro video
+        locationExternalId:
+          type: string
+          description: External ID of place where provider is mentioned
+        locationLat:
+          type: number
+          description: Place latitude coordinate
+        locationLong:
+          type: number
+          description: Place longitude coordinate
+        produceCategories:
+          type: array
+          items:
+            type: string
+          description: 2d level catalogs in marketplace based on products
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Deleted Date
     Tag:
       type: object
       required:
@@ -1862,6 +2200,14 @@ components:
       in: path
       name: filterId
       description: Filter ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    placeIdParam:
+      in: path
+      name: id
+      description: Place ID
       required: true
       schema:
         type: string
@@ -2151,6 +2497,75 @@ components:
                 type: string
                 format: uuid
                 description: Should move before folder ID
+    CreatePlaceBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - type
+              - lat
+              - long
+            properties:
+              type:
+                type: string
+                enum:
+                  - pick-up
+                  - dispatch
+                description: Place Type
+              name:
+                type: string
+                description: Place name
+              description:
+                type: string
+                description: Place description
+              photos:
+                type: array
+                items:
+                  type: string
+                description: Place photos
+              workHours:
+                $ref: "#/components/schemas/PlaceWorkHours"
+                description: Place working hours
+              color:
+                type: string
+                description: Place color showing on map
+              lat:
+                type: number
+                description: Place latitude coordinate
+              long:
+                type: number
+                description: Place longitude coordinate
+    EditPlaceBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Place name
+              description:
+                type: string
+                description: Place description
+              photos:
+                type: array
+                items:
+                  type: string
+                description: Place photos
+              workHours:
+                $ref: "#/components/schemas/PlaceWorkHours"
+                description: Place working hours
+              color:
+                type: string
+                description: Place color showing on map
+              lat:
+                type: number
+                description: Place latitude coordinate
+              long:
+                type: number
+                description: Place longitude coordinate
     SearchProductsBody:
       content:
         application/json:
@@ -2238,6 +2653,37 @@ components:
                       type: string
                     value:
                       type: string
+    UpdateProviderProfileBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+                description: Provider trade name shows in marketplace
+              content:
+                type: string
+                description: Provider Profile context shows
+              photos:
+                type: array
+                items:
+                  type: string
+                description: Provider Profile photos
+              video:
+                type: string
+                description: Provider Profile intro video
+              locationExternalId:
+                type: string
+                description: External ID of place where provider is mentioned
+              locationLat:
+                type: number
+                description: Place latitude coordinate
+              locationLong:
+                type: number
+                description: Place longitude coordinate
     SearchTagsBody:
       content:
         application/json:
@@ -2622,6 +3068,35 @@ components:
               properties:
                 productsCount:
                   type: number
+    PlaceData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Place"
+    SearchPlaceData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                $ref: "#/components/schemas/Place"
+    PlaceNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: place:404
+            message: Place not found
     ProductData:
       description: Successful operation
       content:
@@ -2675,6 +3150,12 @@ components:
           example:
             errorCode: product:404
             message: Product not found
+    ProviderProfileData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProviderProfile"
     SearchTagsData:
       description: Successful operation
       content:

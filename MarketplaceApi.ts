@@ -419,6 +419,67 @@ export interface FolderFullData {
   filters: FolderFilter[];
 }
 
+export interface Place {
+  /**
+   * Place ID
+   * @format uuid
+   */
+  id: string;
+  /** Place Type */
+  type: "pick-up" | "dispatch";
+  /** Place name */
+  name: string;
+  /** Place description */
+  description?: string;
+  /** Place photos */
+  photos?: string[];
+  /** Place working hours */
+  workHours?: PlaceWorkHours;
+  /** Place color showing on map */
+  color?: string;
+  /** Place latitude coordinate */
+  lat: number;
+  /** Place longitude coordinate */
+  long: number;
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  createdBy: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Deleted Date
+   * @format date-time
+   */
+  deletedAt?: string | null;
+}
+
+export interface PlaceWorkHours {
+  /** @example ["HH:MM","HH:MM"] */
+  mon: string[];
+  /** @example ["HH:MM","HH:MM"] */
+  tue: string[];
+  /** @example ["HH:MM","HH:MM"] */
+  wed: string[];
+  /** @example ["HH:MM","HH:MM"] */
+  thu: string[];
+  /** @example ["HH:MM","HH:MM"] */
+  fri: string[];
+  /** @example ["HH:MM","HH:MM"] */
+  sat: string[];
+  /** @example ["HH:MM","HH:MM"] */
+  sun: string[];
+}
+
 export interface Product {
   /**
    * Product ID
@@ -462,7 +523,7 @@ export interface Product {
    * Delete Date
    * @format date-time
    */
-  deleteAt?: string;
+  deletedAt?: string;
 }
 
 export interface ProductFull {
@@ -508,7 +569,7 @@ export interface ProductFull {
    * Delete Date
    * @format date-time
    */
-  deleteAt?: string;
+  deletedAt?: string;
   /** Folders to that product linked */
   folders: string[];
   createdByData: User;
@@ -535,6 +596,50 @@ export interface ProductFilterOption {
   fieldData?: DictionaryWord;
   values: string[];
   valuesData?: (DictionaryWord | null)[];
+}
+
+export interface ProviderProfile {
+  /**
+   * Provider Profile ID (same as Provider ID)
+   * @format uuid
+   */
+  id: string;
+  /** Provider trade name shows in marketplace */
+  name: string;
+  /** Provider Profile context shows */
+  content?: string;
+  /** Provider Profile photos */
+  photos?: string[];
+  /** Provider Profile intro video */
+  video?: string;
+  /** External ID of place where provider is mentioned */
+  locationExternalId?: string;
+  /** Place latitude coordinate */
+  locationLat?: number;
+  /** Place longitude coordinate */
+  locationLong?: number;
+  /** 2d level catalogs in marketplace based on products */
+  produceCategories?: string[];
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  createdBy: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Deleted Date
+   * @format date-time
+   */
+  deletedAt?: string | null;
 }
 
 export interface Tag {
@@ -617,7 +722,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "http://localhost:8082";
+  public baseUrl: string = "https://localhost:8082";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -784,7 +889,7 @@ export class HttpClient<SecurityDataType = unknown> {
 /**
  * @title REST API for B2Marketplace
  * @version 1.0.0
- * @baseUrl http://localhost:8082
+ * @baseUrl https://localhost:8082
  */
 export class MarketplaceApi<SecurityDataType extends unknown> {
   http: HttpClient<SecurityDataType>;
@@ -1182,6 +1287,57 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       this.http.request<Provider, ErrorResponse>({
         path: `/providers/${id}/unblock`,
         method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Providers, Available Public
+     * @name GepProviderProfile
+     * @summary Get provider profile info
+     * @request GET:/providers/{id}/profile
+     */
+    gepProviderProfile: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProviderProfile, ErrorResponse>({
+        path: `/providers/${id}/profile`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`
+     *
+     * @tags Providers, Available Providers
+     * @name UpdateProviderProfile
+     * @summary Create or update provider profile on marketplace
+     * @request PUT:/providers/my/profile
+     * @secure
+     */
+    updateProviderProfile: (
+      data: {
+        /** Provider trade name shows in marketplace */
+        name: string;
+        /** Provider Profile context shows */
+        content?: string;
+        /** Provider Profile photos */
+        photos?: string[];
+        /** Provider Profile intro video */
+        video?: string;
+        /** External ID of place where provider is mentioned */
+        locationExternalId?: string;
+        /** Place latitude coordinate */
+        locationLat?: number;
+        /** Place longitude coordinate */
+        locationLong?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProviderProfile, ErrorResponse>({
+        path: `/providers/my/profile`,
+        method: "PUT",
         body: data,
         secure: true,
         ...params,
@@ -1795,6 +1951,147 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       >({
         path: `/folders/stats`,
         method: "GET",
+        ...params,
+      }),
+  };
+  places = {
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Places
+     * @name CreatePlace
+     * @summary Create place
+     * @request POST:/places
+     * @secure
+     */
+    createPlace: (
+      data: {
+        /** Place Type */
+        type: "pick-up" | "dispatch";
+        /** Place name */
+        name: string;
+        /** Place description */
+        description?: string;
+        /** Place photos */
+        photos?: string[];
+        /** Place working hours */
+        workHours?: PlaceWorkHours;
+        /** Place color showing on map */
+        color?: string;
+        /** Place latitude coordinate */
+        lat: number;
+        /** Place longitude coordinate */
+        long: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Place, ErrorResponse>({
+        path: `/places`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Places, Available Public
+     * @name GetPlace
+     * @summary Get place info
+     * @request GET:/places/{id}
+     */
+    getPlace: (id: string, params: RequestParams = {}) =>
+      this.http.request<Place, ErrorResponse>({
+        path: `/places/${id}`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Places
+     * @name UpdatePlace
+     * @summary Update place
+     * @request PATCH:/places/{id}
+     * @secure
+     */
+    updatePlace: (
+      id: string,
+      data: {
+        /** Place name */
+        name?: string;
+        /** Place description */
+        description?: string;
+        /** Place photos */
+        photos?: string[];
+        /** Place working hours */
+        workHours?: PlaceWorkHours;
+        /** Place color showing on map */
+        color?: string;
+        /** Place latitude coordinate */
+        lat?: number;
+        /** Place longitude coordinate */
+        long?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Place, ErrorResponse>({
+        path: `/places/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Places
+     * @name DeletePlace
+     * @summary Delete place
+     * @request DELETE:/places/{id}
+     * @secure
+     */
+    deletePlace: (id: string, params: RequestParams = {}) =>
+      this.http.request<Place, ErrorResponse>({
+        path: `/places/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Places, Available Public
+     * @name SearchPlaces
+     * @summary Search places
+     * @request GET:/places/search
+     */
+    searchPlaces: (
+      query?: {
+        /** Places type */
+        type?: "pick-up" | "dispatch";
+        /** Search by name */
+        searchTerm?: string;
+        limit?: number;
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: Place;
+        },
+        any
+      >({
+        path: `/places/search`,
+        method: "GET",
+        query: query,
         ...params,
       }),
   };
