@@ -266,7 +266,7 @@ paths:
       summary: Register new provider
       operationId: registerProvider
       requestBody:
-        $ref: "#/components/requestBodies/ProviderRequestBody"
+        $ref: "#/components/requestBodies/RegisterProviderRequestBody"
       responses:
         "200":
           $ref: "#/components/responses/ProviderWithSecretData"
@@ -2304,6 +2304,29 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
+    RegisterProviderRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - address
+              - callback
+              - wallet
+            properties:
+              name:
+                type: string
+                description: Provider Name
+              address:
+                type: string
+                description: Provider URL Address
+              callback:
+                type: string
+                description: Provider Callback Address
+              wallet:
+                type: string
+                description: TON Address who making request
     ProviderRequestBody:
       content:
         application/json:

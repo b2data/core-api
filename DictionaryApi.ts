@@ -1144,6 +1144,8 @@ export class DictionaryApi<SecurityDataType extends unknown> {
         address: string;
         /** Provider Callback Address */
         callback: string;
+        /** TON Address who making request */
+        wallet: string;
       },
       params: RequestParams = {},
     ) =>
