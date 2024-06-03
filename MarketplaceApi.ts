@@ -612,14 +612,17 @@ export interface ProviderProfile {
   photos?: string[];
   /** Provider Profile intro video */
   video?: string;
+  /**
+   * Dispatch place ID
+   * @format uuid
+   */
+  dispatchPlaceId?: string;
   /** External ID of place where provider is mentioned */
   locationExternalId?: string;
   /** Place latitude coordinate */
   locationLat?: number;
   /** Place longitude coordinate */
   locationLong?: number;
-  /** 2d level catalogs in marketplace based on products */
-  produceCategories?: string[];
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -640,6 +643,63 @@ export interface ProviderProfile {
    * @format date-time
    */
   deletedAt?: string | null;
+}
+
+export interface ProviderProfileWithData {
+  /**
+   * Provider Profile ID (same as Provider ID)
+   * @format uuid
+   */
+  id: string;
+  /** Provider trade name shows in marketplace */
+  name: string;
+  /** Provider Profile context shows */
+  content?: string;
+  /** Provider Profile photos */
+  photos?: string[];
+  /** Provider Profile intro video */
+  video?: string;
+  /**
+   * Dispatch place ID
+   * @format uuid
+   */
+  dispatchPlaceId?: string;
+  /** External ID of place where provider is mentioned */
+  locationExternalId?: string;
+  /** Place latitude coordinate */
+  locationLat?: number;
+  /** Place longitude coordinate */
+  locationLong?: number;
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  createdBy: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Deleted Date
+   * @format date-time
+   */
+  deletedAt?: string | null;
+  /** 2d level catalogs in marketplace based on products */
+  produceCategories?: string[];
+  /** Number of products that was created on marketplace including deleted */
+  deployProducts?: number;
+  /** Number of completed orders */
+  completedOrders?: number;
+  /** Number of active orders */
+  activeOrders?: number;
+  /** Number of total orders */
+  totalOrders?: number;
 }
 
 export interface Tag {
@@ -1211,6 +1271,8 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         address: string;
         /** Provider Callback Address */
         callback: string;
+        /** TON Address who making request */
+        wallet: string;
       },
       params: RequestParams = {},
     ) =>
@@ -1296,13 +1358,28 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Providers, Available Public
-     * @name GepProviderProfile
+     * @name GetProviderProfile
      * @summary Get provider profile info
      * @request GET:/providers/{id}/profile
      */
-    gepProviderProfile: (id: string, params: RequestParams = {}) =>
-      this.http.request<ProviderProfile, ErrorResponse>({
+    getProviderProfile: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProviderProfileWithData, ErrorResponse>({
         path: `/providers/${id}/profile`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Providers, Available Providers
+     * @name GetMyProviderProfile
+     * @summary Get provider profile info
+     * @request GET:/providers/my/profile
+     */
+    getMyProviderProfile: (params: RequestParams = {}) =>
+      this.http.request<ProviderProfileWithData, ErrorResponse>({
+        path: `/providers/my/profile`,
         method: "GET",
         ...params,
       }),
@@ -1326,6 +1403,11 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         photos?: string[];
         /** Provider Profile intro video */
         video?: string;
+        /**
+         * Dispatch place ID
+         * @format uuid
+         */
+        dispatchPlaceId?: string;
         /** External ID of place where provider is mentioned */
         locationExternalId?: string;
         /** Place latitude coordinate */
@@ -2085,7 +2167,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       this.http.request<
         {
           total: number;
-          items: Place;
+          items: Place[];
         },
         any
       >({

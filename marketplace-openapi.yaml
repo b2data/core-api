@@ -339,7 +339,7 @@ paths:
       summary: Register new provider
       operationId: registerProvider
       requestBody:
-        $ref: "#/components/requestBodies/ProviderRequestBody"
+        $ref: "#/components/requestBodies/RegisterProviderRequestBody"
       responses:
         "200":
           $ref: "#/components/responses/ProviderWithSecretData"
@@ -1172,15 +1172,34 @@ paths:
         - Providers
         - Available Public
       summary: Get provider profile info
-      operationId: gepProviderProfile
+      operationId: getProviderProfile
       parameters:
         - $ref: "#/components/parameters/providerIdParam"
       responses:
         "200":
-          $ref: "#/components/responses/ProviderProfileData"
+          $ref: "#/components/responses/ProviderProfileWithDataResponse"
+        "400":
+          $ref: "#/components/responses/InvalidData"
         "404":
           $ref: "#/components/responses/ProviderNotFound"
   /providers/my/profile:
+    get:
+      tags:
+        - Providers
+        - Available Providers
+      summary: Get provider profile info
+      operationId: getMyProviderProfile
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderProfileWithDataResponse"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProviderNotFound"
     put:
       tags:
         - Providers
@@ -1196,7 +1215,7 @@ paths:
         $ref: "#/components/requestBodies/UpdateProviderProfileBody"
       responses:
         "200":
-          $ref: "#/components/responses/ProviderProfileData"
+          $ref: "#/components/responses/ProviderProfileResponse"
         "400":
           $ref: "#/components/responses/InvalidData"
         "401":
@@ -2087,6 +2106,10 @@ components:
         video:
           type: string
           description: Provider Profile intro video
+        dispatchPlaceId:
+          type: string
+          format: uuid
+          description: Dispatch place ID
         locationExternalId:
           type: string
           description: External ID of place where provider is mentioned
@@ -2096,11 +2119,6 @@ components:
         locationLong:
           type: number
           description: Place longitude coordinate
-        produceCategories:
-          type: array
-          items:
-            type: string
-          description: 2d level catalogs in marketplace based on products
         createdBy:
           type: string
           description: Wallet Address
@@ -2118,6 +2136,80 @@ components:
           format: date-time
           nullable: true
           description: Deleted Date
+    ProviderProfileWithData:
+      type: object
+      required:
+        - id
+        - name
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Provider Profile ID (same as Provider ID)
+        name:
+          type: string
+          description: Provider trade name shows in marketplace
+        content:
+          type: string
+          description: Provider Profile context shows
+        photos:
+          type: array
+          items:
+            type: string
+          description: Provider Profile photos
+        video:
+          type: string
+          description: Provider Profile intro video
+        dispatchPlaceId:
+          type: string
+          format: uuid
+          description: Dispatch place ID
+        locationExternalId:
+          type: string
+          description: External ID of place where provider is mentioned
+        locationLat:
+          type: number
+          description: Place latitude coordinate
+        locationLong:
+          type: number
+          description: Place longitude coordinate
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Deleted Date
+        produceCategories:
+          type: array
+          items:
+            type: string
+          description: 2d level catalogs in marketplace based on products
+        deployProducts:
+          type: number
+          description: Number of products that was created on marketplace including deleted
+        completedOrders:
+          type: number
+          description: Number of completed orders
+        activeOrders:
+          type: number
+          description: Number of active orders
+        totalOrders:
+          type: number
+          description: Number of total orders
     Tag:
       type: object
       required:
@@ -2272,6 +2364,29 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
+    RegisterProviderRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - address
+              - callback
+              - wallet
+            properties:
+              name:
+                type: string
+                description: Provider Name
+              address:
+                type: string
+                description: Provider URL Address
+              callback:
+                type: string
+                description: Provider Callback Address
+              wallet:
+                type: string
+                description: TON Address who making request
     ProviderRequestBody:
       content:
         application/json:
@@ -2675,6 +2790,10 @@ components:
               video:
                 type: string
                 description: Provider Profile intro video
+              dispatchPlaceId:
+                type: string
+                format: uuid
+                description: Dispatch place ID
               locationExternalId:
                 type: string
                 description: External ID of place where provider is mentioned
@@ -3087,7 +3206,9 @@ components:
               total:
                 type: number
               items:
-                $ref: "#/components/schemas/Place"
+                type: array
+                items:
+                  $ref: "#/components/schemas/Place"
     PlaceNotFound:
       description: Not found
       content:
@@ -3150,12 +3271,18 @@ components:
           example:
             errorCode: product:404
             message: Product not found
-    ProviderProfileData:
+    ProviderProfileResponse:
       description: Successful operation
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ProviderProfile"
+    ProviderProfileWithDataResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProviderProfileWithData"
     SearchTagsData:
       description: Successful operation
       content:
