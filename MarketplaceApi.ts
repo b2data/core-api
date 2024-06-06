@@ -2195,6 +2195,11 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       data: {
         /** Search term */
         searchTerm?: string;
+        /**
+         * Provider ID
+         * @format uuid
+         */
+        providerId?: string;
         folders?: string[];
         /** Number of return items */
         limit?: number;

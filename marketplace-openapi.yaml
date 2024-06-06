@@ -2694,6 +2694,10 @@ components:
               searchTerm:
                 type: string
                 description: Search term
+              providerId:
+                type: string
+                format: uuid
+                description: Provider ID
               folders:
                 type: array
                 items:
