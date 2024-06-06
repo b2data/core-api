@@ -952,7 +952,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title REST API for B2Marketplace
+ * @title REST API for B2Market
  * @version 1.0.0
  * @baseUrl https://localhost:8082
  */

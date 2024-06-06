@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: REST API for B2Marketplace
+  title: REST API for B2Market
   version: 1.0.0
 servers:
   - url: https://localhost:8082
