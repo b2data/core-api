@@ -1417,6 +1417,10 @@ components:
           type: string
           format: date-time
           description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Deleted Date
     ActivityType:
       type: string
       description: Activity Type

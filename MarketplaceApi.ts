@@ -125,6 +125,11 @@ export interface ProviderWithSecret {
    * @format date-time
    */
   updatedAt: string;
+  /**
+   * Deleted Date
+   * @format date-time
+   */
+  deletedAt?: string;
 }
 
 /** Activity Type */
