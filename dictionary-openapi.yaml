@@ -563,7 +563,7 @@ paths:
         - ProviderClientId: []
           ProviderClientSecret: []
           ProviderUserId: []
-      summary: Delete file
+      summary: Delete File
       operationId: deleteFile
       parameters:
         - $ref: "#/components/parameters/fileIdParam"
@@ -574,6 +574,20 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FileNotFound"
+  "/files/{id}/info":
+    get:
+      tags:
+        - Files
+        - Available Public
+      summary: Get file info
+      operationId: getFileInfo
+      parameters:
+        - $ref: "#/components/parameters/fileIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/FileData"
         "404":
           $ref: "#/components/responses/FileNotFound"
   /folders:
@@ -1730,7 +1744,7 @@ components:
           $ref: "#/components/schemas/User"
         createdByData:
           $ref: "#/components/schemas/User"
-    File:
+    FileData:
       type: object
       required:
         - id
@@ -2504,7 +2518,7 @@ components:
                 type: string
                 format: uuid
                 description: If set and file exists then file content will be overwritten
-              files:
+              file:
                 type: string
                 format: binary
     CreateFolderBody:
@@ -3089,7 +3103,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/File"
+            $ref: "#/components/schemas/FileData"
     FileNotFound:
       description: Not found
       content:

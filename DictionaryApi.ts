@@ -222,7 +222,7 @@ export interface Complaint {
   createdByData?: User;
 }
 
-export interface File {
+export interface FileData {
   /**
    * File ID
    * @format uuid
@@ -1513,11 +1513,11 @@ export class DictionaryApi<SecurityDataType extends unknown> {
          */
         id?: string;
         /** @format binary */
-        files?: File;
+        file?: File;
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<File, ErrorResponse>({
+      this.http.request<FileData, ErrorResponse>({
         path: `/files`,
         method: "POST",
         body: data,
@@ -1546,15 +1546,30 @@ export class DictionaryApi<SecurityDataType extends unknown> {
      *
      * @tags Files, Available Providers
      * @name DeleteFile
-     * @summary Delete file
+     * @summary Delete File
      * @request DELETE:/files/{id}
      * @secure
      */
     deleteFile: (id: string, params: RequestParams = {}) =>
-      this.http.request<File, ErrorResponse>({
+      this.http.request<FileData, ErrorResponse>({
         path: `/files/${id}`,
         method: "DELETE",
         secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Files, Available Public
+     * @name GetFileInfo
+     * @summary Get file info
+     * @request GET:/files/{id}/info
+     */
+    getFileInfo: (id: string, params: RequestParams = {}) =>
+      this.http.request<FileData, ErrorResponse>({
+        path: `/files/${id}/info`,
+        method: "GET",
         ...params,
       }),
   };
