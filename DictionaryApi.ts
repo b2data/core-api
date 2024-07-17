@@ -498,6 +498,8 @@ export interface Word {
   id: string;
   /** Word name */
   name: string;
+  /** Word context, used for define the scope */
+  context?: string[];
   /** Word short name */
   shortName?: string;
   /** Word description */
@@ -549,6 +551,8 @@ export interface WordWithData {
   id: string;
   /** Word name */
   name: string;
+  /** Word context, used for define the scope */
+  context?: string[];
   /** Word short name */
   shortName?: string;
   /** Word description */
@@ -2132,6 +2136,8 @@ export class DictionaryApi<SecurityDataType extends unknown> {
       data: {
         /** Word name */
         name: string;
+        /** Word context, used for define the scope */
+        context?: string[];
         /** Word short name */
         shortName?: string;
         /** Word description */
@@ -2173,6 +2179,31 @@ export class DictionaryApi<SecurityDataType extends unknown> {
       }),
 
     /**
+     * No description
+     *
+     * @tags Words, Available Public
+     * @name EditWord
+     * @summary Edit word data
+     * @request PATCH:/words/{id}
+     */
+    editWord: (
+      id: string,
+      data: {
+        /** Word name */
+        name?: string;
+        /** Word context, used for define the scope */
+        context?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<WordWithData, ErrorResponse>({
+        path: `/words/${id}`,
+        method: "PATCH",
+        body: data,
+        ...params,
+      }),
+
+    /**
      * @description Available for `creator` or `System Admin`
      *
      * @tags Words, Available Providers
@@ -2201,6 +2232,8 @@ export class DictionaryApi<SecurityDataType extends unknown> {
       data: {
         /** Search by ids */
         ids?: string[];
+        /** Word context, used for define the scope */
+        context?: string[];
         /** Search term */
         searchTerm?: string;
         /** Return words with unit data */
@@ -2225,6 +2258,39 @@ export class DictionaryApi<SecurityDataType extends unknown> {
         any
       >({
         path: `/words/search`,
+        method: "POST",
+        body: data,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Words, Available Public
+     * @name SearchWordsContext
+     * @summary Search unique context in words
+     * @request POST:/words/search-context
+     */
+    searchWordsContext: (
+      data: {
+        /** Search term */
+        searchTerm?: string;
+        /** Number of return items */
+        limit?: number;
+        /** Number of skip items */
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: string[];
+        },
+        any
+      >({
+        path: `/words/search-context`,
         method: "POST",
         body: data,
         ...params,

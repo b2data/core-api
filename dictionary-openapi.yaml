@@ -1092,6 +1092,27 @@ paths:
           $ref: "#/components/responses/InvalidData"
         "404":
           $ref: "#/components/responses/WordNotFound"
+    patch:
+      tags:
+        - Words
+        - Available Public
+      summary: Edit word data
+      operationId: editWord
+      parameters:
+        - $ref: "#/components/parameters/wordIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditWordBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/WordFullData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/WordNotFound"
     delete:
       tags:
         - Words
@@ -1129,6 +1150,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SearchWordsData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  /words/search-context:
+    post:
+      tags:
+        - Words
+        - Available Public
+      summary: Search unique context in words
+      operationId: searchWordsContext
+      requestBody:
+        $ref: "#/components/requestBodies/SearchWordsContextBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchWordsContextData"
         "400":
           $ref: "#/components/responses/InvalidData"
   "/words/{id}/tags":
@@ -2038,6 +2073,11 @@ components:
         name:
           type: string
           description: Word name
+        context:
+          type: array
+          items:
+            type: string
+          description: Word context, used for define the scope
         shortName:
           type: string
           description: Word short name
@@ -2104,6 +2144,11 @@ components:
         name:
           type: string
           description: Word name
+        context:
+          type: array
+          items:
+            type: string
+          description: Word context, used for define the scope
         shortName:
           type: string
           description: Word short name
@@ -2695,6 +2740,11 @@ components:
                 items:
                   type: string
                   format: uuid
+              context:
+                type: array
+                items:
+                  type: string
+                description: Word context, used for define the scope
               searchTerm:
                 type: string
                 description: Search term
@@ -2720,6 +2770,25 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
+    SearchWordsContextBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              searchTerm:
+                type: string
+                description: Search term
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
     CreateWordBody:
       content:
         application/json:
@@ -2731,6 +2800,11 @@ components:
               name:
                 type: string
                 description: Word name
+              context:
+                type: array
+                items:
+                  type: string
+                description: Word context, used for define the scope
               shortName:
                 type: string
                 description: Word short name
@@ -2756,6 +2830,20 @@ components:
                 description: Word videos
                 items:
                   type: string
+    EditWordBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Word name
+              context:
+                type: array
+                items:
+                  type: string
+                description: Word context, used for define the scope
     EditWordTagsBody:
       content:
         application/json:
@@ -3185,6 +3273,22 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Word"
+    SearchWordsContextData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  type: string
     WordData:
       description: Successful operation
       content:
