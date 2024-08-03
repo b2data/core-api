@@ -575,7 +575,7 @@ export interface ProductFull {
    * @format date-time
    */
   deletedAt?: string;
-  /** Folders to that product linked */
+  /** Folders to that product is linked */
   folders: string[];
   createdByData: User;
   providerData: {
@@ -601,6 +601,105 @@ export interface ProductFilterOption {
   fieldData?: DictionaryWord;
   values: string[];
   valuesData?: (DictionaryWord | null)[];
+}
+
+export interface ProductItem {
+  /**
+   * Product Item ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Product Item External ID form Provider
+   * @format uuid
+   */
+  externalId: string;
+  /**
+   * Configuration External ID form Provider
+   * @format uuid
+   */
+  configExternalId?: string;
+  /**
+   * Product ID in B2Market
+   * @format uuid
+   */
+  productId: string;
+  /** Product Item name */
+  name: string;
+  /** Product Item photos */
+  photos: string[];
+  /** Wallet Address */
+  createdBy: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string;
+}
+
+export interface ProductItemFull {
+  /**
+   * Product Item ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Product Item External ID form Provider
+   * @format uuid
+   */
+  externalId: string;
+  /**
+   * Product ID in B2Market
+   * @format uuid
+   */
+  productId: string;
+  /** Product Item name */
+  name: string;
+  /** Product Item photos */
+  photos: string[];
+  /** Wallet Address */
+  createdBy: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string;
+  /** Folders to that product item is linked */
+  folders: string[];
+  createdByData: User;
+  tagsData: Tag[];
+  /** Provider name */
+  providerName?: string;
 }
 
 export interface ProviderProfile {
@@ -713,12 +812,18 @@ export interface Tag {
    * @format uuid
    */
   id: string;
+  /** Product ID */
+  productId?: string;
+  /** Product Item ID */
+  productItemId?: string;
   /** Tag name */
   field: string;
   fieldData?: DictionaryWord;
   /** Tag value */
   value?: string;
   valueData?: DictionaryWord;
+  /** Is tag configurable */
+  isConfig?: boolean;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -739,6 +844,100 @@ export interface Tag {
    * @format date-time
    */
   updatedAt: string;
+}
+
+export interface Task {
+  /**
+   * Task ID
+   * @format uuid
+   */
+  id: string;
+  /** Task type */
+  type: string;
+  /** Task status */
+  status: "new" | "inProgress" | "review" | "done" | "discard";
+  /** Task priority */
+  priority: "low" | "medium" | "high";
+  /** Task name */
+  name: string;
+  /** Task description */
+  description: string;
+  /** Attached files */
+  files: string[];
+  /** ID of artefact that link with task */
+  artefactId?: string;
+  /** Type of artefact that link with task */
+  artefactType?: string;
+  /** Data of artefact that link with task */
+  artefactData?: object;
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  assignee?: string;
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  createdBy?: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+}
+
+export interface TaskWithData {
+  /**
+   * Task ID
+   * @format uuid
+   */
+  id: string;
+  /** Task type */
+  type: string;
+  /** Task status */
+  status: "new" | "inProgress" | "review" | "done" | "discard";
+  /** Task priority */
+  priority: "low" | "medium" | "high";
+  /** Task name */
+  name: string;
+  /** Task description */
+  description: string;
+  /** Attached files */
+  files: string[];
+  /** ID of artefact that link with task */
+  artefactId?: string;
+  /** Type of artefact that link with task */
+  artefactType?: string;
+  /** Data of artefact that link with task */
+  artefactData?: object;
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  assignee?: string;
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  createdBy?: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  createdByData?: User;
+  assigneeData?: User;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -1381,11 +1580,13 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @name GetMyProviderProfile
      * @summary Get provider profile info
      * @request GET:/providers/my/profile
+     * @secure
      */
     getMyProviderProfile: (params: RequestParams = {}) =>
       this.http.request<ProviderProfileWithData, ErrorResponse>({
         path: `/providers/my/profile`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -2420,6 +2621,141 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         secure: true,
         ...params,
       }),
+
+    /**
+     * @description Available for `providers`
+     *
+     * @tags Products, Available Providers
+     * @name RegisterProductItem
+     * @summary Register new product item
+     * @request POST:/products/items
+     * @secure
+     */
+    registerProductItem: (
+      data: {
+        /**
+         * Product Item External ID form Provider
+         * @format uuid
+         */
+        externalId?: string;
+        /**
+         * Product External ID form Provider
+         * @format uuid
+         */
+        productExternalId?: string;
+        /**
+         * Configuration External ID form Provider
+         * @format uuid
+         */
+        configExternalId?: string;
+        /** Product name */
+        name?: string;
+        /** Product photos */
+        photos?: string[];
+        tags?: {
+          /**
+           * Tag External ID form Provider
+           * @format uuid
+           */
+          externalId?: string;
+          field?: string;
+          value?: string;
+          isConfig?: boolean;
+        }[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProductItemFull, ErrorResponse>({
+        path: `/products/items`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Products, Available Public
+     * @name GetProductItem
+     * @summary Get product item with full data
+     * @request GET:/products/items/{id}
+     */
+    getProductItem: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProductItemFull, ErrorResponse>({
+        path: `/products/items/${id}`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`
+     *
+     * @tags Products, Available Providers
+     * @name UpdateProductItem
+     * @summary Update product item data
+     * @request PATCH:/products/items/{id}
+     * @secure
+     */
+    updateProductItem: (
+      id: string,
+      data: {
+        /**
+         * Product Item External ID form Provider
+         * @format uuid
+         */
+        externalId?: string;
+        /**
+         * Product External ID form Provider
+         * @format uuid
+         */
+        productExternalId?: string;
+        /**
+         * Configuration External ID form Provider
+         * @format uuid
+         */
+        configExternalId?: string;
+        /** Product name */
+        name?: string;
+        /** Product photos */
+        photos?: string[];
+        tags?: {
+          /**
+           * Tag External ID form Provider
+           * @format uuid
+           */
+          externalId?: string;
+          field?: string;
+          value?: string;
+          isConfig?: boolean;
+        }[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProductItemFull, ErrorResponse>({
+        path: `/products/items/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`. Mark that product item was deleted.
+     *
+     * @tags Products, Available Providers
+     * @name DeleteProductItem
+     * @summary Delete product item
+     * @request DELETE:/products/items/{id}
+     * @secure
+     */
+    deleteProductItem: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProductItem, ErrorResponse>({
+        path: `/products/items/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
   };
   tags = {
     /**
@@ -2458,6 +2794,146 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         path: `/tags/search`,
         method: "POST",
         body: data,
+        ...params,
+      }),
+  };
+  tasks = {
+    /**
+     * No description
+     *
+     * @tags Tasks
+     * @name SearchTasks
+     * @summary Search tasks
+     * @request POST:/tasks/search
+     * @secure
+     */
+    searchTasks: (
+      data: {
+        /** Search term */
+        searchTerm?: string;
+        /** Task types */
+        types?: string[];
+        /** Task status */
+        status?: ("new" | "inProgress" | "review" | "done" | "discard")[];
+        /** Task priority */
+        priority?: ("low" | "medium" | "high")[];
+        /** Assignee IDs */
+        assignee?: string[];
+        /** Created by IDs */
+        createdBy?: string[];
+        /** Number of return items */
+        limit?: number;
+        /** Number of skip items */
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: Task[];
+        },
+        any
+      >({
+        path: `/tasks/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Tasks
+     * @name CreateTask
+     * @summary Create new task
+     * @request POST:/tasks
+     * @secure
+     */
+    createTask: (
+      data: {
+        /** Task type */
+        type: string;
+        /** Task priority */
+        priority?: "low" | "medium" | "high";
+        /** Task name */
+        name: string;
+        /** Task description */
+        description?: string;
+        /** Attached files */
+        files?: string[];
+        /**
+         * Wallet Address
+         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+         */
+        assignee?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<TaskWithData, ErrorResponse>({
+        path: `/tasks`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Tasks
+     * @name GetTask
+     * @summary Get task info
+     * @request GET:/tasks/{id}
+     * @secure
+     */
+    getTask: (id: string, params: RequestParams = {}) =>
+      this.http.request<TaskWithData, ErrorResponse>({
+        path: `/tasks/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Tasks
+     * @name UpdateTask
+     * @summary Update task
+     * @request PUT:/tasks/{id}
+     * @secure
+     */
+    updateTask: (
+      id: string,
+      data: {
+        /** Task status */
+        status?: "new" | "inProgress" | "review" | "done" | "discard";
+        /** Task priority */
+        priority?: "low" | "medium" | "high";
+        /** Task name */
+        name?: string;
+        /** Task description */
+        description?: string;
+        /** Attached files */
+        files?: string[];
+        /** Data of artefact that link with task */
+        artefactData?: object;
+        /**
+         * Wallet Address
+         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+         */
+        assignee?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<TaskWithData, ErrorResponse>({
+        path: `/tasks/${id}`,
+        method: "PUT",
+        body: data,
+        secure: true,
         ...params,
       }),
   };

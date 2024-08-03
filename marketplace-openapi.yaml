@@ -14,6 +14,7 @@ tags:
   - name: Folders
   - name: Providers
   - name: Tags
+  - name: Tasks
   - name: Products
   - name: Places
   - name: Available Public
@@ -1166,6 +1167,87 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/ProductNotFound"
+  /products/items:
+    post:
+      tags:
+        - Products
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Register new product item
+      description: Available for `providers`
+      operationId: registerProductItem
+      requestBody:
+        $ref: "#/components/requestBodies/ModifyProductItemBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductItemFullData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/products/items/{id}":
+    get:
+      tags:
+        - Products
+        - Available Public
+      summary: Get product item with full data
+      operationId: getProductItem
+      parameters:
+        - $ref: "#/components/parameters/productItemIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductItemFullData"
+        "404":
+          $ref: "#/components/responses/ProductItemNotFound"
+    patch:
+      tags:
+        - Products
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Update product item data
+      description: Available for `providers`
+      operationId: updateProductItem
+      parameters:
+        - $ref: "#/components/parameters/productItemIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/ModifyProductItemBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductItemFullData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProductItemNotFound"
+    delete:
+      tags:
+        - Products
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Delete product item
+      description: Available for `providers`. Mark that product item was deleted.
+      operationId: deleteProductItem
+      parameters:
+        - $ref: "#/components/parameters/productItemIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductItemData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProductItemNotFound"
   "/providers/{id}/profile":
     get:
       tags:
@@ -1187,6 +1269,10 @@ paths:
       tags:
         - Providers
         - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
       summary: Get provider profile info
       operationId: getMyProviderProfile
       responses:
@@ -1238,6 +1324,77 @@ paths:
           $ref: "#/components/responses/SearchTagsData"
         "400":
           $ref: "#/components/responses/InvalidData"
+  /tasks/search:
+    post:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Search tasks
+      operationId: searchTasks
+      requestBody:
+        $ref: "#/components/requestBodies/SearchTasksBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchTasksData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  /tasks:
+    post:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Create new task
+      operationId: createTask
+      requestBody:
+        $ref: "#/components/requestBodies/CreateTaskBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/TaskWithDataResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/tasks/{id}":
+    get:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Get task info
+      operationId: getTask
+      responses:
+        "200":
+          $ref: "#/components/responses/TaskWithDataResponse"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/TaskNotFound"
+    put:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Update task
+      operationId: updateTask
+      requestBody:
+        $ref: "#/components/requestBodies/EditTaskBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/TaskWithDataResponse"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/TaskNotFound"
 components:
   schemas:
     App:
@@ -1845,7 +2002,6 @@ components:
         - sun
       properties:
         mon:
-          type: array
           items:
             type: string
           example:
@@ -2023,7 +2179,7 @@ components:
           description: Delete Date
         folders:
           type: array
-          description: Folders to that product linked
+          description: Folders to that product is linked
           items:
             type: string
             format: uuid
@@ -2083,6 +2239,132 @@ components:
           items:
             $ref: "#/components/schemas/DictionaryWord"
             nullable: true
+    ProductItem:
+      type: object
+      required:
+        - id
+        - externalId
+        - productId
+        - name
+        - photos
+        - providerId
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Product Item ID
+        externalId:
+          type: string
+          format: uuid
+          description: Product Item External ID form Provider
+        configExternalId:
+          type: string
+          format: uuid
+          description: Configuration External ID form Provider
+        productId:
+          type: string
+          format: uuid
+          description: Product ID in B2Market
+        name:
+          type: string
+          description: Product Item name
+        photos:
+          type: array
+          items:
+            type: string
+          description: Product Item photos
+        createdBy:
+          type: string
+          description: Wallet Address
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Delete Date
+    ProductItemFull:
+      type: object
+      required:
+        - id
+        - externalId
+        - productId
+        - name
+        - photos
+        - providerId
+        - createdBy
+        - createdAt
+        - updatedAt
+        - folders
+        - tagsData
+        - createdByData
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Product Item ID
+        externalId:
+          type: string
+          format: uuid
+          description: Product Item External ID form Provider
+        productId:
+          type: string
+          format: uuid
+          description: Product ID in B2Market
+        name:
+          type: string
+          description: Product Item name
+        photos:
+          type: array
+          items:
+            type: string
+          description: Product Item photos
+        createdBy:
+          type: string
+          description: Wallet Address
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Delete Date
+        folders:
+          type: array
+          description: Folders to that product item is linked
+          items:
+            type: string
+            format: uuid
+        createdByData:
+          $ref: "#/components/schemas/User"
+        tagsData:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
+        providerName:
+          type: string
+          description: Provider name
     ProviderProfile:
       type: object
       required:
@@ -2227,6 +2509,12 @@ components:
           type: string
           format: uuid
           description: Tag ID
+        productId:
+          type: string
+          description: Product ID
+        productItemId:
+          type: string
+          description: Product Item ID
         field:
           type: string
           description: Tag name
@@ -2237,6 +2525,9 @@ components:
           description: Tag value
         valueData:
           $ref: "#/components/schemas/DictionaryWord"
+        isConfig:
+          type: boolean
+          description: Is tag configurable
         createdBy:
           type: string
           description: Wallet Address
@@ -2253,6 +2544,154 @@ components:
           type: string
           format: date-time
           description: Last Updating Date
+    Task:
+      type: object
+      required:
+        - id
+        - type
+        - status
+        - priority
+        - name
+        - description
+        - files
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Task ID
+        type:
+          type: string
+          description: Task type
+        status:
+          type: string
+          description: Task status
+          enum:
+            - new
+            - inProgress
+            - review
+            - done
+            - discard
+        priority:
+          type: string
+          description: Task priority
+          enum:
+            - low
+            - medium
+            - high
+        name:
+          type: string
+          description: Task name
+        description:
+          type: string
+          description: Task description
+        files:
+          type: array
+          items:
+            type: string
+          description: Attached files
+        artefactId:
+          type: string
+          description: ID of artefact that link with task
+        artefactType:
+          type: string
+          description: Type of artefact that link with task
+        artefactData:
+          type: object
+          description: Data of artefact that link with task
+        assignee:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+    TaskWithData:
+      type: object
+      required:
+        - id
+        - type
+        - status
+        - priority
+        - name
+        - description
+        - files
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Task ID
+        type:
+          type: string
+          description: Task type
+        status:
+          type: string
+          description: Task status
+          enum:
+            - new
+            - inProgress
+            - review
+            - done
+            - discard
+        priority:
+          type: string
+          description: Task priority
+          enum:
+            - low
+            - medium
+            - high
+        name:
+          type: string
+          description: Task name
+        description:
+          type: string
+          description: Task description
+        files:
+          type: array
+          items:
+            type: string
+          description: Attached files
+        artefactId:
+          type: string
+          description: ID of artefact that link with task
+        artefactType:
+          type: string
+          description: Type of artefact that link with task
+        artefactData:
+          type: object
+          description: Data of artefact that link with task
+        assignee:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        createdByData:
+          $ref: "#/components/schemas/User"
+        assigneeData:
+          $ref: "#/components/schemas/User"
   parameters:
     appNameParam:
       in: path
@@ -2316,10 +2755,26 @@ components:
       schema:
         type: string
         format: uuid
+    productItemIdParam:
+      in: path
+      name: id
+      description: Product Item ID
+      required: true
+      schema:
+        type: string
+        format: uuid
     tagIdParam:
       in: path
       name: id
       description: Tag ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    taskIdParam:
+      in: path
+      name: id
+      description: Task ID
       required: true
       schema:
         type: string
@@ -2776,6 +3231,47 @@ components:
                       type: string
                     value:
                       type: string
+    ModifyProductItemBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              externalId:
+                type: string
+                format: uuid
+                description: Product Item External ID form Provider
+              productExternalId:
+                type: string
+                format: uuid
+                description: Product External ID form Provider
+              configExternalId:
+                type: string
+                format: uuid
+                description: Configuration External ID form Provider
+              name:
+                type: string
+                description: Product name
+              photos:
+                type: array
+                items:
+                  type: string
+                description: Product photos
+              tags:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    externalId:
+                      type: string
+                      format: uuid
+                      description: Tag External ID form Provider
+                    field:
+                      type: string
+                    value:
+                      type: string
+                    isConfig:
+                      type: boolean
     UpdateProviderProfileBody:
       content:
         application/json:
@@ -2846,6 +3342,134 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
+    SearchTasksBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              searchTerm:
+                type: string
+                description: Search term
+              types:
+                type: array
+                items:
+                  type: string
+                description: Task types
+              status:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - new
+                    - inProgress
+                    - review
+                    - done
+                    - discard
+                description: Task status
+              priority:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - low
+                    - medium
+                    - high
+                description: Task priority
+              assignee:
+                type: array
+                items:
+                  type: string
+                description: Assignee IDs
+              createdBy:
+                type: array
+                items:
+                  type: string
+                description: Created by IDs
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    CreateTaskBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - type
+              - name
+            properties:
+              type:
+                type: string
+                description: Task type
+              priority:
+                type: string
+                description: Task priority
+                enum:
+                  - low
+                  - medium
+                  - high
+              name:
+                type: string
+                description: Task name
+              description:
+                type: string
+                description: Task description
+              files:
+                type: array
+                items:
+                  type: string
+                description: Attached files
+              assignee:
+                type: string
+                description: Wallet Address
+                example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+    EditTaskBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Task status
+                enum:
+                  - new
+                  - inProgress
+                  - review
+                  - done
+                  - discard
+              priority:
+                type: string
+                description: Task priority
+                enum:
+                  - low
+                  - medium
+                  - high
+              name:
+                type: string
+                description: Task name
+              description:
+                type: string
+                description: Task description
+              files:
+                type: array
+                items:
+                  type: string
+                description: Attached files
+              artefactData:
+                type: object
+                description: Data of artefact that link with task
+              assignee:
+                type: string
+                description: Wallet Address
+                example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
   responses:
     AppData:
       description: Successful operation
@@ -3238,6 +3862,18 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ProductFull"
+    ProductItemData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProductItem"
+    ProductItemFullData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProductItemFull"
     SearchProductData:
       description: Successful operation
       content:
@@ -3279,6 +3915,15 @@ components:
           example:
             errorCode: product:404
             message: Product not found
+    ProductItemNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: product:404-item
+            message: Product item not found
     ProviderProfileResponse:
       description: Successful operation
       content:
@@ -3322,6 +3967,43 @@ components:
           example:
             errorCode: tag:404
             message: Tag not found
+    TaskResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Task"
+    TaskWithDataResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TaskWithData"
+    SearchTasksData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    TaskNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: task:404
+            message: Task not found
   securitySchemes:
     BearerAuth:
       type: http
