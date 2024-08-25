@@ -871,6 +871,100 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FolderNotFound"
+  /units/non-system:
+    get:
+      tags:
+        - Units
+        - Available Public
+      summary: Get non system units
+      operationId: getNonSystemUnits
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchNonSystemUnitsData"
+    post:
+      tags:
+        - Units
+      security:
+        - BearerAuth: []
+      summary: Create non system unit
+      description: Required `System Admin` access
+      operationId: createNonSystemUnit
+      requestBody:
+        $ref: "#/components/requestBodies/ModifyNonSystemUnitBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/NonSystemUnitData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/units/non-system/{key}":
+    delete:
+      tags:
+        - Units
+      security:
+        - BearerAuth: []
+      summary: Delete non system unit
+      description: Required `System Admin` access
+      operationId: deleteNonSystemUnit
+      parameters:
+        - $ref: "#/components/parameters/nonSystemUnitKeyParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/NonSystemUnitData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NonSystemUnitNotFound"
+  /units/system:
+    get:
+      tags:
+        - Units
+        - Available Public
+      summary: Get system units
+      operationId: getSystemUnits
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchSystemUnitsData"
+    post:
+      tags:
+        - Units
+      security:
+        - BearerAuth: []
+      summary: Create system unit
+      description: Required `System Admin` access
+      operationId: createSystemUnit
+      requestBody:
+        $ref: "#/components/requestBodies/ModifySystemUnitBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SystemUnitData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/units/system/{key}":
+    delete:
+      tags:
+        - Units
+      security:
+        - BearerAuth: []
+      summary: Delete system unit
+      description: Required `System Admin` access
+      operationId: deleteSystemUnit
+      parameters:
+        - $ref: "#/components/parameters/systemUnitKeyParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/SystemUnitData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SystemUnitNotFound"
   /tags/search:
     post:
       tags:
@@ -959,53 +1053,6 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/TagNotFound"
-  /units:
-    get:
-      tags:
-        - Units
-        - Available Public
-      summary: Get system units
-      operationId: getSystemUnits
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchUnitsData"
-    post:
-      tags:
-        - Units
-      security:
-        - BearerAuth: []
-      summary: Create system unit
-      description: Required `System Admin` access
-      operationId: createSystemUnit
-      requestBody:
-        $ref: "#/components/requestBodies/ModifyUnitBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/UnitData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-  "/units/{key}":
-    delete:
-      tags:
-        - Units
-      security:
-        - BearerAuth: []
-      summary: Delete system unit
-      description: Required `System Admin` access
-      operationId: deleteSystemUnit
-      parameters:
-        - $ref: "#/components/parameters/unitKeyParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/UnitData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/SystemUnitNotFound"
   /users/search:
     post:
       tags:
@@ -1982,6 +2029,48 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FolderFilter"
+    NonSystemUnit:
+      type: object
+      required:
+        - key
+        - name
+        - systemUnit
+        - coeff
+      properties:
+        key:
+          type: string
+          description: Unique unit key
+        name:
+          type: object
+          description: Localized unit name
+          properties:
+            ru:
+              type: string
+            en:
+              type: string
+        systemUnit:
+          type: string
+          description: System unit key
+        coeff:
+          type: number
+          description: Coeff for transforming non-system unit into system unit
+    SystemUnit:
+      type: object
+      required:
+        - key
+        - name
+      properties:
+        key:
+          type: string
+          description: Unique unit key
+        name:
+          type: object
+          description: Localized unit name
+          properties:
+            ru:
+              type: string
+            en:
+              type: string
     Tag:
       type: object
       required:
@@ -2017,23 +2106,6 @@ components:
           type: string
           format: date-time
           description: Last Updating Date
-    Unit:
-      type: object
-      required:
-        - key
-        - name
-      properties:
-        key:
-          type: string
-          description: Unique unit key
-        name:
-          type: object
-          description: Localized unit name
-          properties:
-            ru:
-              type: string
-            en:
-              type: string
     UserWithRating:
       type: object
       required:
@@ -2664,6 +2736,16 @@ components:
                 type: string
                 format: uuid
                 description: Should move before folder ID
+    ModifyNonSystemUnitBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NonSystemUnit"
+    ModifySystemUnitBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SystemUnit"
     SearchTagsBody:
       content:
         application/json:
@@ -2715,11 +2797,6 @@ components:
               color:
                 type: string
                 description: Tag color
-    ModifyUnitBody:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Unit"
     SearchUsersBody:
       content:
         application/json:
@@ -3195,6 +3272,52 @@ components:
                 type: number
               items:
                 type: string
+    SearchNonSystemUnitsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/NonSystemUnit"
+    NonSystemUnitData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NonSystemUnit"
+    NonSystemUnitNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: unit:non-system:404
+            message: Non system unit not found
+    SearchSystemUnitsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/SystemUnit"
+    SystemUnitData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SystemUnit"
+    SystemUnitNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: unit:system:404
+            message: System unit not found
     SearchTagsData:
       description: Successful operation
       content:
@@ -3226,29 +3349,6 @@ components:
           example:
             errorCode: tag:404
             message: Tag not found
-    SearchUnitsData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/Unit"
-    UnitData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Unit"
-    SystemUnitNotFound:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            errorCode: systemUnit:404
-            message: System unit not found
     SearchUsersData:
       description: Successful operation
       content:
@@ -3470,6 +3570,20 @@ components:
           - public
           - personal
           - review
+    nonSystemUnitKeyParam:
+      in: path
+      name: key
+      description: Unit key
+      required: true
+      schema:
+        type: string
+    systemUnitKeyParam:
+      in: path
+      name: key
+      description: System unit key
+      required: true
+      schema:
+        type: string
     tagIdParam:
       in: path
       name: id
@@ -3478,13 +3592,6 @@ components:
       schema:
         type: string
         format: uuid
-    unitKeyParam:
-      in: path
-      name: key
-      description: Unit key
-      required: true
-      schema:
-        type: string
     userIdParam:
       in: path
       name: id

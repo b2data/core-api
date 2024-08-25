@@ -422,6 +422,30 @@ export interface FolderFullData {
   filters: FolderFilter[];
 }
 
+export interface NonSystemUnit {
+  /** Unique unit key */
+  key: string;
+  /** Localized unit name */
+  name: {
+    ru?: string;
+    en?: string;
+  };
+  /** System unit key */
+  systemUnit: string;
+  /** Coeff for transforming non-system unit into system unit */
+  coeff: number;
+}
+
+export interface SystemUnit {
+  /** Unique unit key */
+  key: string;
+  /** Localized unit name */
+  name: {
+    ru?: string;
+    en?: string;
+  };
+}
+
 export interface Tag {
   /**
    * Tag ID
@@ -452,16 +476,6 @@ export interface Tag {
    * @format date-time
    */
   updatedAt: string;
-}
-
-export interface Unit {
-  /** Unique unit key */
-  key: string;
-  /** Localized unit name */
-  name: {
-    ru?: string;
-    en?: string;
-  };
 }
 
 export interface UserWithRating {
@@ -1907,6 +1921,107 @@ export class DictionaryApi<SecurityDataType extends unknown> {
         ...params,
       }),
   };
+  units = {
+    /**
+     * No description
+     *
+     * @tags Units, Available Public
+     * @name GetNonSystemUnits
+     * @summary Get non system units
+     * @request GET:/units/non-system
+     */
+    getNonSystemUnits: (params: RequestParams = {}) =>
+      this.http.request<NonSystemUnit[], any>({
+        path: `/units/non-system`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * @description Required `System Admin` access
+     *
+     * @tags Units
+     * @name CreateNonSystemUnit
+     * @summary Create non system unit
+     * @request POST:/units/non-system
+     * @secure
+     */
+    createNonSystemUnit: (data: NonSystemUnit, params: RequestParams = {}) =>
+      this.http.request<NonSystemUnit, ErrorResponse>({
+        path: `/units/non-system`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Required `System Admin` access
+     *
+     * @tags Units
+     * @name DeleteNonSystemUnit
+     * @summary Delete non system unit
+     * @request DELETE:/units/non-system/{key}
+     * @secure
+     */
+    deleteNonSystemUnit: (key: string, params: RequestParams = {}) =>
+      this.http.request<NonSystemUnit, ErrorResponse>({
+        path: `/units/non-system/${key}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Units, Available Public
+     * @name GetSystemUnits
+     * @summary Get system units
+     * @request GET:/units/system
+     */
+    getSystemUnits: (params: RequestParams = {}) =>
+      this.http.request<SystemUnit[], any>({
+        path: `/units/system`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * @description Required `System Admin` access
+     *
+     * @tags Units
+     * @name CreateSystemUnit
+     * @summary Create system unit
+     * @request POST:/units/system
+     * @secure
+     */
+    createSystemUnit: (data: SystemUnit, params: RequestParams = {}) =>
+      this.http.request<SystemUnit, ErrorResponse>({
+        path: `/units/system`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Required `System Admin` access
+     *
+     * @tags Units
+     * @name DeleteSystemUnit
+     * @summary Delete system unit
+     * @request DELETE:/units/system/{key}
+     * @secure
+     */
+    deleteSystemUnit: (key: string, params: RequestParams = {}) =>
+      this.http.request<SystemUnit, ErrorResponse>({
+        path: `/units/system/${key}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+  };
   tags = {
     /**
      * No description
@@ -2008,57 +2123,6 @@ export class DictionaryApi<SecurityDataType extends unknown> {
     deleteTag: (id: string, params: RequestParams = {}) =>
       this.http.request<Tag, ErrorResponse>({
         path: `/tags/${id}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-  };
-  units = {
-    /**
-     * No description
-     *
-     * @tags Units, Available Public
-     * @name GetSystemUnits
-     * @summary Get system units
-     * @request GET:/units
-     */
-    getSystemUnits: (params: RequestParams = {}) =>
-      this.http.request<Unit[], any>({
-        path: `/units`,
-        method: "GET",
-        ...params,
-      }),
-
-    /**
-     * @description Required `System Admin` access
-     *
-     * @tags Units
-     * @name CreateSystemUnit
-     * @summary Create system unit
-     * @request POST:/units
-     * @secure
-     */
-    createSystemUnit: (data: Unit, params: RequestParams = {}) =>
-      this.http.request<Unit, ErrorResponse>({
-        path: `/units`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Required `System Admin` access
-     *
-     * @tags Units
-     * @name DeleteSystemUnit
-     * @summary Delete system unit
-     * @request DELETE:/units/{key}
-     * @secure
-     */
-    deleteSystemUnit: (key: string, params: RequestParams = {}) =>
-      this.http.request<Unit, ErrorResponse>({
-        path: `/units/${key}`,
         method: "DELETE",
         secure: true,
         ...params,
