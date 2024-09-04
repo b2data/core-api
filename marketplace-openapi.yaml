@@ -17,6 +17,7 @@ tags:
   - name: Tasks
   - name: Products
   - name: Places
+  - name: Orders
   - name: Available Public
     description: This methods does not require authorization
   - name: Available Providers
@@ -698,7 +699,7 @@ paths:
             nullable: true
             format: uuid
         - in: query
-          name: productExternalId
+          name: externalProductId
           description: Search by product external ID
           schema:
             type: string
@@ -884,6 +885,120 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/FoldersStatsData"
+  /orders/search:
+    post:
+      tags:
+        - Orders
+      security:
+        - BearerAuth: []
+      summary: Search orders
+      description: Available for `System Admin`
+      operationId: searchOrders
+      requestBody:
+        $ref: "#/components/requestBodies/SearchOrdersBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchOrders"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /orders/my/search:
+    post:
+      tags:
+        - Orders
+      security:
+        - BearerAuth: []
+      summary: Search my orders
+      operationId: searchMyOrders
+      requestBody:
+        $ref: "#/components/requestBodies/SearchMyOrdersBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchOrders"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /orders:
+    post:
+      tags:
+        - Orders
+      security:
+        - BearerAuth: []
+      summary: Create new order
+      operationId: createOrder
+      requestBody:
+        $ref: "#/components/requestBodies/CreateOrderBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/OrderWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  "/orders/{id}":
+    get:
+      tags:
+        - Orders
+      security:
+        - BearerAuth: []
+      summary: Get order information
+      operationId: getOrder
+      parameters:
+        - $ref: "#/components/parameters/orderIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/OrderWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/OrderNotFound"
+    patch:
+      tags:
+        - Orders
+      security:
+        - BearerAuth: []
+      summary: Update order
+      operationId: updateOrder
+      parameters:
+        - $ref: "#/components/parameters/orderIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditOrderBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/OrderWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/OrderNotFound"
+    delete:
+      tags:
+        - Orders
+      security:
+        - BearerAuth: []
+      summary: Cancel order
+      description: It cancelled all unconfirmed positions
+      operationId: deleteOrder
+      parameters:
+        - $ref: "#/components/parameters/orderIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/OrderWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/OrderNotFound"
   /places:
     post:
       tags:
@@ -1006,46 +1121,24 @@ paths:
     post:
       tags:
         - Products
-        - Available Public
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
       summary: Search products
+      description: Available for `System Admin` or `providers` (own data only)
       operationId: searchProducts
       requestBody:
         $ref: "#/components/requestBodies/SearchProductsBody"
       responses:
         "200":
-          $ref: "#/components/responses/SearchProductData"
+          $ref: "#/components/responses/SearchProducts"
         "400":
           $ref: "#/components/responses/InvalidData"
-  /products/search/suggester:
-    post:
-      tags:
-        - Products
-        - Available Public
-      summary: Search products name suggester
-      description: Returns 5 suggested names by searchTerm
-      operationId: searchProductSuggester
-      requestBody:
-        $ref: "#/components/requestBodies/SearchProductSuggesterBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchProductSuggesterData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-  /products/search/filters:
-    post:
-      tags:
-        - Products
-        - Available Public
-      summary: Search products filters
-      description: Returns products available filters
-      operationId: searchProductFilters
-      requestBody:
-        $ref: "#/components/requestBodies/SearchProductFiltersBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchProductFiltersData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /products:
     post:
       tags:
@@ -1055,14 +1148,14 @@ paths:
         - ProviderClientId: []
           ProviderClientSecret: []
           ProviderUserId: []
-      summary: Register new product
+      summary: Create new product
       description: Available for `providers`
-      operationId: registerProduct
+      operationId: createProduct
       requestBody:
-        $ref: "#/components/requestBodies/ModifyProductBody"
+        $ref: "#/components/requestBodies/CreateProductBody"
       responses:
         "200":
-          $ref: "#/components/responses/ProductFullData"
+          $ref: "#/components/responses/ProductWithData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1071,14 +1164,24 @@ paths:
     get:
       tags:
         - Products
-        - Available Public
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
       summary: Get product with full data
+      description: Available for `System Admin` or `providers` (own data only)
       operationId: getProduct
       parameters:
         - $ref: "#/components/parameters/productIdParam"
       responses:
         "200":
-          $ref: "#/components/responses/ProductFullData"
+          $ref: "#/components/responses/ProductWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/ProductNotFound"
     patch:
@@ -1095,10 +1198,10 @@ paths:
       parameters:
         - $ref: "#/components/parameters/productIdParam"
       requestBody:
-        $ref: "#/components/requestBodies/ModifyProductBody"
+        $ref: "#/components/requestBodies/EditProductBody"
       responses:
         "200":
-          $ref: "#/components/responses/ProductFullData"
+          $ref: "#/components/responses/ProductWithData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1114,13 +1217,13 @@ paths:
           ProviderClientSecret: []
           ProviderUserId: []
       summary: Delete product
-      description: Available for `providers`. Mark that product was deleted.
+      description: Available for `providers`. Mark that product as deleted.
       operationId: deleteProduct
       parameters:
         - $ref: "#/components/parameters/productIdParam"
       responses:
         "200":
-          $ref: "#/components/responses/ProductData"
+          $ref: "#/components/responses/Product"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1140,7 +1243,7 @@ paths:
         - $ref: "#/components/parameters/productIdParam"
       responses:
         "200":
-          $ref: "#/components/responses/ProductData"
+          $ref: "#/components/responses/Product"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1160,13 +1263,37 @@ paths:
         - $ref: "#/components/parameters/productIdParam"
       responses:
         "200":
-          $ref: "#/components/responses/ProductData"
+          $ref: "#/components/responses/Product"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/ProductNotFound"
+  /products/items/search:
+    post:
+      tags:
+        - Products
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Search product items
+      description: Available for `System Admin` or `providers` (own data only)
+      operationId: searchProductItems
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProductItemsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProductItems"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
   /products/items:
     post:
       tags:
@@ -1176,14 +1303,14 @@ paths:
         - ProviderClientId: []
           ProviderClientSecret: []
           ProviderUserId: []
-      summary: Register new product item
+      summary: Create new product item
       description: Available for `providers`
-      operationId: registerProductItem
+      operationId: createProductItem
       requestBody:
-        $ref: "#/components/requestBodies/ModifyProductItemBody"
+        $ref: "#/components/requestBodies/CreateProductItemBody"
       responses:
         "200":
-          $ref: "#/components/responses/ProductItemFullData"
+          $ref: "#/components/responses/ProductItemWithData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1192,14 +1319,24 @@ paths:
     get:
       tags:
         - Products
-        - Available Public
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
       summary: Get product item with full data
+      description: Available for `System Admin` or `providers` (own data only)
       operationId: getProductItem
       parameters:
-        - $ref: "#/components/parameters/productItemIdParam"
+        - $ref: "#/components/parameters/itemIdParam"
       responses:
         "200":
-          $ref: "#/components/responses/ProductItemFullData"
+          $ref: "#/components/responses/ProductItemWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/ProductItemNotFound"
     patch:
@@ -1214,12 +1351,12 @@ paths:
       description: Available for `providers`
       operationId: updateProductItem
       parameters:
-        - $ref: "#/components/parameters/productItemIdParam"
+        - $ref: "#/components/parameters/itemIdParam"
       requestBody:
-        $ref: "#/components/requestBodies/ModifyProductItemBody"
+        $ref: "#/components/requestBodies/EditProductItemBody"
       responses:
         "200":
-          $ref: "#/components/responses/ProductItemFullData"
+          $ref: "#/components/responses/ProductItemWithData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1235,19 +1372,178 @@ paths:
           ProviderClientSecret: []
           ProviderUserId: []
       summary: Delete product item
-      description: Available for `providers`. Mark that product item was deleted.
+      description: Available for `providers`. Mark that product item as deleted.
       operationId: deleteProductItem
       parameters:
-        - $ref: "#/components/parameters/productItemIdParam"
+        - $ref: "#/components/parameters/itemIdParam"
       responses:
         "200":
-          $ref: "#/components/responses/ProductItemData"
+          $ref: "#/components/responses/ProductItem"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/ProductItemNotFound"
+  /products/batches/search:
+    post:
+      tags:
+        - Products
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Search product batches
+      description: Available for `System Admin` or `providers` (own data only)
+      operationId: searchProductBatches
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProductBatchesBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProductBatches"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /products/batches:
+    post:
+      tags:
+        - Products
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Create new product batch
+      description: Available for `providers`
+      operationId: createProductBatch
+      requestBody:
+        $ref: "#/components/requestBodies/CreateProductBatchBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductBatch"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/products/batches/{id}":
+    get:
+      tags:
+        - Products
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Get product batch with full data
+      description: Available for `System Admin` or `providers` (own data only)
+      operationId: getProductBatch
+      parameters:
+        - $ref: "#/components/parameters/productBatchIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductBatchWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProductBatchNotFound"
+    patch:
+      tags:
+        - Products
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Update product batch data
+      description: Available for `providers`
+      operationId: updateProductBatch
+      parameters:
+        - $ref: "#/components/parameters/productBatchIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditProductBatchBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductBatch"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProductBatchNotFound"
+    delete:
+      tags:
+        - Products
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Delete product batch
+      description: Available for `providers`. Mark that product batch as deleted.
+      operationId: deleteProductBatch
+      parameters:
+        - $ref: "#/components/parameters/productBatchIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductBatch"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProductBatchNotFound"
+  /products/cards/search:
+    post:
+      tags:
+        - Products
+        - Available Public
+      summary: Search product cards
+      operationId: searchProductCards
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProductCardsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProductCards"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  /products/cards/search/suggester:
+    post:
+      tags:
+        - Products
+        - Available Public
+      summary: Search products name suggester
+      description: Returns suggested names by searchTerm
+      operationId: searchProductNameSuggester
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProductCardsSuggesterBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProductCardsSuggester"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  /products/cards/search/filters:
+    post:
+      tags:
+        - Products
+        - Available Public
+      summary: Search products filters
+      description: Returns available filters
+      operationId: searchProductFilters
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProductCardsFiltersBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProductCardsFilters"
+        "400":
+          $ref: "#/components/responses/InvalidData"
   "/providers/{id}/profile":
     get:
       tags:
@@ -1364,6 +1660,8 @@ paths:
         - BearerAuth: []
       summary: Get task info
       operationId: getTask
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
       responses:
         "200":
           $ref: "#/components/responses/TaskWithDataResponse"
@@ -1382,6 +1680,8 @@ paths:
         - BearerAuth: []
       summary: Update task
       operationId: updateTask
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
       requestBody:
         $ref: "#/components/requestBodies/EditTaskBody"
       responses:
@@ -1928,6 +2228,428 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FolderFilter"
+    OrderBase:
+      type: object
+      required:
+        - id
+        - key
+        - status
+        - placeId
+        - totalPrice
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Order ID
+        key:
+          type: string
+          description: Order unique key
+        status:
+          type: string
+          enum:
+            - created
+            - paid
+            - failed
+            - cancelled
+          description: Order status
+        totalPrice:
+          type: number
+          description: Total order price, can be changed if some position will be canceled
+        txHash:
+          type: string
+          description: Payment transaction hash
+    OrderPositionBase:
+      type: object
+      required:
+        - id
+        - providerId
+        - itemId
+        - price
+        - amount
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Order Position ID
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        itemId:
+          type: string
+          format: uuid
+          description: Product Item ID
+        price:
+          type: number
+          description: Order Position price
+        amount:
+          type: number
+          description: Amount of idP
+        status:
+          type: string
+          enum:
+            - created
+            - paid
+            - confirmed
+            - production
+            - delivery
+            - cancelled
+            - completed
+            - dispute
+            - returned
+          description: Order Position status
+        txHash:
+          type: string
+          description: Payment transaction hash
+    OrderPositionBaseWithItemData:
+      type: object
+      required:
+        - id
+        - providerId
+        - price
+        - amount
+        - status
+        - itemData
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Order Position ID
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        price:
+          type: number
+          description: Order Position price
+        amount:
+          type: number
+          description: Amount of idP
+        status:
+          type: string
+          enum:
+            - created
+            - paid
+            - confirmed
+            - production
+            - delivery
+            - cancelled
+            - completed
+            - dispute
+            - returned
+          description: Order Position status
+        txHash:
+          type: string
+          description: Payment transaction hash
+        itemData:
+          $ref: "#/components/schemas/ProductItemBase"
+    Order:
+      type: object
+      required:
+        - id
+        - key
+        - status
+        - placeId
+        - totalPrice
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Order ID
+        key:
+          type: string
+          description: Order unique key
+        status:
+          type: string
+          enum:
+            - created
+            - paid
+            - failed
+            - cancelled
+          description: Order status
+        totalPrice:
+          type: number
+          description: Total order price, can be changed if some position will be canceled
+        txHash:
+          type: string
+          description: Payment transaction hash
+        createdBy:
+          type: string
+          description: Wallet Address
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Delete Date
+    OrderWithData:
+      type: object
+      required:
+        - id
+        - key
+        - status
+        - placeId
+        - totalPrice
+        - createdBy
+        - createdAt
+        - updatedAt
+        - positions
+        - createdByData
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Order ID
+        key:
+          type: string
+          description: Order unique key
+        status:
+          type: string
+          enum:
+            - created
+            - paid
+            - failed
+            - cancelled
+          description: Order status
+        totalPrice:
+          type: number
+          description: Total order price, can be changed if some position will be canceled
+        txHash:
+          type: string
+          description: Payment transaction hash
+        createdBy:
+          type: string
+          description: Wallet Address
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Delete Date
+        createdByData:
+          $ref: "#/components/schemas/User"
+        positions:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderPositionBaseWithItemData"
+    OrderWithFullData:
+      type: object
+      required:
+        - id
+        - key
+        - status
+        - placeId
+        - totalPrice
+        - createdBy
+        - createdAt
+        - updatedAt
+        - positions
+        - placeData
+        - createdByData
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Order ID
+        key:
+          type: string
+          description: Order unique key
+        status:
+          type: string
+          enum:
+            - created
+            - paid
+            - failed
+            - cancelled
+          description: Order status
+        totalPrice:
+          type: number
+          description: Total order price, can be changed if some position will be canceled
+        txHash:
+          type: string
+          description: Payment transaction hash
+        createdBy:
+          type: string
+          description: Wallet Address
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Delete Date
+        createdByData:
+          $ref: "#/components/schemas/User"
+        positions:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderPositionWithData"
+        placeData:
+          $ref: "#/components/schemas/Place"
+    OrderPosition:
+      type: object
+      required:
+        - id
+        - providerId
+        - price
+        - amount
+        - status
+        - orderId
+        - productId
+        - itemId
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Order Position ID
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        price:
+          type: number
+          description: Order Position price
+        amount:
+          type: number
+          description: Amount of idP
+        status:
+          type: string
+          enum:
+            - created
+            - paid
+            - confirmed
+            - production
+            - delivery
+            - cancelled
+            - completed
+            - dispute
+            - returned
+          description: Order Position status
+        txHash:
+          type: string
+          description: Payment transaction hash
+        orderId:
+          type: string
+          format: uuid
+          description: Order ID
+        productId:
+          type: string
+          format: uuid
+          description: Product ID
+        itemId:
+          type: string
+          format: uuid
+          description: Product Item ID
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Delete Date
+    OrderPositionWithData:
+      type: object
+      required:
+        - id
+        - providerId
+        - price
+        - amount
+        - status
+        - orderId
+        - productId
+        - itemId
+        - createdAt
+        - updatedAt
+        - itemData
+        - providerName
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Order Position ID
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        price:
+          type: number
+          description: Order Position price
+        amount:
+          type: number
+          description: Amount of idP
+        status:
+          type: string
+          enum:
+            - created
+            - paid
+            - confirmed
+            - production
+            - delivery
+            - cancelled
+            - completed
+            - dispute
+            - returned
+          description: Order Position status
+        txHash:
+          type: string
+          description: Payment transaction hash
+        orderId:
+          type: string
+          format: uuid
+          description: Order ID
+        productId:
+          type: string
+          format: uuid
+          description: Product ID
+        itemId:
+          type: string
+          format: uuid
+          description: Product Item ID
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Delete Date
+        itemData:
+          $ref: "#/components/schemas/ProductItemBase"
+        providerName:
+          type: string
+          description: Provider Name
     Place:
       type: object
       required:
@@ -2049,17 +2771,30 @@ components:
           example:
             - HH:MM
             - HH:MM
+    UnitInfo:
+      type: object
+      required:
+        - unit
+        - coeff
+        - systemUnit
+      properties:
+        unit:
+          type: string
+          description: User-friendly unit
+        coeff:
+          type: number
+          description: Coeff to match with system unit
+        systemUnit:
+          type: string
+          description: System unit
     Product:
       type: object
       required:
         - id
         - externalId
         - name
-        - description
-        - photos
-        - videos
-        - providerId
         - createdBy
+        - providerId
         - createdAt
         - updatedAt
       properties:
@@ -2087,6 +2822,8 @@ components:
           items:
             type: string
           description: Product videos
+        unitInfo:
+          $ref: "#/components/schemas/UnitInfo"
         createdBy:
           type: string
           description: Wallet Address
@@ -2099,6 +2836,7 @@ components:
           description: Provider Name
         isBlocked:
           type: boolean
+          description: Blocked by B2Market moderation
         createdAt:
           type: string
           format: date-time
@@ -2111,22 +2849,18 @@ components:
           type: string
           format: date-time
           description: Delete Date
-    ProductFull:
+    ProductWithData:
       type: object
       required:
         - id
         - externalId
         - name
-        - description
-        - photos
-        - videos
-        - providerId
         - createdBy
+        - providerId
         - createdAt
         - updatedAt
         - folders
         - createdByData
-        - providerData
         - tagsData
       properties:
         id:
@@ -2165,6 +2899,7 @@ components:
           description: Provider Name
         isBlocked:
           type: boolean
+          description: Blocked by B2Market moderation
         createdAt:
           type: string
           format: date-time
@@ -2179,27 +2914,15 @@ components:
           description: Delete Date
         folders:
           type: array
-          description: Folders to that product is linked
+          description: Catalogs where product is shown
           items:
             type: string
             format: uuid
         createdByData:
           $ref: "#/components/schemas/User"
-        providerData:
-          type: object
-          required:
-            - id
-            - name
-          properties:
-            id:
-              type: string
-              description: Provider ID
-              format: uuid
-            name:
-              type: string
-              description: Provider name
         tagsData:
           type: array
+          description: Tags that define catalog
           items:
             $ref: "#/components/schemas/Tag"
     ProductFilter:
@@ -2239,15 +2962,33 @@ components:
           items:
             $ref: "#/components/schemas/DictionaryWord"
             nullable: true
+    ProductItemBase:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Product Item ID
+        name:
+          type: string
+          description: Product Item name
+        photos:
+          type: array
+          items:
+            type: string
+          description: Product Item photos
     ProductItem:
       type: object
       required:
         - id
         - externalId
+        - externalVersionId
         - productId
-        - name
-        - photos
         - providerId
+        - name
         - createdBy
         - createdAt
         - updatedAt
@@ -2260,14 +3001,18 @@ components:
           type: string
           format: uuid
           description: Product Item External ID form Provider
-        configExternalId:
+        externalVersionId:
+          type: string
+          format: uuid
+          description: Product Version External ID form Provider
+        externalConfigId:
           type: string
           format: uuid
           description: Configuration External ID form Provider
         productId:
           type: string
           format: uuid
-          description: Product ID in B2Market
+          description: Product ID
         name:
           type: string
           description: Product Item name
@@ -2295,21 +3040,21 @@ components:
           type: string
           format: date-time
           description: Delete Date
-    ProductItemFull:
+    ProductItemWithData:
       type: object
       required:
         - id
         - externalId
+        - externalVersionId
         - productId
-        - name
-        - photos
         - providerId
+        - name
         - createdBy
         - createdAt
         - updatedAt
-        - folders
-        - tagsData
         - createdByData
+        - tagsData
+        - configurations
       properties:
         id:
           type: string
@@ -2319,10 +3064,18 @@ components:
           type: string
           format: uuid
           description: Product Item External ID form Provider
+        externalVersionId:
+          type: string
+          format: uuid
+          description: Product Version External ID form Provider
+        externalConfigId:
+          type: string
+          format: uuid
+          description: Product Item Configuration External ID form Provider
         productId:
           type: string
           format: uuid
-          description: Product ID in B2Market
+          description: Product ID
         name:
           type: string
           description: Product Item name
@@ -2350,21 +3103,508 @@ components:
           type: string
           format: date-time
           description: Delete Date
-        folders:
-          type: array
-          description: Folders to that product item is linked
-          items:
-            type: string
-            format: uuid
         createdByData:
           $ref: "#/components/schemas/User"
         tagsData:
           type: array
           items:
             $ref: "#/components/schemas/Tag"
+        configurations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductCardConfiguration"
+        description:
+          type: string
+          description: Product description
+        unitInfo:
+          $ref: "#/components/schemas/UnitInfo"
         providerName:
           type: string
-          description: Provider name
+          description: Provider Name
+    ProductBatch:
+      type: object
+      required:
+        - id
+        - externalId
+        - externalVersionId
+        - productId
+        - providerId
+        - createdBy
+        - key
+        - status
+        - price
+        - amount
+        - amountInIDT
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Batch ID
+        productId:
+          type: string
+          format: uuid
+          description: Product ID
+        externalId:
+          type: string
+          format: uuid
+          description: Batch External ID form Provider
+        externalVersionId:
+          type: string
+          format: uuid
+          description: Product Version External ID form Provider
+        externalConfigId:
+          type: string
+          format: uuid
+          description: Product Item Configuration External ID form Provider
+        itemId:
+          type: string
+          format: uuid
+          description: Product Item ID
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdBy:
+          type: string
+          description: Wallet Address
+        key:
+          type: string
+          description: Batch key from Provider
+        status:
+          type: string
+          enum:
+            - preOrder
+            - available
+            - inProduction
+            - sold
+            - canceled
+          description: Batch status
+        price:
+          type: number
+          description: Current Batch price
+        attachments:
+          type: array
+          description: Attachment documents
+          items:
+            type: string
+            format: uuid
+        amount:
+          type: number
+          description: Amount idP in the Batch
+        amountInIDT:
+          type: number
+          description: Amount idP in idT to start delivery
+        condition:
+          type: number
+          description: Condition of minimum idP to start production process (for pre-order)
+        untilDate:
+          type: string
+          format: date-time
+          description: The date when provider decides to start production process (for
+            pre-order)
+        startDate:
+          type: string
+          format: date-time
+          description: The start date of production process
+        duration:
+          type: string
+          format: date-time
+          description: The production duration (days)
+        releaseDate:
+          type: string
+          format: date-time
+          description: The production release date
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Delete Date
+    ProductBatchWithData:
+      type: object
+      required:
+        - id
+        - externalId
+        - externalVersionId
+        - productId
+        - providerId
+        - createdBy
+        - key
+        - status
+        - price
+        - amount
+        - amountInIDT
+        - createdAt
+        - updatedAt
+        - createdByData
+        - providerName
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Batch ID
+        productId:
+          type: string
+          format: uuid
+          description: Product ID
+        externalId:
+          type: string
+          format: uuid
+          description: Batch External ID form Provider
+        externalVersionId:
+          type: string
+          format: uuid
+          description: Product Version External ID form Provider
+        externalConfigId:
+          type: string
+          format: uuid
+          description: Product Item Configuration External ID form Provider
+        itemId:
+          type: string
+          format: uuid
+          description: Product Item ID
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdBy:
+          type: string
+          description: Wallet Address
+        key:
+          type: string
+          description: Batch key from Provider
+        status:
+          type: string
+          enum:
+            - preOrder
+            - available
+            - inProduction
+            - sold
+            - canceled
+          description: Batch status
+        price:
+          type: number
+          description: Current Batch price
+        attachments:
+          type: array
+          description: Attachment documents
+          items:
+            type: string
+            format: uuid
+        amount:
+          type: number
+          description: Amount idP in the Batch
+        amountInIDT:
+          type: number
+          description: Amount idP in idT to start delivery
+        condition:
+          type: number
+          description: Condition of minimum idP to start production process (for pre-order)
+        untilDate:
+          type: string
+          format: date-time
+          description: The date when provider decides to start production process (for
+            pre-order)
+        startDate:
+          type: string
+          format: date-time
+          description: The start date of production process
+        duration:
+          type: string
+          format: date-time
+          description: The production duration (days)
+        releaseDate:
+          type: string
+          format: date-time
+          description: The production release date
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Delete Date
+        createdByData:
+          $ref: "#/components/schemas/User"
+        itemData:
+          $ref: "#/components/schemas/ProductItemBase"
+        providerName:
+          type: string
+          description: Provider Name
+    ProductItemLike:
+      type: object
+      required:
+        - itemId
+        - createdBy
+        - createdAt
+      properties:
+        itemId:
+          type: string
+          format: uuid
+          description: Product Item ID
+        createdBy:
+          type: string
+          description: Wallet Address
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+    ProductCardPrice:
+      type: object
+      required:
+        - id
+        - status
+        - price
+        - amount
+        - amountInIDT
+        - orderedAmount
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Batch ID
+        type:
+          type: string
+          enum:
+            - preOrder
+            - available
+          description: Type of price
+        price:
+          type: number
+          description: Current price
+        amount:
+          type: number
+          description: Total amount of idP
+        amountInIDT:
+          type: number
+          description: Amount idP in idT to start delivery
+        orderedAmount:
+          type: number
+          description: Amount of idP that was ordered
+        endDate:
+          type: string
+          format: date-time
+          description: The end date for this price
+    ProductCardConfiguration:
+      type: object
+      required:
+        - field
+        - fieldData
+        - values
+      properties:
+        field:
+          type: string
+        fieldData:
+          $ref: "#/components/schemas/DictionaryWord"
+        values:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - value
+            properties:
+              ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Product Item id
+              value:
+                type: string
+              valueData:
+                $ref: "#/components/schemas/DictionaryWord"
+    ProductCard:
+      type: object
+      required:
+        - id
+        - productId
+        - name
+        - prices
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Product Item ID
+        productId:
+          type: string
+          format: uuid
+          description: Product ID
+        name:
+          type: string
+          description: Product Item name
+        photos:
+          type: array
+          items:
+            type: string
+          description: Product Item photos
+        unitInfo:
+          $ref: "#/components/schemas/UnitInfo"
+        isLiked:
+          type: boolean
+          description: Current user liked this card or not
+        prices:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductCardPrice"
+    ProductCardWithData:
+      type: object
+      required:
+        - id
+        - productId
+        - providerId
+        - name
+        - updatedAt
+        - tagsData
+        - prices
+        - configurations
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Product Item ID
+        productId:
+          type: string
+          format: uuid
+          description: Product ID
+        name:
+          type: string
+          description: Product Item name
+        photos:
+          type: array
+          items:
+            type: string
+          description: Product Item photos
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        tagsData:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
+        description:
+          type: string
+          description: Product description
+        unitInfo:
+          $ref: "#/components/schemas/UnitInfo"
+        providerName:
+          type: string
+          description: Provider Name
+        isLiked:
+          type: boolean
+          description: Current user liked this card or not
+        prices:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductCardPrice"
+        configurations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductCardConfiguration"
+    ProductBatchPublic:
+      type: object
+      required:
+        - id
+        - providerId
+        - key
+        - status
+        - price
+        - amount
+        - amountInIDT
+        - createdAt
+        - updatedAt
+        - itemData
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Batch ID
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        key:
+          type: string
+          description: Batch key from Provider
+        status:
+          type: string
+          enum:
+            - preOrder
+            - available
+            - inProduction
+            - sold
+            - canceled
+          description: Batch status
+        price:
+          type: number
+          description: Current Batch price
+        attachments:
+          type: array
+          description: Attachment documents
+          items:
+            type: string
+            format: uuid
+        amount:
+          type: number
+          description: Amount idP in the Batch
+        amountInIDT:
+          type: number
+          description: Amount idP in idT to start delivery
+        condition:
+          type: number
+          description: Condition of minimum idP to start production process (for pre-order)
+        untilDate:
+          type: string
+          format: date-time
+          description: The date when provider decides to start production process (for
+            pre-order)
+        startDate:
+          type: string
+          format: date-time
+          description: The start date of production process
+        duration:
+          type: string
+          format: date-time
+          description: The production duration (days)
+        releaseDate:
+          type: string
+          format: date-time
+          description: The production release date
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Delete Date
+        itemData:
+          $ref: "#/components/schemas/ProductItemBase"
+        providerName:
+          type: string
+          description: Provider Name
     ProviderProfile:
       type: object
       required:
@@ -2512,7 +3752,7 @@ components:
         productId:
           type: string
           description: Product ID
-        productItemId:
+        itemId:
           type: string
           description: Product Item ID
         field:
@@ -2525,9 +3765,6 @@ components:
           description: Tag value
         valueData:
           $ref: "#/components/schemas/DictionaryWord"
-        isConfig:
-          type: boolean
-          description: Is tag configurable
         createdBy:
           type: string
           description: Wallet Address
@@ -2739,6 +3976,22 @@ components:
       schema:
         type: string
         format: uuid
+    orderIdParam:
+      in: path
+      name: id
+      description: Order ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    orderPositionIdParam:
+      in: path
+      name: posId
+      description: Order Position ID
+      required: true
+      schema:
+        type: string
+        format: uuid
     placeIdParam:
       in: path
       name: id
@@ -2750,15 +4003,23 @@ components:
     productIdParam:
       in: path
       name: id
-      description: Product ID
+      description: Product ID or External ID
       required: true
       schema:
         type: string
         format: uuid
-    productItemIdParam:
+    itemIdParam:
       in: path
       name: id
-      description: Product Item ID
+      description: Product Item ID or External Item ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    productBatchIdParam:
+      in: path
+      name: id
+      description: Product Batch ID or External Batch ID
       required: true
       schema:
         type: string
@@ -3071,6 +4332,148 @@ components:
                 type: string
                 format: uuid
                 description: Should move before folder ID
+    SearchOrdersBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum:
+                  - created
+                  - paid
+                  - failed
+                  - cancelled
+              places:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Place ID
+              providers:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Provider ID
+              products:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Product ID
+              items:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Product Item ID
+              createdBy:
+                type: array
+                items:
+                  type: string
+                  description: Order creator
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    SearchMyOrdersBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum:
+                  - created
+                  - paid
+                  - failed
+                  - cancelled
+              places:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Place ID
+              providers:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Provider ID
+              products:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Product ID
+              items:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Product Item ID
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    CreateOrderBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - placeId
+              - totalPrice
+              - positions
+            properties:
+              placeId:
+                type: string
+                format: uuid
+                description: Pick-up place ID
+              totalPrice:
+                type: number
+                description: Total order price
+              positions:
+                type: object
+                required:
+                  - itemId
+                  - amount
+                  - price
+                properties:
+                  itemId:
+                    type: string
+                    format: uuid
+                    description: Product Item ID
+                  amount:
+                    type: number
+                    description: Amount of item
+                  price:
+                    type: number
+                    description: Price that is shown
+    EditOrderBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              txHash:
+                type: string
+                description: TON Blockchain tx hash
     CreatePlaceBody:
       content:
         application/json:
@@ -3149,15 +4552,34 @@ components:
               searchTerm:
                 type: string
                 description: Search term
-              providerId:
-                type: string
-                format: uuid
-                description: Provider ID
+              providers:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Provider ID
+              ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Product ID
               folders:
                 type: array
                 items:
                   type: string
                   format: uuid
+                  description: Folder ID
+              filters:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductFilter"
+              isDeleted:
+                type: boolean
+                description: Returns only deleted products
+              isBlocked:
+                type: boolean
+                description: Returns only blocked products
               limit:
                 type: number
                 description: Number of return items
@@ -3168,11 +4590,7 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
-              filters:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ProductFilter"
-    SearchProductSuggesterBody:
+    SearchProductItemsBody:
       content:
         application/json:
           schema:
@@ -3181,7 +4599,159 @@ components:
               searchTerm:
                 type: string
                 description: Search term
-    SearchProductFiltersBody:
+              providers:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Provider ID
+              ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Product Item ID
+              products:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Product Item ID
+              folders:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Folder ID
+              filters:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductFilter"
+              isDeleted:
+                type: boolean
+                description: Returns only deleted product items
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    SearchProductBatchesBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              searchTerm:
+                type: string
+                description: Search term
+              products:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Product ID
+              items:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Product Item ID
+              ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Product Batch ID
+              status:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - preOrder
+                    - available
+                    - inProduction
+                    - sold
+                    - canceled
+                  description: Batch status
+              isDeleted:
+                type: boolean
+                description: Returns only deleted product batches
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    SearchProductCardsBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              searchTerm:
+                type: string
+                description: Search term
+              placeId:
+                type: string
+                format: uuid
+                description: Place ID for pickup
+              ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Product Item ID
+              products:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Product ID
+              folders:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Folder ID
+              filters:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductFilter"
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    SearchProductCardsSuggesterBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              searchTerm:
+                type: string
+                description: Search term
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+    SearchProductCardsFiltersBody:
       content:
         application/json:
           schema:
@@ -3192,11 +4762,15 @@ components:
                 items:
                   type: string
                   format: uuid
-    ModifyProductBody:
+    CreateProductBody:
       content:
         application/json:
           schema:
             type: object
+            required:
+              - externalId
+              - name
+              - tags
             properties:
               externalId:
                 type: string
@@ -3218,6 +4792,8 @@ components:
                 items:
                   type: string
                 description: Product videos
+              unitInfo:
+                $ref: "#/components/schemas/UnitInfo"
               tags:
                 type: array
                 items:
@@ -3227,36 +4803,36 @@ components:
                       type: string
                       format: uuid
                       description: Tag External ID form Provider
+                    category:
+                      type: string
                     field:
                       type: string
                     value:
                       type: string
-    ModifyProductItemBody:
+    EditProductBody:
       content:
         application/json:
           schema:
             type: object
             properties:
-              externalId:
-                type: string
-                format: uuid
-                description: Product Item External ID form Provider
-              productExternalId:
-                type: string
-                format: uuid
-                description: Product External ID form Provider
-              configExternalId:
-                type: string
-                format: uuid
-                description: Configuration External ID form Provider
               name:
                 type: string
                 description: Product name
+              description:
+                type: string
+                description: Product description
               photos:
                 type: array
                 items:
                   type: string
                 description: Product photos
+              videos:
+                type: array
+                items:
+                  type: string
+                description: Product videos
+              unitInfo:
+                $ref: "#/components/schemas/UnitInfo"
               tags:
                 type: array
                 items:
@@ -3266,12 +4842,226 @@ components:
                       type: string
                       format: uuid
                       description: Tag External ID form Provider
+                    category:
+                      type: string
+                    field:
+                      type: string
+                    value:
+                      type: string
+    CreateProductItemBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - externalProductId
+              - externalId
+              - externalVersionId
+              - name
+              - tags
+            properties:
+              externalProductId:
+                type: string
+                format: uuid
+                description: Product External ID form Provider
+              externalId:
+                type: string
+                format: uuid
+                description: Product Item External ID form Provider
+              externalVersionId:
+                type: string
+                format: uuid
+                description: Configuration External ID form Provider
+              externalConfigId:
+                type: string
+                format: uuid
+                description: Configuration External ID form Provider
+              name:
+                type: string
+                description: Product item name
+              photos:
+                type: array
+                items:
+                  type: string
+                description: Product item photos
+              tags:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    externalId:
+                      type: string
+                      format: uuid
+                      description: Tag External ID form Provider
+                    category:
+                      type: string
                     field:
                       type: string
                     value:
                       type: string
                     isConfig:
                       type: boolean
+    EditProductItemBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Product item name
+              photos:
+                type: array
+                items:
+                  type: string
+                description: Product item photos
+              tags:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    externalId:
+                      type: string
+                      format: uuid
+                      description: Tag External ID form Provider
+                    category:
+                      type: string
+                    field:
+                      type: string
+                    value:
+                      type: string
+                    isConfig:
+                      type: boolean
+    CreateProductBatchBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - externalId
+              - externalProductId
+              - externalVersionId
+              - key
+              - status
+              - price
+              - amount
+              - amountInIDT
+            properties:
+              externalId:
+                type: string
+                format: uuid
+                description: Batch External ID form Provider
+              externalProductId:
+                type: string
+                format: uuid
+                description: Product External ID form Provider
+              externalVersionId:
+                type: string
+                format: uuid
+                description: Product Version External ID form Provider
+              externalConfigId:
+                type: string
+                format: uuid
+                description: Product Item Configuration External ID form Provider
+              key:
+                type: string
+                description: Batch key from Provider
+              status:
+                type: string
+                enum:
+                  - preOrder
+                  - available
+                  - inProduction
+                  - sold
+                  - canceled
+                description: Batch status
+              price:
+                type: number
+                description: Current Batch price
+              attachments:
+                type: array
+                description: Attachment documents
+                items:
+                  type: string
+                  format: uuid
+              amount:
+                type: number
+                description: Amount idP in the Batch
+              amountInIDT:
+                type: number
+                description: Amount idP in idT to start delivery
+              condition:
+                type: number
+                description: Condition of minimum idP to start production process (for
+                  pre-order)
+              untilDate:
+                type: string
+                format: date-time
+                description: The date when provider decides to start production process (for
+                  pre-order)
+              startDate:
+                type: string
+                format: date-time
+                description: The start date of production process
+              duration:
+                type: string
+                format: date-time
+                description: The production duration (days)
+              releaseDate:
+                type: string
+                format: date-time
+                description: The production release date
+    EditProductBatchBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum:
+                  - preOrder
+                  - available
+                  - inProduction
+                  - sold
+                  - canceled
+                description: Batch status
+              price:
+                type: number
+                description: Current Batch price
+              attachments:
+                type: array
+                description: Attachment documents
+                items:
+                  type: string
+                  format: uuid
+              amount:
+                type: number
+                description: Amount idP in the Batch
+              amountInIDT:
+                type: number
+                description: Amount idP in idT to start delivery
+              condition:
+                type: number
+                description: Condition of minimum idP to start production process (for
+                  pre-order)
+              untilDate:
+                type: string
+                format: date-time
+                description: The date when provider decides to start production process (for
+                  pre-order)
+              startDate:
+                type: string
+                format: date-time
+                description: The start date of production process
+              duration:
+                type: string
+                format: date-time
+                description: The production duration (days)
+              releaseDate:
+                type: string
+                format: date-time
+                description: The production release date
     UpdateProviderProfileBody:
       content:
         application/json:
@@ -3813,12 +5603,51 @@ components:
         application/json:
           schema:
             type: object
-            properties: null
             additionalProperties:
               type: object
               properties:
                 productsCount:
                   type: number
+    OrderWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderWithData"
+    SearchOrders:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderWithData"
+    OrderNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: order:404
+            message: Order not found
+    OrderPositionNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: order:404-position
+            message: Order position not found
     PlaceData:
       description: Successful operation
       content:
@@ -3850,31 +5679,55 @@ components:
           example:
             errorCode: place:404
             message: Place not found
-    ProductData:
+    Product:
       description: Successful operation
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Product"
-    ProductFullData:
+    ProductWithData:
       description: Successful operation
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ProductFull"
-    ProductItemData:
+            $ref: "#/components/schemas/ProductWithData"
+    ProductItem:
       description: Successful operation
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ProductItem"
-    ProductItemFullData:
+    ProductItemWithData:
       description: Successful operation
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ProductItemFull"
-    SearchProductData:
+            $ref: "#/components/schemas/ProductItemWithData"
+    ProductBatch:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProductBatch"
+    ProductBatchWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProductBatchWithData"
+    ProductCardWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProductCardWithData"
+    ProductBatchPublic:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProductBatchPublic"
+    SearchProducts:
       description: Successful operation
       content:
         application/json:
@@ -3890,7 +5743,55 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Product"
-    SearchProductSuggesterData:
+    SearchProductItems:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductItem"
+    SearchProductBatches:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductBatchWithData"
+    SearchProductCards:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductCard"
+    SearchProductCardsSuggester:
       description: Successful operation
       content:
         application/json:
@@ -3898,7 +5799,7 @@ components:
             type: array
             items:
               type: string
-    SearchProductFiltersData:
+    SearchProductCardsFilters:
       description: Successful operation
       content:
         application/json:
@@ -3924,6 +5825,15 @@ components:
           example:
             errorCode: product:404-item
             message: Product item not found
+    ProductBatchNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: product:404-batch
+            message: Product batch not found
     ProviderProfileResponse:
       description: Successful operation
       content:

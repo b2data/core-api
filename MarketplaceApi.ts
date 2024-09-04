@@ -424,6 +424,315 @@ export interface FolderFullData {
   filters: FolderFilter[];
 }
 
+export interface OrderBase {
+  /**
+   * Order ID
+   * @format uuid
+   */
+  id: string;
+  /** Order unique key */
+  key: string;
+  /** Order status */
+  status: "created" | "paid" | "failed" | "cancelled";
+  /** Total order price, can be changed if some position will be canceled */
+  totalPrice: number;
+  /** Payment transaction hash */
+  txHash?: string;
+}
+
+export interface OrderPositionBase {
+  /**
+   * Order Position ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /**
+   * Product Item ID
+   * @format uuid
+   */
+  itemId: string;
+  /** Order Position price */
+  price: number;
+  /** Amount of idP */
+  amount: number;
+  /** Order Position status */
+  status:
+    | "created"
+    | "paid"
+    | "confirmed"
+    | "production"
+    | "delivery"
+    | "cancelled"
+    | "completed"
+    | "dispute"
+    | "returned";
+  /** Payment transaction hash */
+  txHash?: string;
+}
+
+export interface OrderPositionBaseWithItemData {
+  /**
+   * Order Position ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /** Order Position price */
+  price: number;
+  /** Amount of idP */
+  amount: number;
+  /** Order Position status */
+  status:
+    | "created"
+    | "paid"
+    | "confirmed"
+    | "production"
+    | "delivery"
+    | "cancelled"
+    | "completed"
+    | "dispute"
+    | "returned";
+  /** Payment transaction hash */
+  txHash?: string;
+  itemData: ProductItemBase;
+}
+
+export interface Order {
+  /**
+   * Order ID
+   * @format uuid
+   */
+  id: string;
+  /** Order unique key */
+  key: string;
+  /** Order status */
+  status: "created" | "paid" | "failed" | "cancelled";
+  /** Total order price, can be changed if some position will be canceled */
+  totalPrice: number;
+  /** Payment transaction hash */
+  txHash?: string;
+  /** Wallet Address */
+  createdBy: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string;
+}
+
+export interface OrderWithData {
+  /**
+   * Order ID
+   * @format uuid
+   */
+  id: string;
+  /** Order unique key */
+  key: string;
+  /** Order status */
+  status: "created" | "paid" | "failed" | "cancelled";
+  /** Total order price, can be changed if some position will be canceled */
+  totalPrice: number;
+  /** Payment transaction hash */
+  txHash?: string;
+  /** Wallet Address */
+  createdBy: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string;
+  createdByData: User;
+  positions: OrderPositionBaseWithItemData[];
+}
+
+export interface OrderWithFullData {
+  /**
+   * Order ID
+   * @format uuid
+   */
+  id: string;
+  /** Order unique key */
+  key: string;
+  /** Order status */
+  status: "created" | "paid" | "failed" | "cancelled";
+  /** Total order price, can be changed if some position will be canceled */
+  totalPrice: number;
+  /** Payment transaction hash */
+  txHash?: string;
+  /** Wallet Address */
+  createdBy: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string;
+  createdByData: User;
+  positions: OrderPositionWithData[];
+  placeData: Place;
+}
+
+export interface OrderPosition {
+  /**
+   * Order Position ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /** Order Position price */
+  price: number;
+  /** Amount of idP */
+  amount: number;
+  /** Order Position status */
+  status:
+    | "created"
+    | "paid"
+    | "confirmed"
+    | "production"
+    | "delivery"
+    | "cancelled"
+    | "completed"
+    | "dispute"
+    | "returned";
+  /** Payment transaction hash */
+  txHash?: string;
+  /**
+   * Order ID
+   * @format uuid
+   */
+  orderId: string;
+  /**
+   * Product ID
+   * @format uuid
+   */
+  productId: string;
+  /**
+   * Product Item ID
+   * @format uuid
+   */
+  itemId: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string;
+}
+
+export interface OrderPositionWithData {
+  /**
+   * Order Position ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /** Order Position price */
+  price: number;
+  /** Amount of idP */
+  amount: number;
+  /** Order Position status */
+  status:
+    | "created"
+    | "paid"
+    | "confirmed"
+    | "production"
+    | "delivery"
+    | "cancelled"
+    | "completed"
+    | "dispute"
+    | "returned";
+  /** Payment transaction hash */
+  txHash?: string;
+  /**
+   * Order ID
+   * @format uuid
+   */
+  orderId: string;
+  /**
+   * Product ID
+   * @format uuid
+   */
+  productId: string;
+  /**
+   * Product Item ID
+   * @format uuid
+   */
+  itemId: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string;
+  itemData: ProductItemBase;
+  /** Provider Name */
+  providerName: string;
+}
+
 export interface Place {
   /**
    * Place ID
@@ -485,6 +794,15 @@ export interface PlaceWorkHours {
   sun: string[];
 }
 
+export interface UnitInfo {
+  /** User-friendly unit */
+  unit: string;
+  /** Coeff to match with system unit */
+  coeff: number;
+  /** System unit */
+  systemUnit: string;
+}
+
 export interface Product {
   /**
    * Product ID
@@ -499,11 +817,12 @@ export interface Product {
   /** Product name */
   name: string;
   /** Product description */
-  description: string;
+  description?: string;
   /** Product photos */
-  photos: string[];
+  photos?: string[];
   /** Product videos */
-  videos: string[];
+  videos?: string[];
+  unitInfo?: UnitInfo;
   /** Wallet Address */
   createdBy: string;
   /**
@@ -513,6 +832,7 @@ export interface Product {
   providerId: string;
   /** Provider Name */
   providerName?: string;
+  /** Blocked by B2Market moderation */
   isBlocked?: boolean;
   /**
    * Creation Date
@@ -531,7 +851,7 @@ export interface Product {
   deletedAt?: string;
 }
 
-export interface ProductFull {
+export interface ProductWithData {
   /**
    * Product ID
    * @format uuid
@@ -545,11 +865,11 @@ export interface ProductFull {
   /** Product name */
   name: string;
   /** Product description */
-  description: string;
+  description?: string;
   /** Product photos */
-  photos: string[];
+  photos?: string[];
   /** Product videos */
-  videos: string[];
+  videos?: string[];
   /** Wallet Address */
   createdBy: string;
   /**
@@ -559,6 +879,7 @@ export interface ProductFull {
   providerId: string;
   /** Provider Name */
   providerName?: string;
+  /** Blocked by B2Market moderation */
   isBlocked?: boolean;
   /**
    * Creation Date
@@ -575,18 +896,10 @@ export interface ProductFull {
    * @format date-time
    */
   deletedAt?: string;
-  /** Folders to that product is linked */
+  /** Catalogs where product is shown */
   folders: string[];
   createdByData: User;
-  providerData: {
-    /**
-     * Provider ID
-     * @format uuid
-     */
-    id: string;
-    /** Provider name */
-    name: string;
-  };
+  /** Tags that define catalog */
   tagsData: Tag[];
 }
 
@@ -603,6 +916,18 @@ export interface ProductFilterOption {
   valuesData?: (DictionaryWord | null)[];
 }
 
+export interface ProductItemBase {
+  /**
+   * Product Item ID
+   * @format uuid
+   */
+  id: string;
+  /** Product Item name */
+  name: string;
+  /** Product Item photos */
+  photos?: string[];
+}
+
 export interface ProductItem {
   /**
    * Product Item ID
@@ -615,19 +940,24 @@ export interface ProductItem {
    */
   externalId: string;
   /**
+   * Product Version External ID form Provider
+   * @format uuid
+   */
+  externalVersionId: string;
+  /**
    * Configuration External ID form Provider
    * @format uuid
    */
-  configExternalId?: string;
+  externalConfigId?: string;
   /**
-   * Product ID in B2Market
+   * Product ID
    * @format uuid
    */
   productId: string;
   /** Product Item name */
   name: string;
   /** Product Item photos */
-  photos: string[];
+  photos?: string[];
   /** Wallet Address */
   createdBy: string;
   /**
@@ -652,7 +982,7 @@ export interface ProductItem {
   deletedAt?: string;
 }
 
-export interface ProductItemFull {
+export interface ProductItemWithData {
   /**
    * Product Item ID
    * @format uuid
@@ -664,14 +994,24 @@ export interface ProductItemFull {
    */
   externalId: string;
   /**
-   * Product ID in B2Market
+   * Product Version External ID form Provider
+   * @format uuid
+   */
+  externalVersionId: string;
+  /**
+   * Product Item Configuration External ID form Provider
+   * @format uuid
+   */
+  externalConfigId?: string;
+  /**
+   * Product ID
    * @format uuid
    */
   productId: string;
   /** Product Item name */
   name: string;
   /** Product Item photos */
-  photos: string[];
+  photos?: string[];
   /** Wallet Address */
   createdBy: string;
   /**
@@ -694,11 +1034,366 @@ export interface ProductItemFull {
    * @format date-time
    */
   deletedAt?: string;
-  /** Folders to that product item is linked */
-  folders: string[];
   createdByData: User;
   tagsData: Tag[];
-  /** Provider name */
+  configurations: ProductCardConfiguration[];
+  /** Product description */
+  description?: string;
+  unitInfo?: UnitInfo;
+  /** Provider Name */
+  providerName?: string;
+}
+
+export interface ProductBatch {
+  /**
+   * Batch ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Product ID
+   * @format uuid
+   */
+  productId: string;
+  /**
+   * Batch External ID form Provider
+   * @format uuid
+   */
+  externalId: string;
+  /**
+   * Product Version External ID form Provider
+   * @format uuid
+   */
+  externalVersionId: string;
+  /**
+   * Product Item Configuration External ID form Provider
+   * @format uuid
+   */
+  externalConfigId?: string;
+  /**
+   * Product Item ID
+   * @format uuid
+   */
+  itemId?: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /** Wallet Address */
+  createdBy: string;
+  /** Batch key from Provider */
+  key: string;
+  /** Batch status */
+  status: "preOrder" | "available" | "inProduction" | "sold" | "canceled";
+  /** Current Batch price */
+  price: number;
+  /** Attachment documents */
+  attachments?: string[];
+  /** Amount idP in the Batch */
+  amount: number;
+  /** Amount idP in idT to start delivery */
+  amountInIDT: number;
+  /** Condition of minimum idP to start production process (for pre-order) */
+  condition?: number;
+  /**
+   * The date when provider decides to start production process (for pre-order)
+   * @format date-time
+   */
+  untilDate?: string;
+  /**
+   * The start date of production process
+   * @format date-time
+   */
+  startDate?: string;
+  /**
+   * The production duration (days)
+   * @format date-time
+   */
+  duration?: string;
+  /**
+   * The production release date
+   * @format date-time
+   */
+  releaseDate?: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string;
+}
+
+export interface ProductBatchWithData {
+  /**
+   * Batch ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Product ID
+   * @format uuid
+   */
+  productId: string;
+  /**
+   * Batch External ID form Provider
+   * @format uuid
+   */
+  externalId: string;
+  /**
+   * Product Version External ID form Provider
+   * @format uuid
+   */
+  externalVersionId: string;
+  /**
+   * Product Item Configuration External ID form Provider
+   * @format uuid
+   */
+  externalConfigId?: string;
+  /**
+   * Product Item ID
+   * @format uuid
+   */
+  itemId?: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /** Wallet Address */
+  createdBy: string;
+  /** Batch key from Provider */
+  key: string;
+  /** Batch status */
+  status: "preOrder" | "available" | "inProduction" | "sold" | "canceled";
+  /** Current Batch price */
+  price: number;
+  /** Attachment documents */
+  attachments?: string[];
+  /** Amount idP in the Batch */
+  amount: number;
+  /** Amount idP in idT to start delivery */
+  amountInIDT: number;
+  /** Condition of minimum idP to start production process (for pre-order) */
+  condition?: number;
+  /**
+   * The date when provider decides to start production process (for pre-order)
+   * @format date-time
+   */
+  untilDate?: string;
+  /**
+   * The start date of production process
+   * @format date-time
+   */
+  startDate?: string;
+  /**
+   * The production duration (days)
+   * @format date-time
+   */
+  duration?: string;
+  /**
+   * The production release date
+   * @format date-time
+   */
+  releaseDate?: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string;
+  createdByData: User;
+  itemData?: ProductItemBase;
+  /** Provider Name */
+  providerName: string;
+}
+
+export interface ProductItemLike {
+  /**
+   * Product Item ID
+   * @format uuid
+   */
+  itemId: string;
+  /** Wallet Address */
+  createdBy: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+}
+
+export interface ProductCardPrice {
+  /**
+   * Batch ID
+   * @format uuid
+   */
+  id: string;
+  /** Type of price */
+  type?: "preOrder" | "available";
+  /** Current price */
+  price: number;
+  /** Total amount of idP */
+  amount: number;
+  /** Amount idP in idT to start delivery */
+  amountInIDT: number;
+  /** Amount of idP that was ordered */
+  orderedAmount: number;
+  /**
+   * The end date for this price
+   * @format date-time
+   */
+  endDate?: string;
+}
+
+export interface ProductCardConfiguration {
+  field: string;
+  fieldData: DictionaryWord;
+  values: {
+    ids?: string[];
+    value: string;
+    valueData?: DictionaryWord;
+  }[];
+}
+
+export interface ProductCard {
+  /**
+   * Product Item ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Product ID
+   * @format uuid
+   */
+  productId: string;
+  /** Product Item name */
+  name: string;
+  /** Product Item photos */
+  photos?: string[];
+  unitInfo?: UnitInfo;
+  /** Current user liked this card or not */
+  isLiked?: boolean;
+  prices: ProductCardPrice[];
+}
+
+export interface ProductCardWithData {
+  /**
+   * Product Item ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Product ID
+   * @format uuid
+   */
+  productId: string;
+  /** Product Item name */
+  name: string;
+  /** Product Item photos */
+  photos?: string[];
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  tagsData: Tag[];
+  /** Product description */
+  description?: string;
+  unitInfo?: UnitInfo;
+  /** Provider Name */
+  providerName?: string;
+  /** Current user liked this card or not */
+  isLiked?: boolean;
+  prices: ProductCardPrice[];
+  configurations: ProductCardConfiguration[];
+}
+
+export interface ProductBatchPublic {
+  /**
+   * Batch ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /** Batch key from Provider */
+  key: string;
+  /** Batch status */
+  status: "preOrder" | "available" | "inProduction" | "sold" | "canceled";
+  /** Current Batch price */
+  price: number;
+  /** Attachment documents */
+  attachments?: string[];
+  /** Amount idP in the Batch */
+  amount: number;
+  /** Amount idP in idT to start delivery */
+  amountInIDT: number;
+  /** Condition of minimum idP to start production process (for pre-order) */
+  condition?: number;
+  /**
+   * The date when provider decides to start production process (for pre-order)
+   * @format date-time
+   */
+  untilDate?: string;
+  /**
+   * The start date of production process
+   * @format date-time
+   */
+  startDate?: string;
+  /**
+   * The production duration (days)
+   * @format date-time
+   */
+  duration?: string;
+  /**
+   * The production release date
+   * @format date-time
+   */
+  releaseDate?: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string;
+  itemData: ProductItemBase;
+  /** Provider Name */
   providerName?: string;
 }
 
@@ -815,15 +1510,13 @@ export interface Tag {
   /** Product ID */
   productId?: string;
   /** Product Item ID */
-  productItemId?: string;
+  itemId?: string;
   /** Tag name */
   field: string;
   fieldData?: DictionaryWord;
   /** Tag value */
   value?: string;
   valueData?: DictionaryWord;
-  /** Is tag configurable */
-  isConfig?: boolean;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -1975,7 +2668,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
          * Search by product external ID
          * @format uuid
          */
-        productExternalId?: string | null;
+        externalProductId?: string | null;
         /** Search by ids */
         ids?: string[];
       },
@@ -2242,6 +2935,183 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         ...params,
       }),
   };
+  orders = {
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Orders
+     * @name SearchOrders
+     * @summary Search orders
+     * @request POST:/orders/search
+     * @secure
+     */
+    searchOrders: (
+      data: {
+        status?: "created" | "paid" | "failed" | "cancelled";
+        places?: string[];
+        providers?: string[];
+        products?: string[];
+        items?: string[];
+        createdBy?: string[];
+        /** Number of return items */
+        limit?: number;
+        /** Number of skip items */
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: OrderWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/orders/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Orders
+     * @name SearchMyOrders
+     * @summary Search my orders
+     * @request POST:/orders/my/search
+     * @secure
+     */
+    searchMyOrders: (
+      data: {
+        status?: "created" | "paid" | "failed" | "cancelled";
+        places?: string[];
+        providers?: string[];
+        products?: string[];
+        items?: string[];
+        /** Number of return items */
+        limit?: number;
+        /** Number of skip items */
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: OrderWithData[];
+        },
+        any
+      >({
+        path: `/orders/my/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Orders
+     * @name CreateOrder
+     * @summary Create new order
+     * @request POST:/orders
+     * @secure
+     */
+    createOrder: (
+      data: {
+        /**
+         * Pick-up place ID
+         * @format uuid
+         */
+        placeId: string;
+        /** Total order price */
+        totalPrice: number;
+        positions: {
+          /**
+           * Product Item ID
+           * @format uuid
+           */
+          itemId: string;
+          /** Amount of item */
+          amount: number;
+          /** Price that is shown */
+          price: number;
+        };
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<OrderWithData, any>({
+        path: `/orders`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Orders
+     * @name GetOrder
+     * @summary Get order information
+     * @request GET:/orders/{id}
+     * @secure
+     */
+    getOrder: (id: string, params: RequestParams = {}) =>
+      this.http.request<OrderWithData, ErrorResponse>({
+        path: `/orders/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Orders
+     * @name UpdateOrder
+     * @summary Update order
+     * @request PATCH:/orders/{id}
+     * @secure
+     */
+    updateOrder: (
+      id: string,
+      data: {
+        /** TON Blockchain tx hash */
+        txHash?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<OrderWithData, ErrorResponse>({
+        path: `/orders/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description It cancelled all unconfirmed positions
+     *
+     * @tags Orders
+     * @name DeleteOrder
+     * @summary Cancel order
+     * @request DELETE:/orders/{id}
+     * @secure
+     */
+    deleteOrder: (id: string, params: RequestParams = {}) =>
+      this.http.request<OrderWithData, ErrorResponse>({
+        path: `/orders/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+  };
   places = {
     /**
      * @description Available for `System Admin`
@@ -2385,29 +3255,31 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
   };
   products = {
     /**
-     * No description
+     * @description Available for `System Admin` or `providers` (own data only)
      *
-     * @tags Products, Available Public
+     * @tags Products, Available Providers
      * @name SearchProducts
      * @summary Search products
      * @request POST:/products/search
+     * @secure
      */
     searchProducts: (
       data: {
         /** Search term */
         searchTerm?: string;
-        /**
-         * Provider ID
-         * @format uuid
-         */
-        providerId?: string;
+        providers?: string[];
+        ids?: string[];
         folders?: string[];
+        filters?: ProductFilter[];
+        /** Returns only deleted products */
+        isDeleted?: boolean;
+        /** Returns only blocked products */
+        isBlocked?: boolean;
         /** Number of return items */
         limit?: number;
         /** Number of skip items */
         offset?: number;
         sort?: SortModel[];
-        filters?: ProductFilter[];
       },
       params: RequestParams = {},
     ) =>
@@ -2421,49 +3293,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         path: `/products/search`,
         method: "POST",
         body: data,
-        ...params,
-      }),
-
-    /**
-     * @description Returns 5 suggested names by searchTerm
-     *
-     * @tags Products, Available Public
-     * @name SearchProductSuggester
-     * @summary Search products name suggester
-     * @request POST:/products/search/suggester
-     */
-    searchProductSuggester: (
-      data: {
-        /** Search term */
-        searchTerm?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<string[], any>({
-        path: `/products/search/suggester`,
-        method: "POST",
-        body: data,
-        ...params,
-      }),
-
-    /**
-     * @description Returns products available filters
-     *
-     * @tags Products, Available Public
-     * @name SearchProductFilters
-     * @summary Search products filters
-     * @request POST:/products/search/filters
-     */
-    searchProductFilters: (
-      data: {
-        folders?: string[];
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<ProductFilterOption[], any>({
-        path: `/products/search/filters`,
-        method: "POST",
-        body: data,
+        secure: true,
         ...params,
       }),
 
@@ -2471,39 +3301,41 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @description Available for `providers`
      *
      * @tags Products, Available Providers
-     * @name RegisterProduct
-     * @summary Register new product
+     * @name CreateProduct
+     * @summary Create new product
      * @request POST:/products
      * @secure
      */
-    registerProduct: (
+    createProduct: (
       data: {
         /**
          * Product External ID form Provider
          * @format uuid
          */
-        externalId?: string;
+        externalId: string;
         /** Product name */
-        name?: string;
+        name: string;
         /** Product description */
         description?: string;
         /** Product photos */
         photos?: string[];
         /** Product videos */
         videos?: string[];
-        tags?: {
+        unitInfo?: UnitInfo;
+        tags: {
           /**
            * Tag External ID form Provider
            * @format uuid
            */
           externalId?: string;
+          category?: string;
           field?: string;
           value?: string;
         }[];
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<ProductFull, ErrorResponse>({
+      this.http.request<ProductWithData, ErrorResponse>({
         path: `/products`,
         method: "POST",
         body: data,
@@ -2512,17 +3344,19 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * No description
+     * @description Available for `System Admin` or `providers` (own data only)
      *
-     * @tags Products, Available Public
+     * @tags Products, Available Providers
      * @name GetProduct
      * @summary Get product with full data
      * @request GET:/products/{id}
+     * @secure
      */
     getProduct: (id: string, params: RequestParams = {}) =>
-      this.http.request<ProductFull, ErrorResponse>({
+      this.http.request<ProductWithData, ErrorResponse>({
         path: `/products/${id}`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -2538,11 +3372,6 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     updateProduct: (
       id: string,
       data: {
-        /**
-         * Product External ID form Provider
-         * @format uuid
-         */
-        externalId?: string;
         /** Product name */
         name?: string;
         /** Product description */
@@ -2551,19 +3380,21 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         photos?: string[];
         /** Product videos */
         videos?: string[];
+        unitInfo?: UnitInfo;
         tags?: {
           /**
            * Tag External ID form Provider
            * @format uuid
            */
           externalId?: string;
+          category?: string;
           field?: string;
           value?: string;
         }[];
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<ProductFull, ErrorResponse>({
+      this.http.request<ProductWithData, ErrorResponse>({
         path: `/products/${id}`,
         method: "PATCH",
         body: data,
@@ -2572,7 +3403,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `providers`. Mark that product was deleted.
+     * @description Available for `providers`. Mark that product as deleted.
      *
      * @tags Products, Available Providers
      * @name DeleteProduct
@@ -2623,41 +3454,89 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       }),
 
     /**
+     * @description Available for `System Admin` or `providers` (own data only)
+     *
+     * @tags Products, Available Providers
+     * @name SearchProductItems
+     * @summary Search product items
+     * @request POST:/products/items/search
+     * @secure
+     */
+    searchProductItems: (
+      data: {
+        /** Search term */
+        searchTerm?: string;
+        providers?: string[];
+        ids?: string[];
+        products?: string[];
+        folders?: string[];
+        filters?: ProductFilter[];
+        /** Returns only deleted product items */
+        isDeleted?: boolean;
+        /** Number of return items */
+        limit?: number;
+        /** Number of skip items */
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: ProductItem[];
+        },
+        ErrorResponse
+      >({
+        path: `/products/items/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
      * @description Available for `providers`
      *
      * @tags Products, Available Providers
-     * @name RegisterProductItem
-     * @summary Register new product item
+     * @name CreateProductItem
+     * @summary Create new product item
      * @request POST:/products/items
      * @secure
      */
-    registerProductItem: (
+    createProductItem: (
       data: {
-        /**
-         * Product Item External ID form Provider
-         * @format uuid
-         */
-        externalId?: string;
         /**
          * Product External ID form Provider
          * @format uuid
          */
-        productExternalId?: string;
+        externalProductId: string;
+        /**
+         * Product Item External ID form Provider
+         * @format uuid
+         */
+        externalId: string;
         /**
          * Configuration External ID form Provider
          * @format uuid
          */
-        configExternalId?: string;
-        /** Product name */
-        name?: string;
-        /** Product photos */
+        externalVersionId: string;
+        /**
+         * Configuration External ID form Provider
+         * @format uuid
+         */
+        externalConfigId?: string;
+        /** Product item name */
+        name: string;
+        /** Product item photos */
         photos?: string[];
-        tags?: {
+        tags: {
           /**
            * Tag External ID form Provider
            * @format uuid
            */
           externalId?: string;
+          category?: string;
           field?: string;
           value?: string;
           isConfig?: boolean;
@@ -2665,7 +3544,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<ProductItemFull, ErrorResponse>({
+      this.http.request<ProductItemWithData, ErrorResponse>({
         path: `/products/items`,
         method: "POST",
         body: data,
@@ -2674,17 +3553,19 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * No description
+     * @description Available for `System Admin` or `providers` (own data only)
      *
-     * @tags Products, Available Public
+     * @tags Products, Available Providers
      * @name GetProductItem
      * @summary Get product item with full data
      * @request GET:/products/items/{id}
+     * @secure
      */
     getProductItem: (id: string, params: RequestParams = {}) =>
-      this.http.request<ProductItemFull, ErrorResponse>({
+      this.http.request<ProductItemWithData, ErrorResponse>({
         path: `/products/items/${id}`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -2700,24 +3581,9 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     updateProductItem: (
       id: string,
       data: {
-        /**
-         * Product Item External ID form Provider
-         * @format uuid
-         */
-        externalId?: string;
-        /**
-         * Product External ID form Provider
-         * @format uuid
-         */
-        productExternalId?: string;
-        /**
-         * Configuration External ID form Provider
-         * @format uuid
-         */
-        configExternalId?: string;
-        /** Product name */
+        /** Product item name */
         name?: string;
-        /** Product photos */
+        /** Product item photos */
         photos?: string[];
         tags?: {
           /**
@@ -2725,6 +3591,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
            * @format uuid
            */
           externalId?: string;
+          category?: string;
           field?: string;
           value?: string;
           isConfig?: boolean;
@@ -2732,7 +3599,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<ProductItemFull, ErrorResponse>({
+      this.http.request<ProductItemWithData, ErrorResponse>({
         path: `/products/items/${id}`,
         method: "PATCH",
         body: data,
@@ -2741,7 +3608,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `providers`. Mark that product item was deleted.
+     * @description Available for `providers`. Mark that product item as deleted.
      *
      * @tags Products, Available Providers
      * @name DeleteProductItem
@@ -2754,6 +3621,301 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         path: `/products/items/${id}`,
         method: "DELETE",
         secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin` or `providers` (own data only)
+     *
+     * @tags Products, Available Providers
+     * @name SearchProductBatches
+     * @summary Search product batches
+     * @request POST:/products/batches/search
+     * @secure
+     */
+    searchProductBatches: (
+      data: {
+        /** Search term */
+        searchTerm?: string;
+        products?: string[];
+        items?: string[];
+        ids?: string[];
+        status?: ("preOrder" | "available" | "inProduction" | "sold" | "canceled")[];
+        /** Returns only deleted product batches */
+        isDeleted?: boolean;
+        /** Number of return items */
+        limit?: number;
+        /** Number of skip items */
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: ProductBatchWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/products/batches/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`
+     *
+     * @tags Products, Available Providers
+     * @name CreateProductBatch
+     * @summary Create new product batch
+     * @request POST:/products/batches
+     * @secure
+     */
+    createProductBatch: (
+      data: {
+        /**
+         * Batch External ID form Provider
+         * @format uuid
+         */
+        externalId: string;
+        /**
+         * Product External ID form Provider
+         * @format uuid
+         */
+        externalProductId: string;
+        /**
+         * Product Version External ID form Provider
+         * @format uuid
+         */
+        externalVersionId: string;
+        /**
+         * Product Item Configuration External ID form Provider
+         * @format uuid
+         */
+        externalConfigId?: string;
+        /** Batch key from Provider */
+        key: string;
+        /** Batch status */
+        status: "preOrder" | "available" | "inProduction" | "sold" | "canceled";
+        /** Current Batch price */
+        price: number;
+        /** Attachment documents */
+        attachments?: string[];
+        /** Amount idP in the Batch */
+        amount: number;
+        /** Amount idP in idT to start delivery */
+        amountInIDT: number;
+        /** Condition of minimum idP to start production process (for pre-order) */
+        condition?: number;
+        /**
+         * The date when provider decides to start production process (for pre-order)
+         * @format date-time
+         */
+        untilDate?: string;
+        /**
+         * The start date of production process
+         * @format date-time
+         */
+        startDate?: string;
+        /**
+         * The production duration (days)
+         * @format date-time
+         */
+        duration?: string;
+        /**
+         * The production release date
+         * @format date-time
+         */
+        releaseDate?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProductBatch, ErrorResponse>({
+        path: `/products/batches`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin` or `providers` (own data only)
+     *
+     * @tags Products, Available Providers
+     * @name GetProductBatch
+     * @summary Get product batch with full data
+     * @request GET:/products/batches/{id}
+     * @secure
+     */
+    getProductBatch: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProductBatchWithData, ErrorResponse>({
+        path: `/products/batches/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`
+     *
+     * @tags Products, Available Providers
+     * @name UpdateProductBatch
+     * @summary Update product batch data
+     * @request PATCH:/products/batches/{id}
+     * @secure
+     */
+    updateProductBatch: (
+      id: string,
+      data: {
+        /** Batch status */
+        status?: "preOrder" | "available" | "inProduction" | "sold" | "canceled";
+        /** Current Batch price */
+        price?: number;
+        /** Attachment documents */
+        attachments?: string[];
+        /** Amount idP in the Batch */
+        amount?: number;
+        /** Amount idP in idT to start delivery */
+        amountInIDT?: number;
+        /** Condition of minimum idP to start production process (for pre-order) */
+        condition?: number;
+        /**
+         * The date when provider decides to start production process (for pre-order)
+         * @format date-time
+         */
+        untilDate?: string;
+        /**
+         * The start date of production process
+         * @format date-time
+         */
+        startDate?: string;
+        /**
+         * The production duration (days)
+         * @format date-time
+         */
+        duration?: string;
+        /**
+         * The production release date
+         * @format date-time
+         */
+        releaseDate?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProductBatch, ErrorResponse>({
+        path: `/products/batches/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`. Mark that product batch as deleted.
+     *
+     * @tags Products, Available Providers
+     * @name DeleteProductBatch
+     * @summary Delete product batch
+     * @request DELETE:/products/batches/{id}
+     * @secure
+     */
+    deleteProductBatch: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProductBatch, ErrorResponse>({
+        path: `/products/batches/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Products, Available Public
+     * @name SearchProductCards
+     * @summary Search product cards
+     * @request POST:/products/cards/search
+     */
+    searchProductCards: (
+      data: {
+        /** Search term */
+        searchTerm?: string;
+        /**
+         * Place ID for pickup
+         * @format uuid
+         */
+        placeId?: string;
+        ids?: string[];
+        products?: string[];
+        folders?: string[];
+        filters?: ProductFilter[];
+        /** Number of return items */
+        limit?: number;
+        /** Number of skip items */
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: ProductCard[];
+        },
+        any
+      >({
+        path: `/products/cards/search`,
+        method: "POST",
+        body: data,
+        ...params,
+      }),
+
+    /**
+     * @description Returns suggested names by searchTerm
+     *
+     * @tags Products, Available Public
+     * @name SearchProductNameSuggester
+     * @summary Search products name suggester
+     * @request POST:/products/cards/search/suggester
+     */
+    searchProductNameSuggester: (
+      data: {
+        /** Search term */
+        searchTerm?: string;
+        /** Number of return items */
+        limit?: number;
+        /** Number of skip items */
+        offset?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<string[], any>({
+        path: `/products/cards/search/suggester`,
+        method: "POST",
+        body: data,
+        ...params,
+      }),
+
+    /**
+     * @description Returns available filters
+     *
+     * @tags Products, Available Public
+     * @name SearchProductFilters
+     * @summary Search products filters
+     * @request POST:/products/cards/search/filters
+     */
+    searchProductFilters: (
+      data: {
+        folders?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProductFilterOption[], any>({
+        path: `/products/cards/search/filters`,
+        method: "POST",
+        body: data,
         ...params,
       }),
   };
