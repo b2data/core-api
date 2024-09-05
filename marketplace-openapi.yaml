@@ -1329,7 +1329,7 @@ paths:
       description: Available for `System Admin` or `providers` (own data only)
       operationId: getProductItem
       parameters:
-        - $ref: "#/components/parameters/itemIdParam"
+        - $ref: "#/components/parameters/productItemIdParam"
       responses:
         "200":
           $ref: "#/components/responses/ProductItemWithData"
@@ -1351,7 +1351,7 @@ paths:
       description: Available for `providers`
       operationId: updateProductItem
       parameters:
-        - $ref: "#/components/parameters/itemIdParam"
+        - $ref: "#/components/parameters/productItemIdParam"
       requestBody:
         $ref: "#/components/requestBodies/EditProductItemBody"
       responses:
@@ -1375,7 +1375,7 @@ paths:
       description: Available for `providers`. Mark that product item as deleted.
       operationId: deleteProductItem
       parameters:
-        - $ref: "#/components/parameters/itemIdParam"
+        - $ref: "#/components/parameters/productItemIdParam"
       responses:
         "200":
           $ref: "#/components/responses/ProductItem"
@@ -1544,6 +1544,20 @@ paths:
           $ref: "#/components/responses/SearchProductCardsFilters"
         "400":
           $ref: "#/components/responses/InvalidData"
+  "/products/cards/{id}":
+    get:
+      tags:
+        - Products
+        - Available Public
+      summary: Get product card
+      operationId: getProductCard
+      parameters:
+        - $ref: "#/components/parameters/productItemIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductCardWithData"
+        "404":
+          $ref: "#/components/responses/ProductItemNotFound"
   "/providers/{id}/profile":
     get:
       tags:
@@ -2251,6 +2265,7 @@ components:
             - paid
             - failed
             - cancelled
+            - completed
           description: Order status
         totalPrice:
           type: number
@@ -2370,6 +2385,7 @@ components:
             - paid
             - failed
             - cancelled
+            - completed
           description: Order status
         totalPrice:
           type: number
@@ -2420,6 +2436,7 @@ components:
             - paid
             - failed
             - cancelled
+            - completed
           description: Order status
         totalPrice:
           type: number
@@ -2477,6 +2494,7 @@ components:
             - paid
             - failed
             - cancelled
+            - completed
           description: Order status
         totalPrice:
           type: number
@@ -3135,6 +3153,7 @@ components:
         - price
         - amount
         - amountInIDT
+        - amountInIDP
         - createdAt
         - updatedAt
       properties:
@@ -3192,13 +3211,17 @@ components:
             format: uuid
         amount:
           type: number
-          description: Amount idP in the Batch
+          description: Amount idPacks in the Batch
         amountInIDT:
           type: number
-          description: Amount idP in idT to start delivery
+          description: Amount idPacks in idTare to start delivery
+        amountInIDP:
+          type: number
+          description: Amount of goods in idPack
         condition:
           type: number
-          description: Condition of minimum idP to start production process (for pre-order)
+          description: Condition of minimum idPack to start production process (for
+            pre-order)
         untilDate:
           type: string
           format: date-time
@@ -3242,6 +3265,7 @@ components:
         - price
         - amount
         - amountInIDT
+        - amountInIDP
         - createdAt
         - updatedAt
         - createdByData
@@ -3301,13 +3325,17 @@ components:
             format: uuid
         amount:
           type: number
-          description: Amount idP in the Batch
+          description: Amount idPacks in the Batch
         amountInIDT:
           type: number
-          description: Amount idP in idT to start delivery
+          description: Amount idPacks in idTare to start delivery
+        amountInIDP:
+          type: number
+          description: Amount of goods in idPack
         condition:
           type: number
-          description: Condition of minimum idP to start production process (for pre-order)
+          description: Condition of minimum idPacks to start production process (for
+            pre-order)
         untilDate:
           type: string
           format: date-time
@@ -3370,6 +3398,7 @@ components:
         - price
         - amount
         - amountInIDT
+        - amountInIDP
         - orderedAmount
       properties:
         id:
@@ -3387,34 +3416,41 @@ components:
           description: Current price
         amount:
           type: number
-          description: Total amount of idP
+          description: Total amount of idPacks
         amountInIDT:
           type: number
-          description: Amount idP in idT to start delivery
+          description: Amount idPacks in idTare to start delivery
+        amountInIDP:
+          type: number
+          description: Amount of goods in idPack
         orderedAmount:
           type: number
-          description: Amount of idP that was ordered
+          description: Amount of idPacks that was ordered
         endDate:
           type: string
           format: date-time
           description: The end date for this price
+        condition:
+          type: number
+          description: Condition of minimum idPacks to start production process (for
+            pre-order)
     ProductCardConfiguration:
       type: object
       required:
         - field
         - fieldData
-        - values
+        - options
       properties:
         field:
           type: string
         fieldData:
           $ref: "#/components/schemas/DictionaryWord"
-        values:
+        options:
           type: array
           items:
             type: object
             required:
-              - id
+              - ids
               - value
             properties:
               ids:
@@ -3529,6 +3565,7 @@ components:
         - price
         - amount
         - amountInIDT
+        - amountInIDP
         - createdAt
         - updatedAt
         - itemData
@@ -3564,13 +3601,17 @@ components:
             format: uuid
         amount:
           type: number
-          description: Amount idP in the Batch
+          description: Amount idPacks in the Batch
         amountInIDT:
           type: number
-          description: Amount idP in idT to start delivery
+          description: Amount idPacks in idTare to start delivery
+        amountInIDP:
+          type: number
+          description: Amount of goods in idPack
         condition:
           type: number
-          description: Condition of minimum idP to start production process (for pre-order)
+          description: Condition of minimum idPacks to start production process (for
+            pre-order)
         untilDate:
           type: string
           format: date-time
@@ -3765,6 +3806,14 @@ components:
           description: Tag value
         valueData:
           $ref: "#/components/schemas/DictionaryWord"
+        category:
+          type: string
+          description: Category name
+        categoryData:
+          $ref: "#/components/schemas/DictionaryWord"
+        isConfig:
+          type: string
+          description: Is configurable tag
         createdBy:
           type: string
           description: Wallet Address
@@ -4008,7 +4057,7 @@ components:
       schema:
         type: string
         format: uuid
-    itemIdParam:
+    productItemIdParam:
       in: path
       name: id
       description: Product Item ID or External Item ID
@@ -4345,6 +4394,7 @@ components:
                   - paid
                   - failed
                   - cancelled
+                  - completed
               places:
                 type: array
                 items:
@@ -4397,6 +4447,7 @@ components:
                   - paid
                   - failed
                   - cancelled
+                  - completed
               places:
                 type: array
                 items:
@@ -4946,6 +4997,7 @@ components:
               - price
               - amount
               - amountInIDT
+              - amountInIDP
             properties:
               externalId:
                 type: string
@@ -4986,13 +5038,16 @@ components:
                   format: uuid
               amount:
                 type: number
-                description: Amount idP in the Batch
+                description: Amount idPacks in the Batch
               amountInIDT:
                 type: number
-                description: Amount idP in idT to start delivery
+                description: Amount idPacks in idTare to start delivery
+              amountInIDP:
+                type: number
+                description: Amount of goods in idPack
               condition:
                 type: number
-                description: Condition of minimum idP to start production process (for
+                description: Condition of minimum idPacks to start production process (for
                   pre-order)
               untilDate:
                 type: string
@@ -5037,13 +5092,16 @@ components:
                   format: uuid
               amount:
                 type: number
-                description: Amount idP in the Batch
+                description: Amount idPacks in the Batch
               amountInIDT:
                 type: number
-                description: Amount idP in idT to start delivery
+                description: Amount idPacks in idT to start delivery
+              amountInIDP:
+                type: number
+                description: Amount of goods in idPack
               condition:
                 type: number
-                description: Condition of minimum idP to start production process (for
+                description: Condition of minimum idPacks to start production process (for
                   pre-order)
               untilDate:
                 type: string

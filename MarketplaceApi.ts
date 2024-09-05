@@ -433,7 +433,7 @@ export interface OrderBase {
   /** Order unique key */
   key: string;
   /** Order status */
-  status: "created" | "paid" | "failed" | "cancelled";
+  status: "created" | "paid" | "failed" | "cancelled" | "completed";
   /** Total order price, can be changed if some position will be canceled */
   totalPrice: number;
   /** Payment transaction hash */
@@ -515,7 +515,7 @@ export interface Order {
   /** Order unique key */
   key: string;
   /** Order status */
-  status: "created" | "paid" | "failed" | "cancelled";
+  status: "created" | "paid" | "failed" | "cancelled" | "completed";
   /** Total order price, can be changed if some position will be canceled */
   totalPrice: number;
   /** Payment transaction hash */
@@ -548,7 +548,7 @@ export interface OrderWithData {
   /** Order unique key */
   key: string;
   /** Order status */
-  status: "created" | "paid" | "failed" | "cancelled";
+  status: "created" | "paid" | "failed" | "cancelled" | "completed";
   /** Total order price, can be changed if some position will be canceled */
   totalPrice: number;
   /** Payment transaction hash */
@@ -583,7 +583,7 @@ export interface OrderWithFullData {
   /** Order unique key */
   key: string;
   /** Order status */
-  status: "created" | "paid" | "failed" | "cancelled";
+  status: "created" | "paid" | "failed" | "cancelled" | "completed";
   /** Total order price, can be changed if some position will be canceled */
   totalPrice: number;
   /** Payment transaction hash */
@@ -1090,11 +1090,13 @@ export interface ProductBatch {
   price: number;
   /** Attachment documents */
   attachments?: string[];
-  /** Amount idP in the Batch */
+  /** Amount idPacks in the Batch */
   amount: number;
-  /** Amount idP in idT to start delivery */
+  /** Amount idPacks in idTare to start delivery */
   amountInIDT: number;
-  /** Condition of minimum idP to start production process (for pre-order) */
+  /** Amount of goods in idPack */
+  amountInIDP: number;
+  /** Condition of minimum idPack to start production process (for pre-order) */
   condition?: number;
   /**
    * The date when provider decides to start production process (for pre-order)
@@ -1179,11 +1181,13 @@ export interface ProductBatchWithData {
   price: number;
   /** Attachment documents */
   attachments?: string[];
-  /** Amount idP in the Batch */
+  /** Amount idPacks in the Batch */
   amount: number;
-  /** Amount idP in idT to start delivery */
+  /** Amount idPacks in idTare to start delivery */
   amountInIDT: number;
-  /** Condition of minimum idP to start production process (for pre-order) */
+  /** Amount of goods in idPack */
+  amountInIDP: number;
+  /** Condition of minimum idPacks to start production process (for pre-order) */
   condition?: number;
   /**
    * The date when provider decides to start production process (for pre-order)
@@ -1251,24 +1255,28 @@ export interface ProductCardPrice {
   type?: "preOrder" | "available";
   /** Current price */
   price: number;
-  /** Total amount of idP */
+  /** Total amount of idPacks */
   amount: number;
-  /** Amount idP in idT to start delivery */
+  /** Amount idPacks in idTare to start delivery */
   amountInIDT: number;
-  /** Amount of idP that was ordered */
+  /** Amount of goods in idPack */
+  amountInIDP: number;
+  /** Amount of idPacks that was ordered */
   orderedAmount: number;
   /**
    * The end date for this price
    * @format date-time
    */
   endDate?: string;
+  /** Condition of minimum idPacks to start production process (for pre-order) */
+  condition?: number;
 }
 
 export interface ProductCardConfiguration {
   field: string;
   fieldData: DictionaryWord;
-  values: {
-    ids?: string[];
+  options: {
+    ids: string[];
     value: string;
     valueData?: DictionaryWord;
   }[];
@@ -1351,11 +1359,13 @@ export interface ProductBatchPublic {
   price: number;
   /** Attachment documents */
   attachments?: string[];
-  /** Amount idP in the Batch */
+  /** Amount idPacks in the Batch */
   amount: number;
-  /** Amount idP in idT to start delivery */
+  /** Amount idPacks in idTare to start delivery */
   amountInIDT: number;
-  /** Condition of minimum idP to start production process (for pre-order) */
+  /** Amount of goods in idPack */
+  amountInIDP: number;
+  /** Condition of minimum idPacks to start production process (for pre-order) */
   condition?: number;
   /**
    * The date when provider decides to start production process (for pre-order)
@@ -1517,6 +1527,11 @@ export interface Tag {
   /** Tag value */
   value?: string;
   valueData?: DictionaryWord;
+  /** Category name */
+  category?: string;
+  categoryData?: DictionaryWord;
+  /** Is configurable tag */
+  isConfig?: string;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -2947,7 +2962,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      */
     searchOrders: (
       data: {
-        status?: "created" | "paid" | "failed" | "cancelled";
+        status?: "created" | "paid" | "failed" | "cancelled" | "completed";
         places?: string[];
         providers?: string[];
         products?: string[];
@@ -2986,7 +3001,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      */
     searchMyOrders: (
       data: {
-        status?: "created" | "paid" | "failed" | "cancelled";
+        status?: "created" | "paid" | "failed" | "cancelled" | "completed";
         places?: string[];
         providers?: string[];
         products?: string[];
@@ -3704,11 +3719,13 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         price: number;
         /** Attachment documents */
         attachments?: string[];
-        /** Amount idP in the Batch */
+        /** Amount idPacks in the Batch */
         amount: number;
-        /** Amount idP in idT to start delivery */
+        /** Amount idPacks in idTare to start delivery */
         amountInIDT: number;
-        /** Condition of minimum idP to start production process (for pre-order) */
+        /** Amount of goods in idPack */
+        amountInIDP: number;
+        /** Condition of minimum idPacks to start production process (for pre-order) */
         condition?: number;
         /**
          * The date when provider decides to start production process (for pre-order)
@@ -3776,11 +3793,13 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         price?: number;
         /** Attachment documents */
         attachments?: string[];
-        /** Amount idP in the Batch */
+        /** Amount idPacks in the Batch */
         amount?: number;
-        /** Amount idP in idT to start delivery */
+        /** Amount idPacks in idT to start delivery */
         amountInIDT?: number;
-        /** Condition of minimum idP to start production process (for pre-order) */
+        /** Amount of goods in idPack */
+        amountInIDP?: number;
+        /** Condition of minimum idPacks to start production process (for pre-order) */
         condition?: number;
         /**
          * The date when provider decides to start production process (for pre-order)
@@ -3916,6 +3935,21 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         path: `/products/cards/search/filters`,
         method: "POST",
         body: data,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Products, Available Public
+     * @name GetProductCard
+     * @summary Get product card
+     * @request GET:/products/cards/{id}
+     */
+    getProductCard: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProductCardWithData, ErrorResponse>({
+        path: `/products/cards/${id}`,
+        method: "GET",
         ...params,
       }),
   };
