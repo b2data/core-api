@@ -309,6 +309,10 @@ export class AuthApi<SecurityDataType extends unknown> {
           signature: string;
           /** Timestamp of authentication */
           timestamp: number;
+          domain: {
+            lengthBytes: number;
+            value: string;
+          };
         };
         account: {
           /**
@@ -317,9 +321,11 @@ export class AuthApi<SecurityDataType extends unknown> {
            */
           address: string;
           /** Blockchain chain */
-          chain: string;
+          network: string;
           /** Wallet Public Key */
-          publicKey?: string;
+          publicKey: string;
+          /** Wallet Public Key */
+          walletStateInit: string;
         };
       },
       params: RequestParams = {},
