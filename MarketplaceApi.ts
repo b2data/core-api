@@ -433,7 +433,12 @@ export interface OrderBase {
   /** Order unique key */
   key: string;
   /** Order status */
-  status: "created" | "paid" | "failed" | "cancelled" | "completed";
+  status: "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
+  /**
+   * Pick-up place ID
+   * @format uuid
+   */
+  placeId: string;
   /** Total order price, can be changed if some position will be canceled */
   totalPrice: number;
   /** Payment transaction hash */
@@ -463,14 +468,15 @@ export interface OrderPositionBase {
   /** Order Position status */
   status:
     | "created"
-    | "paid"
     | "confirmed"
     | "production"
     | "delivery"
+    | "cancelling"
     | "cancelled"
     | "completed"
     | "dispute"
-    | "returned";
+    | "returned"
+    | "failed";
   /** Payment transaction hash */
   txHash?: string;
 }
@@ -493,14 +499,15 @@ export interface OrderPositionBaseWithItemData {
   /** Order Position status */
   status:
     | "created"
-    | "paid"
     | "confirmed"
     | "production"
     | "delivery"
+    | "cancelling"
     | "cancelled"
     | "completed"
     | "dispute"
-    | "returned";
+    | "returned"
+    | "failed";
   /** Payment transaction hash */
   txHash?: string;
   itemData: ProductItemBase;
@@ -515,7 +522,12 @@ export interface Order {
   /** Order unique key */
   key: string;
   /** Order status */
-  status: "created" | "paid" | "failed" | "cancelled" | "completed";
+  status: "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
+  /**
+   * Pick-up place ID
+   * @format uuid
+   */
+  placeId: string;
   /** Total order price, can be changed if some position will be canceled */
   totalPrice: number;
   /** Payment transaction hash */
@@ -548,7 +560,12 @@ export interface OrderWithData {
   /** Order unique key */
   key: string;
   /** Order status */
-  status: "created" | "paid" | "failed" | "cancelled" | "completed";
+  status: "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
+  /**
+   * Pick-up place ID
+   * @format uuid
+   */
+  placeId: string;
   /** Total order price, can be changed if some position will be canceled */
   totalPrice: number;
   /** Payment transaction hash */
@@ -583,7 +600,12 @@ export interface OrderWithFullData {
   /** Order unique key */
   key: string;
   /** Order status */
-  status: "created" | "paid" | "failed" | "cancelled" | "completed";
+  status: "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
+  /**
+   * Pick-up place ID
+   * @format uuid
+   */
+  placeId: string;
   /** Total order price, can be changed if some position will be canceled */
   totalPrice: number;
   /** Payment transaction hash */
@@ -628,14 +650,15 @@ export interface OrderPosition {
   /** Order Position status */
   status:
     | "created"
-    | "paid"
     | "confirmed"
     | "production"
     | "delivery"
+    | "cancelling"
     | "cancelled"
     | "completed"
     | "dispute"
-    | "returned";
+    | "returned"
+    | "failed";
   /** Payment transaction hash */
   txHash?: string;
   /**
@@ -688,14 +711,15 @@ export interface OrderPositionWithData {
   /** Order Position status */
   status:
     | "created"
-    | "paid"
     | "confirmed"
     | "production"
     | "delivery"
+    | "cancelling"
     | "cancelled"
     | "completed"
     | "dispute"
-    | "returned";
+    | "returned"
+    | "failed";
   /** Payment transaction hash */
   txHash?: string;
   /**
@@ -1992,6 +2016,10 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
           signature: string;
           /** Timestamp of authentication */
           timestamp: number;
+          domain: {
+            lengthBytes: number;
+            value: string;
+          };
         };
         account: {
           /**
@@ -2000,9 +2028,11 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
            */
           address: string;
           /** Blockchain chain */
-          chain: string;
+          network: string;
           /** Wallet Public Key */
-          publicKey?: string;
+          publicKey: string;
+          /** Wallet Public Key */
+          walletStateInit: string;
         };
       },
       params: RequestParams = {},
@@ -2962,7 +2992,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      */
     searchOrders: (
       data: {
-        status?: "created" | "paid" | "failed" | "cancelled" | "completed";
+        status?: "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
         places?: string[];
         providers?: string[];
         products?: string[];
@@ -3001,11 +3031,12 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      */
     searchMyOrders: (
       data: {
-        status?: "created" | "paid" | "failed" | "cancelled" | "completed";
+        status?: "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
         places?: string[];
         providers?: string[];
         products?: string[];
         items?: string[];
+        ids?: string[];
         /** Number of return items */
         limit?: number;
         /** Number of skip items */
@@ -3024,6 +3055,44 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         path: `/orders/my/search`,
         method: "POST",
         body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Orders
+     * @name GetOrdersStats
+     * @summary Get stats of my orders
+     * @request GET:/orders/my/stats
+     * @secure
+     */
+    getOrdersStats: (params: RequestParams = {}) =>
+      this.http.request<
+        {
+          orders: {
+            created: number;
+            paid: number;
+            failed: number;
+            cancelled: number;
+            completed: number;
+          };
+          positions: {
+            created: number;
+            confirmed: number;
+            production: number;
+            delivery: number;
+            cancelled: number;
+            completed: number;
+            dispute: number;
+            returned: number;
+          };
+        },
+        any
+      >({
+        path: `/orders/my/stats`,
+        method: "GET",
         secure: true,
         ...params,
       }),
@@ -3056,7 +3125,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
           amount: number;
           /** Price that is shown */
           price: number;
-        };
+        }[];
       },
       params: RequestParams = {},
     ) =>
@@ -3078,7 +3147,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @secure
      */
     getOrder: (id: string, params: RequestParams = {}) =>
-      this.http.request<OrderWithData, ErrorResponse>({
+      this.http.request<OrderWithFullData, ErrorResponse>({
         path: `/orders/${id}`,
         method: "GET",
         secure: true,
@@ -3870,6 +3939,10 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         products?: string[];
         folders?: string[];
         filters?: ProductFilter[];
+        /** Returns liked items (only for authorized requests) */
+        isLiked?: boolean;
+        /** Returns bought items (only for authorized requests) */
+        isBought?: boolean;
         /** Number of return items */
         limit?: number;
         /** Number of skip items */
@@ -3950,6 +4023,63 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       this.http.request<ProductCardWithData, ErrorResponse>({
         path: `/products/cards/${id}`,
         method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Products
+     * @name AddProductCardLike
+     * @summary Add product card like
+     * @request POST:/products/cards/{id}/like
+     * @secure
+     */
+    addProductCardLike: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProductCardWithData, ErrorResponse>({
+        path: `/products/cards/${id}/like`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Products
+     * @name RemoveProductCardLike
+     * @summary Remove product card like
+     * @request DELETE:/products/cards/{id}/like
+     * @secure
+     */
+    removeProductCardLike: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProductCardWithData, ErrorResponse>({
+        path: `/products/cards/${id}/like`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Products
+     * @name GetProductsStats
+     * @summary Get products statistics
+     * @request GET:/products/stats
+     * @secure
+     */
+    getProductsStats: (params: RequestParams = {}) =>
+      this.http.request<
+        {
+          liked: number;
+          bought: number;
+        },
+        any
+      >({
+        path: `/products/stats`,
+        method: "GET",
+        secure: true,
         ...params,
       }),
   };

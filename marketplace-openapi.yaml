@@ -142,6 +142,7 @@ paths:
                     - payload
                     - signature
                     - timestamp
+                    - domain
                   properties:
                     payload:
                       type: string
@@ -152,20 +153,35 @@ paths:
                     timestamp:
                       type: number
                       description: Timestamp of authentication
+                    domain:
+                      type: object
+                      required:
+                        - lengthBytes
+                        - value
+                      properties:
+                        lengthBytes:
+                          type: number
+                        value:
+                          type: string
                 account:
                   type: object
                   required:
                     - address
-                    - chain
+                    - network
+                    - publicKey
+                    - walletStateInit
                   properties:
                     address:
                       type: string
                       description: Wallet Address
                       example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
-                    chain:
+                    network:
                       type: string
                       description: Blockchain chain
                     publicKey:
+                      type: string
+                      description: Wallet Public Key
+                    walletStateInit:
                       type: string
                       description: Wallet Public Key
       responses:
@@ -922,6 +938,19 @@ paths:
           $ref: "#/components/responses/InvalidData"
         "401":
           $ref: "#/components/responses/Unauthorized"
+  /orders/my/stats:
+    get:
+      tags:
+        - Orders
+      security:
+        - BearerAuth: []
+      summary: Get stats of my orders
+      operationId: getOrdersStats
+      responses:
+        "200":
+          $ref: "#/components/responses/OrdersStatsData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /orders:
     post:
       tags:
@@ -949,7 +978,7 @@ paths:
         - $ref: "#/components/parameters/orderIdParam"
       responses:
         "200":
-          $ref: "#/components/responses/OrderWithData"
+          $ref: "#/components/responses/OrderWithFullData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1558,6 +1587,56 @@ paths:
           $ref: "#/components/responses/ProductCardWithData"
         "404":
           $ref: "#/components/responses/ProductItemNotFound"
+  "/products/cards/{id}/like":
+    post:
+      tags:
+        - Products
+      security:
+        - BearerAuth: []
+      summary: Add product card like
+      operationId: addProductCardLike
+      parameters:
+        - $ref: "#/components/parameters/productItemIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductCardWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ProductItemNotFound"
+    delete:
+      tags:
+        - Products
+      security:
+        - BearerAuth: []
+      summary: Remove product card like
+      operationId: removeProductCardLike
+      parameters:
+        - $ref: "#/components/parameters/productItemIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductCardWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ProductItemNotFound"
+  /products/stats:
+    get:
+      tags:
+        - Products
+      security:
+        - BearerAuth: []
+      summary: Get products statistics
+      operationId: getProductsStats
+      responses:
+        "200":
+          $ref: "#/components/responses/ProductStatsData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   "/providers/{id}/profile":
     get:
       tags:
@@ -2262,11 +2341,16 @@ components:
           type: string
           enum:
             - created
+            - processing
             - paid
             - failed
             - cancelled
             - completed
           description: Order status
+        placeId:
+          type: string
+          format: uuid
+          description: Pick-up place ID
         totalPrice:
           type: number
           description: Total order price, can be changed if some position will be canceled
@@ -2305,14 +2389,15 @@ components:
           type: string
           enum:
             - created
-            - paid
             - confirmed
             - production
             - delivery
+            - cancelling
             - cancelled
             - completed
             - dispute
             - returned
+            - failed
           description: Order Position status
         txHash:
           type: string
@@ -2345,14 +2430,15 @@ components:
           type: string
           enum:
             - created
-            - paid
             - confirmed
             - production
             - delivery
+            - cancelling
             - cancelled
             - completed
             - dispute
             - returned
+            - failed
           description: Order Position status
         txHash:
           type: string
@@ -2382,11 +2468,16 @@ components:
           type: string
           enum:
             - created
+            - processing
             - paid
             - failed
             - cancelled
             - completed
           description: Order status
+        placeId:
+          type: string
+          format: uuid
+          description: Pick-up place ID
         totalPrice:
           type: number
           description: Total order price, can be changed if some position will be canceled
@@ -2433,11 +2524,16 @@ components:
           type: string
           enum:
             - created
+            - processing
             - paid
             - failed
             - cancelled
             - completed
           description: Order status
+        placeId:
+          type: string
+          format: uuid
+          description: Pick-up place ID
         totalPrice:
           type: number
           description: Total order price, can be changed if some position will be canceled
@@ -2491,11 +2587,16 @@ components:
           type: string
           enum:
             - created
+            - processing
             - paid
             - failed
             - cancelled
             - completed
           description: Order status
+        placeId:
+          type: string
+          format: uuid
+          description: Pick-up place ID
         totalPrice:
           type: number
           description: Total order price, can be changed if some position will be canceled
@@ -2557,14 +2658,15 @@ components:
           type: string
           enum:
             - created
-            - paid
             - confirmed
             - production
             - delivery
+            - cancelling
             - cancelled
             - completed
             - dispute
             - returned
+            - failed
           description: Order Position status
         txHash:
           type: string
@@ -2627,14 +2729,15 @@ components:
           type: string
           enum:
             - created
-            - paid
             - confirmed
             - production
             - delivery
+            - cancelling
             - cancelled
             - completed
             - dispute
             - returned
+            - failed
           description: Order Position status
         txHash:
           type: string
@@ -4391,6 +4494,7 @@ components:
                 type: string
                 enum:
                   - created
+                  - processing
                   - paid
                   - failed
                   - cancelled
@@ -4444,6 +4548,7 @@ components:
                 type: string
                 enum:
                   - created
+                  - processing
                   - paid
                   - failed
                   - cancelled
@@ -4472,6 +4577,12 @@ components:
                   type: string
                   format: uuid
                   description: Product Item ID
+              ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Order ID
               limit:
                 type: number
                 description: Number of return items
@@ -4500,22 +4611,24 @@ components:
                 type: number
                 description: Total order price
               positions:
-                type: object
-                required:
-                  - itemId
-                  - amount
-                  - price
-                properties:
-                  itemId:
-                    type: string
-                    format: uuid
-                    description: Product Item ID
-                  amount:
-                    type: number
-                    description: Amount of item
-                  price:
-                    type: number
-                    description: Price that is shown
+                type: array
+                items:
+                  type: object
+                  required:
+                    - itemId
+                    - amount
+                    - price
+                  properties:
+                    itemId:
+                      type: string
+                      format: uuid
+                      description: Product Item ID
+                    amount:
+                      type: number
+                      description: Amount of item
+                    price:
+                      type: number
+                      description: Price that is shown
     EditOrderBody:
       content:
         application/json:
@@ -4777,6 +4890,12 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/ProductFilter"
+              isLiked:
+                type: boolean
+                description: Returns liked items (only for authorized requests)
+              isBought:
+                type: boolean
+                description: Returns bought items (only for authorized requests)
               limit:
                 type: number
                 description: Number of return items
@@ -5672,6 +5791,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderWithData"
+    OrderWithFullData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderWithFullData"
     SearchOrders:
       description: Successful operation
       content:
@@ -5706,6 +5831,63 @@ components:
           example:
             errorCode: order:404-position
             message: Order position not found
+    OrdersStatsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - orders
+              - positions
+            properties:
+              orders:
+                type: object
+                required:
+                  - created
+                  - paid
+                  - failed
+                  - cancelled
+                  - completed
+                properties:
+                  created:
+                    type: number
+                  paid:
+                    type: number
+                  failed:
+                    type: number
+                  cancelled:
+                    type: number
+                  completed:
+                    type: number
+              positions:
+                type: object
+                required:
+                  - created
+                  - confirmed
+                  - production
+                  - delivery
+                  - cancelled
+                  - completed
+                  - dispute
+                  - returned
+                properties:
+                  created:
+                    type: number
+                  confirmed:
+                    type: number
+                  production:
+                    type: number
+                  delivery:
+                    type: number
+                  cancelled:
+                    type: number
+                  completed:
+                    type: number
+                  dispute:
+                    type: number
+                  returned:
+                    type: number
     PlaceData:
       description: Successful operation
       content:
@@ -5892,6 +6074,20 @@ components:
           example:
             errorCode: product:404-batch
             message: Product batch not found
+    ProductStatsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - liked
+              - bought
+            properties:
+              liked:
+                type: number
+              bought:
+                type: number
     ProviderProfileResponse:
       description: Successful operation
       content:
