@@ -4,7 +4,7 @@ info:
   version: 1.0.0
 servers:
   - url: https://localhost:8082
-  - url: https://b2p.space/api
+  - url: https://market.b2p.space/api
 tags:
   - name: Apps
   - name: Auth
@@ -18,6 +18,7 @@ tags:
   - name: Products
   - name: Places
   - name: Orders
+  - name: Delivery
   - name: Available Public
     description: This methods does not require authorization
   - name: Available Providers
@@ -528,6 +529,138 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/AdminAccessNotFound"
+  "/delivery/idt/{id}/info":
+    get:
+      tags:
+        - Delivery
+      summary: Get public data of delivery idT
+      operationId: getDeliveryIdtPublic
+      parameters:
+        - $ref: "#/components/parameters/idTKeyParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DeliveryIdtBase"
+        "404":
+          $ref: "#/components/responses/DeliveryIdtNotFound"
+  /delivery/idt/search:
+    post:
+      tags:
+        - Delivery
+      security:
+        - BearerAuth: []
+      summary: Search delivery idT
+      description: Available for `System Admin`
+      operationId: searchDeliveryIdt
+      requestBody:
+        $ref: "#/components/requestBodies/SearchDeliveryIdtBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchDeliveryIdt"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /delivery/idt/prefixes:
+    get:
+      tags:
+        - Delivery
+      security:
+        - BearerAuth: []
+      summary: Get prefixes of delivery idT and latest key
+      description: Available for `System Admin`
+      operationId: getDeliveryIdtPrefixes
+      responses:
+        "200":
+          $ref: "#/components/responses/DeliveryIdtPrefixes"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /delivery/idt:
+    post:
+      tags:
+        - Delivery
+      security:
+        - BearerAuth: []
+      summary: Create new delivery idT
+      description: Available for `System Admin`
+      operationId: createDeliveryIdt
+      requestBody:
+        $ref: "#/components/requestBodies/CreateDeliveryIdtBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DeliveryIdtWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/delivery/idt/{id}":
+    get:
+      tags:
+        - Delivery
+      security:
+        - BearerAuth: []
+      summary: Get delivery idT
+      description: Available for `System Admin`
+      operationId: getDeliveryIdt
+      parameters:
+        - $ref: "#/components/parameters/idTParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DeliveryIdtWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DeliveryIdtNotFound"
+    patch:
+      tags:
+        - Delivery
+      security:
+        - BearerAuth: []
+      summary: Update delivery idT
+      description: Available for `System Admin` or `responsible` wallet
+      operationId: updateDeliveryIdt
+      parameters:
+        - $ref: "#/components/parameters/idTParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditDeliveryIdtBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DeliveryIdtWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DeliveryIdtNotFound"
+  "/delivery/idt/{id}/rebuild":
+    post:
+      tags:
+        - Delivery
+      security:
+        - BearerAuth: []
+      summary: Rebuild delivery idT
+      description: Available for `System Admin`
+      operationId: rebuildDeliveryIdt
+      parameters:
+        - $ref: "#/components/parameters/idTParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DeliveryIdtWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DeliveryIdtNotFound"
   /files:
     post:
       tags:
@@ -2036,6 +2169,147 @@ components:
           description: Creation Date
         userData:
           $ref: "#/components/schemas/User"
+    DeliveryIdtBase:
+      type: object
+      required:
+        - id
+        - key
+        - status
+        - responsible
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Delivery idT ID
+        key:
+          type: string
+          description: Delivery idT unique key in format `A_000001`
+        status:
+          type: string
+          enum:
+            - created
+            - storage
+            - delivery
+            - provider
+            - list
+            - destroyed
+          description: Delivery idT status
+        responsible:
+          type: string
+          description: Wallet of responsible user
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+    DeliveryIdt:
+      type: object
+      required:
+        - id
+        - key
+        - status
+        - responsible
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Delivery idT ID
+        key:
+          type: string
+          description: Delivery idT unique key in format `A_000001`
+        status:
+          type: string
+          enum:
+            - created
+            - storage
+            - delivery
+            - provider
+            - list
+            - destroyed
+          description: Delivery idT status
+        responsible:
+          type: string
+          description: Wallet of responsible user
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdBy:
+          type: string
+          description: Wallet Address
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Delete Date
+    DeliveryIdtWithData:
+      type: object
+      required:
+        - id
+        - key
+        - status
+        - responsible
+        - createdBy
+        - createdAt
+        - updatedAt
+        - createdByData
+        - responsibleData
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Delivery idT ID
+        key:
+          type: string
+          description: Delivery idT unique key in format `A_000001`
+        status:
+          type: string
+          enum:
+            - created
+            - storage
+            - delivery
+            - provider
+            - list
+            - destroyed
+          description: Delivery idT status
+        responsible:
+          type: string
+          description: Wallet of responsible user
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        createdBy:
+          type: string
+          description: Wallet Address
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Delete Date
+        createdByData:
+          $ref: "#/components/schemas/User"
+        responsibleData:
+          $ref: "#/components/schemas/User"
+        providerName:
+          type: string
+          description: Provider Name
     DictionaryWord:
       type: object
       required:
@@ -4104,6 +4378,21 @@ components:
       required: true
       schema:
         type: string
+    idTParam:
+      in: path
+      name: id
+      description: Delivery idT ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    idTKeyParam:
+      in: path
+      name: id
+      description: Delivery idT key or ID
+      required: true
+      schema:
+        type: string
     fileIdParam:
       in: path
       name: id
@@ -4318,6 +4607,88 @@ components:
                 type: string
                 description: Wallet Address
                 example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+    SearchDeliveryIdtBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum:
+                  - created
+                  - storage
+                  - delivery
+                  - provider
+                  - list
+                  - destroyed
+              keys:
+                type: array
+                items:
+                  type: string
+                  description: Delivery idT unique key in format `A_000001`
+              searchTerm:
+                type: string
+                description: Partial idT key
+              ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Delivery idT ID
+              responsible:
+                type: array
+                items:
+                  type: string
+                  description: Delivery idT responsible wallet
+              providers:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  description: Provider ID
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    CreateDeliveryIdtBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - prefix
+            properties:
+              prefix:
+                type: string
+                minLength: 1
+                maxLength: 3
+                description: Start prefix of idT unique key. Min length - 1, max length - 3.
+    EditDeliveryIdtBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum:
+                  - created
+                  - storage
+                  - delivery
+                  - provider
+                  - list
+                  - destroyed
+                description: Delivery idT status
+              responsible:
+                type: string
+                description: Wallet of responsible user
     UploadFileBody:
       content:
         multipart/form-data:
@@ -5615,6 +5986,49 @@ components:
           example:
             errorCode: admin-access:404
             message: User has no admin access
+    DeliveryIdtBase:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DeliveryIdtBase"
+    DeliveryIdtWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DeliveryIdtWithData"
+    SearchDeliveryIdt:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeliveryIdtWithData"
+    DeliveryIdtNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: delivery:idt:404
+            message: Delivery idT not found
+    DeliveryIdtPrefixes:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
     FileBinary:
       description: Successful operation
       content:

@@ -192,6 +192,101 @@ export interface AdminAccess {
   userData?: User;
 }
 
+export interface DeliveryIdtBase {
+  /**
+   * Delivery idT ID
+   * @format uuid
+   */
+  id: string;
+  /** Delivery idT unique key in format `A_000001` */
+  key: string;
+  /** Delivery idT status */
+  status: "created" | "storage" | "delivery" | "provider" | "list" | "destroyed";
+  /** Wallet of responsible user */
+  responsible: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId?: string;
+}
+
+export interface DeliveryIdt {
+  /**
+   * Delivery idT ID
+   * @format uuid
+   */
+  id: string;
+  /** Delivery idT unique key in format `A_000001` */
+  key: string;
+  /** Delivery idT status */
+  status: "created" | "storage" | "delivery" | "provider" | "list" | "destroyed";
+  /** Wallet of responsible user */
+  responsible: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId?: string;
+  /** Wallet Address */
+  createdBy: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string;
+}
+
+export interface DeliveryIdtWithData {
+  /**
+   * Delivery idT ID
+   * @format uuid
+   */
+  id: string;
+  /** Delivery idT unique key in format `A_000001` */
+  key: string;
+  /** Delivery idT status */
+  status: "created" | "storage" | "delivery" | "provider" | "list" | "destroyed";
+  /** Wallet of responsible user */
+  responsible: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId?: string;
+  /** Wallet Address */
+  createdBy: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string;
+  createdByData: User;
+  responsibleData: User;
+  /** Provider Name */
+  providerName?: string;
+}
+
 export interface DictionaryWord {
   /**
    * Word ID
@@ -1778,8 +1873,8 @@ export class HttpClient<SecurityDataType = unknown> {
           property instanceof Blob
             ? property
             : typeof property === "object" && property !== null
-            ? JSON.stringify(property)
-            : `${property}`,
+              ? JSON.stringify(property)
+              : `${property}`,
         );
         return formData;
       }, new FormData()),
@@ -1852,7 +1947,7 @@ export class HttpClient<SecurityDataType = unknown> {
       signal: (cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal) || null,
       body: typeof body === "undefined" || body === null ? null : payloadFormatter(body),
     }).then(async (response) => {
-      const r = response as HttpResponse<T, E>;
+      const r = response.clone() as HttpResponse<T, E>;
       r.data = null as unknown as T;
       r.error = null as unknown as E;
 
@@ -2505,6 +2600,168 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       this.http.request<AdminAccess, ErrorResponse>({
         path: `/admin-access/${wallet}`,
         method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+  };
+  delivery = {
+    /**
+     * No description
+     *
+     * @tags Delivery
+     * @name GetDeliveryIdtPublic
+     * @summary Get public data of delivery idT
+     * @request GET:/delivery/idt/{id}/info
+     */
+    getDeliveryIdtPublic: (id: string, params: RequestParams = {}) =>
+      this.http.request<DeliveryIdtBase, ErrorResponse>({
+        path: `/delivery/idt/${id}/info`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Delivery
+     * @name SearchDeliveryIdt
+     * @summary Search delivery idT
+     * @request POST:/delivery/idt/search
+     * @secure
+     */
+    searchDeliveryIdt: (
+      data: {
+        status?: "created" | "storage" | "delivery" | "provider" | "list" | "destroyed";
+        keys?: string[];
+        /** Partial idT key */
+        searchTerm?: string;
+        ids?: string[];
+        responsible?: string[];
+        providers?: string[];
+        /** Number of return items */
+        limit?: number;
+        /** Number of skip items */
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: DeliveryIdtWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/delivery/idt/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Delivery
+     * @name GetDeliveryIdtPrefixes
+     * @summary Get prefixes of delivery idT and latest key
+     * @request GET:/delivery/idt/prefixes
+     * @secure
+     */
+    getDeliveryIdtPrefixes: (params: RequestParams = {}) =>
+      this.http.request<object, ErrorResponse>({
+        path: `/delivery/idt/prefixes`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Delivery
+     * @name CreateDeliveryIdt
+     * @summary Create new delivery idT
+     * @request POST:/delivery/idt
+     * @secure
+     */
+    createDeliveryIdt: (
+      data: {
+        /**
+         * Start prefix of idT unique key. Min length - 1, max length - 3.
+         * @minLength 1
+         * @maxLength 3
+         */
+        prefix: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DeliveryIdtWithData, ErrorResponse>({
+        path: `/delivery/idt`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Delivery
+     * @name GetDeliveryIdt
+     * @summary Get delivery idT
+     * @request GET:/delivery/idt/{id}
+     * @secure
+     */
+    getDeliveryIdt: (id: string, params: RequestParams = {}) =>
+      this.http.request<DeliveryIdtWithData, ErrorResponse>({
+        path: `/delivery/idt/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin` or `responsible` wallet
+     *
+     * @tags Delivery
+     * @name UpdateDeliveryIdt
+     * @summary Update delivery idT
+     * @request PATCH:/delivery/idt/{id}
+     * @secure
+     */
+    updateDeliveryIdt: (
+      id: string,
+      data: {
+        /** Delivery idT status */
+        status?: "created" | "storage" | "delivery" | "provider" | "list" | "destroyed";
+        /** Wallet of responsible user */
+        responsible?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DeliveryIdtWithData, ErrorResponse>({
+        path: `/delivery/idt/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Delivery
+     * @name RebuildDeliveryIdt
+     * @summary Rebuild delivery idT
+     * @request POST:/delivery/idt/{id}/rebuild
+     * @secure
+     */
+    rebuildDeliveryIdt: (id: string, params: RequestParams = {}) =>
+      this.http.request<DeliveryIdtWithData, ErrorResponse>({
+        path: `/delivery/idt/${id}/rebuild`,
+        method: "POST",
         secure: true,
         ...params,
       }),
