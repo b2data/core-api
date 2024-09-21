@@ -1,8 +1,8 @@
-# openapi.model.StartAuth200Response
+# b2delivery.model.StartAuth200Response
 
 ## Load the model package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 ```
 
 ## Properties

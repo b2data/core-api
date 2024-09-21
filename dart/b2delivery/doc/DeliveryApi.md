@@ -1,8 +1,8 @@
-# openapi.api.DeliveryApi
+# b2delivery.api.DeliveryApi
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 ```
 
 All URIs are relative to *https://localhost:8082*
@@ -27,9 +27,9 @@ Available for `System Admin`
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getDeliveryApi();
+final api = B2delivery().getDeliveryApi();
 final CreateDeliveryIdtRequest createDeliveryIdtRequest = ; // CreateDeliveryIdtRequest | 
 
 try {
@@ -70,9 +70,9 @@ Available for `System Admin`
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getDeliveryApi();
+final api = B2delivery().getDeliveryApi();
 final String id = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | Delivery idT ID
 
 try {
@@ -113,9 +113,9 @@ Available for `System Admin`
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getDeliveryApi();
+final api = B2delivery().getDeliveryApi();
 
 try {
     final response = api.getDeliveryIdtPrefixes();
@@ -150,9 +150,9 @@ Get public data of delivery idT
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getDeliveryApi();
+final api = B2delivery().getDeliveryApi();
 final String id = id_example; // String | Delivery idT key or ID
 
 try {
@@ -193,9 +193,9 @@ Available for `System Admin`
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getDeliveryApi();
+final api = B2delivery().getDeliveryApi();
 final String id = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | Delivery idT ID
 
 try {
@@ -236,9 +236,9 @@ Available for `System Admin`
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getDeliveryApi();
+final api = B2delivery().getDeliveryApi();
 final SearchDeliveryIdtRequest searchDeliveryIdtRequest = ; // SearchDeliveryIdtRequest | 
 
 try {
@@ -279,9 +279,9 @@ Available for `System Admin` or `responsible` wallet
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getDeliveryApi();
+final api = B2delivery().getDeliveryApi();
 final String id = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | Delivery idT ID
 final UpdateDeliveryIdtRequest updateDeliveryIdtRequest = ; // UpdateDeliveryIdtRequest | 
 

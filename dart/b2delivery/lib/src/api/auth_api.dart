@@ -8,14 +8,14 @@ import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
+import 'package:b2delivery/src/model/error_response.dart';
+import 'package:b2delivery/src/model/refresh_token_request.dart';
+import 'package:b2delivery/src/model/start_auth200_response.dart';
+import 'package:b2delivery/src/model/update_profile_request.dart';
+import 'package:b2delivery/src/model/user.dart';
+import 'package:b2delivery/src/model/verify_auth200_response.dart';
+import 'package:b2delivery/src/model/verify_auth_request.dart';
 import 'package:built_value/json_object.dart';
-import 'package:openapi/src/model/error_response.dart';
-import 'package:openapi/src/model/refresh_token_request.dart';
-import 'package:openapi/src/model/start_auth200_response.dart';
-import 'package:openapi/src/model/update_profile_request.dart';
-import 'package:openapi/src/model/user.dart';
-import 'package:openapi/src/model/verify_auth200_response.dart';
-import 'package:openapi/src/model/verify_auth_request.dart';
 
 class AuthApi {
 

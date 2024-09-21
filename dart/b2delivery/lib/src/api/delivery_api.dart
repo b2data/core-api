@@ -8,15 +8,15 @@ import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
+import 'package:b2delivery/src/api_util.dart';
+import 'package:b2delivery/src/model/create_delivery_idt_request.dart';
+import 'package:b2delivery/src/model/delivery_idt_base.dart';
+import 'package:b2delivery/src/model/delivery_idt_with_data.dart';
+import 'package:b2delivery/src/model/error_response.dart';
+import 'package:b2delivery/src/model/search_delivery_idt200_response.dart';
+import 'package:b2delivery/src/model/search_delivery_idt_request.dart';
+import 'package:b2delivery/src/model/update_delivery_idt_request.dart';
 import 'package:built_value/json_object.dart';
-import 'package:openapi/src/api_util.dart';
-import 'package:openapi/src/model/create_delivery_idt_request.dart';
-import 'package:openapi/src/model/delivery_idt_base.dart';
-import 'package:openapi/src/model/delivery_idt_with_data.dart';
-import 'package:openapi/src/model/error_response.dart';
-import 'package:openapi/src/model/search_delivery_idt200_response.dart';
-import 'package:openapi/src/model/search_delivery_idt_request.dart';
-import 'package:openapi/src/model/update_delivery_idt_request.dart';
 
 class DeliveryApi {
 

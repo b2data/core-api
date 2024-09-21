@@ -3,8 +3,8 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:openapi/src/model/verify_auth_request_proof.dart';
-import 'package:openapi/src/model/verify_auth_request_account.dart';
+import 'package:b2delivery/src/model/verify_auth_request_account.dart';
+import 'package:b2delivery/src/model/verify_auth_request_proof.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 

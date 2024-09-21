@@ -1,8 +1,8 @@
-# openapi.api.AvailableProvidersApi
+# b2delivery.api.AvailableProvidersApi
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 ```
 
 All URIs are relative to *https://localhost:8082*
@@ -22,7 +22,7 @@ Delete by file ID or external ID
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 // TODO Configure API key authorization: ProviderUserId
 //defaultApiClient.getAuthentication<ApiKeyAuth>('ProviderUserId').apiKey = 'YOUR_API_KEY';
 // uncomment below to setup prefix (e.g. Bearer) for API key, if needed
@@ -36,7 +36,7 @@ import 'package:openapi/api.dart';
 // uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 //defaultApiClient.getAuthentication<ApiKeyAuth>('ProviderClientSecret').apiKeyPrefix = 'Bearer';
 
-final api = Openapi().getAvailableProvidersApi();
+final api = B2delivery().getAvailableProvidersApi();
 final String id = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | File ID
 
 try {
@@ -75,7 +75,7 @@ Upload file
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 // TODO Configure API key authorization: ProviderUserId
 //defaultApiClient.getAuthentication<ApiKeyAuth>('ProviderUserId').apiKey = 'YOUR_API_KEY';
 // uncomment below to setup prefix (e.g. Bearer) for API key, if needed
@@ -89,7 +89,7 @@ import 'package:openapi/api.dart';
 // uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 //defaultApiClient.getAuthentication<ApiKeyAuth>('ProviderClientSecret').apiKeyPrefix = 'Bearer';
 
-final api = Openapi().getAvailableProvidersApi();
+final api = B2delivery().getAvailableProvidersApi();
 final String id = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | If set and file exists then file content will be overwritten
 final String externalId = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | External file ID
 final MultipartFile file = BINARY_DATA_HERE; // MultipartFile | 

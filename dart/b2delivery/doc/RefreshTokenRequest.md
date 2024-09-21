@@ -1,8 +1,8 @@
-# openapi.model.RefreshTokenRequest
+# b2delivery.model.RefreshTokenRequest
 
 ## Load the model package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 ```
 
 ## Properties

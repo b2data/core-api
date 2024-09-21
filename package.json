@@ -10,7 +10,7 @@
     "gen:apps": "swagger-typescript-api -p apps-openapi.yaml ${npm_package_config_gen} --api-class-name AppsApi -n AppsApi.ts",
     "gen:dictionary": "swagger-typescript-api -p dictionary-openapi.yaml ${npm_package_config_gen} --api-class-name DictionaryApi -n DictionaryApi.ts",
     "gen:marketplace": "swagger-typescript-api -p marketplace-openapi.yaml ${npm_package_config_gen} --api-class-name MarketplaceApi -n MarketplaceApi.ts",
-    "gen:marketplace:delivery": "openapi-generator-cli generate -i marketplace-delivery-openapi.yaml -g dart-dio -o ./dart/b2delivery"
+    "gen:marketplace:delivery": "openapi-generator-cli generate -i marketplace-delivery-openapi.yaml -g dart-dio -o ./dart/b2delivery --additional-properties=pubName=b2delivery"
   },
   "config": {
     "gen": "--unwrap-response-data --module-name-first-tag --single-http-client --union-enums"

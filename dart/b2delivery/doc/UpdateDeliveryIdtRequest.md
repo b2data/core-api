@@ -1,8 +1,8 @@
-# openapi.model.UpdateDeliveryIdtRequest
+# b2delivery.model.UpdateDeliveryIdtRequest
 
 ## Load the model package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 ```
 
 ## Properties

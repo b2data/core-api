@@ -4,24 +4,24 @@
 
 import 'package:dio/dio.dart';
 import 'package:built_value/serializer.dart';
-import 'package:openapi/src/serializers.dart';
-import 'package:openapi/src/auth/api_key_auth.dart';
-import 'package:openapi/src/auth/basic_auth.dart';
-import 'package:openapi/src/auth/bearer_auth.dart';
-import 'package:openapi/src/auth/oauth.dart';
-import 'package:openapi/src/api/auth_api.dart';
-import 'package:openapi/src/api/available_providers_api.dart';
-import 'package:openapi/src/api/available_public_api.dart';
-import 'package:openapi/src/api/delivery_api.dart';
-import 'package:openapi/src/api/files_api.dart';
+import 'package:b2delivery/src/serializers.dart';
+import 'package:b2delivery/src/auth/api_key_auth.dart';
+import 'package:b2delivery/src/auth/basic_auth.dart';
+import 'package:b2delivery/src/auth/bearer_auth.dart';
+import 'package:b2delivery/src/auth/oauth.dart';
+import 'package:b2delivery/src/api/auth_api.dart';
+import 'package:b2delivery/src/api/available_providers_api.dart';
+import 'package:b2delivery/src/api/available_public_api.dart';
+import 'package:b2delivery/src/api/delivery_api.dart';
+import 'package:b2delivery/src/api/files_api.dart';
 
-class Openapi {
+class B2delivery {
   static const String basePath = r'https://localhost:8082';
 
   final Dio dio;
   final Serializers serializers;
 
-  Openapi({
+  B2delivery({
     Dio? dio,
     Serializers? serializers,
     String? basePathOverride,

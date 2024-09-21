@@ -1,8 +1,8 @@
-# openapi.model.VerifyAuthRequestProofDomain
+# b2delivery.model.VerifyAuthRequestProofDomain
 
 ## Load the model package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 ```
 
 ## Properties

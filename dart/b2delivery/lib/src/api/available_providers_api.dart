@@ -8,9 +8,9 @@ import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
-import 'package:openapi/src/api_util.dart';
-import 'package:openapi/src/model/error_response.dart';
-import 'package:openapi/src/model/file_data.dart';
+import 'package:b2delivery/src/api_util.dart';
+import 'package:b2delivery/src/model/error_response.dart';
+import 'package:b2delivery/src/model/file_data.dart';
 
 class AvailableProvidersApi {
 

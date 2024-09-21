@@ -1,8 +1,8 @@
-# openapi.api.AvailablePublicApi
+# b2delivery.api.AvailablePublicApi
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 ```
 
 All URIs are relative to *https://localhost:8082*
@@ -20,9 +20,9 @@ Get file
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getAvailablePublicApi();
+final api = B2delivery().getAvailablePublicApi();
 final String id = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | File ID
 
 try {
@@ -61,9 +61,9 @@ Get file info
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getAvailablePublicApi();
+final api = B2delivery().getAvailablePublicApi();
 final String id = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | File ID
 
 try {

@@ -1,8 +1,8 @@
-# openapi.api.AuthApi
+# b2delivery.api.AuthApi
 
 ## Load the API package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 ```
 
 All URIs are relative to *https://localhost:8082*
@@ -23,9 +23,9 @@ Get Profile
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getAuthApi();
+final api = B2delivery().getAuthApi();
 
 try {
     final response = api.getProfile();
@@ -60,9 +60,9 @@ Refresh Access Token by Refresh token
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getAuthApi();
+final api = B2delivery().getAuthApi();
 final RefreshTokenRequest refreshTokenRequest = ; // RefreshTokenRequest | 
 
 try {
@@ -101,9 +101,9 @@ Start authentication process
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getAuthApi();
+final api = B2delivery().getAuthApi();
 final JsonObject body = Object; // JsonObject | 
 
 try {
@@ -142,9 +142,9 @@ Update Profile
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getAuthApi();
+final api = B2delivery().getAuthApi();
 final UpdateProfileRequest updateProfileRequest = ; // UpdateProfileRequest | 
 
 try {
@@ -183,9 +183,9 @@ Verify authentication wallet
 
 ### Example
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 
-final api = Openapi().getAuthApi();
+final api = B2delivery().getAuthApi();
 final VerifyAuthRequest verifyAuthRequest = ; // VerifyAuthRequest | 
 
 try {

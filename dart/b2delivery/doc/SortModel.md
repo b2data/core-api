@@ -1,8 +1,8 @@
-# openapi.model.SortModel
+# b2delivery.model.SortModel
 
 ## Load the model package
 ```dart
-import 'package:openapi/api.dart';
+import 'package:b2delivery/api.dart';
 ```
 
 ## Properties
