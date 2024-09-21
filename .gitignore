@@ -8,3 +8,4 @@ dist
 .npmrc
 .yarnrc
 *.js
+openapitools.json

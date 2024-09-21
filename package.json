@@ -1,15 +1,16 @@
 {
   "name": "@b2data/core-api",
   "description": "Core API interfaces",
-  "version": "1.0.42",
+  "version": "1.0.43",
   "scripts": {
     "build": "tsc",
-    "gen": "npm run gen:auth && npm run gen:providers && npm run gen:apps && npm run gen:dictionary && npm run gen:marketplace",
+    "gen": "npm run gen:auth && npm run gen:providers && npm run gen:apps && npm run gen:dictionary && npm run gen:marketplace && npm run gen:marketplace:delivery",
     "gen:auth": "swagger-typescript-api -p auth-openapi.yaml ${npm_package_config_gen} --api-class-name AuthApi -n AuthApi.ts",
     "gen:providers": "swagger-typescript-api -p providers-openapi.yaml ${npm_package_config_gen} --api-class-name ProvidersApi -n ProvidersApi.ts",
     "gen:apps": "swagger-typescript-api -p apps-openapi.yaml ${npm_package_config_gen} --api-class-name AppsApi -n AppsApi.ts",
     "gen:dictionary": "swagger-typescript-api -p dictionary-openapi.yaml ${npm_package_config_gen} --api-class-name DictionaryApi -n DictionaryApi.ts",
-    "gen:marketplace": "swagger-typescript-api -p marketplace-openapi.yaml ${npm_package_config_gen} --api-class-name MarketplaceApi -n MarketplaceApi.ts"
+    "gen:marketplace": "swagger-typescript-api -p marketplace-openapi.yaml ${npm_package_config_gen} --api-class-name MarketplaceApi -n MarketplaceApi.ts",
+    "gen:marketplace:delivery": "openapi-generator-cli generate -i marketplace-delivery-openapi.yaml -g dart-dio -o ./dart/b2delivery"
   },
   "config": {
     "gen": "--unwrap-response-data --module-name-first-tag --single-http-client --union-enums"
@@ -27,6 +28,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.13.7",
     "swagger-typescript-api": "^13.0.3"
   }
 }
