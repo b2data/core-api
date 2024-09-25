@@ -1138,14 +1138,16 @@ components:
             type: object
             properties:
               status:
-                type: string
-                enum:
-                  - created
-                  - storage
-                  - delivery
-                  - provider
-                  - lost
-                  - destroyed
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - created
+                    - storage
+                    - delivery
+                    - provider
+                    - lost
+                    - destroyed
               keys:
                 type: array
                 items:

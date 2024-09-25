@@ -53,6 +53,25 @@ Serializers _$serializers = (new Serializers().toBuilder()
               BuiltList, const [const FullType(DeliveryIdtWithData)]),
           () => new ListBuilder<DeliveryIdtWithData>())
       ..addBuilderFactory(
+          const FullType(BuiltList,
+              const [const FullType(SearchDeliveryIdtRequestStatusEnum)]),
+          () => new ListBuilder<SearchDeliveryIdtRequestStatusEnum>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => new ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => new ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => new ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => new ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(SortModel)]),
+          () => new ListBuilder<SortModel>())
+      ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(SortModel)]),
           () => new ListBuilder<SortModel>())
       ..addBuilderFactory(
@@ -61,21 +80,6 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(SortModel)]),
           () => new ListBuilder<SortModel>())
-      ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>())
-      ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(SortModel)]),
-          () => new ListBuilder<SortModel>())
-      ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>())
-      ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>())
-      ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
           () => new ListBuilder<String>())

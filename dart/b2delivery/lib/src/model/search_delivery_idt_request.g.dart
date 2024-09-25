@@ -100,7 +100,7 @@ class _$SearchDeliveryIdtRequestStatusEnumSerializer
 
 class _$SearchDeliveryIdtRequest extends SearchDeliveryIdtRequest {
   @override
-  final SearchDeliveryIdtRequestStatusEnum? status;
+  final BuiltList<SearchDeliveryIdtRequestStatusEnum>? status;
   @override
   final BuiltList<String>? keys;
   @override
@@ -195,9 +195,10 @@ class SearchDeliveryIdtRequestBuilder
         Builder<SearchDeliveryIdtRequest, SearchDeliveryIdtRequestBuilder> {
   _$SearchDeliveryIdtRequest? _$v;
 
-  SearchDeliveryIdtRequestStatusEnum? _status;
-  SearchDeliveryIdtRequestStatusEnum? get status => _$this._status;
-  set status(SearchDeliveryIdtRequestStatusEnum? status) =>
+  ListBuilder<SearchDeliveryIdtRequestStatusEnum>? _status;
+  ListBuilder<SearchDeliveryIdtRequestStatusEnum> get status =>
+      _$this._status ??= new ListBuilder<SearchDeliveryIdtRequestStatusEnum>();
+  set status(ListBuilder<SearchDeliveryIdtRequestStatusEnum>? status) =>
       _$this._status = status;
 
   ListBuilder<String>? _keys;
@@ -244,7 +245,7 @@ class SearchDeliveryIdtRequestBuilder
   SearchDeliveryIdtRequestBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
-      _status = $v.status;
+      _status = $v.status?.toBuilder();
       _keys = $v.keys?.toBuilder();
       _searchTerm = $v.searchTerm;
       _ids = $v.ids?.toBuilder();
@@ -277,7 +278,7 @@ class SearchDeliveryIdtRequestBuilder
     try {
       _$result = _$v ??
           new _$SearchDeliveryIdtRequest._(
-              status: status,
+              status: _status?.build(),
               keys: _keys?.build(),
               searchTerm: searchTerm,
               ids: _ids?.build(),
@@ -289,6 +290,8 @@ class SearchDeliveryIdtRequestBuilder
     } catch (_) {
       late String _$failedField;
       try {
+        _$failedField = 'status';
+        _status?.build();
         _$failedField = 'keys';
         _keys?.build();
 

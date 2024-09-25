@@ -8,7 +8,7 @@ import 'package:b2delivery/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**status** | **String** |  | [optional] 
+**status** | **BuiltList&lt;String&gt;** |  | [optional] 
 **keys** | **BuiltList&lt;String&gt;** |  | [optional] 
 **searchTerm** | **String** | Partial idT key | [optional] 
 **ids** | **BuiltList&lt;String&gt;** |  | [optional] 

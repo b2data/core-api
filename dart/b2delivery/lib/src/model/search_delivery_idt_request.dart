@@ -25,7 +25,7 @@ part 'search_delivery_idt_request.g.dart';
 @BuiltValue()
 abstract class SearchDeliveryIdtRequest implements Built<SearchDeliveryIdtRequest, SearchDeliveryIdtRequestBuilder> {
   @BuiltValueField(wireName: r'status')
-  SearchDeliveryIdtRequestStatusEnum? get status;
+  BuiltList<SearchDeliveryIdtRequestStatusEnum>? get status;
   // enum statusEnum {  created,  storage,  delivery,  provider,  lost,  destroyed,  };
 
   @BuiltValueField(wireName: r'keys')
@@ -82,7 +82,7 @@ class _$SearchDeliveryIdtRequestSerializer implements PrimitiveSerializer<Search
       yield r'status';
       yield serializers.serialize(
         object.status,
-        specifiedType: const FullType(SearchDeliveryIdtRequestStatusEnum),
+        specifiedType: const FullType(BuiltList, [FullType(SearchDeliveryIdtRequestStatusEnum)]),
       );
     }
     if (object.keys != null) {
@@ -167,9 +167,9 @@ class _$SearchDeliveryIdtRequestSerializer implements PrimitiveSerializer<Search
         case r'status':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(SearchDeliveryIdtRequestStatusEnum),
-          ) as SearchDeliveryIdtRequestStatusEnum;
-          result.status = valueDes;
+            specifiedType: const FullType(BuiltList, [FullType(SearchDeliveryIdtRequestStatusEnum)]),
+          ) as BuiltList<SearchDeliveryIdtRequestStatusEnum>;
+          result.status.replace(valueDes);
           break;
         case r'keys':
           final valueDes = serializers.deserialize(
