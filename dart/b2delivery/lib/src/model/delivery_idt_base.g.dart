@@ -14,8 +14,8 @@ const DeliveryIdtBaseStatusEnum _$deliveryIdtBaseStatusEnum_delivery =
     const DeliveryIdtBaseStatusEnum._('delivery');
 const DeliveryIdtBaseStatusEnum _$deliveryIdtBaseStatusEnum_provider =
     const DeliveryIdtBaseStatusEnum._('provider');
-const DeliveryIdtBaseStatusEnum _$deliveryIdtBaseStatusEnum_list =
-    const DeliveryIdtBaseStatusEnum._('list');
+const DeliveryIdtBaseStatusEnum _$deliveryIdtBaseStatusEnum_lost =
+    const DeliveryIdtBaseStatusEnum._('lost');
 const DeliveryIdtBaseStatusEnum _$deliveryIdtBaseStatusEnum_destroyed =
     const DeliveryIdtBaseStatusEnum._('destroyed');
 
@@ -29,8 +29,8 @@ DeliveryIdtBaseStatusEnum _$deliveryIdtBaseStatusEnumValueOf(String name) {
       return _$deliveryIdtBaseStatusEnum_delivery;
     case 'provider':
       return _$deliveryIdtBaseStatusEnum_provider;
-    case 'list':
-      return _$deliveryIdtBaseStatusEnum_list;
+    case 'lost':
+      return _$deliveryIdtBaseStatusEnum_lost;
     case 'destroyed':
       return _$deliveryIdtBaseStatusEnum_destroyed;
     default:
@@ -44,7 +44,7 @@ final BuiltSet<DeliveryIdtBaseStatusEnum> _$deliveryIdtBaseStatusEnumValues =
   _$deliveryIdtBaseStatusEnum_storage,
   _$deliveryIdtBaseStatusEnum_delivery,
   _$deliveryIdtBaseStatusEnum_provider,
-  _$deliveryIdtBaseStatusEnum_list,
+  _$deliveryIdtBaseStatusEnum_lost,
   _$deliveryIdtBaseStatusEnum_destroyed,
 ]);
 
@@ -58,7 +58,7 @@ class _$DeliveryIdtBaseStatusEnumSerializer
     'storage': 'storage',
     'delivery': 'delivery',
     'provider': 'provider',
-    'list': 'list',
+    'lost': 'lost',
     'destroyed': 'destroyed',
   };
   static const Map<Object, String> _fromWire = const <Object, String>{
@@ -66,7 +66,7 @@ class _$DeliveryIdtBaseStatusEnumSerializer
     'storage': 'storage',
     'delivery': 'delivery',
     'provider': 'provider',
-    'list': 'list',
+    'lost': 'lost',
     'destroyed': 'destroyed',
   };
 

@@ -19,8 +19,8 @@ const SearchDeliveryIdtRequestStatusEnum
     _$searchDeliveryIdtRequestStatusEnum_provider =
     const SearchDeliveryIdtRequestStatusEnum._('provider');
 const SearchDeliveryIdtRequestStatusEnum
-    _$searchDeliveryIdtRequestStatusEnum_list =
-    const SearchDeliveryIdtRequestStatusEnum._('list');
+    _$searchDeliveryIdtRequestStatusEnum_lost =
+    const SearchDeliveryIdtRequestStatusEnum._('lost');
 const SearchDeliveryIdtRequestStatusEnum
     _$searchDeliveryIdtRequestStatusEnum_destroyed =
     const SearchDeliveryIdtRequestStatusEnum._('destroyed');
@@ -36,8 +36,8 @@ SearchDeliveryIdtRequestStatusEnum _$searchDeliveryIdtRequestStatusEnumValueOf(
       return _$searchDeliveryIdtRequestStatusEnum_delivery;
     case 'provider':
       return _$searchDeliveryIdtRequestStatusEnum_provider;
-    case 'list':
-      return _$searchDeliveryIdtRequestStatusEnum_list;
+    case 'lost':
+      return _$searchDeliveryIdtRequestStatusEnum_lost;
     case 'destroyed':
       return _$searchDeliveryIdtRequestStatusEnum_destroyed;
     default:
@@ -52,7 +52,7 @@ final BuiltSet<SearchDeliveryIdtRequestStatusEnum>
   _$searchDeliveryIdtRequestStatusEnum_storage,
   _$searchDeliveryIdtRequestStatusEnum_delivery,
   _$searchDeliveryIdtRequestStatusEnum_provider,
-  _$searchDeliveryIdtRequestStatusEnum_list,
+  _$searchDeliveryIdtRequestStatusEnum_lost,
   _$searchDeliveryIdtRequestStatusEnum_destroyed,
 ]);
 
@@ -67,7 +67,7 @@ class _$SearchDeliveryIdtRequestStatusEnumSerializer
     'storage': 'storage',
     'delivery': 'delivery',
     'provider': 'provider',
-    'list': 'list',
+    'lost': 'lost',
     'destroyed': 'destroyed',
   };
   static const Map<Object, String> _fromWire = const <Object, String>{
@@ -75,7 +75,7 @@ class _$SearchDeliveryIdtRequestStatusEnumSerializer
     'storage': 'storage',
     'delivery': 'delivery',
     'provider': 'provider',
-    'list': 'list',
+    'lost': 'lost',
     'destroyed': 'destroyed',
   };
 

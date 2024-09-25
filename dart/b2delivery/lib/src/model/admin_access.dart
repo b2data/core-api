@@ -3,59 +3,69 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:b2delivery/src/model/user.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'create_delivery_idt_request.g.dart';
+part 'admin_access.g.dart';
 
-/// CreateDeliveryIdtRequest
+/// AdminAccess
 ///
 /// Properties:
-/// * [prefix] - Start prefix of idT unique key. Min length - 1, max length - 3.
-/// * [amount] - Number of idT keys
+/// * [wallet] - Wallet Address
+/// * [createdAt] - Creation Date
+/// * [userData] 
 @BuiltValue()
-abstract class CreateDeliveryIdtRequest implements Built<CreateDeliveryIdtRequest, CreateDeliveryIdtRequestBuilder> {
-  /// Start prefix of idT unique key. Min length - 1, max length - 3.
-  @BuiltValueField(wireName: r'prefix')
-  String get prefix;
+abstract class AdminAccess implements Built<AdminAccess, AdminAccessBuilder> {
+  /// Wallet Address
+  @BuiltValueField(wireName: r'wallet')
+  String get wallet;
 
-  /// Number of idT keys
-  @BuiltValueField(wireName: r'amount')
-  num? get amount;
+  /// Creation Date
+  @BuiltValueField(wireName: r'createdAt')
+  DateTime get createdAt;
 
-  CreateDeliveryIdtRequest._();
+  @BuiltValueField(wireName: r'userData')
+  User? get userData;
 
-  factory CreateDeliveryIdtRequest([void updates(CreateDeliveryIdtRequestBuilder b)]) = _$CreateDeliveryIdtRequest;
+  AdminAccess._();
+
+  factory AdminAccess([void updates(AdminAccessBuilder b)]) = _$AdminAccess;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(CreateDeliveryIdtRequestBuilder b) => b;
+  static void _defaults(AdminAccessBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<CreateDeliveryIdtRequest> get serializer => _$CreateDeliveryIdtRequestSerializer();
+  static Serializer<AdminAccess> get serializer => _$AdminAccessSerializer();
 }
 
-class _$CreateDeliveryIdtRequestSerializer implements PrimitiveSerializer<CreateDeliveryIdtRequest> {
+class _$AdminAccessSerializer implements PrimitiveSerializer<AdminAccess> {
   @override
-  final Iterable<Type> types = const [CreateDeliveryIdtRequest, _$CreateDeliveryIdtRequest];
+  final Iterable<Type> types = const [AdminAccess, _$AdminAccess];
 
   @override
-  final String wireName = r'CreateDeliveryIdtRequest';
+  final String wireName = r'AdminAccess';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    CreateDeliveryIdtRequest object, {
+    AdminAccess object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'prefix';
+    yield r'wallet';
     yield serializers.serialize(
-      object.prefix,
+      object.wallet,
       specifiedType: const FullType(String),
     );
-    if (object.amount != null) {
-      yield r'amount';
+    yield r'createdAt';
+    yield serializers.serialize(
+      object.createdAt,
+      specifiedType: const FullType(DateTime),
+    );
+    if (object.userData != null) {
+      yield r'userData';
       yield serializers.serialize(
-        object.amount,
-        specifiedType: const FullType(num),
+        object.userData,
+        specifiedType: const FullType(User),
       );
     }
   }
@@ -63,7 +73,7 @@ class _$CreateDeliveryIdtRequestSerializer implements PrimitiveSerializer<Create
   @override
   Object serialize(
     Serializers serializers,
-    CreateDeliveryIdtRequest object, {
+    AdminAccess object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
@@ -74,26 +84,33 @@ class _$CreateDeliveryIdtRequestSerializer implements PrimitiveSerializer<Create
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required CreateDeliveryIdtRequestBuilder result,
+    required AdminAccessBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'prefix':
+        case r'wallet':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(String),
           ) as String;
-          result.prefix = valueDes;
+          result.wallet = valueDes;
           break;
-        case r'amount':
+        case r'createdAt':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(num),
-          ) as num;
-          result.amount = valueDes;
+            specifiedType: const FullType(DateTime),
+          ) as DateTime;
+          result.createdAt = valueDes;
+          break;
+        case r'userData':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(User),
+          ) as User;
+          result.userData.replace(valueDes);
           break;
         default:
           unhandled.add(key);
@@ -104,12 +121,12 @@ class _$CreateDeliveryIdtRequestSerializer implements PrimitiveSerializer<Create
   }
 
   @override
-  CreateDeliveryIdtRequest deserialize(
+  AdminAccess deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = CreateDeliveryIdtRequestBuilder();
+    final result = AdminAccessBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

@@ -1,4 +1,4 @@
-# b2delivery.model.CreateDeliveryIdtRequest
+# b2delivery.model.CheckAdminAccess200Response
 
 ## Load the model package
 ```dart
@@ -8,8 +8,8 @@ import 'package:b2delivery/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**prefix** | **String** | Start prefix of idT unique key. Min length - 1, max length - 3. | 
-**amount** | **num** | Number of idT keys | [optional] 
+**isAdmin** | **bool** | If `true` user has admin access | 
+**isWalletAdmin** | **bool** | If `true` user has wallet admin access | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

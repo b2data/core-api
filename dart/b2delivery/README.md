@@ -47,13 +47,14 @@ Please follow the [installation procedure](#installation--usage) and then run th
 import 'package:b2delivery/b2delivery.dart';
 
 
-final api = B2delivery().getAuthApi();
+final api = B2delivery().getActivitiesApi();
+final SearchActivitiesRequest searchActivitiesRequest = ; // SearchActivitiesRequest | 
 
 try {
-    final response = await api.getProfile();
+    final response = await api.searchActivities(searchActivitiesRequest);
     print(response);
 } catch on DioException (e) {
-    print("Exception when calling AuthApi->getProfile: $e\n");
+    print("Exception when calling ActivitiesApi->searchActivities: $e\n");
 }
 
 ```
@@ -64,12 +65,19 @@ All URIs are relative to *https://localhost:8082*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+[*ActivitiesApi*](doc/ActivitiesApi.md) | [**searchActivities**](doc/ActivitiesApi.md#searchactivities) | **POST** /activities/search | Search activities
+[*AdminAccessApi*](doc/AdminAccessApi.md) | [**addAdminAccess**](doc/AdminAccessApi.md#addadminaccess) | **POST** /admin-access | Add System Admin
+[*AdminAccessApi*](doc/AdminAccessApi.md) | [**checkAdminAccess**](doc/AdminAccessApi.md#checkadminaccess) | **GET** /admin-access/check | Check Admin Access
+[*AdminAccessApi*](doc/AdminAccessApi.md) | [**deleteAdminAccess**](doc/AdminAccessApi.md#deleteadminaccess) | **DELETE** /admin-access/{wallet} | Delete System Admin
+[*AdminAccessApi*](doc/AdminAccessApi.md) | [**searchAdminAccess**](doc/AdminAccessApi.md#searchadminaccess) | **POST** /admin-access/search | Search System Admins
+[*AdminAccessApi*](doc/AdminAccessApi.md) | [**searchUsers**](doc/AdminAccessApi.md#searchusers) | **POST** /admin-access/users | Search users
 [*AuthApi*](doc/AuthApi.md) | [**getProfile**](doc/AuthApi.md#getprofile) | **GET** /auth/profile | Get Profile
 [*AuthApi*](doc/AuthApi.md) | [**refreshToken**](doc/AuthApi.md#refreshtoken) | **POST** /auth/refresh | Refresh Access Token by Refresh token
 [*AuthApi*](doc/AuthApi.md) | [**startAuth**](doc/AuthApi.md#startauth) | **POST** /auth/start | Start authentication process
 [*AuthApi*](doc/AuthApi.md) | [**updateProfile**](doc/AuthApi.md#updateprofile) | **PATCH** /auth/profile | Update Profile
 [*AuthApi*](doc/AuthApi.md) | [**verifyAuth**](doc/AuthApi.md#verifyauth) | **POST** /auth/verify | Verify authentication wallet
 [*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**deleteFile**](doc/AvailableProvidersApi.md#deletefile) | **DELETE** /files/{id} | Delete File
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**searchActivities**](doc/AvailableProvidersApi.md#searchactivities) | **POST** /activities/search | Search activities
 [*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**uploadFile**](doc/AvailableProvidersApi.md#uploadfile) | **POST** /files | Upload file
 [*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**getFile**](doc/AvailablePublicApi.md#getfile) | **GET** /files/{id} | Get file
 [*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**getFileInfo**](doc/AvailablePublicApi.md#getfileinfo) | **GET** /files/{id}/info | Get file info
@@ -88,6 +96,10 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [ActivityLog](doc/ActivityLog.md)
+ - [AddAdminAccessRequest](doc/AddAdminAccessRequest.md)
+ - [AdminAccess](doc/AdminAccess.md)
+ - [CheckAdminAccess200Response](doc/CheckAdminAccess200Response.md)
  - [CreateDeliveryIdtRequest](doc/CreateDeliveryIdtRequest.md)
  - [DeliveryIdt](doc/DeliveryIdt.md)
  - [DeliveryIdtBase](doc/DeliveryIdtBase.md)
@@ -95,9 +107,14 @@ Class | Method | HTTP request | Description
  - [ErrorResponse](doc/ErrorResponse.md)
  - [FileData](doc/FileData.md)
  - [RefreshTokenRequest](doc/RefreshTokenRequest.md)
+ - [SearchActivities200Response](doc/SearchActivities200Response.md)
+ - [SearchActivitiesRequest](doc/SearchActivitiesRequest.md)
+ - [SearchAdminAccess200Response](doc/SearchAdminAccess200Response.md)
  - [SearchDeliveryIdt200Response](doc/SearchDeliveryIdt200Response.md)
  - [SearchDeliveryIdtRequest](doc/SearchDeliveryIdtRequest.md)
  - [SearchModel](doc/SearchModel.md)
+ - [SearchUsers200Response](doc/SearchUsers200Response.md)
+ - [SearchUsersRequest](doc/SearchUsersRequest.md)
  - [SortModel](doc/SortModel.md)
  - [StartAuth200Response](doc/StartAuth200Response.md)
  - [UpdateDeliveryIdtRequest](doc/UpdateDeliveryIdtRequest.md)

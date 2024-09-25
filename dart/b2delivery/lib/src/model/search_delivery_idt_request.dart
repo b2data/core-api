@@ -26,7 +26,7 @@ part 'search_delivery_idt_request.g.dart';
 abstract class SearchDeliveryIdtRequest implements Built<SearchDeliveryIdtRequest, SearchDeliveryIdtRequestBuilder> {
   @BuiltValueField(wireName: r'status')
   SearchDeliveryIdtRequestStatusEnum? get status;
-  // enum statusEnum {  created,  storage,  delivery,  provider,  list,  destroyed,  };
+  // enum statusEnum {  created,  storage,  delivery,  provider,  lost,  destroyed,  };
 
   @BuiltValueField(wireName: r'keys')
   BuiltList<String>? get keys;
@@ -266,8 +266,8 @@ class SearchDeliveryIdtRequestStatusEnum extends EnumClass {
   static const SearchDeliveryIdtRequestStatusEnum delivery = _$searchDeliveryIdtRequestStatusEnum_delivery;
   @BuiltValueEnumConst(wireName: r'provider')
   static const SearchDeliveryIdtRequestStatusEnum provider = _$searchDeliveryIdtRequestStatusEnum_provider;
-  @BuiltValueEnumConst(wireName: r'list')
-  static const SearchDeliveryIdtRequestStatusEnum list = _$searchDeliveryIdtRequestStatusEnum_list;
+  @BuiltValueEnumConst(wireName: r'lost')
+  static const SearchDeliveryIdtRequestStatusEnum lost = _$searchDeliveryIdtRequestStatusEnum_lost;
   @BuiltValueEnumConst(wireName: r'destroyed')
   static const SearchDeliveryIdtRequestStatusEnum destroyed = _$searchDeliveryIdtRequestStatusEnum_destroyed;
 

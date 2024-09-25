@@ -6,64 +6,52 @@
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'create_delivery_idt_request.g.dart';
+part 'add_admin_access_request.g.dart';
 
-/// CreateDeliveryIdtRequest
+/// AddAdminAccessRequest
 ///
 /// Properties:
-/// * [prefix] - Start prefix of idT unique key. Min length - 1, max length - 3.
-/// * [amount] - Number of idT keys
+/// * [wallet] - Wallet Address
 @BuiltValue()
-abstract class CreateDeliveryIdtRequest implements Built<CreateDeliveryIdtRequest, CreateDeliveryIdtRequestBuilder> {
-  /// Start prefix of idT unique key. Min length - 1, max length - 3.
-  @BuiltValueField(wireName: r'prefix')
-  String get prefix;
+abstract class AddAdminAccessRequest implements Built<AddAdminAccessRequest, AddAdminAccessRequestBuilder> {
+  /// Wallet Address
+  @BuiltValueField(wireName: r'wallet')
+  String get wallet;
 
-  /// Number of idT keys
-  @BuiltValueField(wireName: r'amount')
-  num? get amount;
+  AddAdminAccessRequest._();
 
-  CreateDeliveryIdtRequest._();
-
-  factory CreateDeliveryIdtRequest([void updates(CreateDeliveryIdtRequestBuilder b)]) = _$CreateDeliveryIdtRequest;
+  factory AddAdminAccessRequest([void updates(AddAdminAccessRequestBuilder b)]) = _$AddAdminAccessRequest;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(CreateDeliveryIdtRequestBuilder b) => b;
+  static void _defaults(AddAdminAccessRequestBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<CreateDeliveryIdtRequest> get serializer => _$CreateDeliveryIdtRequestSerializer();
+  static Serializer<AddAdminAccessRequest> get serializer => _$AddAdminAccessRequestSerializer();
 }
 
-class _$CreateDeliveryIdtRequestSerializer implements PrimitiveSerializer<CreateDeliveryIdtRequest> {
+class _$AddAdminAccessRequestSerializer implements PrimitiveSerializer<AddAdminAccessRequest> {
   @override
-  final Iterable<Type> types = const [CreateDeliveryIdtRequest, _$CreateDeliveryIdtRequest];
+  final Iterable<Type> types = const [AddAdminAccessRequest, _$AddAdminAccessRequest];
 
   @override
-  final String wireName = r'CreateDeliveryIdtRequest';
+  final String wireName = r'AddAdminAccessRequest';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    CreateDeliveryIdtRequest object, {
+    AddAdminAccessRequest object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'prefix';
+    yield r'wallet';
     yield serializers.serialize(
-      object.prefix,
+      object.wallet,
       specifiedType: const FullType(String),
     );
-    if (object.amount != null) {
-      yield r'amount';
-      yield serializers.serialize(
-        object.amount,
-        specifiedType: const FullType(num),
-      );
-    }
   }
 
   @override
   Object serialize(
     Serializers serializers,
-    CreateDeliveryIdtRequest object, {
+    AddAdminAccessRequest object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
@@ -74,26 +62,19 @@ class _$CreateDeliveryIdtRequestSerializer implements PrimitiveSerializer<Create
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required CreateDeliveryIdtRequestBuilder result,
+    required AddAdminAccessRequestBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'prefix':
+        case r'wallet':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(String),
           ) as String;
-          result.prefix = valueDes;
-          break;
-        case r'amount':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(num),
-          ) as num;
-          result.amount = valueDes;
+          result.wallet = valueDes;
           break;
         default:
           unhandled.add(key);
@@ -104,12 +85,12 @@ class _$CreateDeliveryIdtRequestSerializer implements PrimitiveSerializer<Create
   }
 
   @override
-  CreateDeliveryIdtRequest deserialize(
+  AddAdminAccessRequest deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = CreateDeliveryIdtRequestBuilder();
+    final result = AddAdminAccessRequestBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

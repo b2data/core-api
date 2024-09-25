@@ -34,7 +34,7 @@ abstract class DeliveryIdt implements Built<DeliveryIdt, DeliveryIdtBuilder> {
   /// Delivery idT status
   @BuiltValueField(wireName: r'status')
   DeliveryIdtStatusEnum get status;
-  // enum statusEnum {  created,  storage,  delivery,  provider,  list,  destroyed,  };
+  // enum statusEnum {  created,  storage,  delivery,  provider,  lost,  destroyed,  };
 
   /// Wallet of responsible user
   @BuiltValueField(wireName: r'responsible')
@@ -262,8 +262,8 @@ class DeliveryIdtStatusEnum extends EnumClass {
   @BuiltValueEnumConst(wireName: r'provider')
   static const DeliveryIdtStatusEnum provider = _$deliveryIdtStatusEnum_provider;
   /// Delivery idT status
-  @BuiltValueEnumConst(wireName: r'list')
-  static const DeliveryIdtStatusEnum list = _$deliveryIdtStatusEnum_list;
+  @BuiltValueEnumConst(wireName: r'lost')
+  static const DeliveryIdtStatusEnum lost = _$deliveryIdtStatusEnum_lost;
   /// Delivery idT status
   @BuiltValueEnumConst(wireName: r'destroyed')
   static const DeliveryIdtStatusEnum destroyed = _$deliveryIdtStatusEnum_destroyed;

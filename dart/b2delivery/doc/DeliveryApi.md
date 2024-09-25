@@ -19,7 +19,7 @@ Method | HTTP request | Description
 
 
 # **createDeliveryIdt**
-> DeliveryIdtWithData createDeliveryIdt(createDeliveryIdtRequest)
+> BuiltList<DeliveryIdtWithData> createDeliveryIdt(createDeliveryIdtRequest)
 
 Create new delivery idT
 
@@ -48,7 +48,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**DeliveryIdtWithData**](DeliveryIdtWithData.md)
+[**BuiltList&lt;DeliveryIdtWithData&gt;**](DeliveryIdtWithData.md)
 
 ### Authorization
 

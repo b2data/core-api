@@ -19,7 +19,7 @@ abstract class UpdateDeliveryIdtRequest implements Built<UpdateDeliveryIdtReques
   /// Delivery idT status
   @BuiltValueField(wireName: r'status')
   UpdateDeliveryIdtRequestStatusEnum? get status;
-  // enum statusEnum {  created,  storage,  delivery,  provider,  list,  destroyed,  };
+  // enum statusEnum {  created,  storage,  delivery,  provider,  lost,  destroyed,  };
 
   /// Wallet of responsible user
   @BuiltValueField(wireName: r'responsible')
@@ -143,8 +143,8 @@ class UpdateDeliveryIdtRequestStatusEnum extends EnumClass {
   @BuiltValueEnumConst(wireName: r'provider')
   static const UpdateDeliveryIdtRequestStatusEnum provider = _$updateDeliveryIdtRequestStatusEnum_provider;
   /// Delivery idT status
-  @BuiltValueEnumConst(wireName: r'list')
-  static const UpdateDeliveryIdtRequestStatusEnum list = _$updateDeliveryIdtRequestStatusEnum_list;
+  @BuiltValueEnumConst(wireName: r'lost')
+  static const UpdateDeliveryIdtRequestStatusEnum lost = _$updateDeliveryIdtRequestStatusEnum_lost;
   /// Delivery idT status
   @BuiltValueEnumConst(wireName: r'destroyed')
   static const UpdateDeliveryIdtRequestStatusEnum destroyed = _$updateDeliveryIdtRequestStatusEnum_destroyed;
