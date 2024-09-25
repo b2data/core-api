@@ -133,18 +133,7 @@ export interface ProviderWithSecret {
 }
 
 /** Activity Type */
-export type ActivityType =
-  | "tagCreated"
-  | "tagUpdated"
-  | "tagDeleted"
-  | "folderCreated"
-  | "folderUpdated"
-  | "folderMoved"
-  | "folderDeleted"
-  | "folderFilterCreated"
-  | "folderFilterUpdated"
-  | "folderFilterMoved"
-  | "folderFilterDeleted";
+export type ActivityType = string;
 
 export interface ActivityLog {
   /**
@@ -201,7 +190,7 @@ export interface DeliveryIdtBase {
   /** Delivery idT unique key in format `A_000001` */
   key: string;
   /** Delivery idT status */
-  status: "created" | "storage" | "delivery" | "provider" | "list" | "destroyed";
+  status: "created" | "storage" | "delivery" | "provider" | "lost" | "destroyed";
   /** Wallet of responsible user */
   responsible: string;
   /**
@@ -220,7 +209,7 @@ export interface DeliveryIdt {
   /** Delivery idT unique key in format `A_000001` */
   key: string;
   /** Delivery idT status */
-  status: "created" | "storage" | "delivery" | "provider" | "list" | "destroyed";
+  status: "created" | "storage" | "delivery" | "provider" | "lost" | "destroyed";
   /** Wallet of responsible user */
   responsible: string;
   /**
@@ -256,7 +245,7 @@ export interface DeliveryIdtWithData {
   /** Delivery idT unique key in format `A_000001` */
   key: string;
   /** Delivery idT status */
-  status: "created" | "storage" | "delivery" | "provider" | "list" | "destroyed";
+  status: "created" | "storage" | "delivery" | "provider" | "lost" | "destroyed";
   /** Wallet of responsible user */
   responsible: string;
   /**
@@ -2603,6 +2592,42 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         secure: true,
         ...params,
       }),
+
+    /**
+     * @description Required `Admin` access
+     *
+     * @tags Admin Access
+     * @name SearchUsers
+     * @summary Search users
+     * @request POST:/admin-access/users
+     * @secure
+     */
+    searchUsers: (
+      data: {
+        /** User first name, last name or middle name */
+        searchTerm?: string;
+        ids?: string[];
+        /** Number of return items */
+        limit?: number;
+        /** Number of skip items */
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: User[];
+        },
+        ErrorResponse
+      >({
+        path: `/admin-access/users`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
   };
   delivery = {
     /**
@@ -2631,7 +2656,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      */
     searchDeliveryIdt: (
       data: {
-        status?: "created" | "storage" | "delivery" | "provider" | "list" | "destroyed";
+        status?: "created" | "storage" | "delivery" | "provider" | "lost" | "destroyed";
         keys?: string[];
         /** Partial idT key */
         searchTerm?: string;
@@ -2694,10 +2719,16 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
          * @maxLength 3
          */
         prefix: string;
+        /**
+         * Number of idT keys
+         * @min 1
+         * @max 1000
+         */
+        amount?: number;
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<DeliveryIdtWithData, ErrorResponse>({
+      this.http.request<DeliveryIdtWithData[], ErrorResponse>({
         path: `/delivery/idt`,
         method: "POST",
         body: data,
@@ -2735,7 +2766,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       id: string,
       data: {
         /** Delivery idT status */
-        status?: "created" | "storage" | "delivery" | "provider" | "list" | "destroyed";
+        status?: "created" | "storage" | "delivery" | "provider" | "lost" | "destroyed";
         /** Wallet of responsible user */
         responsible?: string;
       },

@@ -214,6 +214,123 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/UserNotFound"
+  /activities/search:
+    post:
+      tags:
+        - Activities
+        - Available Providers
+      security:
+        - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      summary: Search activities
+      operationId: searchActivities
+      requestBody:
+        $ref: "#/components/requestBodies/SearchActivitiesBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchActivitiesData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /admin-access/check:
+    get:
+      tags:
+        - Admin Access
+      security:
+        - BearerAuth: []
+      summary: Check Admin Access
+      operationId: checkAdminAccess
+      responses:
+        "200":
+          $ref: "#/components/responses/CheckUserAccess"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /admin-access/search:
+    post:
+      tags:
+        - Admin Access
+      security:
+        - BearerAuth: []
+      summary: Search System Admins
+      description: Required `Wallet Admin` access
+      operationId: searchAdminAccess
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchModel"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchAdminAccess"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /admin-access:
+    post:
+      tags:
+        - Admin Access
+      security:
+        - BearerAuth: []
+      summary: Add System Admin
+      description: Required `Wallet Admin` access
+      operationId: addAdminAccess
+      requestBody:
+        $ref: "#/components/requestBodies/CreateAdminAccessBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/AdminAccessData"
+        "400":
+          $ref: "#/components/responses/AdminAccessExist"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/admin-access/{wallet}":
+    delete:
+      tags:
+        - Admin Access
+      security:
+        - BearerAuth: []
+      summary: Delete System Admin
+      description: Required `Wallet Admin` access
+      operationId: deleteAdminAccess
+      parameters:
+        - $ref: "#/components/parameters/walletParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/AdminAccessData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/AdminAccessNotFound"
+  /admin-access/users:
+    post:
+      tags:
+        - Admin Access
+      security:
+        - BearerAuth: []
+      summary: Search users
+      description: Required `Admin` access
+      operationId: searchUsers
+      requestBody:
+        $ref: "#/components/requestBodies/SearchUsersBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchUsers"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/AdminAccessNotFound"
   /files:
     post:
       tags:
@@ -350,7 +467,7 @@ paths:
         $ref: "#/components/requestBodies/CreateDeliveryIdtBody"
       responses:
         "200":
-          $ref: "#/components/responses/DeliveryIdtWithData"
+          $ref: "#/components/responses/DeliveryIdtCreated"
         "400":
           $ref: "#/components/responses/InvalidData"
         "401":
@@ -482,6 +599,59 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SortModel"
+    ActivityType:
+      type: string
+      description: Activity Type
+    ActivityLog:
+      type: object
+      required:
+        - id
+        - type
+        - userId
+        - artefactId
+        - data
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Artefact ID
+        type:
+          $ref: "#/components/schemas/ActivityType"
+        userId:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        artefactId:
+          type: string
+          format: uuid
+          description: Artefact ID
+        providerId:
+          type: string
+          format: uuid
+          description: Provider ID
+        data:
+          type: object
+          description: Activity Data depends on type
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+    AdminAccess:
+      type: object
+      required:
+        - wallet
+        - createdAt
+      properties:
+        wallet:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        userData:
+          $ref: "#/components/schemas/User"
     FileData:
       type: object
       required:
@@ -544,7 +714,7 @@ components:
             - storage
             - delivery
             - provider
-            - list
+            - lost
             - destroyed
           description: Delivery idT status
         responsible:
@@ -579,7 +749,7 @@ components:
             - storage
             - delivery
             - provider
-            - list
+            - lost
             - destroyed
           description: Delivery idT status
         responsible:
@@ -631,7 +801,7 @@ components:
             - storage
             - delivery
             - provider
-            - list
+            - lost
             - destroyed
           description: Delivery idT status
         responsible:
@@ -692,6 +862,94 @@ components:
           example:
             errorCode: api:403
             message: You don't have access to this method
+    SearchActivitiesData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLog"
+    CheckUserAccess:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - isAdmin
+              - isWalletAdmin
+            properties:
+              isAdmin:
+                type: boolean
+                description: If `true` user has admin access
+              isWalletAdmin:
+                type: boolean
+                description: If `true` user has wallet admin access
+    SearchAdminAccess:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminAccess"
+    AdminAccessData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AdminAccess"
+    AdminAccessExist:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: admin-access:400-exist
+            message: User has admin access
+    AdminAccessNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: admin-access:404
+            message: User has no admin access
+    SearchUsers:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
     FileBinary:
       description: Successful operation
       content:
@@ -726,6 +984,14 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/DeliveryIdtWithData"
+    DeliveryIdtCreated:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/DeliveryIdtWithData"
     SearchDeliveryIdt:
       description: Successful operation
       content:
@@ -784,6 +1050,70 @@ components:
         application/json:
           schema:
             type: object
+    SearchActivitiesBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              artefactId:
+                type: string
+                format: uuid
+                description: Artefact ID
+              providerId:
+                type: string
+                format: uuid
+                description: Provider ID
+              types:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityType"
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    CreateAdminAccessBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - wallet
+            properties:
+              wallet:
+                type: string
+                description: Wallet Address
+                example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+    SearchUsersBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              searchTerm:
+                type: string
+                description: User first name, last name or middle name
+              ids:
+                type: array
+                items:
+                  type: string
+                  description: Wallet address
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
     UploadFileBody:
       content:
         multipart/form-data:
@@ -814,7 +1144,7 @@ components:
                   - storage
                   - delivery
                   - provider
-                  - list
+                  - lost
                   - destroyed
               keys:
                 type: array
@@ -864,6 +1194,11 @@ components:
                 minLength: 1
                 maxLength: 3
                 description: Start prefix of idT unique key. Min length - 1, max length - 3.
+              amount:
+                type: number
+                minimum: 1
+                maximum: 1000
+                description: Number of idT keys
     EditDeliveryIdtBody:
       content:
         application/json:
@@ -877,13 +1212,20 @@ components:
                   - storage
                   - delivery
                   - provider
-                  - list
+                  - lost
                   - destroyed
                 description: Delivery idT status
               responsible:
                 type: string
                 description: Wallet of responsible user
   parameters:
+    walletParam:
+      in: path
+      name: wallet
+      description: Wallet Address
+      required: true
+      schema:
+        type: string
     fileIdParam:
       in: path
       name: id
