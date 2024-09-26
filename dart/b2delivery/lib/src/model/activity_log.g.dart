@@ -21,6 +21,8 @@ class _$ActivityLog extends ActivityLog {
   final JsonObject data;
   @override
   final DateTime? createdAt;
+  @override
+  final User? userData;
 
   factory _$ActivityLog([void Function(ActivityLogBuilder)? updates]) =>
       (new ActivityLogBuilder()..update(updates))._build();
@@ -32,7 +34,8 @@ class _$ActivityLog extends ActivityLog {
       required this.artefactId,
       this.providerId,
       required this.data,
-      this.createdAt})
+      this.createdAt,
+      this.userData})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(id, r'ActivityLog', 'id');
     BuiltValueNullFieldError.checkNotNull(type, r'ActivityLog', 'type');
@@ -59,7 +62,8 @@ class _$ActivityLog extends ActivityLog {
         artefactId == other.artefactId &&
         providerId == other.providerId &&
         data == other.data &&
-        createdAt == other.createdAt;
+        createdAt == other.createdAt &&
+        userData == other.userData;
   }
 
   @override
@@ -72,6 +76,7 @@ class _$ActivityLog extends ActivityLog {
     _$hash = $jc(_$hash, providerId.hashCode);
     _$hash = $jc(_$hash, data.hashCode);
     _$hash = $jc(_$hash, createdAt.hashCode);
+    _$hash = $jc(_$hash, userData.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -85,7 +90,8 @@ class _$ActivityLog extends ActivityLog {
           ..add('artefactId', artefactId)
           ..add('providerId', providerId)
           ..add('data', data)
-          ..add('createdAt', createdAt))
+          ..add('createdAt', createdAt)
+          ..add('userData', userData))
         .toString();
   }
 }
@@ -121,6 +127,10 @@ class ActivityLogBuilder implements Builder<ActivityLog, ActivityLogBuilder> {
   DateTime? get createdAt => _$this._createdAt;
   set createdAt(DateTime? createdAt) => _$this._createdAt = createdAt;
 
+  UserBuilder? _userData;
+  UserBuilder get userData => _$this._userData ??= new UserBuilder();
+  set userData(UserBuilder? userData) => _$this._userData = userData;
+
   ActivityLogBuilder() {
     ActivityLog._defaults(this);
   }
@@ -135,6 +145,7 @@ class ActivityLogBuilder implements Builder<ActivityLog, ActivityLogBuilder> {
       _providerId = $v.providerId;
       _data = $v.data;
       _createdAt = $v.createdAt;
+      _userData = $v.userData?.toBuilder();
       _$v = null;
     }
     return this;
@@ -155,19 +166,34 @@ class ActivityLogBuilder implements Builder<ActivityLog, ActivityLogBuilder> {
   ActivityLog build() => _build();
 
   _$ActivityLog _build() {
-    final _$result = _$v ??
-        new _$ActivityLog._(
-            id: BuiltValueNullFieldError.checkNotNull(id, r'ActivityLog', 'id'),
-            type: BuiltValueNullFieldError.checkNotNull(
-                type, r'ActivityLog', 'type'),
-            userId: BuiltValueNullFieldError.checkNotNull(
-                userId, r'ActivityLog', 'userId'),
-            artefactId: BuiltValueNullFieldError.checkNotNull(
-                artefactId, r'ActivityLog', 'artefactId'),
-            providerId: providerId,
-            data: BuiltValueNullFieldError.checkNotNull(
-                data, r'ActivityLog', 'data'),
-            createdAt: createdAt);
+    _$ActivityLog _$result;
+    try {
+      _$result = _$v ??
+          new _$ActivityLog._(
+              id: BuiltValueNullFieldError.checkNotNull(
+                  id, r'ActivityLog', 'id'),
+              type: BuiltValueNullFieldError.checkNotNull(
+                  type, r'ActivityLog', 'type'),
+              userId: BuiltValueNullFieldError.checkNotNull(
+                  userId, r'ActivityLog', 'userId'),
+              artefactId: BuiltValueNullFieldError.checkNotNull(
+                  artefactId, r'ActivityLog', 'artefactId'),
+              providerId: providerId,
+              data: BuiltValueNullFieldError.checkNotNull(
+                  data, r'ActivityLog', 'data'),
+              createdAt: createdAt,
+              userData: _userData?.build());
+    } catch (_) {
+      late String _$failedField;
+      try {
+        _$failedField = 'userData';
+        _userData?.build();
+      } catch (e) {
+        throw new BuiltValueNestedFieldError(
+            r'ActivityLog', _$failedField, e.toString());
+      }
+      rethrow;
+    }
     replace(_$result);
     return _$result;
   }

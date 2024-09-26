@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:b2delivery/src/model/user.dart';
 import 'package:built_value/json_object.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -19,6 +20,7 @@ part 'activity_log.g.dart';
 /// * [providerId] - Provider ID
 /// * [data] - Activity Data depends on type
 /// * [createdAt] - Creation Date
+/// * [userData] 
 @BuiltValue()
 abstract class ActivityLog implements Built<ActivityLog, ActivityLogBuilder> {
   /// Artefact ID
@@ -48,6 +50,9 @@ abstract class ActivityLog implements Built<ActivityLog, ActivityLogBuilder> {
   /// Creation Date
   @BuiltValueField(wireName: r'createdAt')
   DateTime? get createdAt;
+
+  @BuiltValueField(wireName: r'userData')
+  User? get userData;
 
   ActivityLog._();
 
@@ -109,6 +114,13 @@ class _$ActivityLogSerializer implements PrimitiveSerializer<ActivityLog> {
       yield serializers.serialize(
         object.createdAt,
         specifiedType: const FullType(DateTime),
+      );
+    }
+    if (object.userData != null) {
+      yield r'userData';
+      yield serializers.serialize(
+        object.userData,
+        specifiedType: const FullType(User),
       );
     }
   }
@@ -182,6 +194,13 @@ class _$ActivityLogSerializer implements PrimitiveSerializer<ActivityLog> {
             specifiedType: const FullType(DateTime),
           ) as DateTime;
           result.createdAt = valueDes;
+          break;
+        case r'userData':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(User),
+          ) as User;
+          result.userData.replace(valueDes);
           break;
         default:
           unhandled.add(key);
