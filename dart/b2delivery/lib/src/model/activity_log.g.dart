@@ -20,7 +20,7 @@ class _$ActivityLog extends ActivityLog {
   @override
   final JsonObject data;
   @override
-  final DateTime? createdAt;
+  final DateTime createdAt;
   @override
   final User? userData;
 
@@ -34,7 +34,7 @@ class _$ActivityLog extends ActivityLog {
       required this.artefactId,
       this.providerId,
       required this.data,
-      this.createdAt,
+      required this.createdAt,
       this.userData})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(id, r'ActivityLog', 'id');
@@ -43,6 +43,8 @@ class _$ActivityLog extends ActivityLog {
     BuiltValueNullFieldError.checkNotNull(
         artefactId, r'ActivityLog', 'artefactId');
     BuiltValueNullFieldError.checkNotNull(data, r'ActivityLog', 'data');
+    BuiltValueNullFieldError.checkNotNull(
+        createdAt, r'ActivityLog', 'createdAt');
   }
 
   @override
@@ -181,7 +183,8 @@ class ActivityLogBuilder implements Builder<ActivityLog, ActivityLogBuilder> {
               providerId: providerId,
               data: BuiltValueNullFieldError.checkNotNull(
                   data, r'ActivityLog', 'data'),
-              createdAt: createdAt,
+              createdAt: BuiltValueNullFieldError.checkNotNull(
+                  createdAt, r'ActivityLog', 'createdAt'),
               userData: _userData?.build());
     } catch (_) {
       late String _$failedField;
