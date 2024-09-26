@@ -610,6 +610,7 @@ components:
         - userId
         - artefactId
         - data
+        - createdAt
       properties:
         id:
           type: string

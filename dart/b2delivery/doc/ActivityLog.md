@@ -14,7 +14,7 @@ Name | Type | Description | Notes
 **artefactId** | **String** | Artefact ID | 
 **providerId** | **String** | Provider ID | [optional] 
 **data** | [**JsonObject**](.md) | Activity Data depends on type | 
-**createdAt** | [**DateTime**](DateTime.md) | Creation Date | [optional] 
+**createdAt** | [**DateTime**](DateTime.md) | Creation Date | 
 **userData** | [**User**](User.md) |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

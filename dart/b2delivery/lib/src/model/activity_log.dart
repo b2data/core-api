@@ -49,7 +49,7 @@ abstract class ActivityLog implements Built<ActivityLog, ActivityLogBuilder> {
 
   /// Creation Date
   @BuiltValueField(wireName: r'createdAt')
-  DateTime? get createdAt;
+  DateTime get createdAt;
 
   @BuiltValueField(wireName: r'userData')
   User? get userData;
@@ -109,13 +109,11 @@ class _$ActivityLogSerializer implements PrimitiveSerializer<ActivityLog> {
       object.data,
       specifiedType: const FullType(JsonObject),
     );
-    if (object.createdAt != null) {
-      yield r'createdAt';
-      yield serializers.serialize(
-        object.createdAt,
-        specifiedType: const FullType(DateTime),
-      );
-    }
+    yield r'createdAt';
+    yield serializers.serialize(
+      object.createdAt,
+      specifiedType: const FullType(DateTime),
+    );
     if (object.userData != null) {
       yield r'userData';
       yield serializers.serialize(
