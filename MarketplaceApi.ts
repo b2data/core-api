@@ -164,7 +164,8 @@ export interface ActivityLog {
    * Creation Date
    * @format date-time
    */
-  createdAt?: string;
+  createdAt: string;
+  userData?: User;
 }
 
 export interface AdminAccess {
@@ -2656,7 +2657,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      */
     searchDeliveryIdt: (
       data: {
-        status?: "created" | "storage" | "delivery" | "provider" | "lost" | "destroyed";
+        status?: ("created" | "storage" | "delivery" | "provider" | "lost" | "destroyed")[];
         keys?: string[];
         /** Partial idT key */
         searchTerm?: string;

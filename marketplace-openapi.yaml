@@ -2135,6 +2135,7 @@ components:
         - userId
         - artefactId
         - data
+        - createdAt
       properties:
         id:
           type: string
@@ -2161,6 +2162,8 @@ components:
           type: string
           format: date-time
           description: Creation Date
+        userData:
+          $ref: "#/components/schemas/User"
     AdminAccess:
       type: object
       required:
@@ -4646,14 +4649,16 @@ components:
             type: object
             properties:
               status:
-                type: string
-                enum:
-                  - created
-                  - storage
-                  - delivery
-                  - provider
-                  - lost
-                  - destroyed
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - created
+                    - storage
+                    - delivery
+                    - provider
+                    - lost
+                    - destroyed
               keys:
                 type: array
                 items:
