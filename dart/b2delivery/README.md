@@ -92,6 +92,10 @@ Class | Method | HTTP request | Description
 [*FilesApi*](doc/FilesApi.md) | [**getFile**](doc/FilesApi.md#getfile) | **GET** /files/{id} | Get file
 [*FilesApi*](doc/FilesApi.md) | [**getFileInfo**](doc/FilesApi.md#getfileinfo) | **GET** /files/{id}/info | Get file info
 [*FilesApi*](doc/FilesApi.md) | [**uploadFile**](doc/FilesApi.md#uploadfile) | **POST** /files | Upload file
+[*TasksApi*](doc/TasksApi.md) | [**createTask**](doc/TasksApi.md#createtask) | **POST** /tasks | Create new task
+[*TasksApi*](doc/TasksApi.md) | [**getTask**](doc/TasksApi.md#gettask) | **GET** /tasks/{id} | Get task info
+[*TasksApi*](doc/TasksApi.md) | [**searchTasks**](doc/TasksApi.md#searchtasks) | **POST** /tasks/search | Search tasks
+[*TasksApi*](doc/TasksApi.md) | [**updateTask**](doc/TasksApi.md#updatetask) | **PUT** /tasks/{id} | Update task
 
 
 ## Documentation For Models
@@ -101,6 +105,7 @@ Class | Method | HTTP request | Description
  - [AdminAccess](doc/AdminAccess.md)
  - [CheckAdminAccess200Response](doc/CheckAdminAccess200Response.md)
  - [CreateDeliveryIdtRequest](doc/CreateDeliveryIdtRequest.md)
+ - [CreateTaskRequest](doc/CreateTaskRequest.md)
  - [DeliveryIdt](doc/DeliveryIdt.md)
  - [DeliveryIdtBase](doc/DeliveryIdtBase.md)
  - [DeliveryIdtWithData](doc/DeliveryIdtWithData.md)
@@ -113,12 +118,17 @@ Class | Method | HTTP request | Description
  - [SearchDeliveryIdt200Response](doc/SearchDeliveryIdt200Response.md)
  - [SearchDeliveryIdtRequest](doc/SearchDeliveryIdtRequest.md)
  - [SearchModel](doc/SearchModel.md)
+ - [SearchTasks200Response](doc/SearchTasks200Response.md)
+ - [SearchTasksRequest](doc/SearchTasksRequest.md)
  - [SearchUsers200Response](doc/SearchUsers200Response.md)
  - [SearchUsersRequest](doc/SearchUsersRequest.md)
  - [SortModel](doc/SortModel.md)
  - [StartAuth200Response](doc/StartAuth200Response.md)
+ - [Task](doc/Task.md)
+ - [TaskWithData](doc/TaskWithData.md)
  - [UpdateDeliveryIdtRequest](doc/UpdateDeliveryIdtRequest.md)
  - [UpdateProfileRequest](doc/UpdateProfileRequest.md)
+ - [UpdateTaskRequest](doc/UpdateTaskRequest.md)
  - [User](doc/User.md)
  - [VerifyAuth200Response](doc/VerifyAuth200Response.md)
  - [VerifyAuthRequest](doc/VerifyAuthRequest.md)

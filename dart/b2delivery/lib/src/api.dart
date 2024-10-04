@@ -16,6 +16,7 @@ import 'package:b2delivery/src/api/available_providers_api.dart';
 import 'package:b2delivery/src/api/available_public_api.dart';
 import 'package:b2delivery/src/api/delivery_api.dart';
 import 'package:b2delivery/src/api/files_api.dart';
+import 'package:b2delivery/src/api/tasks_api.dart';
 
 class B2delivery {
   static const String basePath = r'https://localhost:8082';
@@ -111,5 +112,11 @@ class B2delivery {
   /// by doing that all interceptors will not be executed
   FilesApi getFilesApi() {
     return FilesApi(dio, serializers);
+  }
+
+  /// Get TasksApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  TasksApi getTasksApi() {
+    return TasksApi(dio, serializers);
   }
 }

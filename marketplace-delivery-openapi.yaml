@@ -7,8 +7,10 @@ servers:
   - url: https://market.b2p.space/api
 tags:
   - name: Auth
+  - name: Activities
   - name: Files
   - name: Delivery
+  - name: Tasks
 paths:
   /auth/start:
     post:
@@ -537,6 +539,81 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DeliveryIdtNotFound"
+  /tasks/search:
+    post:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Search tasks
+      operationId: searchTasks
+      requestBody:
+        $ref: "#/components/requestBodies/SearchTasksBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchTasksData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  /tasks:
+    post:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Create new task
+      operationId: createTask
+      requestBody:
+        $ref: "#/components/requestBodies/CreateTaskBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/TaskWithDataResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/tasks/{id}":
+    get:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Get task info
+      operationId: getTask
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/TaskWithDataResponse"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/TaskNotFound"
+    put:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Update task
+      operationId: updateTask
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditTaskBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/TaskWithDataResponse"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/TaskNotFound"
 components:
   schemas:
     User:
@@ -836,6 +913,154 @@ components:
         providerName:
           type: string
           description: Provider Name
+    Task:
+      type: object
+      required:
+        - id
+        - type
+        - status
+        - priority
+        - name
+        - description
+        - files
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Task ID
+        type:
+          type: string
+          description: Task type
+        status:
+          type: string
+          description: Task status
+          enum:
+            - new
+            - inProgress
+            - review
+            - done
+            - discard
+        priority:
+          type: string
+          description: Task priority
+          enum:
+            - low
+            - medium
+            - high
+        name:
+          type: string
+          description: Task name
+        description:
+          type: string
+          description: Task description
+        files:
+          type: array
+          items:
+            type: string
+          description: Attached files
+        artefactId:
+          type: string
+          description: ID of artefact that link with task
+        artefactType:
+          type: string
+          description: Type of artefact that link with task
+        artefactData:
+          type: object
+          description: Data of artefact that link with task
+        assignee:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+    TaskWithData:
+      type: object
+      required:
+        - id
+        - type
+        - status
+        - priority
+        - name
+        - description
+        - files
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Task ID
+        type:
+          type: string
+          description: Task type
+        status:
+          type: string
+          description: Task status
+          enum:
+            - new
+            - inProgress
+            - review
+            - done
+            - discard
+        priority:
+          type: string
+          description: Task priority
+          enum:
+            - low
+            - medium
+            - high
+        name:
+          type: string
+          description: Task name
+        description:
+          type: string
+          description: Task description
+        files:
+          type: array
+          items:
+            type: string
+          description: Attached files
+        artefactId:
+          type: string
+          description: ID of artefact that link with task
+        artefactType:
+          type: string
+          description: Type of artefact that link with task
+        artefactData:
+          type: object
+          description: Data of artefact that link with task
+        assignee:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        createdByData:
+          $ref: "#/components/schemas/User"
+        assigneeData:
+          $ref: "#/components/schemas/User"
   responses:
     UserData:
       description: Successful operation
@@ -1026,6 +1251,43 @@ components:
         application/json:
           schema:
             type: object
+    TaskResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Task"
+    TaskWithDataResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TaskWithData"
+    SearchTasksData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    TaskNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: task:404
+            message: Task not found
   securitySchemes:
     BearerAuth:
       type: http
@@ -1223,6 +1485,134 @@ components:
               responsible:
                 type: string
                 description: Wallet of responsible user
+    SearchTasksBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              searchTerm:
+                type: string
+                description: Search term
+              types:
+                type: array
+                items:
+                  type: string
+                description: Task types
+              status:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - new
+                    - inProgress
+                    - review
+                    - done
+                    - discard
+                description: Task status
+              priority:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - low
+                    - medium
+                    - high
+                description: Task priority
+              assignee:
+                type: array
+                items:
+                  type: string
+                description: Assignee IDs
+              createdBy:
+                type: array
+                items:
+                  type: string
+                description: Created by IDs
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    CreateTaskBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - type
+              - name
+            properties:
+              type:
+                type: string
+                description: Task type
+              priority:
+                type: string
+                description: Task priority
+                enum:
+                  - low
+                  - medium
+                  - high
+              name:
+                type: string
+                description: Task name
+              description:
+                type: string
+                description: Task description
+              files:
+                type: array
+                items:
+                  type: string
+                description: Attached files
+              assignee:
+                type: string
+                description: Wallet Address
+                example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+    EditTaskBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: Task status
+                enum:
+                  - new
+                  - inProgress
+                  - review
+                  - done
+                  - discard
+              priority:
+                type: string
+                description: Task priority
+                enum:
+                  - low
+                  - medium
+                  - high
+              name:
+                type: string
+                description: Task name
+              description:
+                type: string
+                description: Task description
+              files:
+                type: array
+                items:
+                  type: string
+                description: Attached files
+              artefactData:
+                type: object
+                description: Data of artefact that link with task
+              assignee:
+                type: string
+                description: Wallet Address
+                example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
   parameters:
     walletParam:
       in: path
@@ -1254,3 +1644,11 @@ components:
       required: true
       schema:
         type: string
+    taskIdParam:
+      in: path
+      name: id
+      description: Task ID
+      required: true
+      schema:
+        type: string
+        format: uuid

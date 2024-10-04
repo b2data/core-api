@@ -19,6 +19,7 @@ import 'package:b2delivery/src/model/add_admin_access_request.dart';
 import 'package:b2delivery/src/model/admin_access.dart';
 import 'package:b2delivery/src/model/check_admin_access200_response.dart';
 import 'package:b2delivery/src/model/create_delivery_idt_request.dart';
+import 'package:b2delivery/src/model/create_task_request.dart';
 import 'package:b2delivery/src/model/delivery_idt.dart';
 import 'package:b2delivery/src/model/delivery_idt_base.dart';
 import 'package:b2delivery/src/model/delivery_idt_with_data.dart';
@@ -31,12 +32,17 @@ import 'package:b2delivery/src/model/search_admin_access200_response.dart';
 import 'package:b2delivery/src/model/search_delivery_idt200_response.dart';
 import 'package:b2delivery/src/model/search_delivery_idt_request.dart';
 import 'package:b2delivery/src/model/search_model.dart';
+import 'package:b2delivery/src/model/search_tasks200_response.dart';
+import 'package:b2delivery/src/model/search_tasks_request.dart';
 import 'package:b2delivery/src/model/search_users200_response.dart';
 import 'package:b2delivery/src/model/search_users_request.dart';
 import 'package:b2delivery/src/model/sort_model.dart';
 import 'package:b2delivery/src/model/start_auth200_response.dart';
+import 'package:b2delivery/src/model/task.dart';
+import 'package:b2delivery/src/model/task_with_data.dart';
 import 'package:b2delivery/src/model/update_delivery_idt_request.dart';
 import 'package:b2delivery/src/model/update_profile_request.dart';
+import 'package:b2delivery/src/model/update_task_request.dart';
 import 'package:b2delivery/src/model/user.dart';
 import 'package:b2delivery/src/model/verify_auth200_response.dart';
 import 'package:b2delivery/src/model/verify_auth_request.dart';
@@ -52,6 +58,7 @@ part 'serializers.g.dart';
   AdminAccess,
   CheckAdminAccess200Response,
   CreateDeliveryIdtRequest,
+  CreateTaskRequest,
   DeliveryIdt,
   DeliveryIdtBase,
   DeliveryIdtWithData,
@@ -64,12 +71,17 @@ part 'serializers.g.dart';
   SearchDeliveryIdt200Response,
   SearchDeliveryIdtRequest,
   SearchModel,
+  SearchTasks200Response,
+  SearchTasksRequest,
   SearchUsers200Response,
   SearchUsersRequest,
   SortModel,
   StartAuth200Response,
+  Task,
+  TaskWithData,
   UpdateDeliveryIdtRequest,
   UpdateProfileRequest,
+  UpdateTaskRequest,
   User,
   VerifyAuth200Response,
   VerifyAuthRequest,
