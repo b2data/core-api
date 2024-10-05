@@ -67,6 +67,7 @@ paths:
                     - payload
                     - signature
                     - timestamp
+                    - domain
                   properties:
                     payload:
                       type: string
@@ -77,20 +78,35 @@ paths:
                     timestamp:
                       type: number
                       description: Timestamp of authentication
+                    domain:
+                      type: object
+                      required:
+                        - lengthBytes
+                        - value
+                      properties:
+                        lengthBytes:
+                          type: number
+                        value:
+                          type: string
                 account:
                   type: object
                   required:
                     - address
-                    - chain
+                    - network
+                    - publicKey
+                    - walletStateInit
                   properties:
                     address:
                       type: string
                       description: Wallet Address
                       example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
-                    chain:
+                    network:
                       type: string
                       description: Blockchain chain
                     publicKey:
+                      type: string
+                      description: Wallet Public Key
+                    walletStateInit:
                       type: string
                       description: Wallet Public Key
       responses:
