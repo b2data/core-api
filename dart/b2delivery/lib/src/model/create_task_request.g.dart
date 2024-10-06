@@ -6,6 +6,53 @@ part of 'create_task_request.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
+const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_productItemReview =
+    const CreateTaskRequestTypeEnum._('productItemReview');
+const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_simpleTask =
+    const CreateTaskRequestTypeEnum._('simpleTask');
+const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_prepareIdtTask =
+    const CreateTaskRequestTypeEnum._('prepareIdtTask');
+const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_pickUpIdtTask =
+    const CreateTaskRequestTypeEnum._('pickUpIdtTask');
+const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_receiveIdtTask =
+    const CreateTaskRequestTypeEnum._('receiveIdtTask');
+const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_shipIdtTask =
+    const CreateTaskRequestTypeEnum._('shipIdtTask');
+const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_deliverIdtTask =
+    const CreateTaskRequestTypeEnum._('deliverIdtTask');
+
+CreateTaskRequestTypeEnum _$createTaskRequestTypeEnumValueOf(String name) {
+  switch (name) {
+    case 'productItemReview':
+      return _$createTaskRequestTypeEnum_productItemReview;
+    case 'simpleTask':
+      return _$createTaskRequestTypeEnum_simpleTask;
+    case 'prepareIdtTask':
+      return _$createTaskRequestTypeEnum_prepareIdtTask;
+    case 'pickUpIdtTask':
+      return _$createTaskRequestTypeEnum_pickUpIdtTask;
+    case 'receiveIdtTask':
+      return _$createTaskRequestTypeEnum_receiveIdtTask;
+    case 'shipIdtTask':
+      return _$createTaskRequestTypeEnum_shipIdtTask;
+    case 'deliverIdtTask':
+      return _$createTaskRequestTypeEnum_deliverIdtTask;
+    default:
+      throw new ArgumentError(name);
+  }
+}
+
+final BuiltSet<CreateTaskRequestTypeEnum> _$createTaskRequestTypeEnumValues =
+    new BuiltSet<CreateTaskRequestTypeEnum>(const <CreateTaskRequestTypeEnum>[
+  _$createTaskRequestTypeEnum_productItemReview,
+  _$createTaskRequestTypeEnum_simpleTask,
+  _$createTaskRequestTypeEnum_prepareIdtTask,
+  _$createTaskRequestTypeEnum_pickUpIdtTask,
+  _$createTaskRequestTypeEnum_receiveIdtTask,
+  _$createTaskRequestTypeEnum_shipIdtTask,
+  _$createTaskRequestTypeEnum_deliverIdtTask,
+]);
+
 const CreateTaskRequestPriorityEnum _$createTaskRequestPriorityEnum_low =
     const CreateTaskRequestPriorityEnum._('low');
 const CreateTaskRequestPriorityEnum _$createTaskRequestPriorityEnum_medium =
@@ -35,9 +82,50 @@ final BuiltSet<CreateTaskRequestPriorityEnum>
   _$createTaskRequestPriorityEnum_high,
 ]);
 
+Serializer<CreateTaskRequestTypeEnum> _$createTaskRequestTypeEnumSerializer =
+    new _$CreateTaskRequestTypeEnumSerializer();
 Serializer<CreateTaskRequestPriorityEnum>
     _$createTaskRequestPriorityEnumSerializer =
     new _$CreateTaskRequestPriorityEnumSerializer();
+
+class _$CreateTaskRequestTypeEnumSerializer
+    implements PrimitiveSerializer<CreateTaskRequestTypeEnum> {
+  static const Map<String, Object> _toWire = const <String, Object>{
+    'productItemReview': 'productItemReview',
+    'simpleTask': 'simpleTask',
+    'prepareIdtTask': 'prepareIdtTask',
+    'pickUpIdtTask': 'pickUpIdtTask',
+    'receiveIdtTask': 'receiveIdtTask',
+    'shipIdtTask': 'shipIdtTask',
+    'deliverIdtTask': 'deliverIdtTask',
+  };
+  static const Map<Object, String> _fromWire = const <Object, String>{
+    'productItemReview': 'productItemReview',
+    'simpleTask': 'simpleTask',
+    'prepareIdtTask': 'prepareIdtTask',
+    'pickUpIdtTask': 'pickUpIdtTask',
+    'receiveIdtTask': 'receiveIdtTask',
+    'shipIdtTask': 'shipIdtTask',
+    'deliverIdtTask': 'deliverIdtTask',
+  };
+
+  @override
+  final Iterable<Type> types = const <Type>[CreateTaskRequestTypeEnum];
+  @override
+  final String wireName = 'CreateTaskRequestTypeEnum';
+
+  @override
+  Object serialize(Serializers serializers, CreateTaskRequestTypeEnum object,
+          {FullType specifiedType = FullType.unspecified}) =>
+      _toWire[object.name] ?? object.name;
+
+  @override
+  CreateTaskRequestTypeEnum deserialize(
+          Serializers serializers, Object serialized,
+          {FullType specifiedType = FullType.unspecified}) =>
+      CreateTaskRequestTypeEnum.valueOf(
+          _fromWire[serialized] ?? (serialized is String ? serialized : ''));
+}
 
 class _$CreateTaskRequestPriorityEnumSerializer
     implements PrimitiveSerializer<CreateTaskRequestPriorityEnum> {
@@ -73,7 +161,7 @@ class _$CreateTaskRequestPriorityEnumSerializer
 
 class _$CreateTaskRequest extends CreateTaskRequest {
   @override
-  final String type;
+  final CreateTaskRequestTypeEnum type;
   @override
   final CreateTaskRequestPriorityEnum? priority;
   @override
@@ -151,9 +239,9 @@ class CreateTaskRequestBuilder
     implements Builder<CreateTaskRequest, CreateTaskRequestBuilder> {
   _$CreateTaskRequest? _$v;
 
-  String? _type;
-  String? get type => _$this._type;
-  set type(String? type) => _$this._type = type;
+  CreateTaskRequestTypeEnum? _type;
+  CreateTaskRequestTypeEnum? get type => _$this._type;
+  set type(CreateTaskRequestTypeEnum? type) => _$this._type = type;
 
   CreateTaskRequestPriorityEnum? _priority;
   CreateTaskRequestPriorityEnum? get priority => _$this._priority;

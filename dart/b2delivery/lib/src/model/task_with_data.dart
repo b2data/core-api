@@ -38,7 +38,8 @@ abstract class TaskWithData implements Built<TaskWithData, TaskWithDataBuilder> 
 
   /// Task type
   @BuiltValueField(wireName: r'type')
-  String get type;
+  TaskWithDataTypeEnum get type;
+  // enum typeEnum {  productItemReview,  simpleTask,  prepareIdtTask,  pickUpIdtTask,  receiveIdtTask,  shipIdtTask,  deliverIdtTask,  };
 
   /// Task status
   @BuiltValueField(wireName: r'status')
@@ -127,7 +128,7 @@ class _$TaskWithDataSerializer implements PrimitiveSerializer<TaskWithData> {
     yield r'type';
     yield serializers.serialize(
       object.type,
-      specifiedType: const FullType(String),
+      specifiedType: const FullType(TaskWithDataTypeEnum),
     );
     yield r'status';
     yield serializers.serialize(
@@ -246,8 +247,8 @@ class _$TaskWithDataSerializer implements PrimitiveSerializer<TaskWithData> {
         case r'type':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(String),
-          ) as String;
+            specifiedType: const FullType(TaskWithDataTypeEnum),
+          ) as TaskWithDataTypeEnum;
           result.type = valueDes;
           break;
         case r'status':
@@ -375,6 +376,38 @@ class _$TaskWithDataSerializer implements PrimitiveSerializer<TaskWithData> {
     );
     return result.build();
   }
+}
+
+class TaskWithDataTypeEnum extends EnumClass {
+
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'productItemReview')
+  static const TaskWithDataTypeEnum productItemReview = _$taskWithDataTypeEnum_productItemReview;
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'simpleTask')
+  static const TaskWithDataTypeEnum simpleTask = _$taskWithDataTypeEnum_simpleTask;
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'prepareIdtTask')
+  static const TaskWithDataTypeEnum prepareIdtTask = _$taskWithDataTypeEnum_prepareIdtTask;
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'pickUpIdtTask')
+  static const TaskWithDataTypeEnum pickUpIdtTask = _$taskWithDataTypeEnum_pickUpIdtTask;
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'receiveIdtTask')
+  static const TaskWithDataTypeEnum receiveIdtTask = _$taskWithDataTypeEnum_receiveIdtTask;
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'shipIdtTask')
+  static const TaskWithDataTypeEnum shipIdtTask = _$taskWithDataTypeEnum_shipIdtTask;
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'deliverIdtTask')
+  static const TaskWithDataTypeEnum deliverIdtTask = _$taskWithDataTypeEnum_deliverIdtTask;
+
+  static Serializer<TaskWithDataTypeEnum> get serializer => _$taskWithDataTypeEnumSerializer;
+
+  const TaskWithDataTypeEnum._(String name): super(name);
+
+  static BuiltSet<TaskWithDataTypeEnum> get values => _$taskWithDataTypeEnumValues;
+  static TaskWithDataTypeEnum valueOf(String name) => _$taskWithDataTypeEnumValueOf(name);
 }
 
 class TaskWithDataStatusEnum extends EnumClass {

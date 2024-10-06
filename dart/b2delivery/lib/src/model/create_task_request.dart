@@ -22,7 +22,8 @@ part 'create_task_request.g.dart';
 abstract class CreateTaskRequest implements Built<CreateTaskRequest, CreateTaskRequestBuilder> {
   /// Task type
   @BuiltValueField(wireName: r'type')
-  String get type;
+  CreateTaskRequestTypeEnum get type;
+  // enum typeEnum {  productItemReview,  simpleTask,  prepareIdtTask,  pickUpIdtTask,  receiveIdtTask,  shipIdtTask,  deliverIdtTask,  };
 
   /// Task priority
   @BuiltValueField(wireName: r'priority')
@@ -71,7 +72,7 @@ class _$CreateTaskRequestSerializer implements PrimitiveSerializer<CreateTaskReq
     yield r'type';
     yield serializers.serialize(
       object.type,
-      specifiedType: const FullType(String),
+      specifiedType: const FullType(CreateTaskRequestTypeEnum),
     );
     if (object.priority != null) {
       yield r'priority';
@@ -132,8 +133,8 @@ class _$CreateTaskRequestSerializer implements PrimitiveSerializer<CreateTaskReq
         case r'type':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(String),
-          ) as String;
+            specifiedType: const FullType(CreateTaskRequestTypeEnum),
+          ) as CreateTaskRequestTypeEnum;
           result.type = valueDes;
           break;
         case r'priority':
@@ -198,6 +199,38 @@ class _$CreateTaskRequestSerializer implements PrimitiveSerializer<CreateTaskReq
     );
     return result.build();
   }
+}
+
+class CreateTaskRequestTypeEnum extends EnumClass {
+
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'productItemReview')
+  static const CreateTaskRequestTypeEnum productItemReview = _$createTaskRequestTypeEnum_productItemReview;
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'simpleTask')
+  static const CreateTaskRequestTypeEnum simpleTask = _$createTaskRequestTypeEnum_simpleTask;
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'prepareIdtTask')
+  static const CreateTaskRequestTypeEnum prepareIdtTask = _$createTaskRequestTypeEnum_prepareIdtTask;
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'pickUpIdtTask')
+  static const CreateTaskRequestTypeEnum pickUpIdtTask = _$createTaskRequestTypeEnum_pickUpIdtTask;
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'receiveIdtTask')
+  static const CreateTaskRequestTypeEnum receiveIdtTask = _$createTaskRequestTypeEnum_receiveIdtTask;
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'shipIdtTask')
+  static const CreateTaskRequestTypeEnum shipIdtTask = _$createTaskRequestTypeEnum_shipIdtTask;
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'deliverIdtTask')
+  static const CreateTaskRequestTypeEnum deliverIdtTask = _$createTaskRequestTypeEnum_deliverIdtTask;
+
+  static Serializer<CreateTaskRequestTypeEnum> get serializer => _$createTaskRequestTypeEnumSerializer;
+
+  const CreateTaskRequestTypeEnum._(String name): super(name);
+
+  static BuiltSet<CreateTaskRequestTypeEnum> get values => _$createTaskRequestTypeEnumValues;
+  static CreateTaskRequestTypeEnum valueOf(String name) => _$createTaskRequestTypeEnumValueOf(name);
 }
 
 class CreateTaskRequestPriorityEnum extends EnumClass {

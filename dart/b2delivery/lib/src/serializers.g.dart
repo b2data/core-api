@@ -14,6 +14,7 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(CreateDeliveryIdtRequest.serializer)
       ..add(CreateTaskRequest.serializer)
       ..add(CreateTaskRequestPriorityEnum.serializer)
+      ..add(CreateTaskRequestTypeEnum.serializer)
       ..add(DeliveryIdt.serializer)
       ..add(DeliveryIdtBase.serializer)
       ..add(DeliveryIdtBaseStatusEnum.serializer)
@@ -34,6 +35,7 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(SearchTasksRequest.serializer)
       ..add(SearchTasksRequestPriorityEnum.serializer)
       ..add(SearchTasksRequestStatusEnum.serializer)
+      ..add(SearchTasksRequestTypesEnum.serializer)
       ..add(SearchUsers200Response.serializer)
       ..add(SearchUsersRequest.serializer)
       ..add(SortModel.serializer)
@@ -42,9 +44,11 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(Task.serializer)
       ..add(TaskPriorityEnum.serializer)
       ..add(TaskStatusEnum.serializer)
+      ..add(TaskTypeEnum.serializer)
       ..add(TaskWithData.serializer)
       ..add(TaskWithDataPriorityEnum.serializer)
       ..add(TaskWithDataStatusEnum.serializer)
+      ..add(TaskWithDataTypeEnum.serializer)
       ..add(UpdateDeliveryIdtRequest.serializer)
       ..add(UpdateDeliveryIdtRequestStatusEnum.serializer)
       ..add(UpdateProfileRequest.serializer)
@@ -87,23 +91,9 @@ Serializers _$serializers = (new Serializers().toBuilder()
           const FullType(BuiltList, const [const FullType(SortModel)]),
           () => new ListBuilder<SortModel>())
       ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(SortModel)]),
-          () => new ListBuilder<SortModel>())
-      ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>())
-      ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>())
-      ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>())
-      ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>())
-      ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>())
+          const FullType(
+              BuiltList, const [const FullType(SearchTasksRequestTypesEnum)]),
+          () => new ListBuilder<SearchTasksRequestTypesEnum>())
       ..addBuilderFactory(
           const FullType(
               BuiltList, const [const FullType(SearchTasksRequestStatusEnum)]),
@@ -121,6 +111,21 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(SortModel)]),
           () => new ListBuilder<SortModel>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(SortModel)]),
+          () => new ListBuilder<SortModel>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => new ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => new ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => new ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => new ListBuilder<String>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
           () => new ListBuilder<String>())

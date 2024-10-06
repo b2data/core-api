@@ -6,6 +6,55 @@ part of 'search_tasks_request.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
+const SearchTasksRequestTypesEnum
+    _$searchTasksRequestTypesEnum_productItemReview =
+    const SearchTasksRequestTypesEnum._('productItemReview');
+const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_simpleTask =
+    const SearchTasksRequestTypesEnum._('simpleTask');
+const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_prepareIdtTask =
+    const SearchTasksRequestTypesEnum._('prepareIdtTask');
+const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_pickUpIdtTask =
+    const SearchTasksRequestTypesEnum._('pickUpIdtTask');
+const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_receiveIdtTask =
+    const SearchTasksRequestTypesEnum._('receiveIdtTask');
+const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_shipIdtTask =
+    const SearchTasksRequestTypesEnum._('shipIdtTask');
+const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_deliverIdtTask =
+    const SearchTasksRequestTypesEnum._('deliverIdtTask');
+
+SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnumValueOf(String name) {
+  switch (name) {
+    case 'productItemReview':
+      return _$searchTasksRequestTypesEnum_productItemReview;
+    case 'simpleTask':
+      return _$searchTasksRequestTypesEnum_simpleTask;
+    case 'prepareIdtTask':
+      return _$searchTasksRequestTypesEnum_prepareIdtTask;
+    case 'pickUpIdtTask':
+      return _$searchTasksRequestTypesEnum_pickUpIdtTask;
+    case 'receiveIdtTask':
+      return _$searchTasksRequestTypesEnum_receiveIdtTask;
+    case 'shipIdtTask':
+      return _$searchTasksRequestTypesEnum_shipIdtTask;
+    case 'deliverIdtTask':
+      return _$searchTasksRequestTypesEnum_deliverIdtTask;
+    default:
+      throw new ArgumentError(name);
+  }
+}
+
+final BuiltSet<SearchTasksRequestTypesEnum>
+    _$searchTasksRequestTypesEnumValues = new BuiltSet<
+        SearchTasksRequestTypesEnum>(const <SearchTasksRequestTypesEnum>[
+  _$searchTasksRequestTypesEnum_productItemReview,
+  _$searchTasksRequestTypesEnum_simpleTask,
+  _$searchTasksRequestTypesEnum_prepareIdtTask,
+  _$searchTasksRequestTypesEnum_pickUpIdtTask,
+  _$searchTasksRequestTypesEnum_receiveIdtTask,
+  _$searchTasksRequestTypesEnum_shipIdtTask,
+  _$searchTasksRequestTypesEnum_deliverIdtTask,
+]);
+
 const SearchTasksRequestStatusEnum _$searchTasksRequestStatusEnum_new_ =
     const SearchTasksRequestStatusEnum._('new_');
 const SearchTasksRequestStatusEnum _$searchTasksRequestStatusEnum_inProgress =
@@ -74,12 +123,54 @@ final BuiltSet<SearchTasksRequestPriorityEnum>
   _$searchTasksRequestPriorityEnum_high,
 ]);
 
+Serializer<SearchTasksRequestTypesEnum>
+    _$searchTasksRequestTypesEnumSerializer =
+    new _$SearchTasksRequestTypesEnumSerializer();
 Serializer<SearchTasksRequestStatusEnum>
     _$searchTasksRequestStatusEnumSerializer =
     new _$SearchTasksRequestStatusEnumSerializer();
 Serializer<SearchTasksRequestPriorityEnum>
     _$searchTasksRequestPriorityEnumSerializer =
     new _$SearchTasksRequestPriorityEnumSerializer();
+
+class _$SearchTasksRequestTypesEnumSerializer
+    implements PrimitiveSerializer<SearchTasksRequestTypesEnum> {
+  static const Map<String, Object> _toWire = const <String, Object>{
+    'productItemReview': 'productItemReview',
+    'simpleTask': 'simpleTask',
+    'prepareIdtTask': 'prepareIdtTask',
+    'pickUpIdtTask': 'pickUpIdtTask',
+    'receiveIdtTask': 'receiveIdtTask',
+    'shipIdtTask': 'shipIdtTask',
+    'deliverIdtTask': 'deliverIdtTask',
+  };
+  static const Map<Object, String> _fromWire = const <Object, String>{
+    'productItemReview': 'productItemReview',
+    'simpleTask': 'simpleTask',
+    'prepareIdtTask': 'prepareIdtTask',
+    'pickUpIdtTask': 'pickUpIdtTask',
+    'receiveIdtTask': 'receiveIdtTask',
+    'shipIdtTask': 'shipIdtTask',
+    'deliverIdtTask': 'deliverIdtTask',
+  };
+
+  @override
+  final Iterable<Type> types = const <Type>[SearchTasksRequestTypesEnum];
+  @override
+  final String wireName = 'SearchTasksRequestTypesEnum';
+
+  @override
+  Object serialize(Serializers serializers, SearchTasksRequestTypesEnum object,
+          {FullType specifiedType = FullType.unspecified}) =>
+      _toWire[object.name] ?? object.name;
+
+  @override
+  SearchTasksRequestTypesEnum deserialize(
+          Serializers serializers, Object serialized,
+          {FullType specifiedType = FullType.unspecified}) =>
+      SearchTasksRequestTypesEnum.valueOf(
+          _fromWire[serialized] ?? (serialized is String ? serialized : ''));
+}
 
 class _$SearchTasksRequestStatusEnumSerializer
     implements PrimitiveSerializer<SearchTasksRequestStatusEnum> {
@@ -152,7 +243,7 @@ class _$SearchTasksRequest extends SearchTasksRequest {
   @override
   final String? searchTerm;
   @override
-  final BuiltList<String>? types;
+  final BuiltList<SearchTasksRequestTypesEnum>? types;
   @override
   final BuiltList<SearchTasksRequestStatusEnum>? status;
   @override
@@ -248,9 +339,11 @@ class SearchTasksRequestBuilder
   String? get searchTerm => _$this._searchTerm;
   set searchTerm(String? searchTerm) => _$this._searchTerm = searchTerm;
 
-  ListBuilder<String>? _types;
-  ListBuilder<String> get types => _$this._types ??= new ListBuilder<String>();
-  set types(ListBuilder<String>? types) => _$this._types = types;
+  ListBuilder<SearchTasksRequestTypesEnum>? _types;
+  ListBuilder<SearchTasksRequestTypesEnum> get types =>
+      _$this._types ??= new ListBuilder<SearchTasksRequestTypesEnum>();
+  set types(ListBuilder<SearchTasksRequestTypesEnum>? types) =>
+      _$this._types = types;
 
   ListBuilder<SearchTasksRequestStatusEnum>? _status;
   ListBuilder<SearchTasksRequestStatusEnum> get status =>

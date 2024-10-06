@@ -30,7 +30,8 @@ abstract class SearchTasksRequest implements Built<SearchTasksRequest, SearchTas
 
   /// Task types
   @BuiltValueField(wireName: r'types')
-  BuiltList<String>? get types;
+  BuiltList<SearchTasksRequestTypesEnum>? get types;
+  // enum typesEnum {  productItemReview,  simpleTask,  prepareIdtTask,  pickUpIdtTask,  receiveIdtTask,  shipIdtTask,  deliverIdtTask,  };
 
   /// Task status
   @BuiltValueField(wireName: r'status')
@@ -95,7 +96,7 @@ class _$SearchTasksRequestSerializer implements PrimitiveSerializer<SearchTasksR
       yield r'types';
       yield serializers.serialize(
         object.types,
-        specifiedType: const FullType(BuiltList, [FullType(String)]),
+        specifiedType: const FullType(BuiltList, [FullType(SearchTasksRequestTypesEnum)]),
       );
     }
     if (object.status != null) {
@@ -180,8 +181,8 @@ class _$SearchTasksRequestSerializer implements PrimitiveSerializer<SearchTasksR
         case r'types':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(BuiltList, [FullType(String)]),
-          ) as BuiltList<String>;
+            specifiedType: const FullType(BuiltList, [FullType(SearchTasksRequestTypesEnum)]),
+          ) as BuiltList<SearchTasksRequestTypesEnum>;
           result.types.replace(valueDes);
           break;
         case r'status':
@@ -260,6 +261,31 @@ class _$SearchTasksRequestSerializer implements PrimitiveSerializer<SearchTasksR
     );
     return result.build();
   }
+}
+
+class SearchTasksRequestTypesEnum extends EnumClass {
+
+  @BuiltValueEnumConst(wireName: r'productItemReview')
+  static const SearchTasksRequestTypesEnum productItemReview = _$searchTasksRequestTypesEnum_productItemReview;
+  @BuiltValueEnumConst(wireName: r'simpleTask')
+  static const SearchTasksRequestTypesEnum simpleTask = _$searchTasksRequestTypesEnum_simpleTask;
+  @BuiltValueEnumConst(wireName: r'prepareIdtTask')
+  static const SearchTasksRequestTypesEnum prepareIdtTask = _$searchTasksRequestTypesEnum_prepareIdtTask;
+  @BuiltValueEnumConst(wireName: r'pickUpIdtTask')
+  static const SearchTasksRequestTypesEnum pickUpIdtTask = _$searchTasksRequestTypesEnum_pickUpIdtTask;
+  @BuiltValueEnumConst(wireName: r'receiveIdtTask')
+  static const SearchTasksRequestTypesEnum receiveIdtTask = _$searchTasksRequestTypesEnum_receiveIdtTask;
+  @BuiltValueEnumConst(wireName: r'shipIdtTask')
+  static const SearchTasksRequestTypesEnum shipIdtTask = _$searchTasksRequestTypesEnum_shipIdtTask;
+  @BuiltValueEnumConst(wireName: r'deliverIdtTask')
+  static const SearchTasksRequestTypesEnum deliverIdtTask = _$searchTasksRequestTypesEnum_deliverIdtTask;
+
+  static Serializer<SearchTasksRequestTypesEnum> get serializer => _$searchTasksRequestTypesEnumSerializer;
+
+  const SearchTasksRequestTypesEnum._(String name): super(name);
+
+  static BuiltSet<SearchTasksRequestTypesEnum> get values => _$searchTasksRequestTypesEnumValues;
+  static SearchTasksRequestTypesEnum valueOf(String name) => _$searchTasksRequestTypesEnumValueOf(name);
 }
 
 class SearchTasksRequestStatusEnum extends EnumClass {

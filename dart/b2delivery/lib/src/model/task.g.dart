@@ -6,6 +6,53 @@ part of 'task.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
+const TaskTypeEnum _$taskTypeEnum_productItemReview =
+    const TaskTypeEnum._('productItemReview');
+const TaskTypeEnum _$taskTypeEnum_simpleTask =
+    const TaskTypeEnum._('simpleTask');
+const TaskTypeEnum _$taskTypeEnum_prepareIdtTask =
+    const TaskTypeEnum._('prepareIdtTask');
+const TaskTypeEnum _$taskTypeEnum_pickUpIdtTask =
+    const TaskTypeEnum._('pickUpIdtTask');
+const TaskTypeEnum _$taskTypeEnum_receiveIdtTask =
+    const TaskTypeEnum._('receiveIdtTask');
+const TaskTypeEnum _$taskTypeEnum_shipIdtTask =
+    const TaskTypeEnum._('shipIdtTask');
+const TaskTypeEnum _$taskTypeEnum_deliverIdtTask =
+    const TaskTypeEnum._('deliverIdtTask');
+
+TaskTypeEnum _$taskTypeEnumValueOf(String name) {
+  switch (name) {
+    case 'productItemReview':
+      return _$taskTypeEnum_productItemReview;
+    case 'simpleTask':
+      return _$taskTypeEnum_simpleTask;
+    case 'prepareIdtTask':
+      return _$taskTypeEnum_prepareIdtTask;
+    case 'pickUpIdtTask':
+      return _$taskTypeEnum_pickUpIdtTask;
+    case 'receiveIdtTask':
+      return _$taskTypeEnum_receiveIdtTask;
+    case 'shipIdtTask':
+      return _$taskTypeEnum_shipIdtTask;
+    case 'deliverIdtTask':
+      return _$taskTypeEnum_deliverIdtTask;
+    default:
+      throw new ArgumentError(name);
+  }
+}
+
+final BuiltSet<TaskTypeEnum> _$taskTypeEnumValues =
+    new BuiltSet<TaskTypeEnum>(const <TaskTypeEnum>[
+  _$taskTypeEnum_productItemReview,
+  _$taskTypeEnum_simpleTask,
+  _$taskTypeEnum_prepareIdtTask,
+  _$taskTypeEnum_pickUpIdtTask,
+  _$taskTypeEnum_receiveIdtTask,
+  _$taskTypeEnum_shipIdtTask,
+  _$taskTypeEnum_deliverIdtTask,
+]);
+
 const TaskStatusEnum _$taskStatusEnum_new_ = const TaskStatusEnum._('new_');
 const TaskStatusEnum _$taskStatusEnum_inProgress =
     const TaskStatusEnum._('inProgress');
@@ -66,10 +113,49 @@ final BuiltSet<TaskPriorityEnum> _$taskPriorityEnumValues =
   _$taskPriorityEnum_high,
 ]);
 
+Serializer<TaskTypeEnum> _$taskTypeEnumSerializer =
+    new _$TaskTypeEnumSerializer();
 Serializer<TaskStatusEnum> _$taskStatusEnumSerializer =
     new _$TaskStatusEnumSerializer();
 Serializer<TaskPriorityEnum> _$taskPriorityEnumSerializer =
     new _$TaskPriorityEnumSerializer();
+
+class _$TaskTypeEnumSerializer implements PrimitiveSerializer<TaskTypeEnum> {
+  static const Map<String, Object> _toWire = const <String, Object>{
+    'productItemReview': 'productItemReview',
+    'simpleTask': 'simpleTask',
+    'prepareIdtTask': 'prepareIdtTask',
+    'pickUpIdtTask': 'pickUpIdtTask',
+    'receiveIdtTask': 'receiveIdtTask',
+    'shipIdtTask': 'shipIdtTask',
+    'deliverIdtTask': 'deliverIdtTask',
+  };
+  static const Map<Object, String> _fromWire = const <Object, String>{
+    'productItemReview': 'productItemReview',
+    'simpleTask': 'simpleTask',
+    'prepareIdtTask': 'prepareIdtTask',
+    'pickUpIdtTask': 'pickUpIdtTask',
+    'receiveIdtTask': 'receiveIdtTask',
+    'shipIdtTask': 'shipIdtTask',
+    'deliverIdtTask': 'deliverIdtTask',
+  };
+
+  @override
+  final Iterable<Type> types = const <Type>[TaskTypeEnum];
+  @override
+  final String wireName = 'TaskTypeEnum';
+
+  @override
+  Object serialize(Serializers serializers, TaskTypeEnum object,
+          {FullType specifiedType = FullType.unspecified}) =>
+      _toWire[object.name] ?? object.name;
+
+  @override
+  TaskTypeEnum deserialize(Serializers serializers, Object serialized,
+          {FullType specifiedType = FullType.unspecified}) =>
+      TaskTypeEnum.valueOf(
+          _fromWire[serialized] ?? (serialized is String ? serialized : ''));
+}
 
 class _$TaskStatusEnumSerializer
     implements PrimitiveSerializer<TaskStatusEnum> {
@@ -139,7 +225,7 @@ class _$Task extends Task {
   @override
   final String id;
   @override
-  final String type;
+  final TaskTypeEnum type;
   @override
   final TaskStatusEnum status;
   @override
@@ -271,9 +357,9 @@ class TaskBuilder implements Builder<Task, TaskBuilder> {
   String? get id => _$this._id;
   set id(String? id) => _$this._id = id;
 
-  String? _type;
-  String? get type => _$this._type;
-  set type(String? type) => _$this._type = type;
+  TaskTypeEnum? _type;
+  TaskTypeEnum? get type => _$this._type;
+  set type(TaskTypeEnum? type) => _$this._type = type;
 
   TaskStatusEnum? _status;
   TaskStatusEnum? get status => _$this._status;

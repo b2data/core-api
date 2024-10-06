@@ -6,6 +6,53 @@ part of 'task_with_data.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
+const TaskWithDataTypeEnum _$taskWithDataTypeEnum_productItemReview =
+    const TaskWithDataTypeEnum._('productItemReview');
+const TaskWithDataTypeEnum _$taskWithDataTypeEnum_simpleTask =
+    const TaskWithDataTypeEnum._('simpleTask');
+const TaskWithDataTypeEnum _$taskWithDataTypeEnum_prepareIdtTask =
+    const TaskWithDataTypeEnum._('prepareIdtTask');
+const TaskWithDataTypeEnum _$taskWithDataTypeEnum_pickUpIdtTask =
+    const TaskWithDataTypeEnum._('pickUpIdtTask');
+const TaskWithDataTypeEnum _$taskWithDataTypeEnum_receiveIdtTask =
+    const TaskWithDataTypeEnum._('receiveIdtTask');
+const TaskWithDataTypeEnum _$taskWithDataTypeEnum_shipIdtTask =
+    const TaskWithDataTypeEnum._('shipIdtTask');
+const TaskWithDataTypeEnum _$taskWithDataTypeEnum_deliverIdtTask =
+    const TaskWithDataTypeEnum._('deliverIdtTask');
+
+TaskWithDataTypeEnum _$taskWithDataTypeEnumValueOf(String name) {
+  switch (name) {
+    case 'productItemReview':
+      return _$taskWithDataTypeEnum_productItemReview;
+    case 'simpleTask':
+      return _$taskWithDataTypeEnum_simpleTask;
+    case 'prepareIdtTask':
+      return _$taskWithDataTypeEnum_prepareIdtTask;
+    case 'pickUpIdtTask':
+      return _$taskWithDataTypeEnum_pickUpIdtTask;
+    case 'receiveIdtTask':
+      return _$taskWithDataTypeEnum_receiveIdtTask;
+    case 'shipIdtTask':
+      return _$taskWithDataTypeEnum_shipIdtTask;
+    case 'deliverIdtTask':
+      return _$taskWithDataTypeEnum_deliverIdtTask;
+    default:
+      throw new ArgumentError(name);
+  }
+}
+
+final BuiltSet<TaskWithDataTypeEnum> _$taskWithDataTypeEnumValues =
+    new BuiltSet<TaskWithDataTypeEnum>(const <TaskWithDataTypeEnum>[
+  _$taskWithDataTypeEnum_productItemReview,
+  _$taskWithDataTypeEnum_simpleTask,
+  _$taskWithDataTypeEnum_prepareIdtTask,
+  _$taskWithDataTypeEnum_pickUpIdtTask,
+  _$taskWithDataTypeEnum_receiveIdtTask,
+  _$taskWithDataTypeEnum_shipIdtTask,
+  _$taskWithDataTypeEnum_deliverIdtTask,
+]);
+
 const TaskWithDataStatusEnum _$taskWithDataStatusEnum_new_ =
     const TaskWithDataStatusEnum._('new_');
 const TaskWithDataStatusEnum _$taskWithDataStatusEnum_inProgress =
@@ -70,10 +117,50 @@ final BuiltSet<TaskWithDataPriorityEnum> _$taskWithDataPriorityEnumValues =
   _$taskWithDataPriorityEnum_high,
 ]);
 
+Serializer<TaskWithDataTypeEnum> _$taskWithDataTypeEnumSerializer =
+    new _$TaskWithDataTypeEnumSerializer();
 Serializer<TaskWithDataStatusEnum> _$taskWithDataStatusEnumSerializer =
     new _$TaskWithDataStatusEnumSerializer();
 Serializer<TaskWithDataPriorityEnum> _$taskWithDataPriorityEnumSerializer =
     new _$TaskWithDataPriorityEnumSerializer();
+
+class _$TaskWithDataTypeEnumSerializer
+    implements PrimitiveSerializer<TaskWithDataTypeEnum> {
+  static const Map<String, Object> _toWire = const <String, Object>{
+    'productItemReview': 'productItemReview',
+    'simpleTask': 'simpleTask',
+    'prepareIdtTask': 'prepareIdtTask',
+    'pickUpIdtTask': 'pickUpIdtTask',
+    'receiveIdtTask': 'receiveIdtTask',
+    'shipIdtTask': 'shipIdtTask',
+    'deliverIdtTask': 'deliverIdtTask',
+  };
+  static const Map<Object, String> _fromWire = const <Object, String>{
+    'productItemReview': 'productItemReview',
+    'simpleTask': 'simpleTask',
+    'prepareIdtTask': 'prepareIdtTask',
+    'pickUpIdtTask': 'pickUpIdtTask',
+    'receiveIdtTask': 'receiveIdtTask',
+    'shipIdtTask': 'shipIdtTask',
+    'deliverIdtTask': 'deliverIdtTask',
+  };
+
+  @override
+  final Iterable<Type> types = const <Type>[TaskWithDataTypeEnum];
+  @override
+  final String wireName = 'TaskWithDataTypeEnum';
+
+  @override
+  Object serialize(Serializers serializers, TaskWithDataTypeEnum object,
+          {FullType specifiedType = FullType.unspecified}) =>
+      _toWire[object.name] ?? object.name;
+
+  @override
+  TaskWithDataTypeEnum deserialize(Serializers serializers, Object serialized,
+          {FullType specifiedType = FullType.unspecified}) =>
+      TaskWithDataTypeEnum.valueOf(
+          _fromWire[serialized] ?? (serialized is String ? serialized : ''));
+}
 
 class _$TaskWithDataStatusEnumSerializer
     implements PrimitiveSerializer<TaskWithDataStatusEnum> {
@@ -144,7 +231,7 @@ class _$TaskWithData extends TaskWithData {
   @override
   final String id;
   @override
-  final String type;
+  final TaskWithDataTypeEnum type;
   @override
   final TaskWithDataStatusEnum status;
   @override
@@ -293,9 +380,9 @@ class TaskWithDataBuilder
   String? get id => _$this._id;
   set id(String? id) => _$this._id = id;
 
-  String? _type;
-  String? get type => _$this._type;
-  set type(String? type) => _$this._type = type;
+  TaskWithDataTypeEnum? _type;
+  TaskWithDataTypeEnum? get type => _$this._type;
+  set type(TaskWithDataTypeEnum? type) => _$this._type = type;
 
   TaskWithDataStatusEnum? _status;
   TaskWithDataStatusEnum? get status => _$this._status;
