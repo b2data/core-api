@@ -223,6 +223,8 @@ class _$Task extends Task {
   @override
   final String id;
   @override
+  final String key;
+  @override
   final TaskTypeEnum type;
   @override
   final TaskStatusEnum status;
@@ -254,6 +256,7 @@ class _$Task extends Task {
 
   _$Task._(
       {required this.id,
+      required this.key,
       required this.type,
       required this.status,
       required this.priority,
@@ -269,6 +272,7 @@ class _$Task extends Task {
       required this.updatedAt})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(id, r'Task', 'id');
+    BuiltValueNullFieldError.checkNotNull(key, r'Task', 'key');
     BuiltValueNullFieldError.checkNotNull(type, r'Task', 'type');
     BuiltValueNullFieldError.checkNotNull(status, r'Task', 'status');
     BuiltValueNullFieldError.checkNotNull(priority, r'Task', 'priority');
@@ -292,6 +296,7 @@ class _$Task extends Task {
     if (identical(other, this)) return true;
     return other is Task &&
         id == other.id &&
+        key == other.key &&
         type == other.type &&
         status == other.status &&
         priority == other.priority &&
@@ -311,6 +316,7 @@ class _$Task extends Task {
   int get hashCode {
     var _$hash = 0;
     _$hash = $jc(_$hash, id.hashCode);
+    _$hash = $jc(_$hash, key.hashCode);
     _$hash = $jc(_$hash, type.hashCode);
     _$hash = $jc(_$hash, status.hashCode);
     _$hash = $jc(_$hash, priority.hashCode);
@@ -332,6 +338,7 @@ class _$Task extends Task {
   String toString() {
     return (newBuiltValueToStringHelper(r'Task')
           ..add('id', id)
+          ..add('key', key)
           ..add('type', type)
           ..add('status', status)
           ..add('priority', priority)
@@ -355,6 +362,10 @@ class TaskBuilder implements Builder<Task, TaskBuilder> {
   String? _id;
   String? get id => _$this._id;
   set id(String? id) => _$this._id = id;
+
+  String? _key;
+  String? get key => _$this._key;
+  set key(String? key) => _$this._key = key;
 
   TaskTypeEnum? _type;
   TaskTypeEnum? get type => _$this._type;
@@ -416,6 +427,7 @@ class TaskBuilder implements Builder<Task, TaskBuilder> {
     final $v = _$v;
     if ($v != null) {
       _id = $v.id;
+      _key = $v.key;
       _type = $v.type;
       _status = $v.status;
       _priority = $v.priority;
@@ -454,6 +466,7 @@ class TaskBuilder implements Builder<Task, TaskBuilder> {
       _$result = _$v ??
           new _$Task._(
               id: BuiltValueNullFieldError.checkNotNull(id, r'Task', 'id'),
+              key: BuiltValueNullFieldError.checkNotNull(key, r'Task', 'key'),
               type:
                   BuiltValueNullFieldError.checkNotNull(type, r'Task', 'type'),
               status: BuiltValueNullFieldError.checkNotNull(

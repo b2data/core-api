@@ -14,6 +14,7 @@ part 'task.g.dart';
 ///
 /// Properties:
 /// * [id] - Task ID
+/// * [key] - Task key
 /// * [type] - Task type
 /// * [status] - Task status
 /// * [priority] - Task priority
@@ -32,6 +33,10 @@ abstract class Task implements Built<Task, TaskBuilder> {
   /// Task ID
   @BuiltValueField(wireName: r'id')
   String get id;
+
+  /// Task key
+  @BuiltValueField(wireName: r'key')
+  String get key;
 
   /// Task type
   @BuiltValueField(wireName: r'type')
@@ -114,6 +119,11 @@ class _$TaskSerializer implements PrimitiveSerializer<Task> {
     yield r'id';
     yield serializers.serialize(
       object.id,
+      specifiedType: const FullType(String),
+    );
+    yield r'key';
+    yield serializers.serialize(
+      object.key,
       specifiedType: const FullType(String),
     );
     yield r'type';
@@ -218,6 +228,13 @@ class _$TaskSerializer implements PrimitiveSerializer<Task> {
             specifiedType: const FullType(String),
           ) as String;
           result.id = valueDes;
+          break;
+        case r'key':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.key = valueDes;
           break;
         case r'type':
           final valueDes = serializers.deserialize(

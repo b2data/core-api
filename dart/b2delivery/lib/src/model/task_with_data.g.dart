@@ -231,6 +231,8 @@ class _$TaskWithData extends TaskWithData {
   @override
   final String id;
   @override
+  final String key;
+  @override
   final TaskWithDataTypeEnum type;
   @override
   final TaskWithDataStatusEnum status;
@@ -266,6 +268,7 @@ class _$TaskWithData extends TaskWithData {
 
   _$TaskWithData._(
       {required this.id,
+      required this.key,
       required this.type,
       required this.status,
       required this.priority,
@@ -283,6 +286,7 @@ class _$TaskWithData extends TaskWithData {
       this.assigneeData})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(id, r'TaskWithData', 'id');
+    BuiltValueNullFieldError.checkNotNull(key, r'TaskWithData', 'key');
     BuiltValueNullFieldError.checkNotNull(type, r'TaskWithData', 'type');
     BuiltValueNullFieldError.checkNotNull(status, r'TaskWithData', 'status');
     BuiltValueNullFieldError.checkNotNull(
@@ -310,6 +314,7 @@ class _$TaskWithData extends TaskWithData {
     if (identical(other, this)) return true;
     return other is TaskWithData &&
         id == other.id &&
+        key == other.key &&
         type == other.type &&
         status == other.status &&
         priority == other.priority &&
@@ -331,6 +336,7 @@ class _$TaskWithData extends TaskWithData {
   int get hashCode {
     var _$hash = 0;
     _$hash = $jc(_$hash, id.hashCode);
+    _$hash = $jc(_$hash, key.hashCode);
     _$hash = $jc(_$hash, type.hashCode);
     _$hash = $jc(_$hash, status.hashCode);
     _$hash = $jc(_$hash, priority.hashCode);
@@ -354,6 +360,7 @@ class _$TaskWithData extends TaskWithData {
   String toString() {
     return (newBuiltValueToStringHelper(r'TaskWithData')
           ..add('id', id)
+          ..add('key', key)
           ..add('type', type)
           ..add('status', status)
           ..add('priority', priority)
@@ -380,6 +387,10 @@ class TaskWithDataBuilder
   String? _id;
   String? get id => _$this._id;
   set id(String? id) => _$this._id = id;
+
+  String? _key;
+  String? get key => _$this._key;
+  set key(String? key) => _$this._key = key;
 
   TaskWithDataTypeEnum? _type;
   TaskWithDataTypeEnum? get type => _$this._type;
@@ -452,6 +463,7 @@ class TaskWithDataBuilder
     final $v = _$v;
     if ($v != null) {
       _id = $v.id;
+      _key = $v.key;
       _type = $v.type;
       _status = $v.status;
       _priority = $v.priority;
@@ -493,6 +505,8 @@ class TaskWithDataBuilder
           new _$TaskWithData._(
               id: BuiltValueNullFieldError.checkNotNull(
                   id, r'TaskWithData', 'id'),
+              key: BuiltValueNullFieldError.checkNotNull(
+                  key, r'TaskWithData', 'key'),
               type: BuiltValueNullFieldError.checkNotNull(
                   type, r'TaskWithData', 'type'),
               status: BuiltValueNullFieldError.checkNotNull(

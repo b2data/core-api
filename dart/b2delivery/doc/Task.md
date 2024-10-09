@@ -9,6 +9,7 @@ import 'package:b2delivery/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** | Task ID | 
+**key** | **String** | Task key | 
 **type** | **String** | Task type | 
 **status** | **String** | Task status | 
 **priority** | **String** | Task priority | 
