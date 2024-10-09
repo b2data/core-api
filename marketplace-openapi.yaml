@@ -2180,6 +2180,30 @@ components:
           description: Creation Date
         userData:
           $ref: "#/components/schemas/User"
+    DeliveryIdpBase:
+      type: object
+      required:
+        - id
+        - productId
+        - itemId
+        - batchId
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Delivery idP
+        productId:
+          type: string
+          format: uuid
+          description: Product ID
+        itemId:
+          type: string
+          format: uuid
+          description: Item ID
+        batchId:
+          type: string
+          format: uuid
+          description: Batch ID
     DeliveryIdtBase:
       type: object
       required:
@@ -2219,6 +2243,7 @@ components:
         - key
         - status
         - responsible
+        - contains
         - createdBy
         - createdAt
         - updatedAt
@@ -2247,6 +2272,11 @@ components:
           type: string
           format: uuid
           description: Provider ID
+        contains:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeliveryIdpBase"
+          description: List of idP in idT
         createdBy:
           type: string
           description: Wallet Address
@@ -2269,6 +2299,7 @@ components:
         - key
         - status
         - responsible
+        - contains
         - createdBy
         - createdAt
         - updatedAt
@@ -2299,6 +2330,11 @@ components:
           type: string
           format: uuid
           description: Provider ID
+        contains:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeliveryIdpBase"
+          description: List of idP in idT
         createdBy:
           type: string
           description: Wallet Address
@@ -4227,6 +4263,7 @@ components:
         - priority
         - name
         - description
+        - data
         - files
         - createdAt
         - updatedAt
@@ -4238,6 +4275,14 @@ components:
         type:
           type: string
           description: Task type
+          enum:
+            - simpleTask
+            - productItemReview
+            - fillIdt
+            - pickUpIdt
+            - receiveIdt
+            - prepareIdtToDelivery
+            - deliverIdt
         status:
           type: string
           description: Task status
@@ -4271,9 +4316,9 @@ components:
         artefactType:
           type: string
           description: Type of artefact that link with task
-        artefactData:
+        data:
           type: object
-          description: Data of artefact that link with task
+          description: Task Data
         assignee:
           type: string
           description: Wallet Address
@@ -4300,6 +4345,7 @@ components:
         - name
         - description
         - files
+        - data
         - createdAt
         - updatedAt
       properties:
@@ -4310,6 +4356,14 @@ components:
         type:
           type: string
           description: Task type
+          enum:
+            - simpleTask
+            - productItemReview
+            - fillIdt
+            - pickUpIdt
+            - receiveIdt
+            - prepareIdtToDelivery
+            - deliverIdt
         status:
           type: string
           description: Task status
@@ -4343,9 +4397,9 @@ components:
         artefactType:
           type: string
           description: Type of artefact that link with task
-        artefactData:
+        data:
           type: object
-          description: Data of artefact that link with task
+          description: Task Data
         assignee:
           type: string
           description: Wallet Address
@@ -4366,6 +4420,179 @@ components:
           $ref: "#/components/schemas/User"
         assigneeData:
           $ref: "#/components/schemas/User"
+    TaskDataIdtWithIdp:
+      type: object
+      required:
+        - id
+        - key
+        - contains
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Delivery idT
+        key:
+          type: string
+          description: Delivery idT unique key in format `A_000001`
+        contains:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeliveryIdpBase"
+          description: List of idP in idT
+    TaskData:
+      type: object
+      properties:
+        comment:
+          type: string
+          description: ProductItemReview - comment from user
+        status:
+          type: string
+          description: ProductItemReview - acceptance status
+          enum:
+            - blocked
+            - published
+        productId:
+          type: string
+          format: uuid
+          description: FillIdt - Product ID
+        itemId:
+          type: string
+          format: uuid
+          description: FillIdt - Item ID
+        amount:
+          type: number
+          description: FillIdt - Amount of IDP
+        idt:
+          $ref: "#/components/schemas/TaskDataIdtWithIdp"
+          description: FillIdt
+        pickUpSubtasks:
+          type: array
+          description: PickUpIdt
+          items:
+            type: object
+            required:
+              - providerId
+              - providerName
+              - locationLat
+              - locationLong
+              - items
+              - completed
+            properties:
+              providerId:
+                type: string
+                description: Provider ID
+              providerName:
+                type: string
+                description: Provider Name
+              locationLat:
+                type: number
+                description: Location Latitude
+              locationLong:
+                type: number
+                description: Location Longitude
+              completed:
+                type: boolean
+                description: Subtask completed
+              items:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - productId
+                    - itemId
+                    - amount
+                  properties:
+                    productId:
+                      type: string
+                      format: uuid
+                      description: Product ID
+                    itemId:
+                      type: string
+                      format: uuid
+                      description: Item ID
+                    amount:
+                      type: number
+                      description: Amount of IDP
+        idtList:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskDataIdtWithIdp"
+          description: PickUpIdt, ReceiveIdt, PrepareIdtToDelivery, DeliverIdt
+        placeId:
+          type: string
+          description: ReceiveIdt, PrepareIdtToDelivery - Place ID
+        fromUserId:
+          type: string
+          description: ReceiveIdt - From User ID
+        fromUserName:
+          type: string
+          description: ReceiveIdt - From User Name
+        items:
+          type: array
+          description: ReceiveIdt
+          items:
+            type: object
+            required:
+              - productId
+              - itemId
+              - amount
+              - received
+            properties:
+              productId:
+                type: string
+                format: uuid
+                description: Product ID
+              itemId:
+                type: string
+                format: uuid
+                description: Item ID
+              amount:
+                type: number
+                description: Amount of IDP
+              received:
+                type: boolean
+                description: Is item received
+        toUserId:
+          type: string
+          description: PrepareIdtToDelivery - To User ID
+        toUserName:
+          type: string
+          description: PrepareIdtToDelivery - To User Name
+        orders:
+          type: array
+          description: DeliverIdt
+          items:
+            $ref: "#/components/schemas/OrderWithData"
+        deliveryLogs:
+          type: array
+          description: DeliverIdt
+          items:
+            type: object
+            required:
+              - id
+              - key
+              - amount
+              - orderId
+              - positionId
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: Delivery IDT
+              key:
+                type: string
+                description: IDT key
+              orderId:
+                type: string
+                format: uuid
+                description: Order ID
+              positionId:
+                type: string
+                format: uuid
+                description: Order Position ID
+              amount:
+                type: number
+                description: Amount of IDP
   parameters:
     appNameParam:
       in: path
@@ -5735,6 +5962,14 @@ components:
                 type: array
                 items:
                   type: string
+                  enum:
+                    - simpleTask
+                    - productItemReview
+                    - fillIdt
+                    - pickUpIdt
+                    - receiveIdt
+                    - prepareIdtToDelivery
+                    - deliverIdt
                 description: Task types
               status:
                 type: array
@@ -5788,6 +6023,14 @@ components:
               type:
                 type: string
                 description: Task type
+                enum:
+                  - simpleTask
+                  - productItemReview
+                  - fillIdt
+                  - pickUpIdt
+                  - receiveIdt
+                  - prepareIdtToDelivery
+                  - deliverIdt
               priority:
                 type: string
                 description: Task priority
@@ -5843,9 +6086,9 @@ components:
                 items:
                   type: string
                 description: Attached files
-              artefactData:
+              data:
                 type: object
-                description: Data of artefact that link with task
+                description: Task Data
               assignee:
                 type: string
                 description: Wallet Address

@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
+import 'package:b2delivery/src/model/delivery_idp_base.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -17,6 +18,7 @@ part 'delivery_idt.g.dart';
 /// * [status] - Delivery idT status
 /// * [responsible] - Wallet of responsible user
 /// * [providerId] - Provider ID
+/// * [contains] - List of idP in idT
 /// * [createdBy] - Wallet Address
 /// * [createdAt] - Creation Date
 /// * [updatedAt] - Last Updating Date
@@ -43,6 +45,10 @@ abstract class DeliveryIdt implements Built<DeliveryIdt, DeliveryIdtBuilder> {
   /// Provider ID
   @BuiltValueField(wireName: r'providerId')
   String? get providerId;
+
+  /// List of idP in idT
+  @BuiltValueField(wireName: r'contains')
+  BuiltList<DeliveryIdpBase> get contains;
 
   /// Wallet Address
   @BuiltValueField(wireName: r'createdBy')
@@ -110,6 +116,11 @@ class _$DeliveryIdtSerializer implements PrimitiveSerializer<DeliveryIdt> {
         specifiedType: const FullType(String),
       );
     }
+    yield r'contains';
+    yield serializers.serialize(
+      object.contains,
+      specifiedType: const FullType(BuiltList, [FullType(DeliveryIdpBase)]),
+    );
     yield r'createdBy';
     yield serializers.serialize(
       object.createdBy,
@@ -189,6 +200,13 @@ class _$DeliveryIdtSerializer implements PrimitiveSerializer<DeliveryIdt> {
             specifiedType: const FullType(String),
           ) as String;
           result.providerId = valueDes;
+          break;
+        case r'contains':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(BuiltList, [FullType(DeliveryIdpBase)]),
+          ) as BuiltList<DeliveryIdpBase>;
+          result.contains.replace(valueDes);
           break;
         case r'createdBy':
           final valueDes = serializers.deserialize(

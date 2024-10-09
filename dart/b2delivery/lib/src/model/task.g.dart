@@ -6,37 +6,35 @@ part of 'task.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
-const TaskTypeEnum _$taskTypeEnum_productItemReview =
-    const TaskTypeEnum._('productItemReview');
 const TaskTypeEnum _$taskTypeEnum_simpleTask =
     const TaskTypeEnum._('simpleTask');
-const TaskTypeEnum _$taskTypeEnum_prepareIdtTask =
-    const TaskTypeEnum._('prepareIdtTask');
-const TaskTypeEnum _$taskTypeEnum_pickUpIdtTask =
-    const TaskTypeEnum._('pickUpIdtTask');
-const TaskTypeEnum _$taskTypeEnum_receiveIdtTask =
-    const TaskTypeEnum._('receiveIdtTask');
-const TaskTypeEnum _$taskTypeEnum_shipIdtTask =
-    const TaskTypeEnum._('shipIdtTask');
-const TaskTypeEnum _$taskTypeEnum_deliverIdtTask =
-    const TaskTypeEnum._('deliverIdtTask');
+const TaskTypeEnum _$taskTypeEnum_productItemReview =
+    const TaskTypeEnum._('productItemReview');
+const TaskTypeEnum _$taskTypeEnum_fillIdt = const TaskTypeEnum._('fillIdt');
+const TaskTypeEnum _$taskTypeEnum_pickUpIdt = const TaskTypeEnum._('pickUpIdt');
+const TaskTypeEnum _$taskTypeEnum_receiveIdt =
+    const TaskTypeEnum._('receiveIdt');
+const TaskTypeEnum _$taskTypeEnum_prepareIdtToDelivery =
+    const TaskTypeEnum._('prepareIdtToDelivery');
+const TaskTypeEnum _$taskTypeEnum_deliverIdt =
+    const TaskTypeEnum._('deliverIdt');
 
 TaskTypeEnum _$taskTypeEnumValueOf(String name) {
   switch (name) {
-    case 'productItemReview':
-      return _$taskTypeEnum_productItemReview;
     case 'simpleTask':
       return _$taskTypeEnum_simpleTask;
-    case 'prepareIdtTask':
-      return _$taskTypeEnum_prepareIdtTask;
-    case 'pickUpIdtTask':
-      return _$taskTypeEnum_pickUpIdtTask;
-    case 'receiveIdtTask':
-      return _$taskTypeEnum_receiveIdtTask;
-    case 'shipIdtTask':
-      return _$taskTypeEnum_shipIdtTask;
-    case 'deliverIdtTask':
-      return _$taskTypeEnum_deliverIdtTask;
+    case 'productItemReview':
+      return _$taskTypeEnum_productItemReview;
+    case 'fillIdt':
+      return _$taskTypeEnum_fillIdt;
+    case 'pickUpIdt':
+      return _$taskTypeEnum_pickUpIdt;
+    case 'receiveIdt':
+      return _$taskTypeEnum_receiveIdt;
+    case 'prepareIdtToDelivery':
+      return _$taskTypeEnum_prepareIdtToDelivery;
+    case 'deliverIdt':
+      return _$taskTypeEnum_deliverIdt;
     default:
       throw new ArgumentError(name);
   }
@@ -44,13 +42,13 @@ TaskTypeEnum _$taskTypeEnumValueOf(String name) {
 
 final BuiltSet<TaskTypeEnum> _$taskTypeEnumValues =
     new BuiltSet<TaskTypeEnum>(const <TaskTypeEnum>[
-  _$taskTypeEnum_productItemReview,
   _$taskTypeEnum_simpleTask,
-  _$taskTypeEnum_prepareIdtTask,
-  _$taskTypeEnum_pickUpIdtTask,
-  _$taskTypeEnum_receiveIdtTask,
-  _$taskTypeEnum_shipIdtTask,
-  _$taskTypeEnum_deliverIdtTask,
+  _$taskTypeEnum_productItemReview,
+  _$taskTypeEnum_fillIdt,
+  _$taskTypeEnum_pickUpIdt,
+  _$taskTypeEnum_receiveIdt,
+  _$taskTypeEnum_prepareIdtToDelivery,
+  _$taskTypeEnum_deliverIdt,
 ]);
 
 const TaskStatusEnum _$taskStatusEnum_new_ = const TaskStatusEnum._('new_');
@@ -122,22 +120,22 @@ Serializer<TaskPriorityEnum> _$taskPriorityEnumSerializer =
 
 class _$TaskTypeEnumSerializer implements PrimitiveSerializer<TaskTypeEnum> {
   static const Map<String, Object> _toWire = const <String, Object>{
-    'productItemReview': 'productItemReview',
     'simpleTask': 'simpleTask',
-    'prepareIdtTask': 'prepareIdtTask',
-    'pickUpIdtTask': 'pickUpIdtTask',
-    'receiveIdtTask': 'receiveIdtTask',
-    'shipIdtTask': 'shipIdtTask',
-    'deliverIdtTask': 'deliverIdtTask',
+    'productItemReview': 'productItemReview',
+    'fillIdt': 'fillIdt',
+    'pickUpIdt': 'pickUpIdt',
+    'receiveIdt': 'receiveIdt',
+    'prepareIdtToDelivery': 'prepareIdtToDelivery',
+    'deliverIdt': 'deliverIdt',
   };
   static const Map<Object, String> _fromWire = const <Object, String>{
-    'productItemReview': 'productItemReview',
     'simpleTask': 'simpleTask',
-    'prepareIdtTask': 'prepareIdtTask',
-    'pickUpIdtTask': 'pickUpIdtTask',
-    'receiveIdtTask': 'receiveIdtTask',
-    'shipIdtTask': 'shipIdtTask',
-    'deliverIdtTask': 'deliverIdtTask',
+    'productItemReview': 'productItemReview',
+    'fillIdt': 'fillIdt',
+    'pickUpIdt': 'pickUpIdt',
+    'receiveIdt': 'receiveIdt',
+    'prepareIdtToDelivery': 'prepareIdtToDelivery',
+    'deliverIdt': 'deliverIdt',
   };
 
   @override
@@ -241,7 +239,7 @@ class _$Task extends Task {
   @override
   final String? artefactType;
   @override
-  final JsonObject? artefactData;
+  final JsonObject data;
   @override
   final String? assignee;
   @override
@@ -264,7 +262,7 @@ class _$Task extends Task {
       required this.files,
       this.artefactId,
       this.artefactType,
-      this.artefactData,
+      required this.data,
       this.assignee,
       this.createdBy,
       required this.createdAt,
@@ -277,6 +275,7 @@ class _$Task extends Task {
     BuiltValueNullFieldError.checkNotNull(name, r'Task', 'name');
     BuiltValueNullFieldError.checkNotNull(description, r'Task', 'description');
     BuiltValueNullFieldError.checkNotNull(files, r'Task', 'files');
+    BuiltValueNullFieldError.checkNotNull(data, r'Task', 'data');
     BuiltValueNullFieldError.checkNotNull(createdAt, r'Task', 'createdAt');
     BuiltValueNullFieldError.checkNotNull(updatedAt, r'Task', 'updatedAt');
   }
@@ -301,7 +300,7 @@ class _$Task extends Task {
         files == other.files &&
         artefactId == other.artefactId &&
         artefactType == other.artefactType &&
-        artefactData == other.artefactData &&
+        data == other.data &&
         assignee == other.assignee &&
         createdBy == other.createdBy &&
         createdAt == other.createdAt &&
@@ -320,7 +319,7 @@ class _$Task extends Task {
     _$hash = $jc(_$hash, files.hashCode);
     _$hash = $jc(_$hash, artefactId.hashCode);
     _$hash = $jc(_$hash, artefactType.hashCode);
-    _$hash = $jc(_$hash, artefactData.hashCode);
+    _$hash = $jc(_$hash, data.hashCode);
     _$hash = $jc(_$hash, assignee.hashCode);
     _$hash = $jc(_$hash, createdBy.hashCode);
     _$hash = $jc(_$hash, createdAt.hashCode);
@@ -341,7 +340,7 @@ class _$Task extends Task {
           ..add('files', files)
           ..add('artefactId', artefactId)
           ..add('artefactType', artefactType)
-          ..add('artefactData', artefactData)
+          ..add('data', data)
           ..add('assignee', assignee)
           ..add('createdBy', createdBy)
           ..add('createdAt', createdAt)
@@ -389,10 +388,9 @@ class TaskBuilder implements Builder<Task, TaskBuilder> {
   String? get artefactType => _$this._artefactType;
   set artefactType(String? artefactType) => _$this._artefactType = artefactType;
 
-  JsonObject? _artefactData;
-  JsonObject? get artefactData => _$this._artefactData;
-  set artefactData(JsonObject? artefactData) =>
-      _$this._artefactData = artefactData;
+  JsonObject? _data;
+  JsonObject? get data => _$this._data;
+  set data(JsonObject? data) => _$this._data = data;
 
   String? _assignee;
   String? get assignee => _$this._assignee;
@@ -426,7 +424,7 @@ class TaskBuilder implements Builder<Task, TaskBuilder> {
       _files = $v.files.toBuilder();
       _artefactId = $v.artefactId;
       _artefactType = $v.artefactType;
-      _artefactData = $v.artefactData;
+      _data = $v.data;
       _assignee = $v.assignee;
       _createdBy = $v.createdBy;
       _createdAt = $v.createdAt;
@@ -469,7 +467,8 @@ class TaskBuilder implements Builder<Task, TaskBuilder> {
               files: files.build(),
               artefactId: artefactId,
               artefactType: artefactType,
-              artefactData: artefactData,
+              data:
+                  BuiltValueNullFieldError.checkNotNull(data, r'Task', 'data'),
               assignee: assignee,
               createdBy: createdBy,
               createdAt: BuiltValueNullFieldError.checkNotNull(

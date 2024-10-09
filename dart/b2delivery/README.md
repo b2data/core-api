@@ -71,16 +71,57 @@ Class | Method | HTTP request | Description
 [*AdminAccessApi*](doc/AdminAccessApi.md) | [**deleteAdminAccess**](doc/AdminAccessApi.md#deleteadminaccess) | **DELETE** /admin-access/{wallet} | Delete System Admin
 [*AdminAccessApi*](doc/AdminAccessApi.md) | [**searchAdminAccess**](doc/AdminAccessApi.md#searchadminaccess) | **POST** /admin-access/search | Search System Admins
 [*AdminAccessApi*](doc/AdminAccessApi.md) | [**searchUsers**](doc/AdminAccessApi.md#searchusers) | **POST** /admin-access/users | Search users
+[*AppsApi*](doc/AppsApi.md) | [**activateApp**](doc/AppsApi.md#activateapp) | **POST** /apps/activate | Activate app
+[*AppsApi*](doc/AppsApi.md) | [**deactivateApp**](doc/AppsApi.md#deactivateapp) | **POST** /apps/deactivate/{name} | Deactivate app
+[*AppsApi*](doc/AppsApi.md) | [**getApps**](doc/AppsApi.md#getapps) | **GET** /apps | Get activated apps
+[*AppsApi*](doc/AppsApi.md) | [**getAppsFull**](doc/AppsApi.md#getappsfull) | **GET** /apps/full | Get activated apps full data
 [*AuthApi*](doc/AuthApi.md) | [**getProfile**](doc/AuthApi.md#getprofile) | **GET** /auth/profile | Get Profile
 [*AuthApi*](doc/AuthApi.md) | [**refreshToken**](doc/AuthApi.md#refreshtoken) | **POST** /auth/refresh | Refresh Access Token by Refresh token
 [*AuthApi*](doc/AuthApi.md) | [**startAuth**](doc/AuthApi.md#startauth) | **POST** /auth/start | Start authentication process
 [*AuthApi*](doc/AuthApi.md) | [**updateProfile**](doc/AuthApi.md#updateprofile) | **PATCH** /auth/profile | Update Profile
 [*AuthApi*](doc/AuthApi.md) | [**verifyAuth**](doc/AuthApi.md#verifyauth) | **POST** /auth/verify | Verify authentication wallet
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**createFolderFilter**](doc/AvailableProvidersApi.md#createfolderfilter) | **POST** /folders/{id}/filters | Create folder filter
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**createProduct**](doc/AvailableProvidersApi.md#createproduct) | **POST** /products | Create new product
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**createProductBatch**](doc/AvailableProvidersApi.md#createproductbatch) | **POST** /products/batches | Create new product batch
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**createProductItem**](doc/AvailableProvidersApi.md#createproductitem) | **POST** /products/items | Create new product item
 [*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**deleteFile**](doc/AvailableProvidersApi.md#deletefile) | **DELETE** /files/{id} | Delete File
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**deleteFolderFilter**](doc/AvailableProvidersApi.md#deletefolderfilter) | **DELETE** /folders/{id}/filters/{filterId} | Delete folder filter
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**deleteProduct**](doc/AvailableProvidersApi.md#deleteproduct) | **DELETE** /products/{id} | Delete product
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**deleteProductBatch**](doc/AvailableProvidersApi.md#deleteproductbatch) | **DELETE** /products/batches/{id} | Delete product batch
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**deleteProductItem**](doc/AvailableProvidersApi.md#deleteproductitem) | **DELETE** /products/items/{id} | Delete product item
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**deleteProvider**](doc/AvailableProvidersApi.md#deleteprovider) | **DELETE** /providers/my | Delete provider
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**getMyProviderProfile**](doc/AvailableProvidersApi.md#getmyproviderprofile) | **GET** /providers/my/profile | Get provider profile info
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**getProduct**](doc/AvailableProvidersApi.md#getproduct) | **GET** /products/{id} | Get product with full data
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**getProductBatch**](doc/AvailableProvidersApi.md#getproductbatch) | **GET** /products/batches/{id} | Get product batch with full data
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**getProductItem**](doc/AvailableProvidersApi.md#getproductitem) | **GET** /products/items/{id} | Get product item with full data
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**getProvider**](doc/AvailableProvidersApi.md#getprovider) | **GET** /providers/my | Get provider data
 [*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**searchActivities**](doc/AvailableProvidersApi.md#searchactivities) | **POST** /activities/search | Search activities
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**searchProductBatches**](doc/AvailableProvidersApi.md#searchproductbatches) | **POST** /products/batches/search | Search product batches
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**searchProductItems**](doc/AvailableProvidersApi.md#searchproductitems) | **POST** /products/items/search | Search product items
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**searchProducts**](doc/AvailableProvidersApi.md#searchproducts) | **POST** /products/search | Search products
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**updateFolderFilter**](doc/AvailableProvidersApi.md#updatefolderfilter) | **PATCH** /folders/{id}/filters/{filterId} | Update folder filter
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**updateProduct**](doc/AvailableProvidersApi.md#updateproduct) | **PATCH** /products/{id} | Update product data
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**updateProductBatch**](doc/AvailableProvidersApi.md#updateproductbatch) | **PATCH** /products/batches/{id} | Update product batch data
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**updateProductItem**](doc/AvailableProvidersApi.md#updateproductitem) | **PATCH** /products/items/{id} | Update product item data
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**updateProvider**](doc/AvailableProvidersApi.md#updateprovider) | **PATCH** /providers/my | Update provider data
+[*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**updateProviderProfile**](doc/AvailableProvidersApi.md#updateproviderprofile) | **PUT** /providers/my/profile | Create or update provider profile on marketplace
 [*AvailableProvidersApi*](doc/AvailableProvidersApi.md) | [**uploadFile**](doc/AvailableProvidersApi.md#uploadfile) | **POST** /files | Upload file
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**checkFolderReference**](doc/AvailablePublicApi.md#checkfolderreference) | **GET** /folders/{id}/check-reference | Check folder filters data for references
 [*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**getFile**](doc/AvailablePublicApi.md#getfile) | **GET** /files/{id} | Get file
 [*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**getFileInfo**](doc/AvailablePublicApi.md#getfileinfo) | **GET** /files/{id}/info | Get file info
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**getFolder**](doc/AvailablePublicApi.md#getfolder) | **GET** /folders/{id} | Get full folder data
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**getFoldersStats**](doc/AvailablePublicApi.md#getfoldersstats) | **GET** /folders/stats | Get folders stats
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**getPlace**](doc/AvailablePublicApi.md#getplace) | **GET** /places/{id} | Get place info
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**getProductCard**](doc/AvailablePublicApi.md#getproductcard) | **GET** /products/cards/{id} | Get product card
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**getProviderProfile**](doc/AvailablePublicApi.md#getproviderprofile) | **GET** /providers/{id}/profile | Get provider profile info
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**registerProvider**](doc/AvailablePublicApi.md#registerprovider) | **POST** /providers/register | Register new provider
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**searchFolders**](doc/AvailablePublicApi.md#searchfolders) | **GET** /folders/search | Search folders
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**searchFoldersFilters**](doc/AvailablePublicApi.md#searchfoldersfilters) | **POST** /folders/filters/search | Search folders filters
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**searchPlaces**](doc/AvailablePublicApi.md#searchplaces) | **GET** /places/search | Search places
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**searchProductCards**](doc/AvailablePublicApi.md#searchproductcards) | **POST** /products/cards/search | Search product cards
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**searchProductFilters**](doc/AvailablePublicApi.md#searchproductfilters) | **POST** /products/cards/search/filters | Search products filters
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**searchProductNameSuggester**](doc/AvailablePublicApi.md#searchproductnamesuggester) | **POST** /products/cards/search/suggester | Search products name suggester
+[*AvailablePublicApi*](doc/AvailablePublicApi.md) | [**searchTags**](doc/AvailablePublicApi.md#searchtags) | **POST** /tags/search | Search tags
 [*DeliveryApi*](doc/DeliveryApi.md) | [**createDeliveryIdt**](doc/DeliveryApi.md#createdeliveryidt) | **POST** /delivery/idt | Create new delivery idT
 [*DeliveryApi*](doc/DeliveryApi.md) | [**getDeliveryIdt**](doc/DeliveryApi.md#getdeliveryidt) | **GET** /delivery/idt/{id} | Get delivery idT
 [*DeliveryApi*](doc/DeliveryApi.md) | [**getDeliveryIdtPrefixes**](doc/DeliveryApi.md#getdeliveryidtprefixes) | **GET** /delivery/idt/prefixes | Get prefixes of delivery idT and latest key
@@ -92,6 +133,66 @@ Class | Method | HTTP request | Description
 [*FilesApi*](doc/FilesApi.md) | [**getFile**](doc/FilesApi.md#getfile) | **GET** /files/{id} | Get file
 [*FilesApi*](doc/FilesApi.md) | [**getFileInfo**](doc/FilesApi.md#getfileinfo) | **GET** /files/{id}/info | Get file info
 [*FilesApi*](doc/FilesApi.md) | [**uploadFile**](doc/FilesApi.md#uploadfile) | **POST** /files | Upload file
+[*FoldersApi*](doc/FoldersApi.md) | [**checkFolderReference**](doc/FoldersApi.md#checkfolderreference) | **GET** /folders/{id}/check-reference | Check folder filters data for references
+[*FoldersApi*](doc/FoldersApi.md) | [**createFolder**](doc/FoldersApi.md#createfolder) | **POST** /folders | Create folder
+[*FoldersApi*](doc/FoldersApi.md) | [**createFolderFilter**](doc/FoldersApi.md#createfolderfilter) | **POST** /folders/{id}/filters | Create folder filter
+[*FoldersApi*](doc/FoldersApi.md) | [**deleteFolder**](doc/FoldersApi.md#deletefolder) | **DELETE** /folders/{id} | Delete folder
+[*FoldersApi*](doc/FoldersApi.md) | [**deleteFolderFilter**](doc/FoldersApi.md#deletefolderfilter) | **DELETE** /folders/{id}/filters/{filterId} | Delete folder filter
+[*FoldersApi*](doc/FoldersApi.md) | [**getFolder**](doc/FoldersApi.md#getfolder) | **GET** /folders/{id} | Get full folder data
+[*FoldersApi*](doc/FoldersApi.md) | [**getFoldersStats**](doc/FoldersApi.md#getfoldersstats) | **GET** /folders/stats | Get folders stats
+[*FoldersApi*](doc/FoldersApi.md) | [**moveFolder**](doc/FoldersApi.md#movefolder) | **PUT** /folders/move | Change folder order
+[*FoldersApi*](doc/FoldersApi.md) | [**moveFolderFilter**](doc/FoldersApi.md#movefolderfilter) | **PUT** /folders/{id}/filters/move | Move folder filter
+[*FoldersApi*](doc/FoldersApi.md) | [**searchFolders**](doc/FoldersApi.md#searchfolders) | **GET** /folders/search | Search folders
+[*FoldersApi*](doc/FoldersApi.md) | [**searchFoldersFilters**](doc/FoldersApi.md#searchfoldersfilters) | **POST** /folders/filters/search | Search folders filters
+[*FoldersApi*](doc/FoldersApi.md) | [**updateFolder**](doc/FoldersApi.md#updatefolder) | **PATCH** /folders/{id} | Update folder
+[*FoldersApi*](doc/FoldersApi.md) | [**updateFolderFilter**](doc/FoldersApi.md#updatefolderfilter) | **PATCH** /folders/{id}/filters/{filterId} | Update folder filter
+[*OrdersApi*](doc/OrdersApi.md) | [**createOrder**](doc/OrdersApi.md#createorder) | **POST** /orders | Create new order
+[*OrdersApi*](doc/OrdersApi.md) | [**deleteOrder**](doc/OrdersApi.md#deleteorder) | **DELETE** /orders/{id} | Cancel order
+[*OrdersApi*](doc/OrdersApi.md) | [**getOrder**](doc/OrdersApi.md#getorder) | **GET** /orders/{id} | Get order information
+[*OrdersApi*](doc/OrdersApi.md) | [**getOrdersStats**](doc/OrdersApi.md#getordersstats) | **GET** /orders/my/stats | Get stats of my orders
+[*OrdersApi*](doc/OrdersApi.md) | [**searchMyOrders**](doc/OrdersApi.md#searchmyorders) | **POST** /orders/my/search | Search my orders
+[*OrdersApi*](doc/OrdersApi.md) | [**searchOrders**](doc/OrdersApi.md#searchorders) | **POST** /orders/search | Search orders
+[*OrdersApi*](doc/OrdersApi.md) | [**updateOrder**](doc/OrdersApi.md#updateorder) | **PATCH** /orders/{id} | Update order
+[*PlacesApi*](doc/PlacesApi.md) | [**createPlace**](doc/PlacesApi.md#createplace) | **POST** /places | Create place
+[*PlacesApi*](doc/PlacesApi.md) | [**deletePlace**](doc/PlacesApi.md#deleteplace) | **DELETE** /places/{id} | Delete place
+[*PlacesApi*](doc/PlacesApi.md) | [**getPlace**](doc/PlacesApi.md#getplace) | **GET** /places/{id} | Get place info
+[*PlacesApi*](doc/PlacesApi.md) | [**searchPlaces**](doc/PlacesApi.md#searchplaces) | **GET** /places/search | Search places
+[*PlacesApi*](doc/PlacesApi.md) | [**updatePlace**](doc/PlacesApi.md#updateplace) | **PATCH** /places/{id} | Update place
+[*ProductsApi*](doc/ProductsApi.md) | [**addProductCardLike**](doc/ProductsApi.md#addproductcardlike) | **POST** /products/cards/{id}/like | Add product card like
+[*ProductsApi*](doc/ProductsApi.md) | [**blockProduct**](doc/ProductsApi.md#blockproduct) | **POST** /products/{id}/block | Block product
+[*ProductsApi*](doc/ProductsApi.md) | [**createProduct**](doc/ProductsApi.md#createproduct) | **POST** /products | Create new product
+[*ProductsApi*](doc/ProductsApi.md) | [**createProductBatch**](doc/ProductsApi.md#createproductbatch) | **POST** /products/batches | Create new product batch
+[*ProductsApi*](doc/ProductsApi.md) | [**createProductItem**](doc/ProductsApi.md#createproductitem) | **POST** /products/items | Create new product item
+[*ProductsApi*](doc/ProductsApi.md) | [**deleteProduct**](doc/ProductsApi.md#deleteproduct) | **DELETE** /products/{id} | Delete product
+[*ProductsApi*](doc/ProductsApi.md) | [**deleteProductBatch**](doc/ProductsApi.md#deleteproductbatch) | **DELETE** /products/batches/{id} | Delete product batch
+[*ProductsApi*](doc/ProductsApi.md) | [**deleteProductItem**](doc/ProductsApi.md#deleteproductitem) | **DELETE** /products/items/{id} | Delete product item
+[*ProductsApi*](doc/ProductsApi.md) | [**getProduct**](doc/ProductsApi.md#getproduct) | **GET** /products/{id} | Get product with full data
+[*ProductsApi*](doc/ProductsApi.md) | [**getProductBatch**](doc/ProductsApi.md#getproductbatch) | **GET** /products/batches/{id} | Get product batch with full data
+[*ProductsApi*](doc/ProductsApi.md) | [**getProductCard**](doc/ProductsApi.md#getproductcard) | **GET** /products/cards/{id} | Get product card
+[*ProductsApi*](doc/ProductsApi.md) | [**getProductItem**](doc/ProductsApi.md#getproductitem) | **GET** /products/items/{id} | Get product item with full data
+[*ProductsApi*](doc/ProductsApi.md) | [**getProductsStats**](doc/ProductsApi.md#getproductsstats) | **GET** /products/stats | Get products statistics
+[*ProductsApi*](doc/ProductsApi.md) | [**removeProductCardLike**](doc/ProductsApi.md#removeproductcardlike) | **DELETE** /products/cards/{id}/like | Remove product card like
+[*ProductsApi*](doc/ProductsApi.md) | [**searchProductBatches**](doc/ProductsApi.md#searchproductbatches) | **POST** /products/batches/search | Search product batches
+[*ProductsApi*](doc/ProductsApi.md) | [**searchProductCards**](doc/ProductsApi.md#searchproductcards) | **POST** /products/cards/search | Search product cards
+[*ProductsApi*](doc/ProductsApi.md) | [**searchProductFilters**](doc/ProductsApi.md#searchproductfilters) | **POST** /products/cards/search/filters | Search products filters
+[*ProductsApi*](doc/ProductsApi.md) | [**searchProductItems**](doc/ProductsApi.md#searchproductitems) | **POST** /products/items/search | Search product items
+[*ProductsApi*](doc/ProductsApi.md) | [**searchProductNameSuggester**](doc/ProductsApi.md#searchproductnamesuggester) | **POST** /products/cards/search/suggester | Search products name suggester
+[*ProductsApi*](doc/ProductsApi.md) | [**searchProducts**](doc/ProductsApi.md#searchproducts) | **POST** /products/search | Search products
+[*ProductsApi*](doc/ProductsApi.md) | [**unblockProduct**](doc/ProductsApi.md#unblockproduct) | **POST** /products/{id}/unblock | Unblock product
+[*ProductsApi*](doc/ProductsApi.md) | [**updateProduct**](doc/ProductsApi.md#updateproduct) | **PATCH** /products/{id} | Update product data
+[*ProductsApi*](doc/ProductsApi.md) | [**updateProductBatch**](doc/ProductsApi.md#updateproductbatch) | **PATCH** /products/batches/{id} | Update product batch data
+[*ProductsApi*](doc/ProductsApi.md) | [**updateProductItem**](doc/ProductsApi.md#updateproductitem) | **PATCH** /products/items/{id} | Update product item data
+[*ProvidersApi*](doc/ProvidersApi.md) | [**blockProvider**](doc/ProvidersApi.md#blockprovider) | **POST** /providers/{id}/block | Block provider
+[*ProvidersApi*](doc/ProvidersApi.md) | [**deleteProvider**](doc/ProvidersApi.md#deleteprovider) | **DELETE** /providers/my | Delete provider
+[*ProvidersApi*](doc/ProvidersApi.md) | [**getMyProviderProfile**](doc/ProvidersApi.md#getmyproviderprofile) | **GET** /providers/my/profile | Get provider profile info
+[*ProvidersApi*](doc/ProvidersApi.md) | [**getProvider**](doc/ProvidersApi.md#getprovider) | **GET** /providers/my | Get provider data
+[*ProvidersApi*](doc/ProvidersApi.md) | [**getProviderProfile**](doc/ProvidersApi.md#getproviderprofile) | **GET** /providers/{id}/profile | Get provider profile info
+[*ProvidersApi*](doc/ProvidersApi.md) | [**registerProvider**](doc/ProvidersApi.md#registerprovider) | **POST** /providers/register | Register new provider
+[*ProvidersApi*](doc/ProvidersApi.md) | [**searchProviders**](doc/ProvidersApi.md#searchproviders) | **POST** /providers/search | Search providers
+[*ProvidersApi*](doc/ProvidersApi.md) | [**unblockProvider**](doc/ProvidersApi.md#unblockprovider) | **POST** /providers/{id}/unblock | Unblock provider
+[*ProvidersApi*](doc/ProvidersApi.md) | [**updateProvider**](doc/ProvidersApi.md#updateprovider) | **PATCH** /providers/my | Update provider data
+[*ProvidersApi*](doc/ProvidersApi.md) | [**updateProviderProfile**](doc/ProvidersApi.md#updateproviderprofile) | **PUT** /providers/my/profile | Create or update provider profile on marketplace
+[*TagsApi*](doc/TagsApi.md) | [**searchTags**](doc/TagsApi.md#searchtags) | **POST** /tags/search | Search tags
 [*TasksApi*](doc/TasksApi.md) | [**createTask**](doc/TasksApi.md#createtask) | **POST** /tasks | Create new task
 [*TasksApi*](doc/TasksApi.md) | [**getTask**](doc/TasksApi.md#gettask) | **GET** /tasks/{id} | Get task info
 [*TasksApi*](doc/TasksApi.md) | [**searchTasks**](doc/TasksApi.md#searchtasks) | **POST** /tasks/search | Search tasks
@@ -100,34 +201,133 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [ActivateAppRequest](doc/ActivateAppRequest.md)
  - [ActivityLog](doc/ActivityLog.md)
  - [AddAdminAccessRequest](doc/AddAdminAccessRequest.md)
  - [AdminAccess](doc/AdminAccess.md)
+ - [App](doc/App.md)
+ - [AppPublic](doc/AppPublic.md)
  - [CheckAdminAccess200Response](doc/CheckAdminAccess200Response.md)
+ - [CheckFolderReference200Response](doc/CheckFolderReference200Response.md)
+ - [CheckFolderReference200ResponseAddDataInner](doc/CheckFolderReference200ResponseAddDataInner.md)
+ - [CheckFolderReference200ResponseMissedDataInner](doc/CheckFolderReference200ResponseMissedDataInner.md)
+ - [CheckFolderReference200ResponseMissedDataInnerOptionsInner](doc/CheckFolderReference200ResponseMissedDataInnerOptionsInner.md)
  - [CreateDeliveryIdtRequest](doc/CreateDeliveryIdtRequest.md)
+ - [CreateFolderFilterRequest](doc/CreateFolderFilterRequest.md)
+ - [CreateFolderRequest](doc/CreateFolderRequest.md)
+ - [CreateOrderRequest](doc/CreateOrderRequest.md)
+ - [CreateOrderRequestPositionsInner](doc/CreateOrderRequestPositionsInner.md)
+ - [CreatePlaceRequest](doc/CreatePlaceRequest.md)
+ - [CreateProductBatchRequest](doc/CreateProductBatchRequest.md)
+ - [CreateProductItemRequest](doc/CreateProductItemRequest.md)
+ - [CreateProductItemRequestTagsInner](doc/CreateProductItemRequestTagsInner.md)
+ - [CreateProductRequest](doc/CreateProductRequest.md)
+ - [CreateProductRequestTagsInner](doc/CreateProductRequestTagsInner.md)
  - [CreateTaskRequest](doc/CreateTaskRequest.md)
+ - [DeliveryIdpBase](doc/DeliveryIdpBase.md)
  - [DeliveryIdt](doc/DeliveryIdt.md)
  - [DeliveryIdtBase](doc/DeliveryIdtBase.md)
  - [DeliveryIdtWithData](doc/DeliveryIdtWithData.md)
+ - [DictionaryWord](doc/DictionaryWord.md)
  - [ErrorResponse](doc/ErrorResponse.md)
  - [FileData](doc/FileData.md)
+ - [Folder](doc/Folder.md)
+ - [FolderFilter](doc/FolderFilter.md)
+ - [FolderFormulaOperator](doc/FolderFormulaOperator.md)
+ - [FolderFullData](doc/FolderFullData.md)
+ - [FolderTreeItem](doc/FolderTreeItem.md)
+ - [GetFoldersStats200ResponseValue](doc/GetFoldersStats200ResponseValue.md)
+ - [GetOrdersStats200Response](doc/GetOrdersStats200Response.md)
+ - [GetOrdersStats200ResponseOrders](doc/GetOrdersStats200ResponseOrders.md)
+ - [GetOrdersStats200ResponsePositions](doc/GetOrdersStats200ResponsePositions.md)
+ - [GetProductsStats200Response](doc/GetProductsStats200Response.md)
+ - [MoveFolderFilterRequest](doc/MoveFolderFilterRequest.md)
+ - [MoveFolderRequest](doc/MoveFolderRequest.md)
+ - [Order](doc/Order.md)
+ - [OrderBase](doc/OrderBase.md)
+ - [OrderPosition](doc/OrderPosition.md)
+ - [OrderPositionBase](doc/OrderPositionBase.md)
+ - [OrderPositionBaseWithItemData](doc/OrderPositionBaseWithItemData.md)
+ - [OrderPositionWithData](doc/OrderPositionWithData.md)
+ - [OrderWithData](doc/OrderWithData.md)
+ - [OrderWithFullData](doc/OrderWithFullData.md)
+ - [Place](doc/Place.md)
+ - [PlaceWorkHours](doc/PlaceWorkHours.md)
+ - [Product](doc/Product.md)
+ - [ProductBatch](doc/ProductBatch.md)
+ - [ProductBatchPublic](doc/ProductBatchPublic.md)
+ - [ProductBatchWithData](doc/ProductBatchWithData.md)
+ - [ProductCard](doc/ProductCard.md)
+ - [ProductCardConfiguration](doc/ProductCardConfiguration.md)
+ - [ProductCardConfigurationOptionsInner](doc/ProductCardConfigurationOptionsInner.md)
+ - [ProductCardPrice](doc/ProductCardPrice.md)
+ - [ProductCardWithData](doc/ProductCardWithData.md)
+ - [ProductFilter](doc/ProductFilter.md)
+ - [ProductFilterOption](doc/ProductFilterOption.md)
+ - [ProductItem](doc/ProductItem.md)
+ - [ProductItemBase](doc/ProductItemBase.md)
+ - [ProductItemLike](doc/ProductItemLike.md)
+ - [ProductItemWithData](doc/ProductItemWithData.md)
+ - [ProductWithData](doc/ProductWithData.md)
+ - [Provider](doc/Provider.md)
+ - [ProviderProfile](doc/ProviderProfile.md)
+ - [ProviderProfileWithData](doc/ProviderProfileWithData.md)
+ - [ProviderWithSecret](doc/ProviderWithSecret.md)
  - [RefreshTokenRequest](doc/RefreshTokenRequest.md)
+ - [RegisterProviderRequest](doc/RegisterProviderRequest.md)
  - [SearchActivities200Response](doc/SearchActivities200Response.md)
  - [SearchActivitiesRequest](doc/SearchActivitiesRequest.md)
  - [SearchAdminAccess200Response](doc/SearchAdminAccess200Response.md)
  - [SearchDeliveryIdt200Response](doc/SearchDeliveryIdt200Response.md)
  - [SearchDeliveryIdtRequest](doc/SearchDeliveryIdtRequest.md)
+ - [SearchFoldersFilters200Response](doc/SearchFoldersFilters200Response.md)
+ - [SearchFoldersFiltersRequest](doc/SearchFoldersFiltersRequest.md)
  - [SearchModel](doc/SearchModel.md)
+ - [SearchMyOrdersRequest](doc/SearchMyOrdersRequest.md)
+ - [SearchOrders200Response](doc/SearchOrders200Response.md)
+ - [SearchOrdersRequest](doc/SearchOrdersRequest.md)
+ - [SearchPlaces200Response](doc/SearchPlaces200Response.md)
+ - [SearchProductBatches200Response](doc/SearchProductBatches200Response.md)
+ - [SearchProductBatchesRequest](doc/SearchProductBatchesRequest.md)
+ - [SearchProductCards200Response](doc/SearchProductCards200Response.md)
+ - [SearchProductCardsRequest](doc/SearchProductCardsRequest.md)
+ - [SearchProductFiltersRequest](doc/SearchProductFiltersRequest.md)
+ - [SearchProductItems200Response](doc/SearchProductItems200Response.md)
+ - [SearchProductItemsRequest](doc/SearchProductItemsRequest.md)
+ - [SearchProductNameSuggesterRequest](doc/SearchProductNameSuggesterRequest.md)
+ - [SearchProducts200Response](doc/SearchProducts200Response.md)
+ - [SearchProductsRequest](doc/SearchProductsRequest.md)
+ - [SearchProviders200Response](doc/SearchProviders200Response.md)
+ - [SearchProvidersRequest](doc/SearchProvidersRequest.md)
+ - [SearchTags200Response](doc/SearchTags200Response.md)
+ - [SearchTagsRequest](doc/SearchTagsRequest.md)
  - [SearchTasks200Response](doc/SearchTasks200Response.md)
  - [SearchTasksRequest](doc/SearchTasksRequest.md)
  - [SearchUsers200Response](doc/SearchUsers200Response.md)
  - [SearchUsersRequest](doc/SearchUsersRequest.md)
  - [SortModel](doc/SortModel.md)
  - [StartAuth200Response](doc/StartAuth200Response.md)
+ - [Tag](doc/Tag.md)
  - [Task](doc/Task.md)
+ - [TaskData](doc/TaskData.md)
+ - [TaskDataDeliveryLogsInner](doc/TaskDataDeliveryLogsInner.md)
+ - [TaskDataIdtWithIdp](doc/TaskDataIdtWithIdp.md)
+ - [TaskDataItemsInner](doc/TaskDataItemsInner.md)
+ - [TaskDataPickUpSubtasksInner](doc/TaskDataPickUpSubtasksInner.md)
+ - [TaskDataPickUpSubtasksInnerItemsInner](doc/TaskDataPickUpSubtasksInnerItemsInner.md)
  - [TaskWithData](doc/TaskWithData.md)
+ - [UnitInfo](doc/UnitInfo.md)
  - [UpdateDeliveryIdtRequest](doc/UpdateDeliveryIdtRequest.md)
+ - [UpdateFolderFilterRequest](doc/UpdateFolderFilterRequest.md)
+ - [UpdateFolderRequest](doc/UpdateFolderRequest.md)
+ - [UpdateOrderRequest](doc/UpdateOrderRequest.md)
+ - [UpdatePlaceRequest](doc/UpdatePlaceRequest.md)
+ - [UpdateProductBatchRequest](doc/UpdateProductBatchRequest.md)
+ - [UpdateProductItemRequest](doc/UpdateProductItemRequest.md)
+ - [UpdateProductRequest](doc/UpdateProductRequest.md)
  - [UpdateProfileRequest](doc/UpdateProfileRequest.md)
+ - [UpdateProviderProfileRequest](doc/UpdateProviderProfileRequest.md)
+ - [UpdateProviderRequest](doc/UpdateProviderRequest.md)
  - [UpdateTaskRequest](doc/UpdateTaskRequest.md)
  - [User](doc/User.md)
  - [VerifyAuth200Response](doc/VerifyAuth200Response.md)

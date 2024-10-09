@@ -11,11 +11,18 @@ import 'package:b2delivery/src/auth/bearer_auth.dart';
 import 'package:b2delivery/src/auth/oauth.dart';
 import 'package:b2delivery/src/api/activities_api.dart';
 import 'package:b2delivery/src/api/admin_access_api.dart';
+import 'package:b2delivery/src/api/apps_api.dart';
 import 'package:b2delivery/src/api/auth_api.dart';
 import 'package:b2delivery/src/api/available_providers_api.dart';
 import 'package:b2delivery/src/api/available_public_api.dart';
 import 'package:b2delivery/src/api/delivery_api.dart';
 import 'package:b2delivery/src/api/files_api.dart';
+import 'package:b2delivery/src/api/folders_api.dart';
+import 'package:b2delivery/src/api/orders_api.dart';
+import 'package:b2delivery/src/api/places_api.dart';
+import 'package:b2delivery/src/api/products_api.dart';
+import 'package:b2delivery/src/api/providers_api.dart';
+import 'package:b2delivery/src/api/tags_api.dart';
 import 'package:b2delivery/src/api/tasks_api.dart';
 
 class B2delivery {
@@ -84,6 +91,12 @@ class B2delivery {
     return AdminAccessApi(dio, serializers);
   }
 
+  /// Get AppsApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  AppsApi getAppsApi() {
+    return AppsApi(dio, serializers);
+  }
+
   /// Get AuthApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
   AuthApi getAuthApi() {
@@ -112,6 +125,42 @@ class B2delivery {
   /// by doing that all interceptors will not be executed
   FilesApi getFilesApi() {
     return FilesApi(dio, serializers);
+  }
+
+  /// Get FoldersApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  FoldersApi getFoldersApi() {
+    return FoldersApi(dio, serializers);
+  }
+
+  /// Get OrdersApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  OrdersApi getOrdersApi() {
+    return OrdersApi(dio, serializers);
+  }
+
+  /// Get PlacesApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  PlacesApi getPlacesApi() {
+    return PlacesApi(dio, serializers);
+  }
+
+  /// Get ProductsApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  ProductsApi getProductsApi() {
+    return ProductsApi(dio, serializers);
+  }
+
+  /// Get ProvidersApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  ProvidersApi getProvidersApi() {
+    return ProvidersApi(dio, serializers);
+  }
+
+  /// Get TagsApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  TagsApi getTagsApi() {
+    return TagsApi(dio, serializers);
   }
 
   /// Get TasksApi instance, base route and serializer can be overridden by a given but be careful,

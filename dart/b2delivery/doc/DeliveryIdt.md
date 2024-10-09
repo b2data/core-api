@@ -13,6 +13,7 @@ Name | Type | Description | Notes
 **status** | **String** | Delivery idT status | 
 **responsible** | **String** | Wallet of responsible user | 
 **providerId** | **String** | Provider ID | [optional] 
+**contains** | [**BuiltList&lt;DeliveryIdpBase&gt;**](DeliveryIdpBase.md) | List of idP in idT | 
 **createdBy** | **String** | Wallet Address | 
 **createdAt** | [**DateTime**](DateTime.md) | Creation Date | 
 **updatedAt** | [**DateTime**](DateTime.md) | Last Updating Date | 

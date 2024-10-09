@@ -31,7 +31,7 @@ abstract class SearchTasksRequest implements Built<SearchTasksRequest, SearchTas
   /// Task types
   @BuiltValueField(wireName: r'types')
   BuiltList<SearchTasksRequestTypesEnum>? get types;
-  // enum typesEnum {  productItemReview,  simpleTask,  prepareIdtTask,  pickUpIdtTask,  receiveIdtTask,  shipIdtTask,  deliverIdtTask,  };
+  // enum typesEnum {  simpleTask,  productItemReview,  fillIdt,  pickUpIdt,  receiveIdt,  prepareIdtToDelivery,  deliverIdt,  };
 
   /// Task status
   @BuiltValueField(wireName: r'status')
@@ -265,20 +265,20 @@ class _$SearchTasksRequestSerializer implements PrimitiveSerializer<SearchTasksR
 
 class SearchTasksRequestTypesEnum extends EnumClass {
 
-  @BuiltValueEnumConst(wireName: r'productItemReview')
-  static const SearchTasksRequestTypesEnum productItemReview = _$searchTasksRequestTypesEnum_productItemReview;
   @BuiltValueEnumConst(wireName: r'simpleTask')
   static const SearchTasksRequestTypesEnum simpleTask = _$searchTasksRequestTypesEnum_simpleTask;
-  @BuiltValueEnumConst(wireName: r'prepareIdtTask')
-  static const SearchTasksRequestTypesEnum prepareIdtTask = _$searchTasksRequestTypesEnum_prepareIdtTask;
-  @BuiltValueEnumConst(wireName: r'pickUpIdtTask')
-  static const SearchTasksRequestTypesEnum pickUpIdtTask = _$searchTasksRequestTypesEnum_pickUpIdtTask;
-  @BuiltValueEnumConst(wireName: r'receiveIdtTask')
-  static const SearchTasksRequestTypesEnum receiveIdtTask = _$searchTasksRequestTypesEnum_receiveIdtTask;
-  @BuiltValueEnumConst(wireName: r'shipIdtTask')
-  static const SearchTasksRequestTypesEnum shipIdtTask = _$searchTasksRequestTypesEnum_shipIdtTask;
-  @BuiltValueEnumConst(wireName: r'deliverIdtTask')
-  static const SearchTasksRequestTypesEnum deliverIdtTask = _$searchTasksRequestTypesEnum_deliverIdtTask;
+  @BuiltValueEnumConst(wireName: r'productItemReview')
+  static const SearchTasksRequestTypesEnum productItemReview = _$searchTasksRequestTypesEnum_productItemReview;
+  @BuiltValueEnumConst(wireName: r'fillIdt')
+  static const SearchTasksRequestTypesEnum fillIdt = _$searchTasksRequestTypesEnum_fillIdt;
+  @BuiltValueEnumConst(wireName: r'pickUpIdt')
+  static const SearchTasksRequestTypesEnum pickUpIdt = _$searchTasksRequestTypesEnum_pickUpIdt;
+  @BuiltValueEnumConst(wireName: r'receiveIdt')
+  static const SearchTasksRequestTypesEnum receiveIdt = _$searchTasksRequestTypesEnum_receiveIdt;
+  @BuiltValueEnumConst(wireName: r'prepareIdtToDelivery')
+  static const SearchTasksRequestTypesEnum prepareIdtToDelivery = _$searchTasksRequestTypesEnum_prepareIdtToDelivery;
+  @BuiltValueEnumConst(wireName: r'deliverIdt')
+  static const SearchTasksRequestTypesEnum deliverIdt = _$searchTasksRequestTypesEnum_deliverIdt;
 
   static Serializer<SearchTasksRequestTypesEnum> get serializer => _$searchTasksRequestTypesEnumSerializer;
 

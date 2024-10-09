@@ -23,7 +23,7 @@ part 'task_with_data.g.dart';
 /// * [files] - Attached files
 /// * [artefactId] - ID of artefact that link with task
 /// * [artefactType] - Type of artefact that link with task
-/// * [artefactData] - Data of artefact that link with task
+/// * [data] - Task Data
 /// * [assignee] - Wallet Address
 /// * [createdBy] - Wallet Address
 /// * [createdAt] - Creation Date
@@ -39,7 +39,7 @@ abstract class TaskWithData implements Built<TaskWithData, TaskWithDataBuilder> 
   /// Task type
   @BuiltValueField(wireName: r'type')
   TaskWithDataTypeEnum get type;
-  // enum typeEnum {  productItemReview,  simpleTask,  prepareIdtTask,  pickUpIdtTask,  receiveIdtTask,  shipIdtTask,  deliverIdtTask,  };
+  // enum typeEnum {  simpleTask,  productItemReview,  fillIdt,  pickUpIdt,  receiveIdt,  prepareIdtToDelivery,  deliverIdt,  };
 
   /// Task status
   @BuiltValueField(wireName: r'status')
@@ -71,9 +71,9 @@ abstract class TaskWithData implements Built<TaskWithData, TaskWithDataBuilder> 
   @BuiltValueField(wireName: r'artefactType')
   String? get artefactType;
 
-  /// Data of artefact that link with task
-  @BuiltValueField(wireName: r'artefactData')
-  JsonObject? get artefactData;
+  /// Task Data
+  @BuiltValueField(wireName: r'data')
+  JsonObject get data;
 
   /// Wallet Address
   @BuiltValueField(wireName: r'assignee')
@@ -169,13 +169,11 @@ class _$TaskWithDataSerializer implements PrimitiveSerializer<TaskWithData> {
         specifiedType: const FullType(String),
       );
     }
-    if (object.artefactData != null) {
-      yield r'artefactData';
-      yield serializers.serialize(
-        object.artefactData,
-        specifiedType: const FullType(JsonObject),
-      );
-    }
+    yield r'data';
+    yield serializers.serialize(
+      object.data,
+      specifiedType: const FullType(JsonObject),
+    );
     if (object.assignee != null) {
       yield r'assignee';
       yield serializers.serialize(
@@ -300,12 +298,12 @@ class _$TaskWithDataSerializer implements PrimitiveSerializer<TaskWithData> {
           ) as String;
           result.artefactType = valueDes;
           break;
-        case r'artefactData':
+        case r'data':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(JsonObject),
           ) as JsonObject;
-          result.artefactData = valueDes;
+          result.data = valueDes;
           break;
         case r'assignee':
           final valueDes = serializers.deserialize(
@@ -381,26 +379,26 @@ class _$TaskWithDataSerializer implements PrimitiveSerializer<TaskWithData> {
 class TaskWithDataTypeEnum extends EnumClass {
 
   /// Task type
-  @BuiltValueEnumConst(wireName: r'productItemReview')
-  static const TaskWithDataTypeEnum productItemReview = _$taskWithDataTypeEnum_productItemReview;
-  /// Task type
   @BuiltValueEnumConst(wireName: r'simpleTask')
   static const TaskWithDataTypeEnum simpleTask = _$taskWithDataTypeEnum_simpleTask;
   /// Task type
-  @BuiltValueEnumConst(wireName: r'prepareIdtTask')
-  static const TaskWithDataTypeEnum prepareIdtTask = _$taskWithDataTypeEnum_prepareIdtTask;
+  @BuiltValueEnumConst(wireName: r'productItemReview')
+  static const TaskWithDataTypeEnum productItemReview = _$taskWithDataTypeEnum_productItemReview;
   /// Task type
-  @BuiltValueEnumConst(wireName: r'pickUpIdtTask')
-  static const TaskWithDataTypeEnum pickUpIdtTask = _$taskWithDataTypeEnum_pickUpIdtTask;
+  @BuiltValueEnumConst(wireName: r'fillIdt')
+  static const TaskWithDataTypeEnum fillIdt = _$taskWithDataTypeEnum_fillIdt;
   /// Task type
-  @BuiltValueEnumConst(wireName: r'receiveIdtTask')
-  static const TaskWithDataTypeEnum receiveIdtTask = _$taskWithDataTypeEnum_receiveIdtTask;
+  @BuiltValueEnumConst(wireName: r'pickUpIdt')
+  static const TaskWithDataTypeEnum pickUpIdt = _$taskWithDataTypeEnum_pickUpIdt;
   /// Task type
-  @BuiltValueEnumConst(wireName: r'shipIdtTask')
-  static const TaskWithDataTypeEnum shipIdtTask = _$taskWithDataTypeEnum_shipIdtTask;
+  @BuiltValueEnumConst(wireName: r'receiveIdt')
+  static const TaskWithDataTypeEnum receiveIdt = _$taskWithDataTypeEnum_receiveIdt;
   /// Task type
-  @BuiltValueEnumConst(wireName: r'deliverIdtTask')
-  static const TaskWithDataTypeEnum deliverIdtTask = _$taskWithDataTypeEnum_deliverIdtTask;
+  @BuiltValueEnumConst(wireName: r'prepareIdtToDelivery')
+  static const TaskWithDataTypeEnum prepareIdtToDelivery = _$taskWithDataTypeEnum_prepareIdtToDelivery;
+  /// Task type
+  @BuiltValueEnumConst(wireName: r'deliverIdt')
+  static const TaskWithDataTypeEnum deliverIdt = _$taskWithDataTypeEnum_deliverIdt;
 
   static Serializer<TaskWithDataTypeEnum> get serializer => _$taskWithDataTypeEnumSerializer;
 

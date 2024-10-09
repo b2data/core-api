@@ -18,7 +18,7 @@ part 'update_task_request.g.dart';
 /// * [name] - Task name
 /// * [description] - Task description
 /// * [files] - Attached files
-/// * [artefactData] - Data of artefact that link with task
+/// * [data] - Task Data
 /// * [assignee] - Wallet Address
 @BuiltValue()
 abstract class UpdateTaskRequest implements Built<UpdateTaskRequest, UpdateTaskRequestBuilder> {
@@ -44,9 +44,9 @@ abstract class UpdateTaskRequest implements Built<UpdateTaskRequest, UpdateTaskR
   @BuiltValueField(wireName: r'files')
   BuiltList<String>? get files;
 
-  /// Data of artefact that link with task
-  @BuiltValueField(wireName: r'artefactData')
-  JsonObject? get artefactData;
+  /// Task Data
+  @BuiltValueField(wireName: r'data')
+  JsonObject? get data;
 
   /// Wallet Address
   @BuiltValueField(wireName: r'assignee')
@@ -110,10 +110,10 @@ class _$UpdateTaskRequestSerializer implements PrimitiveSerializer<UpdateTaskReq
         specifiedType: const FullType(BuiltList, [FullType(String)]),
       );
     }
-    if (object.artefactData != null) {
-      yield r'artefactData';
+    if (object.data != null) {
+      yield r'data';
       yield serializers.serialize(
-        object.artefactData,
+        object.data,
         specifiedType: const FullType(JsonObject),
       );
     }
@@ -182,12 +182,12 @@ class _$UpdateTaskRequestSerializer implements PrimitiveSerializer<UpdateTaskReq
           ) as BuiltList<String>;
           result.files.replace(valueDes);
           break;
-        case r'artefactData':
+        case r'data':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(JsonObject),
           ) as JsonObject;
-          result.artefactData = valueDes;
+          result.data = valueDes;
           break;
         case r'assignee':
           final valueDes = serializers.deserialize(

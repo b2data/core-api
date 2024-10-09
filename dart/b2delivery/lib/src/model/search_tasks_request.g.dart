@@ -6,38 +6,39 @@ part of 'search_tasks_request.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
+const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_simpleTask =
+    const SearchTasksRequestTypesEnum._('simpleTask');
 const SearchTasksRequestTypesEnum
     _$searchTasksRequestTypesEnum_productItemReview =
     const SearchTasksRequestTypesEnum._('productItemReview');
-const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_simpleTask =
-    const SearchTasksRequestTypesEnum._('simpleTask');
-const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_prepareIdtTask =
-    const SearchTasksRequestTypesEnum._('prepareIdtTask');
-const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_pickUpIdtTask =
-    const SearchTasksRequestTypesEnum._('pickUpIdtTask');
-const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_receiveIdtTask =
-    const SearchTasksRequestTypesEnum._('receiveIdtTask');
-const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_shipIdtTask =
-    const SearchTasksRequestTypesEnum._('shipIdtTask');
-const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_deliverIdtTask =
-    const SearchTasksRequestTypesEnum._('deliverIdtTask');
+const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_fillIdt =
+    const SearchTasksRequestTypesEnum._('fillIdt');
+const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_pickUpIdt =
+    const SearchTasksRequestTypesEnum._('pickUpIdt');
+const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_receiveIdt =
+    const SearchTasksRequestTypesEnum._('receiveIdt');
+const SearchTasksRequestTypesEnum
+    _$searchTasksRequestTypesEnum_prepareIdtToDelivery =
+    const SearchTasksRequestTypesEnum._('prepareIdtToDelivery');
+const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_deliverIdt =
+    const SearchTasksRequestTypesEnum._('deliverIdt');
 
 SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnumValueOf(String name) {
   switch (name) {
-    case 'productItemReview':
-      return _$searchTasksRequestTypesEnum_productItemReview;
     case 'simpleTask':
       return _$searchTasksRequestTypesEnum_simpleTask;
-    case 'prepareIdtTask':
-      return _$searchTasksRequestTypesEnum_prepareIdtTask;
-    case 'pickUpIdtTask':
-      return _$searchTasksRequestTypesEnum_pickUpIdtTask;
-    case 'receiveIdtTask':
-      return _$searchTasksRequestTypesEnum_receiveIdtTask;
-    case 'shipIdtTask':
-      return _$searchTasksRequestTypesEnum_shipIdtTask;
-    case 'deliverIdtTask':
-      return _$searchTasksRequestTypesEnum_deliverIdtTask;
+    case 'productItemReview':
+      return _$searchTasksRequestTypesEnum_productItemReview;
+    case 'fillIdt':
+      return _$searchTasksRequestTypesEnum_fillIdt;
+    case 'pickUpIdt':
+      return _$searchTasksRequestTypesEnum_pickUpIdt;
+    case 'receiveIdt':
+      return _$searchTasksRequestTypesEnum_receiveIdt;
+    case 'prepareIdtToDelivery':
+      return _$searchTasksRequestTypesEnum_prepareIdtToDelivery;
+    case 'deliverIdt':
+      return _$searchTasksRequestTypesEnum_deliverIdt;
     default:
       throw new ArgumentError(name);
   }
@@ -46,13 +47,13 @@ SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnumValueOf(String name) {
 final BuiltSet<SearchTasksRequestTypesEnum>
     _$searchTasksRequestTypesEnumValues = new BuiltSet<
         SearchTasksRequestTypesEnum>(const <SearchTasksRequestTypesEnum>[
-  _$searchTasksRequestTypesEnum_productItemReview,
   _$searchTasksRequestTypesEnum_simpleTask,
-  _$searchTasksRequestTypesEnum_prepareIdtTask,
-  _$searchTasksRequestTypesEnum_pickUpIdtTask,
-  _$searchTasksRequestTypesEnum_receiveIdtTask,
-  _$searchTasksRequestTypesEnum_shipIdtTask,
-  _$searchTasksRequestTypesEnum_deliverIdtTask,
+  _$searchTasksRequestTypesEnum_productItemReview,
+  _$searchTasksRequestTypesEnum_fillIdt,
+  _$searchTasksRequestTypesEnum_pickUpIdt,
+  _$searchTasksRequestTypesEnum_receiveIdt,
+  _$searchTasksRequestTypesEnum_prepareIdtToDelivery,
+  _$searchTasksRequestTypesEnum_deliverIdt,
 ]);
 
 const SearchTasksRequestStatusEnum _$searchTasksRequestStatusEnum_new_ =
@@ -136,22 +137,22 @@ Serializer<SearchTasksRequestPriorityEnum>
 class _$SearchTasksRequestTypesEnumSerializer
     implements PrimitiveSerializer<SearchTasksRequestTypesEnum> {
   static const Map<String, Object> _toWire = const <String, Object>{
-    'productItemReview': 'productItemReview',
     'simpleTask': 'simpleTask',
-    'prepareIdtTask': 'prepareIdtTask',
-    'pickUpIdtTask': 'pickUpIdtTask',
-    'receiveIdtTask': 'receiveIdtTask',
-    'shipIdtTask': 'shipIdtTask',
-    'deliverIdtTask': 'deliverIdtTask',
+    'productItemReview': 'productItemReview',
+    'fillIdt': 'fillIdt',
+    'pickUpIdt': 'pickUpIdt',
+    'receiveIdt': 'receiveIdt',
+    'prepareIdtToDelivery': 'prepareIdtToDelivery',
+    'deliverIdt': 'deliverIdt',
   };
   static const Map<Object, String> _fromWire = const <Object, String>{
-    'productItemReview': 'productItemReview',
     'simpleTask': 'simpleTask',
-    'prepareIdtTask': 'prepareIdtTask',
-    'pickUpIdtTask': 'pickUpIdtTask',
-    'receiveIdtTask': 'receiveIdtTask',
-    'shipIdtTask': 'shipIdtTask',
-    'deliverIdtTask': 'deliverIdtTask',
+    'productItemReview': 'productItemReview',
+    'fillIdt': 'fillIdt',
+    'pickUpIdt': 'pickUpIdt',
+    'receiveIdt': 'receiveIdt',
+    'prepareIdtToDelivery': 'prepareIdtToDelivery',
+    'deliverIdt': 'deliverIdt',
   };
 
   @override

@@ -6,37 +6,38 @@ part of 'create_task_request.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
-const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_productItemReview =
-    const CreateTaskRequestTypeEnum._('productItemReview');
 const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_simpleTask =
     const CreateTaskRequestTypeEnum._('simpleTask');
-const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_prepareIdtTask =
-    const CreateTaskRequestTypeEnum._('prepareIdtTask');
-const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_pickUpIdtTask =
-    const CreateTaskRequestTypeEnum._('pickUpIdtTask');
-const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_receiveIdtTask =
-    const CreateTaskRequestTypeEnum._('receiveIdtTask');
-const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_shipIdtTask =
-    const CreateTaskRequestTypeEnum._('shipIdtTask');
-const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_deliverIdtTask =
-    const CreateTaskRequestTypeEnum._('deliverIdtTask');
+const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_productItemReview =
+    const CreateTaskRequestTypeEnum._('productItemReview');
+const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_fillIdt =
+    const CreateTaskRequestTypeEnum._('fillIdt');
+const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_pickUpIdt =
+    const CreateTaskRequestTypeEnum._('pickUpIdt');
+const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_receiveIdt =
+    const CreateTaskRequestTypeEnum._('receiveIdt');
+const CreateTaskRequestTypeEnum
+    _$createTaskRequestTypeEnum_prepareIdtToDelivery =
+    const CreateTaskRequestTypeEnum._('prepareIdtToDelivery');
+const CreateTaskRequestTypeEnum _$createTaskRequestTypeEnum_deliverIdt =
+    const CreateTaskRequestTypeEnum._('deliverIdt');
 
 CreateTaskRequestTypeEnum _$createTaskRequestTypeEnumValueOf(String name) {
   switch (name) {
-    case 'productItemReview':
-      return _$createTaskRequestTypeEnum_productItemReview;
     case 'simpleTask':
       return _$createTaskRequestTypeEnum_simpleTask;
-    case 'prepareIdtTask':
-      return _$createTaskRequestTypeEnum_prepareIdtTask;
-    case 'pickUpIdtTask':
-      return _$createTaskRequestTypeEnum_pickUpIdtTask;
-    case 'receiveIdtTask':
-      return _$createTaskRequestTypeEnum_receiveIdtTask;
-    case 'shipIdtTask':
-      return _$createTaskRequestTypeEnum_shipIdtTask;
-    case 'deliverIdtTask':
-      return _$createTaskRequestTypeEnum_deliverIdtTask;
+    case 'productItemReview':
+      return _$createTaskRequestTypeEnum_productItemReview;
+    case 'fillIdt':
+      return _$createTaskRequestTypeEnum_fillIdt;
+    case 'pickUpIdt':
+      return _$createTaskRequestTypeEnum_pickUpIdt;
+    case 'receiveIdt':
+      return _$createTaskRequestTypeEnum_receiveIdt;
+    case 'prepareIdtToDelivery':
+      return _$createTaskRequestTypeEnum_prepareIdtToDelivery;
+    case 'deliverIdt':
+      return _$createTaskRequestTypeEnum_deliverIdt;
     default:
       throw new ArgumentError(name);
   }
@@ -44,13 +45,13 @@ CreateTaskRequestTypeEnum _$createTaskRequestTypeEnumValueOf(String name) {
 
 final BuiltSet<CreateTaskRequestTypeEnum> _$createTaskRequestTypeEnumValues =
     new BuiltSet<CreateTaskRequestTypeEnum>(const <CreateTaskRequestTypeEnum>[
-  _$createTaskRequestTypeEnum_productItemReview,
   _$createTaskRequestTypeEnum_simpleTask,
-  _$createTaskRequestTypeEnum_prepareIdtTask,
-  _$createTaskRequestTypeEnum_pickUpIdtTask,
-  _$createTaskRequestTypeEnum_receiveIdtTask,
-  _$createTaskRequestTypeEnum_shipIdtTask,
-  _$createTaskRequestTypeEnum_deliverIdtTask,
+  _$createTaskRequestTypeEnum_productItemReview,
+  _$createTaskRequestTypeEnum_fillIdt,
+  _$createTaskRequestTypeEnum_pickUpIdt,
+  _$createTaskRequestTypeEnum_receiveIdt,
+  _$createTaskRequestTypeEnum_prepareIdtToDelivery,
+  _$createTaskRequestTypeEnum_deliverIdt,
 ]);
 
 const CreateTaskRequestPriorityEnum _$createTaskRequestPriorityEnum_low =
@@ -91,22 +92,22 @@ Serializer<CreateTaskRequestPriorityEnum>
 class _$CreateTaskRequestTypeEnumSerializer
     implements PrimitiveSerializer<CreateTaskRequestTypeEnum> {
   static const Map<String, Object> _toWire = const <String, Object>{
-    'productItemReview': 'productItemReview',
     'simpleTask': 'simpleTask',
-    'prepareIdtTask': 'prepareIdtTask',
-    'pickUpIdtTask': 'pickUpIdtTask',
-    'receiveIdtTask': 'receiveIdtTask',
-    'shipIdtTask': 'shipIdtTask',
-    'deliverIdtTask': 'deliverIdtTask',
+    'productItemReview': 'productItemReview',
+    'fillIdt': 'fillIdt',
+    'pickUpIdt': 'pickUpIdt',
+    'receiveIdt': 'receiveIdt',
+    'prepareIdtToDelivery': 'prepareIdtToDelivery',
+    'deliverIdt': 'deliverIdt',
   };
   static const Map<Object, String> _fromWire = const <Object, String>{
-    'productItemReview': 'productItemReview',
     'simpleTask': 'simpleTask',
-    'prepareIdtTask': 'prepareIdtTask',
-    'pickUpIdtTask': 'pickUpIdtTask',
-    'receiveIdtTask': 'receiveIdtTask',
-    'shipIdtTask': 'shipIdtTask',
-    'deliverIdtTask': 'deliverIdtTask',
+    'productItemReview': 'productItemReview',
+    'fillIdt': 'fillIdt',
+    'pickUpIdt': 'pickUpIdt',
+    'receiveIdt': 'receiveIdt',
+    'prepareIdtToDelivery': 'prepareIdtToDelivery',
+    'deliverIdt': 'deliverIdt',
   };
 
   @override

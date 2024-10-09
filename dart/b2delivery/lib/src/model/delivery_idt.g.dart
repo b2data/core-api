@@ -99,6 +99,8 @@ class _$DeliveryIdt extends DeliveryIdt {
   @override
   final String? providerId;
   @override
+  final BuiltList<DeliveryIdpBase> contains;
+  @override
   final String createdBy;
   @override
   final DateTime createdAt;
@@ -116,6 +118,7 @@ class _$DeliveryIdt extends DeliveryIdt {
       required this.status,
       required this.responsible,
       this.providerId,
+      required this.contains,
       required this.createdBy,
       required this.createdAt,
       required this.updatedAt,
@@ -126,6 +129,7 @@ class _$DeliveryIdt extends DeliveryIdt {
     BuiltValueNullFieldError.checkNotNull(status, r'DeliveryIdt', 'status');
     BuiltValueNullFieldError.checkNotNull(
         responsible, r'DeliveryIdt', 'responsible');
+    BuiltValueNullFieldError.checkNotNull(contains, r'DeliveryIdt', 'contains');
     BuiltValueNullFieldError.checkNotNull(
         createdBy, r'DeliveryIdt', 'createdBy');
     BuiltValueNullFieldError.checkNotNull(
@@ -150,6 +154,7 @@ class _$DeliveryIdt extends DeliveryIdt {
         status == other.status &&
         responsible == other.responsible &&
         providerId == other.providerId &&
+        contains == other.contains &&
         createdBy == other.createdBy &&
         createdAt == other.createdAt &&
         updatedAt == other.updatedAt &&
@@ -164,6 +169,7 @@ class _$DeliveryIdt extends DeliveryIdt {
     _$hash = $jc(_$hash, status.hashCode);
     _$hash = $jc(_$hash, responsible.hashCode);
     _$hash = $jc(_$hash, providerId.hashCode);
+    _$hash = $jc(_$hash, contains.hashCode);
     _$hash = $jc(_$hash, createdBy.hashCode);
     _$hash = $jc(_$hash, createdAt.hashCode);
     _$hash = $jc(_$hash, updatedAt.hashCode);
@@ -180,6 +186,7 @@ class _$DeliveryIdt extends DeliveryIdt {
           ..add('status', status)
           ..add('responsible', responsible)
           ..add('providerId', providerId)
+          ..add('contains', contains)
           ..add('createdBy', createdBy)
           ..add('createdAt', createdAt)
           ..add('updatedAt', updatedAt)
@@ -211,6 +218,12 @@ class DeliveryIdtBuilder implements Builder<DeliveryIdt, DeliveryIdtBuilder> {
   String? get providerId => _$this._providerId;
   set providerId(String? providerId) => _$this._providerId = providerId;
 
+  ListBuilder<DeliveryIdpBase>? _contains;
+  ListBuilder<DeliveryIdpBase> get contains =>
+      _$this._contains ??= new ListBuilder<DeliveryIdpBase>();
+  set contains(ListBuilder<DeliveryIdpBase>? contains) =>
+      _$this._contains = contains;
+
   String? _createdBy;
   String? get createdBy => _$this._createdBy;
   set createdBy(String? createdBy) => _$this._createdBy = createdBy;
@@ -239,6 +252,7 @@ class DeliveryIdtBuilder implements Builder<DeliveryIdt, DeliveryIdtBuilder> {
       _status = $v.status;
       _responsible = $v.responsible;
       _providerId = $v.providerId;
+      _contains = $v.contains.toBuilder();
       _createdBy = $v.createdBy;
       _createdAt = $v.createdAt;
       _updatedAt = $v.updatedAt;
@@ -263,23 +277,38 @@ class DeliveryIdtBuilder implements Builder<DeliveryIdt, DeliveryIdtBuilder> {
   DeliveryIdt build() => _build();
 
   _$DeliveryIdt _build() {
-    final _$result = _$v ??
-        new _$DeliveryIdt._(
-            id: BuiltValueNullFieldError.checkNotNull(id, r'DeliveryIdt', 'id'),
-            key: BuiltValueNullFieldError.checkNotNull(
-                key, r'DeliveryIdt', 'key'),
-            status: BuiltValueNullFieldError.checkNotNull(
-                status, r'DeliveryIdt', 'status'),
-            responsible: BuiltValueNullFieldError.checkNotNull(
-                responsible, r'DeliveryIdt', 'responsible'),
-            providerId: providerId,
-            createdBy: BuiltValueNullFieldError.checkNotNull(
-                createdBy, r'DeliveryIdt', 'createdBy'),
-            createdAt: BuiltValueNullFieldError.checkNotNull(
-                createdAt, r'DeliveryIdt', 'createdAt'),
-            updatedAt: BuiltValueNullFieldError.checkNotNull(
-                updatedAt, r'DeliveryIdt', 'updatedAt'),
-            deletedAt: deletedAt);
+    _$DeliveryIdt _$result;
+    try {
+      _$result = _$v ??
+          new _$DeliveryIdt._(
+              id: BuiltValueNullFieldError.checkNotNull(
+                  id, r'DeliveryIdt', 'id'),
+              key: BuiltValueNullFieldError.checkNotNull(
+                  key, r'DeliveryIdt', 'key'),
+              status: BuiltValueNullFieldError.checkNotNull(
+                  status, r'DeliveryIdt', 'status'),
+              responsible: BuiltValueNullFieldError.checkNotNull(
+                  responsible, r'DeliveryIdt', 'responsible'),
+              providerId: providerId,
+              contains: contains.build(),
+              createdBy: BuiltValueNullFieldError.checkNotNull(
+                  createdBy, r'DeliveryIdt', 'createdBy'),
+              createdAt: BuiltValueNullFieldError.checkNotNull(
+                  createdAt, r'DeliveryIdt', 'createdAt'),
+              updatedAt: BuiltValueNullFieldError.checkNotNull(
+                  updatedAt, r'DeliveryIdt', 'updatedAt'),
+              deletedAt: deletedAt);
+    } catch (_) {
+      late String _$failedField;
+      try {
+        _$failedField = 'contains';
+        contains.build();
+      } catch (e) {
+        throw new BuiltValueNestedFieldError(
+            r'DeliveryIdt', _$failedField, e.toString());
+      }
+      rethrow;
+    }
     replace(_$result);
     return _$result;
   }

@@ -159,7 +159,7 @@ class _$UpdateTaskRequest extends UpdateTaskRequest {
   @override
   final BuiltList<String>? files;
   @override
-  final JsonObject? artefactData;
+  final JsonObject? data;
   @override
   final String? assignee;
 
@@ -173,7 +173,7 @@ class _$UpdateTaskRequest extends UpdateTaskRequest {
       this.name,
       this.description,
       this.files,
-      this.artefactData,
+      this.data,
       this.assignee})
       : super._();
 
@@ -194,7 +194,7 @@ class _$UpdateTaskRequest extends UpdateTaskRequest {
         name == other.name &&
         description == other.description &&
         files == other.files &&
-        artefactData == other.artefactData &&
+        data == other.data &&
         assignee == other.assignee;
   }
 
@@ -206,7 +206,7 @@ class _$UpdateTaskRequest extends UpdateTaskRequest {
     _$hash = $jc(_$hash, name.hashCode);
     _$hash = $jc(_$hash, description.hashCode);
     _$hash = $jc(_$hash, files.hashCode);
-    _$hash = $jc(_$hash, artefactData.hashCode);
+    _$hash = $jc(_$hash, data.hashCode);
     _$hash = $jc(_$hash, assignee.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
@@ -220,7 +220,7 @@ class _$UpdateTaskRequest extends UpdateTaskRequest {
           ..add('name', name)
           ..add('description', description)
           ..add('files', files)
-          ..add('artefactData', artefactData)
+          ..add('data', data)
           ..add('assignee', assignee))
         .toString();
   }
@@ -251,10 +251,9 @@ class UpdateTaskRequestBuilder
   ListBuilder<String> get files => _$this._files ??= new ListBuilder<String>();
   set files(ListBuilder<String>? files) => _$this._files = files;
 
-  JsonObject? _artefactData;
-  JsonObject? get artefactData => _$this._artefactData;
-  set artefactData(JsonObject? artefactData) =>
-      _$this._artefactData = artefactData;
+  JsonObject? _data;
+  JsonObject? get data => _$this._data;
+  set data(JsonObject? data) => _$this._data = data;
 
   String? _assignee;
   String? get assignee => _$this._assignee;
@@ -272,7 +271,7 @@ class UpdateTaskRequestBuilder
       _name = $v.name;
       _description = $v.description;
       _files = $v.files?.toBuilder();
-      _artefactData = $v.artefactData;
+      _data = $v.data;
       _assignee = $v.assignee;
       _$v = null;
     }
@@ -303,7 +302,7 @@ class UpdateTaskRequestBuilder
               name: name,
               description: description,
               files: _files?.build(),
-              artefactData: artefactData,
+              data: data,
               assignee: assignee);
     } catch (_) {
       late String _$failedField;
