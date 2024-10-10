@@ -196,7 +196,7 @@ Class | Method | HTTP request | Description
 [*TasksApi*](doc/TasksApi.md) | [**createTask**](doc/TasksApi.md#createtask) | **POST** /tasks | Create new task
 [*TasksApi*](doc/TasksApi.md) | [**getTask**](doc/TasksApi.md#gettask) | **GET** /tasks/{id} | Get task info
 [*TasksApi*](doc/TasksApi.md) | [**searchTasks**](doc/TasksApi.md#searchtasks) | **POST** /tasks/search | Search tasks
-[*TasksApi*](doc/TasksApi.md) | [**updateTask**](doc/TasksApi.md#updatetask) | **PUT** /tasks/{id} | Update task
+[*TasksApi*](doc/TasksApi.md) | [**updateTask**](doc/TasksApi.md#updatetask) | **PATCH** /tasks/{id} | Update task
 
 
 ## Documentation For Models

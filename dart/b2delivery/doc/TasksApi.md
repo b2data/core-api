@@ -12,7 +12,7 @@ Method | HTTP request | Description
 [**createTask**](TasksApi.md#createtask) | **POST** /tasks | Create new task
 [**getTask**](TasksApi.md#gettask) | **GET** /tasks/{id} | Get task info
 [**searchTasks**](TasksApi.md#searchtasks) | **POST** /tasks/search | Search tasks
-[**updateTask**](TasksApi.md#updatetask) | **PUT** /tasks/{id} | Update task
+[**updateTask**](TasksApi.md#updatetask) | **PATCH** /tasks/{id} | Update task
 
 
 # **createTask**

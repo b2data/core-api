@@ -334,7 +334,7 @@ class TasksApi {
   }) async {
     final _path = r'/tasks/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
     final _options = Options(
-      method: r'PUT',
+      method: r'PATCH',
       headers: <String, dynamic>{
         ...?headers,
       },

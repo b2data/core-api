@@ -1919,7 +1919,7 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/TaskNotFound"
-    put:
+    patch:
       tags:
         - Tasks
       security:
