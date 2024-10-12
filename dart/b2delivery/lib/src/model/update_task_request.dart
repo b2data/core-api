@@ -4,7 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
-import 'package:built_value/json_object.dart';
+import 'package:b2delivery/src/model/task_data.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -18,7 +18,7 @@ part 'update_task_request.g.dart';
 /// * [name] - Task name
 /// * [description] - Task description
 /// * [files] - Attached files
-/// * [data] - Task Data
+/// * [data] 
 /// * [assignee] - Wallet Address
 @BuiltValue()
 abstract class UpdateTaskRequest implements Built<UpdateTaskRequest, UpdateTaskRequestBuilder> {
@@ -44,9 +44,8 @@ abstract class UpdateTaskRequest implements Built<UpdateTaskRequest, UpdateTaskR
   @BuiltValueField(wireName: r'files')
   BuiltList<String>? get files;
 
-  /// Task Data
   @BuiltValueField(wireName: r'data')
-  JsonObject? get data;
+  TaskData? get data;
 
   /// Wallet Address
   @BuiltValueField(wireName: r'assignee')
@@ -114,7 +113,7 @@ class _$UpdateTaskRequestSerializer implements PrimitiveSerializer<UpdateTaskReq
       yield r'data';
       yield serializers.serialize(
         object.data,
-        specifiedType: const FullType(JsonObject),
+        specifiedType: const FullType(TaskData),
       );
     }
     if (object.assignee != null) {
@@ -185,9 +184,9 @@ class _$UpdateTaskRequestSerializer implements PrimitiveSerializer<UpdateTaskReq
         case r'data':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(JsonObject),
-          ) as JsonObject;
-          result.data = valueDes;
+            specifiedType: const FullType(TaskData),
+          ) as TaskData;
+          result.data.replace(valueDes);
           break;
         case r'assignee':
           final valueDes = serializers.deserialize(

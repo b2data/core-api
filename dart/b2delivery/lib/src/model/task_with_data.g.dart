@@ -249,7 +249,7 @@ class _$TaskWithData extends TaskWithData {
   @override
   final String? artefactType;
   @override
-  final JsonObject data;
+  final TaskData data;
   @override
   final String? assignee;
   @override
@@ -425,9 +425,9 @@ class TaskWithDataBuilder
   String? get artefactType => _$this._artefactType;
   set artefactType(String? artefactType) => _$this._artefactType = artefactType;
 
-  JsonObject? _data;
-  JsonObject? get data => _$this._data;
-  set data(JsonObject? data) => _$this._data = data;
+  TaskDataBuilder? _data;
+  TaskDataBuilder get data => _$this._data ??= new TaskDataBuilder();
+  set data(TaskDataBuilder? data) => _$this._data = data;
 
   String? _assignee;
   String? get assignee => _$this._assignee;
@@ -472,7 +472,7 @@ class TaskWithDataBuilder
       _files = $v.files.toBuilder();
       _artefactId = $v.artefactId;
       _artefactType = $v.artefactType;
-      _data = $v.data;
+      _data = $v.data.toBuilder();
       _assignee = $v.assignee;
       _createdBy = $v.createdBy;
       _createdAt = $v.createdAt;
@@ -520,8 +520,7 @@ class TaskWithDataBuilder
               files: files.build(),
               artefactId: artefactId,
               artefactType: artefactType,
-              data: BuiltValueNullFieldError.checkNotNull(
-                  data, r'TaskWithData', 'data'),
+              data: data.build(),
               assignee: assignee,
               createdBy: createdBy,
               createdAt: BuiltValueNullFieldError.checkNotNull(
@@ -535,6 +534,9 @@ class TaskWithDataBuilder
       try {
         _$failedField = 'files';
         files.build();
+
+        _$failedField = 'data';
+        data.build();
 
         _$failedField = 'createdByData';
         _createdByData?.build();

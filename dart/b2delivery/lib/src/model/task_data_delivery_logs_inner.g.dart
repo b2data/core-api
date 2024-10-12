@@ -17,6 +17,8 @@ class _$TaskDataDeliveryLogsInner extends TaskDataDeliveryLogsInner {
   final String positionId;
   @override
   final num amount;
+  @override
+  final DateTime timestamp;
 
   factory _$TaskDataDeliveryLogsInner(
           [void Function(TaskDataDeliveryLogsInnerBuilder)? updates]) =>
@@ -27,7 +29,8 @@ class _$TaskDataDeliveryLogsInner extends TaskDataDeliveryLogsInner {
       required this.key,
       required this.orderId,
       required this.positionId,
-      required this.amount})
+      required this.amount,
+      required this.timestamp})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         id, r'TaskDataDeliveryLogsInner', 'id');
@@ -39,6 +42,8 @@ class _$TaskDataDeliveryLogsInner extends TaskDataDeliveryLogsInner {
         positionId, r'TaskDataDeliveryLogsInner', 'positionId');
     BuiltValueNullFieldError.checkNotNull(
         amount, r'TaskDataDeliveryLogsInner', 'amount');
+    BuiltValueNullFieldError.checkNotNull(
+        timestamp, r'TaskDataDeliveryLogsInner', 'timestamp');
   }
 
   @override
@@ -58,7 +63,8 @@ class _$TaskDataDeliveryLogsInner extends TaskDataDeliveryLogsInner {
         key == other.key &&
         orderId == other.orderId &&
         positionId == other.positionId &&
-        amount == other.amount;
+        amount == other.amount &&
+        timestamp == other.timestamp;
   }
 
   @override
@@ -69,6 +75,7 @@ class _$TaskDataDeliveryLogsInner extends TaskDataDeliveryLogsInner {
     _$hash = $jc(_$hash, orderId.hashCode);
     _$hash = $jc(_$hash, positionId.hashCode);
     _$hash = $jc(_$hash, amount.hashCode);
+    _$hash = $jc(_$hash, timestamp.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -80,7 +87,8 @@ class _$TaskDataDeliveryLogsInner extends TaskDataDeliveryLogsInner {
           ..add('key', key)
           ..add('orderId', orderId)
           ..add('positionId', positionId)
-          ..add('amount', amount))
+          ..add('amount', amount)
+          ..add('timestamp', timestamp))
         .toString();
   }
 }
@@ -110,6 +118,10 @@ class TaskDataDeliveryLogsInnerBuilder
   num? get amount => _$this._amount;
   set amount(num? amount) => _$this._amount = amount;
 
+  DateTime? _timestamp;
+  DateTime? get timestamp => _$this._timestamp;
+  set timestamp(DateTime? timestamp) => _$this._timestamp = timestamp;
+
   TaskDataDeliveryLogsInnerBuilder() {
     TaskDataDeliveryLogsInner._defaults(this);
   }
@@ -122,6 +134,7 @@ class TaskDataDeliveryLogsInnerBuilder
       _orderId = $v.orderId;
       _positionId = $v.positionId;
       _amount = $v.amount;
+      _timestamp = $v.timestamp;
       _$v = null;
     }
     return this;
@@ -153,7 +166,9 @@ class TaskDataDeliveryLogsInnerBuilder
             positionId: BuiltValueNullFieldError.checkNotNull(
                 positionId, r'TaskDataDeliveryLogsInner', 'positionId'),
             amount: BuiltValueNullFieldError.checkNotNull(
-                amount, r'TaskDataDeliveryLogsInner', 'amount'));
+                amount, r'TaskDataDeliveryLogsInner', 'amount'),
+            timestamp: BuiltValueNullFieldError.checkNotNull(
+                timestamp, r'TaskDataDeliveryLogsInner', 'timestamp'));
     replace(_$result);
     return _$result;
   }

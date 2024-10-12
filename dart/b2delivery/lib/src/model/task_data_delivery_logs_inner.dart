@@ -16,6 +16,7 @@ part 'task_data_delivery_logs_inner.g.dart';
 /// * [orderId] - Order ID
 /// * [positionId] - Order Position ID
 /// * [amount] - Amount of IDP
+/// * [timestamp] - Timestamp
 @BuiltValue()
 abstract class TaskDataDeliveryLogsInner implements Built<TaskDataDeliveryLogsInner, TaskDataDeliveryLogsInnerBuilder> {
   /// Delivery IDT
@@ -37,6 +38,10 @@ abstract class TaskDataDeliveryLogsInner implements Built<TaskDataDeliveryLogsIn
   /// Amount of IDP
   @BuiltValueField(wireName: r'amount')
   num get amount;
+
+  /// Timestamp
+  @BuiltValueField(wireName: r'timestamp')
+  DateTime get timestamp;
 
   TaskDataDeliveryLogsInner._();
 
@@ -85,6 +90,11 @@ class _$TaskDataDeliveryLogsInnerSerializer implements PrimitiveSerializer<TaskD
     yield serializers.serialize(
       object.amount,
       specifiedType: const FullType(num),
+    );
+    yield r'timestamp';
+    yield serializers.serialize(
+      object.timestamp,
+      specifiedType: const FullType(DateTime),
     );
   }
 
@@ -143,6 +153,13 @@ class _$TaskDataDeliveryLogsInnerSerializer implements PrimitiveSerializer<TaskD
             specifiedType: const FullType(num),
           ) as num;
           result.amount = valueDes;
+          break;
+        case r'timestamp':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(DateTime),
+          ) as DateTime;
+          result.timestamp = valueDes;
           break;
         default:
           unhandled.add(key);

@@ -159,7 +159,7 @@ class _$UpdateTaskRequest extends UpdateTaskRequest {
   @override
   final BuiltList<String>? files;
   @override
-  final JsonObject? data;
+  final TaskData? data;
   @override
   final String? assignee;
 
@@ -251,9 +251,9 @@ class UpdateTaskRequestBuilder
   ListBuilder<String> get files => _$this._files ??= new ListBuilder<String>();
   set files(ListBuilder<String>? files) => _$this._files = files;
 
-  JsonObject? _data;
-  JsonObject? get data => _$this._data;
-  set data(JsonObject? data) => _$this._data = data;
+  TaskDataBuilder? _data;
+  TaskDataBuilder get data => _$this._data ??= new TaskDataBuilder();
+  set data(TaskDataBuilder? data) => _$this._data = data;
 
   String? _assignee;
   String? get assignee => _$this._assignee;
@@ -271,7 +271,7 @@ class UpdateTaskRequestBuilder
       _name = $v.name;
       _description = $v.description;
       _files = $v.files?.toBuilder();
-      _data = $v.data;
+      _data = $v.data?.toBuilder();
       _assignee = $v.assignee;
       _$v = null;
     }
@@ -302,13 +302,15 @@ class UpdateTaskRequestBuilder
               name: name,
               description: description,
               files: _files?.build(),
-              data: data,
+              data: _data?.build(),
               assignee: assignee);
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'files';
         _files?.build();
+        _$failedField = 'data';
+        _data?.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             r'UpdateTaskRequest', _$failedField, e.toString());

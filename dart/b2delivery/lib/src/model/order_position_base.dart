@@ -14,6 +14,7 @@ part 'order_position_base.g.dart';
 /// Properties:
 /// * [id] - Order Position ID
 /// * [providerId] - Provider ID
+/// * [productId] - Product ID
 /// * [itemId] - Product Item ID
 /// * [price] - Order Position price
 /// * [amount] - Amount of idP
@@ -28,6 +29,10 @@ abstract class OrderPositionBase implements Built<OrderPositionBase, OrderPositi
   /// Provider ID
   @BuiltValueField(wireName: r'providerId')
   String get providerId;
+
+  /// Product ID
+  @BuiltValueField(wireName: r'productId')
+  String get productId;
 
   /// Product Item ID
   @BuiltValueField(wireName: r'itemId')
@@ -81,6 +86,11 @@ class _$OrderPositionBaseSerializer implements PrimitiveSerializer<OrderPosition
     yield r'providerId';
     yield serializers.serialize(
       object.providerId,
+      specifiedType: const FullType(String),
+    );
+    yield r'productId';
+    yield serializers.serialize(
+      object.productId,
       specifiedType: const FullType(String),
     );
     yield r'itemId';
@@ -146,6 +156,13 @@ class _$OrderPositionBaseSerializer implements PrimitiveSerializer<OrderPosition
             specifiedType: const FullType(String),
           ) as String;
           result.providerId = valueDes;
+          break;
+        case r'productId':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.productId = valueDes;
           break;
         case r'itemId':
           final valueDes = serializers.deserialize(

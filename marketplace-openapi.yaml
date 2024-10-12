@@ -2683,6 +2683,7 @@ components:
       required:
         - id
         - providerId
+        - productId
         - itemId
         - price
         - amount
@@ -2696,6 +2697,10 @@ components:
           type: string
           format: uuid
           description: Provider ID
+        productId:
+          type: string
+          format: uuid
+          description: Product ID
         itemId:
           type: string
           format: uuid
@@ -4321,8 +4326,7 @@ components:
           type: string
           description: Type of artefact that link with task
         data:
-          type: object
-          description: Task Data
+          $ref: "#/components/schemas/TaskData"
         assignee:
           type: string
           description: Wallet Address
@@ -4406,8 +4410,7 @@ components:
           type: string
           description: Type of artefact that link with task
         data:
-          type: object
-          description: Task Data
+          $ref: "#/components/schemas/TaskData"
         assignee:
           type: string
           description: Wallet Address
@@ -4582,6 +4585,7 @@ components:
               - amount
               - orderId
               - positionId
+              - timestamp
             properties:
               id:
                 type: string
@@ -4601,6 +4605,10 @@ components:
               amount:
                 type: number
                 description: Amount of IDP
+              timestamp:
+                type: string
+                format: date-time
+                description: Timestamp
   parameters:
     appNameParam:
       in: path
@@ -6095,8 +6103,7 @@ components:
                   type: string
                 description: Attached files
               data:
-                type: object
-                description: Task Data
+                $ref: "#/components/schemas/TaskData"
               assignee:
                 type: string
                 description: Wallet Address

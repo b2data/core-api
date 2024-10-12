@@ -13,7 +13,7 @@ Name | Type | Description | Notes
 **name** | **String** | Task name | [optional] 
 **description** | **String** | Task description | [optional] 
 **files** | **BuiltList&lt;String&gt;** | Attached files | [optional] 
-**data** | [**JsonObject**](.md) | Task Data | [optional] 
+**data** | [**TaskData**](TaskData.md) |  | [optional] 
 **assignee** | **String** | Wallet Address | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

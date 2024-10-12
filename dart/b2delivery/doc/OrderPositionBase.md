@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** | Order Position ID | 
 **providerId** | **String** | Provider ID | 
+**productId** | **String** | Product ID | 
 **itemId** | **String** | Product Item ID | 
 **price** | **num** | Order Position price | 
 **amount** | **num** | Amount of idP | 

@@ -18,7 +18,7 @@ Name | Type | Description | Notes
 **files** | **BuiltList&lt;String&gt;** | Attached files | 
 **artefactId** | **String** | ID of artefact that link with task | [optional] 
 **artefactType** | **String** | Type of artefact that link with task | [optional] 
-**data** | [**JsonObject**](.md) | Task Data | 
+**data** | [**TaskData**](TaskData.md) |  | 
 **assignee** | **String** | Wallet Address | [optional] 
 **createdBy** | **String** | Wallet Address | [optional] 
 **createdAt** | [**DateTime**](DateTime.md) | Creation Date | 

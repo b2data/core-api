@@ -124,6 +124,8 @@ class _$OrderPositionBase extends OrderPositionBase {
   @override
   final String providerId;
   @override
+  final String productId;
+  @override
   final String itemId;
   @override
   final num price;
@@ -141,6 +143,7 @@ class _$OrderPositionBase extends OrderPositionBase {
   _$OrderPositionBase._(
       {required this.id,
       required this.providerId,
+      required this.productId,
       required this.itemId,
       required this.price,
       required this.amount,
@@ -150,6 +153,8 @@ class _$OrderPositionBase extends OrderPositionBase {
     BuiltValueNullFieldError.checkNotNull(id, r'OrderPositionBase', 'id');
     BuiltValueNullFieldError.checkNotNull(
         providerId, r'OrderPositionBase', 'providerId');
+    BuiltValueNullFieldError.checkNotNull(
+        productId, r'OrderPositionBase', 'productId');
     BuiltValueNullFieldError.checkNotNull(
         itemId, r'OrderPositionBase', 'itemId');
     BuiltValueNullFieldError.checkNotNull(price, r'OrderPositionBase', 'price');
@@ -173,6 +178,7 @@ class _$OrderPositionBase extends OrderPositionBase {
     return other is OrderPositionBase &&
         id == other.id &&
         providerId == other.providerId &&
+        productId == other.productId &&
         itemId == other.itemId &&
         price == other.price &&
         amount == other.amount &&
@@ -185,6 +191,7 @@ class _$OrderPositionBase extends OrderPositionBase {
     var _$hash = 0;
     _$hash = $jc(_$hash, id.hashCode);
     _$hash = $jc(_$hash, providerId.hashCode);
+    _$hash = $jc(_$hash, productId.hashCode);
     _$hash = $jc(_$hash, itemId.hashCode);
     _$hash = $jc(_$hash, price.hashCode);
     _$hash = $jc(_$hash, amount.hashCode);
@@ -199,6 +206,7 @@ class _$OrderPositionBase extends OrderPositionBase {
     return (newBuiltValueToStringHelper(r'OrderPositionBase')
           ..add('id', id)
           ..add('providerId', providerId)
+          ..add('productId', productId)
           ..add('itemId', itemId)
           ..add('price', price)
           ..add('amount', amount)
@@ -219,6 +227,10 @@ class OrderPositionBaseBuilder
   String? _providerId;
   String? get providerId => _$this._providerId;
   set providerId(String? providerId) => _$this._providerId = providerId;
+
+  String? _productId;
+  String? get productId => _$this._productId;
+  set productId(String? productId) => _$this._productId = productId;
 
   String? _itemId;
   String? get itemId => _$this._itemId;
@@ -249,6 +261,7 @@ class OrderPositionBaseBuilder
     if ($v != null) {
       _id = $v.id;
       _providerId = $v.providerId;
+      _productId = $v.productId;
       _itemId = $v.itemId;
       _price = $v.price;
       _amount = $v.amount;
@@ -280,6 +293,8 @@ class OrderPositionBaseBuilder
                 id, r'OrderPositionBase', 'id'),
             providerId: BuiltValueNullFieldError.checkNotNull(
                 providerId, r'OrderPositionBase', 'providerId'),
+            productId: BuiltValueNullFieldError.checkNotNull(
+                productId, r'OrderPositionBase', 'productId'),
             itemId: BuiltValueNullFieldError.checkNotNull(
                 itemId, r'OrderPositionBase', 'itemId'),
             price: BuiltValueNullFieldError.checkNotNull(

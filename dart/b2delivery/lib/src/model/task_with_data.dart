@@ -4,8 +4,8 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
+import 'package:b2delivery/src/model/task_data.dart';
 import 'package:b2delivery/src/model/user.dart';
-import 'package:built_value/json_object.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -24,7 +24,7 @@ part 'task_with_data.g.dart';
 /// * [files] - Attached files
 /// * [artefactId] - ID of artefact that link with task
 /// * [artefactType] - Type of artefact that link with task
-/// * [data] - Task Data
+/// * [data] 
 /// * [assignee] - Wallet Address
 /// * [createdBy] - Wallet Address
 /// * [createdAt] - Creation Date
@@ -76,9 +76,8 @@ abstract class TaskWithData implements Built<TaskWithData, TaskWithDataBuilder> 
   @BuiltValueField(wireName: r'artefactType')
   String? get artefactType;
 
-  /// Task Data
   @BuiltValueField(wireName: r'data')
-  JsonObject get data;
+  TaskData get data;
 
   /// Wallet Address
   @BuiltValueField(wireName: r'assignee')
@@ -182,7 +181,7 @@ class _$TaskWithDataSerializer implements PrimitiveSerializer<TaskWithData> {
     yield r'data';
     yield serializers.serialize(
       object.data,
-      specifiedType: const FullType(JsonObject),
+      specifiedType: const FullType(TaskData),
     );
     if (object.assignee != null) {
       yield r'assignee';
@@ -318,9 +317,9 @@ class _$TaskWithDataSerializer implements PrimitiveSerializer<TaskWithData> {
         case r'data':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(JsonObject),
-          ) as JsonObject;
-          result.data = valueDes;
+            specifiedType: const FullType(TaskData),
+          ) as TaskData;
+          result.data.replace(valueDes);
           break;
         case r'assignee':
           final valueDes = serializers.deserialize(
