@@ -182,6 +182,29 @@ export interface AdminAccess {
   userData?: User;
 }
 
+export interface DeliveryIdpBase {
+  /**
+   * Delivery idP
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Product ID
+   * @format uuid
+   */
+  productId: string;
+  /**
+   * Item ID
+   * @format uuid
+   */
+  itemId: string;
+  /**
+   * Batch ID
+   * @format uuid
+   */
+  batchId: string;
+}
+
 export interface DeliveryIdtBase {
   /**
    * Delivery idT ID
@@ -218,6 +241,8 @@ export interface DeliveryIdt {
    * @format uuid
    */
   providerId?: string;
+  /** List of idP in idT */
+  contains: DeliveryIdpBase[];
   /** Wallet Address */
   createdBy: string;
   /**
@@ -254,6 +279,8 @@ export interface DeliveryIdtWithData {
    * @format uuid
    */
   providerId?: string;
+  /** List of idP in idT */
+  contains: DeliveryIdpBase[];
   /** Wallet Address */
   createdBy: string;
   /**
@@ -541,6 +568,11 @@ export interface OrderPositionBase {
    * @format uuid
    */
   providerId: string;
+  /**
+   * Product ID
+   * @format uuid
+   */
+  productId: string;
   /**
    * Product Item ID
    * @format uuid
@@ -1669,8 +1701,17 @@ export interface Task {
    * @format uuid
    */
   id: string;
+  /** Task key */
+  key: string;
   /** Task type */
-  type: string;
+  type:
+    | "simpleTask"
+    | "productItemReview"
+    | "fillIdt"
+    | "pickUpIdt"
+    | "receiveIdt"
+    | "prepareIdtToDelivery"
+    | "deliverIdt";
   /** Task status */
   status: "new" | "inProgress" | "review" | "done" | "discard";
   /** Task priority */
@@ -1685,8 +1726,7 @@ export interface Task {
   artefactId?: string;
   /** Type of artefact that link with task */
   artefactType?: string;
-  /** Data of artefact that link with task */
-  artefactData?: object;
+  data: TaskData;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -1715,8 +1755,17 @@ export interface TaskWithData {
    * @format uuid
    */
   id: string;
+  /** Task key */
+  key: string;
   /** Task type */
-  type: string;
+  type:
+    | "simpleTask"
+    | "productItemReview"
+    | "fillIdt"
+    | "pickUpIdt"
+    | "receiveIdt"
+    | "prepareIdtToDelivery"
+    | "deliverIdt";
   /** Task status */
   status: "new" | "inProgress" | "review" | "done" | "discard";
   /** Task priority */
@@ -1731,8 +1780,7 @@ export interface TaskWithData {
   artefactId?: string;
   /** Type of artefact that link with task */
   artefactType?: string;
-  /** Data of artefact that link with task */
-  artefactData?: object;
+  data: TaskData;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -1755,6 +1803,124 @@ export interface TaskWithData {
   updatedAt: string;
   createdByData?: User;
   assigneeData?: User;
+}
+
+export interface TaskDataIdtWithIdp {
+  /**
+   * Delivery idT
+   * @format uuid
+   */
+  id: string;
+  /** Delivery idT unique key in format `A_000001` */
+  key: string;
+  /** List of idP in idT */
+  contains: DeliveryIdpBase[];
+}
+
+export interface TaskData {
+  /** ProductItemReview - comment from user */
+  comment?: string;
+  /** ProductItemReview - acceptance status */
+  status?: "blocked" | "published";
+  /**
+   * FillIdt - Product ID
+   * @format uuid
+   */
+  productId?: string;
+  /**
+   * FillIdt - Item ID
+   * @format uuid
+   */
+  itemId?: string;
+  /** FillIdt - Amount of IDP */
+  amount?: number;
+  /** FillIdt */
+  idt?: TaskDataIdtWithIdp;
+  /** PickUpIdt */
+  pickUpSubtasks?: {
+    /** Provider ID */
+    providerId: string;
+    /** Provider Name */
+    providerName: string;
+    /** Location Latitude */
+    locationLat: number;
+    /** Location Longitude */
+    locationLong: number;
+    /** Subtask completed */
+    completed: boolean;
+    items: {
+      /**
+       * Product ID
+       * @format uuid
+       */
+      productId: string;
+      /**
+       * Item ID
+       * @format uuid
+       */
+      itemId: string;
+      /** Amount of IDP */
+      amount: number;
+    }[];
+  }[];
+  /** PickUpIdt, ReceiveIdt, PrepareIdtToDelivery, DeliverIdt */
+  idtList?: TaskDataIdtWithIdp[];
+  /** ReceiveIdt, PrepareIdtToDelivery - Place ID */
+  placeId?: string;
+  /** ReceiveIdt - From User ID */
+  fromUserId?: string;
+  /** ReceiveIdt - From User Name */
+  fromUserName?: string;
+  /** ReceiveIdt */
+  items?: {
+    /**
+     * Product ID
+     * @format uuid
+     */
+    productId: string;
+    /**
+     * Item ID
+     * @format uuid
+     */
+    itemId: string;
+    /** Amount of IDP */
+    amount: number;
+    /** Is item received */
+    received: boolean;
+  }[];
+  /** PrepareIdtToDelivery - To User ID */
+  toUserId?: string;
+  /** PrepareIdtToDelivery - To User Name */
+  toUserName?: string;
+  /** DeliverIdt */
+  orders?: OrderWithData[];
+  /** DeliverIdt */
+  deliveryLogs?: {
+    /**
+     * Delivery IDT
+     * @format uuid
+     */
+    id: string;
+    /** IDT key */
+    key: string;
+    /**
+     * Order ID
+     * @format uuid
+     */
+    orderId: string;
+    /**
+     * Order Position ID
+     * @format uuid
+     */
+    positionId: string;
+    /** Amount of IDP */
+    amount: number;
+    /**
+     * Timestamp
+     * @format date-time
+     */
+    timestamp: string;
+  }[];
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -4427,7 +4593,15 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         /** Search term */
         searchTerm?: string;
         /** Task types */
-        types?: string[];
+        types?: (
+          | "simpleTask"
+          | "productItemReview"
+          | "fillIdt"
+          | "pickUpIdt"
+          | "receiveIdt"
+          | "prepareIdtToDelivery"
+          | "deliverIdt"
+        )[];
         /** Task status */
         status?: ("new" | "inProgress" | "review" | "done" | "discard")[];
         /** Task priority */
@@ -4470,7 +4644,14 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     createTask: (
       data: {
         /** Task type */
-        type: string;
+        type:
+          | "simpleTask"
+          | "productItemReview"
+          | "fillIdt"
+          | "pickUpIdt"
+          | "receiveIdt"
+          | "prepareIdtToDelivery"
+          | "deliverIdt";
         /** Task priority */
         priority?: "low" | "medium" | "high";
         /** Task name */
@@ -4518,7 +4699,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @tags Tasks
      * @name UpdateTask
      * @summary Update task
-     * @request PUT:/tasks/{id}
+     * @request PATCH:/tasks/{id}
      * @secure
      */
     updateTask: (
@@ -4534,8 +4715,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         description?: string;
         /** Attached files */
         files?: string[];
-        /** Data of artefact that link with task */
-        artefactData?: object;
+        data?: TaskData;
         /**
          * Wallet Address
          * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -4546,7 +4726,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     ) =>
       this.http.request<TaskWithData, ErrorResponse>({
         path: `/tasks/${id}`,
-        method: "PUT",
+        method: "PATCH",
         body: data,
         secure: true,
         ...params,
