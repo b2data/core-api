@@ -8,9 +8,10 @@ import 'package:b2delivery/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **String** | Delivery IDT | 
-**key** | **String** | IDT key | 
+**idtId** | **String** | idT ID | 
+**idtKey** | **String** | idT key | 
 **orderId** | **String** | Order ID | 
+**orderKey** | **String** | Order key | 
 **positionId** | **String** | Order Position ID | 
 **amount** | **num** | Amount of IDP | 
 **timestamp** | [**DateTime**](DateTime.md) | Timestamp | 

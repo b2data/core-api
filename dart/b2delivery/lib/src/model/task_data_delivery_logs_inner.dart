@@ -11,25 +11,30 @@ part 'task_data_delivery_logs_inner.g.dart';
 /// TaskDataDeliveryLogsInner
 ///
 /// Properties:
-/// * [id] - Delivery IDT
-/// * [key] - IDT key
+/// * [idtId] - idT ID
+/// * [idtKey] - idT key
 /// * [orderId] - Order ID
+/// * [orderKey] - Order key
 /// * [positionId] - Order Position ID
 /// * [amount] - Amount of IDP
 /// * [timestamp] - Timestamp
 @BuiltValue()
 abstract class TaskDataDeliveryLogsInner implements Built<TaskDataDeliveryLogsInner, TaskDataDeliveryLogsInnerBuilder> {
-  /// Delivery IDT
-  @BuiltValueField(wireName: r'id')
-  String get id;
+  /// idT ID
+  @BuiltValueField(wireName: r'idtId')
+  String get idtId;
 
-  /// IDT key
-  @BuiltValueField(wireName: r'key')
-  String get key;
+  /// idT key
+  @BuiltValueField(wireName: r'idtKey')
+  String get idtKey;
 
   /// Order ID
   @BuiltValueField(wireName: r'orderId')
   String get orderId;
+
+  /// Order key
+  @BuiltValueField(wireName: r'orderKey')
+  String get orderKey;
 
   /// Order Position ID
   @BuiltValueField(wireName: r'positionId')
@@ -66,19 +71,24 @@ class _$TaskDataDeliveryLogsInnerSerializer implements PrimitiveSerializer<TaskD
     TaskDataDeliveryLogsInner object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'id';
+    yield r'idtId';
     yield serializers.serialize(
-      object.id,
+      object.idtId,
       specifiedType: const FullType(String),
     );
-    yield r'key';
+    yield r'idtKey';
     yield serializers.serialize(
-      object.key,
+      object.idtKey,
       specifiedType: const FullType(String),
     );
     yield r'orderId';
     yield serializers.serialize(
       object.orderId,
+      specifiedType: const FullType(String),
+    );
+    yield r'orderKey';
+    yield serializers.serialize(
+      object.orderKey,
       specifiedType: const FullType(String),
     );
     yield r'positionId';
@@ -119,19 +129,19 @@ class _$TaskDataDeliveryLogsInnerSerializer implements PrimitiveSerializer<TaskD
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'id':
+        case r'idtId':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(String),
           ) as String;
-          result.id = valueDes;
+          result.idtId = valueDes;
           break;
-        case r'key':
+        case r'idtKey':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(String),
           ) as String;
-          result.key = valueDes;
+          result.idtKey = valueDes;
           break;
         case r'orderId':
           final valueDes = serializers.deserialize(
@@ -139,6 +149,13 @@ class _$TaskDataDeliveryLogsInnerSerializer implements PrimitiveSerializer<TaskD
             specifiedType: const FullType(String),
           ) as String;
           result.orderId = valueDes;
+          break;
+        case r'orderKey':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.orderKey = valueDes;
           break;
         case r'positionId':
           final valueDes = serializers.deserialize(

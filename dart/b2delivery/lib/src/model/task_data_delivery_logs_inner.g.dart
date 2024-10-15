@@ -8,11 +8,13 @@ part of 'task_data_delivery_logs_inner.dart';
 
 class _$TaskDataDeliveryLogsInner extends TaskDataDeliveryLogsInner {
   @override
-  final String id;
+  final String idtId;
   @override
-  final String key;
+  final String idtKey;
   @override
   final String orderId;
+  @override
+  final String orderKey;
   @override
   final String positionId;
   @override
@@ -25,19 +27,22 @@ class _$TaskDataDeliveryLogsInner extends TaskDataDeliveryLogsInner {
       (new TaskDataDeliveryLogsInnerBuilder()..update(updates))._build();
 
   _$TaskDataDeliveryLogsInner._(
-      {required this.id,
-      required this.key,
+      {required this.idtId,
+      required this.idtKey,
       required this.orderId,
+      required this.orderKey,
       required this.positionId,
       required this.amount,
       required this.timestamp})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
-        id, r'TaskDataDeliveryLogsInner', 'id');
+        idtId, r'TaskDataDeliveryLogsInner', 'idtId');
     BuiltValueNullFieldError.checkNotNull(
-        key, r'TaskDataDeliveryLogsInner', 'key');
+        idtKey, r'TaskDataDeliveryLogsInner', 'idtKey');
     BuiltValueNullFieldError.checkNotNull(
         orderId, r'TaskDataDeliveryLogsInner', 'orderId');
+    BuiltValueNullFieldError.checkNotNull(
+        orderKey, r'TaskDataDeliveryLogsInner', 'orderKey');
     BuiltValueNullFieldError.checkNotNull(
         positionId, r'TaskDataDeliveryLogsInner', 'positionId');
     BuiltValueNullFieldError.checkNotNull(
@@ -59,9 +64,10 @@ class _$TaskDataDeliveryLogsInner extends TaskDataDeliveryLogsInner {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is TaskDataDeliveryLogsInner &&
-        id == other.id &&
-        key == other.key &&
+        idtId == other.idtId &&
+        idtKey == other.idtKey &&
         orderId == other.orderId &&
+        orderKey == other.orderKey &&
         positionId == other.positionId &&
         amount == other.amount &&
         timestamp == other.timestamp;
@@ -70,9 +76,10 @@ class _$TaskDataDeliveryLogsInner extends TaskDataDeliveryLogsInner {
   @override
   int get hashCode {
     var _$hash = 0;
-    _$hash = $jc(_$hash, id.hashCode);
-    _$hash = $jc(_$hash, key.hashCode);
+    _$hash = $jc(_$hash, idtId.hashCode);
+    _$hash = $jc(_$hash, idtKey.hashCode);
     _$hash = $jc(_$hash, orderId.hashCode);
+    _$hash = $jc(_$hash, orderKey.hashCode);
     _$hash = $jc(_$hash, positionId.hashCode);
     _$hash = $jc(_$hash, amount.hashCode);
     _$hash = $jc(_$hash, timestamp.hashCode);
@@ -83,9 +90,10 @@ class _$TaskDataDeliveryLogsInner extends TaskDataDeliveryLogsInner {
   @override
   String toString() {
     return (newBuiltValueToStringHelper(r'TaskDataDeliveryLogsInner')
-          ..add('id', id)
-          ..add('key', key)
+          ..add('idtId', idtId)
+          ..add('idtKey', idtKey)
           ..add('orderId', orderId)
+          ..add('orderKey', orderKey)
           ..add('positionId', positionId)
           ..add('amount', amount)
           ..add('timestamp', timestamp))
@@ -98,17 +106,21 @@ class TaskDataDeliveryLogsInnerBuilder
         Builder<TaskDataDeliveryLogsInner, TaskDataDeliveryLogsInnerBuilder> {
   _$TaskDataDeliveryLogsInner? _$v;
 
-  String? _id;
-  String? get id => _$this._id;
-  set id(String? id) => _$this._id = id;
+  String? _idtId;
+  String? get idtId => _$this._idtId;
+  set idtId(String? idtId) => _$this._idtId = idtId;
 
-  String? _key;
-  String? get key => _$this._key;
-  set key(String? key) => _$this._key = key;
+  String? _idtKey;
+  String? get idtKey => _$this._idtKey;
+  set idtKey(String? idtKey) => _$this._idtKey = idtKey;
 
   String? _orderId;
   String? get orderId => _$this._orderId;
   set orderId(String? orderId) => _$this._orderId = orderId;
+
+  String? _orderKey;
+  String? get orderKey => _$this._orderKey;
+  set orderKey(String? orderKey) => _$this._orderKey = orderKey;
 
   String? _positionId;
   String? get positionId => _$this._positionId;
@@ -129,9 +141,10 @@ class TaskDataDeliveryLogsInnerBuilder
   TaskDataDeliveryLogsInnerBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
-      _id = $v.id;
-      _key = $v.key;
+      _idtId = $v.idtId;
+      _idtKey = $v.idtKey;
       _orderId = $v.orderId;
+      _orderKey = $v.orderKey;
       _positionId = $v.positionId;
       _amount = $v.amount;
       _timestamp = $v.timestamp;
@@ -157,12 +170,14 @@ class TaskDataDeliveryLogsInnerBuilder
   _$TaskDataDeliveryLogsInner _build() {
     final _$result = _$v ??
         new _$TaskDataDeliveryLogsInner._(
-            id: BuiltValueNullFieldError.checkNotNull(
-                id, r'TaskDataDeliveryLogsInner', 'id'),
-            key: BuiltValueNullFieldError.checkNotNull(
-                key, r'TaskDataDeliveryLogsInner', 'key'),
+            idtId: BuiltValueNullFieldError.checkNotNull(
+                idtId, r'TaskDataDeliveryLogsInner', 'idtId'),
+            idtKey: BuiltValueNullFieldError.checkNotNull(
+                idtKey, r'TaskDataDeliveryLogsInner', 'idtKey'),
             orderId: BuiltValueNullFieldError.checkNotNull(
                 orderId, r'TaskDataDeliveryLogsInner', 'orderId'),
+            orderKey: BuiltValueNullFieldError.checkNotNull(
+                orderKey, r'TaskDataDeliveryLogsInner', 'orderKey'),
             positionId: BuiltValueNullFieldError.checkNotNull(
                 positionId, r'TaskDataDeliveryLogsInner', 'positionId'),
             amount: BuiltValueNullFieldError.checkNotNull(

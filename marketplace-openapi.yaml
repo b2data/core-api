@@ -4580,24 +4580,29 @@ components:
           items:
             type: object
             required:
-              - id
-              - key
-              - amount
+              - idtId
+              - idtKey
               - orderId
+              - orderKey
               - positionId
+              - amount
               - timestamp
             properties:
-              id:
+              idtId:
                 type: string
                 format: uuid
-                description: Delivery IDT
-              key:
+                description: idT ID
+              idtKey:
                 type: string
-                description: IDT key
+                description: idT key
               orderId:
                 type: string
                 format: uuid
                 description: Order ID
+              orderKey:
+                type: string
+                format: uuid
+                description: Order key
               positionId:
                 type: string
                 format: uuid
