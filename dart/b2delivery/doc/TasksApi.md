@@ -11,6 +11,7 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**createTask**](TasksApi.md#createtask) | **POST** /tasks | Create new task
 [**getTask**](TasksApi.md#gettask) | **GET** /tasks/{id} | Get task info
+[**getTasksStats**](TasksApi.md#gettasksstats) | **GET** /tasks/stats | Get tasks stats
 [**searchTasks**](TasksApi.md#searchtasks) | **POST** /tasks/search | Search tasks
 [**updateTask**](TasksApi.md#updatetask) | **PATCH** /tasks/{id} | Update task
 
@@ -85,6 +86,43 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**TaskWithData**](TaskWithData.md)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getTasksStats**
+> GetTasksStats200Response getTasksStats()
+
+Get tasks stats
+
+### Example
+```dart
+import 'package:b2delivery/api.dart';
+
+final api = B2delivery().getTasksApi();
+
+try {
+    final response = api.getTasksStats();
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling TasksApi->getTasksStats: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**GetTasksStats200Response**](GetTasksStats200Response.md)
 
 ### Authorization
 

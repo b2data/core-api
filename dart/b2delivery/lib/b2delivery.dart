@@ -66,6 +66,7 @@ export 'package:b2delivery/src/model/get_orders_stats200_response.dart';
 export 'package:b2delivery/src/model/get_orders_stats200_response_orders.dart';
 export 'package:b2delivery/src/model/get_orders_stats200_response_positions.dart';
 export 'package:b2delivery/src/model/get_products_stats200_response.dart';
+export 'package:b2delivery/src/model/get_tasks_stats200_response.dart';
 export 'package:b2delivery/src/model/move_folder_filter_request.dart';
 export 'package:b2delivery/src/model/move_folder_request.dart';
 export 'package:b2delivery/src/model/order.dart';

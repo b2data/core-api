@@ -50,6 +50,7 @@ doc/GetOrdersStats200Response.md
 doc/GetOrdersStats200ResponseOrders.md
 doc/GetOrdersStats200ResponsePositions.md
 doc/GetProductsStats200Response.md
+doc/GetTasksStats200Response.md
 doc/MoveFolderFilterRequest.md
 doc/MoveFolderRequest.md
 doc/Order.md
@@ -215,6 +216,7 @@ lib/src/model/get_orders_stats200_response.dart
 lib/src/model/get_orders_stats200_response_orders.dart
 lib/src/model/get_orders_stats200_response_positions.dart
 lib/src/model/get_products_stats200_response.dart
+lib/src/model/get_tasks_stats200_response.dart
 lib/src/model/move_folder_filter_request.dart
 lib/src/model/move_folder_request.dart
 lib/src/model/order.dart

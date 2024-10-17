@@ -195,6 +195,7 @@ Class | Method | HTTP request | Description
 [*TagsApi*](doc/TagsApi.md) | [**searchTags**](doc/TagsApi.md#searchtags) | **POST** /tags/search | Search tags
 [*TasksApi*](doc/TasksApi.md) | [**createTask**](doc/TasksApi.md#createtask) | **POST** /tasks | Create new task
 [*TasksApi*](doc/TasksApi.md) | [**getTask**](doc/TasksApi.md#gettask) | **GET** /tasks/{id} | Get task info
+[*TasksApi*](doc/TasksApi.md) | [**getTasksStats**](doc/TasksApi.md#gettasksstats) | **GET** /tasks/stats | Get tasks stats
 [*TasksApi*](doc/TasksApi.md) | [**searchTasks**](doc/TasksApi.md#searchtasks) | **POST** /tasks/search | Search tasks
 [*TasksApi*](doc/TasksApi.md) | [**updateTask**](doc/TasksApi.md#updatetask) | **PATCH** /tasks/{id} | Update task
 
@@ -241,6 +242,7 @@ Class | Method | HTTP request | Description
  - [GetOrdersStats200ResponseOrders](doc/GetOrdersStats200ResponseOrders.md)
  - [GetOrdersStats200ResponsePositions](doc/GetOrdersStats200ResponsePositions.md)
  - [GetProductsStats200Response](doc/GetProductsStats200Response.md)
+ - [GetTasksStats200Response](doc/GetTasksStats200Response.md)
  - [MoveFolderFilterRequest](doc/MoveFolderFilterRequest.md)
  - [MoveFolderRequest](doc/MoveFolderRequest.md)
  - [Order](doc/Order.md)

@@ -54,6 +54,7 @@ import 'package:b2delivery/src/model/get_orders_stats200_response.dart';
 import 'package:b2delivery/src/model/get_orders_stats200_response_orders.dart';
 import 'package:b2delivery/src/model/get_orders_stats200_response_positions.dart';
 import 'package:b2delivery/src/model/get_products_stats200_response.dart';
+import 'package:b2delivery/src/model/get_tasks_stats200_response.dart';
 import 'package:b2delivery/src/model/move_folder_filter_request.dart';
 import 'package:b2delivery/src/model/move_folder_request.dart';
 import 'package:b2delivery/src/model/order.dart';
@@ -192,6 +193,7 @@ part 'serializers.g.dart';
   GetOrdersStats200ResponseOrders,
   GetOrdersStats200ResponsePositions,
   GetProductsStats200Response,
+  GetTasksStats200Response,
   MoveFolderFilterRequest,
   MoveFolderRequest,
   Order,

@@ -55,6 +55,7 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(GetOrdersStats200ResponseOrders.serializer)
       ..add(GetOrdersStats200ResponsePositions.serializer)
       ..add(GetProductsStats200Response.serializer)
+      ..add(GetTasksStats200Response.serializer)
       ..add(MoveFolderFilterRequest.serializer)
       ..add(MoveFolderRequest.serializer)
       ..add(Order.serializer)
@@ -637,7 +638,15 @@ Serializers _$serializers = (new Serializers().toBuilder()
           () => new ListBuilder<TaskDataPickUpSubtasksInnerItemsInner>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(User)]),
-          () => new ListBuilder<User>()))
+          () => new ListBuilder<User>())
+      ..addBuilderFactory(
+          const FullType(
+              BuiltMap, const [const FullType(String), const FullType(num)]),
+          () => new MapBuilder<String, num>())
+      ..addBuilderFactory(
+          const FullType(
+              BuiltMap, const [const FullType(String), const FullType(num)]),
+          () => new MapBuilder<String, num>()))
     .build();
 
 // ignore_for_file: deprecated_member_use_from_same_package,type=lint

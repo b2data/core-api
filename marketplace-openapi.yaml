@@ -1898,6 +1898,19 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /tasks/stats:
+    get:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Get tasks stats
+      operationId: getTasksStats
+      responses:
+        "200":
+          $ref: "#/components/responses/TasksStatsData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   "/tasks/{id}":
     get:
       tags:
@@ -6902,6 +6915,27 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/Task"
+    TasksStatsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - byStatus
+              - byProgress
+            properties:
+              total:
+                type: number
+              byStatus:
+                type: object
+                additionalProperties:
+                  type: number
+              byProgress:
+                type: object
+                additionalProperties:
+                  type: number
     TaskNotFound:
       description: Not found
       content:
