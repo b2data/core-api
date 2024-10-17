@@ -6924,7 +6924,8 @@ components:
             required:
               - total
               - byStatus
-              - byProgress
+              - byPriority
+              - byType
             properties:
               total:
                 type: number
@@ -6932,7 +6933,11 @@ components:
                 type: object
                 additionalProperties:
                   type: number
-              byProgress:
+              byPriority:
+                type: object
+                additionalProperties:
+                  type: number
+              byType:
                 type: object
                 additionalProperties:
                   type: number

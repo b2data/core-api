@@ -14,7 +14,8 @@ part 'get_tasks_stats200_response.g.dart';
 /// Properties:
 /// * [total] 
 /// * [byStatus] 
-/// * [byProgress] 
+/// * [byPriority] 
+/// * [byType] 
 @BuiltValue()
 abstract class GetTasksStats200Response implements Built<GetTasksStats200Response, GetTasksStats200ResponseBuilder> {
   @BuiltValueField(wireName: r'total')
@@ -23,8 +24,11 @@ abstract class GetTasksStats200Response implements Built<GetTasksStats200Respons
   @BuiltValueField(wireName: r'byStatus')
   BuiltMap<String, num> get byStatus;
 
-  @BuiltValueField(wireName: r'byProgress')
-  BuiltMap<String, num> get byProgress;
+  @BuiltValueField(wireName: r'byPriority')
+  BuiltMap<String, num> get byPriority;
+
+  @BuiltValueField(wireName: r'byType')
+  BuiltMap<String, num> get byType;
 
   GetTasksStats200Response._();
 
@@ -59,9 +63,14 @@ class _$GetTasksStats200ResponseSerializer implements PrimitiveSerializer<GetTas
       object.byStatus,
       specifiedType: const FullType(BuiltMap, [FullType(String), FullType(num)]),
     );
-    yield r'byProgress';
+    yield r'byPriority';
     yield serializers.serialize(
-      object.byProgress,
+      object.byPriority,
+      specifiedType: const FullType(BuiltMap, [FullType(String), FullType(num)]),
+    );
+    yield r'byType';
+    yield serializers.serialize(
+      object.byType,
       specifiedType: const FullType(BuiltMap, [FullType(String), FullType(num)]),
     );
   }
@@ -101,12 +110,19 @@ class _$GetTasksStats200ResponseSerializer implements PrimitiveSerializer<GetTas
           ) as BuiltMap<String, num>;
           result.byStatus.replace(valueDes);
           break;
-        case r'byProgress':
+        case r'byPriority':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(BuiltMap, [FullType(String), FullType(num)]),
           ) as BuiltMap<String, num>;
-          result.byProgress.replace(valueDes);
+          result.byPriority.replace(valueDes);
+          break;
+        case r'byType':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(BuiltMap, [FullType(String), FullType(num)]),
+          ) as BuiltMap<String, num>;
+          result.byType.replace(valueDes);
           break;
         default:
           unhandled.add(key);

@@ -12,21 +12,28 @@ class _$GetTasksStats200Response extends GetTasksStats200Response {
   @override
   final BuiltMap<String, num> byStatus;
   @override
-  final BuiltMap<String, num> byProgress;
+  final BuiltMap<String, num> byPriority;
+  @override
+  final BuiltMap<String, num> byType;
 
   factory _$GetTasksStats200Response(
           [void Function(GetTasksStats200ResponseBuilder)? updates]) =>
       (new GetTasksStats200ResponseBuilder()..update(updates))._build();
 
   _$GetTasksStats200Response._(
-      {required this.total, required this.byStatus, required this.byProgress})
+      {required this.total,
+      required this.byStatus,
+      required this.byPriority,
+      required this.byType})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         total, r'GetTasksStats200Response', 'total');
     BuiltValueNullFieldError.checkNotNull(
         byStatus, r'GetTasksStats200Response', 'byStatus');
     BuiltValueNullFieldError.checkNotNull(
-        byProgress, r'GetTasksStats200Response', 'byProgress');
+        byPriority, r'GetTasksStats200Response', 'byPriority');
+    BuiltValueNullFieldError.checkNotNull(
+        byType, r'GetTasksStats200Response', 'byType');
   }
 
   @override
@@ -44,7 +51,8 @@ class _$GetTasksStats200Response extends GetTasksStats200Response {
     return other is GetTasksStats200Response &&
         total == other.total &&
         byStatus == other.byStatus &&
-        byProgress == other.byProgress;
+        byPriority == other.byPriority &&
+        byType == other.byType;
   }
 
   @override
@@ -52,7 +60,8 @@ class _$GetTasksStats200Response extends GetTasksStats200Response {
     var _$hash = 0;
     _$hash = $jc(_$hash, total.hashCode);
     _$hash = $jc(_$hash, byStatus.hashCode);
-    _$hash = $jc(_$hash, byProgress.hashCode);
+    _$hash = $jc(_$hash, byPriority.hashCode);
+    _$hash = $jc(_$hash, byType.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -62,7 +71,8 @@ class _$GetTasksStats200Response extends GetTasksStats200Response {
     return (newBuiltValueToStringHelper(r'GetTasksStats200Response')
           ..add('total', total)
           ..add('byStatus', byStatus)
-          ..add('byProgress', byProgress))
+          ..add('byPriority', byPriority)
+          ..add('byType', byType))
         .toString();
   }
 }
@@ -82,11 +92,16 @@ class GetTasksStats200ResponseBuilder
   set byStatus(MapBuilder<String, num>? byStatus) =>
       _$this._byStatus = byStatus;
 
-  MapBuilder<String, num>? _byProgress;
-  MapBuilder<String, num> get byProgress =>
-      _$this._byProgress ??= new MapBuilder<String, num>();
-  set byProgress(MapBuilder<String, num>? byProgress) =>
-      _$this._byProgress = byProgress;
+  MapBuilder<String, num>? _byPriority;
+  MapBuilder<String, num> get byPriority =>
+      _$this._byPriority ??= new MapBuilder<String, num>();
+  set byPriority(MapBuilder<String, num>? byPriority) =>
+      _$this._byPriority = byPriority;
+
+  MapBuilder<String, num>? _byType;
+  MapBuilder<String, num> get byType =>
+      _$this._byType ??= new MapBuilder<String, num>();
+  set byType(MapBuilder<String, num>? byType) => _$this._byType = byType;
 
   GetTasksStats200ResponseBuilder() {
     GetTasksStats200Response._defaults(this);
@@ -97,7 +112,8 @@ class GetTasksStats200ResponseBuilder
     if ($v != null) {
       _total = $v.total;
       _byStatus = $v.byStatus.toBuilder();
-      _byProgress = $v.byProgress.toBuilder();
+      _byPriority = $v.byPriority.toBuilder();
+      _byType = $v.byType.toBuilder();
       _$v = null;
     }
     return this;
@@ -125,14 +141,17 @@ class GetTasksStats200ResponseBuilder
               total: BuiltValueNullFieldError.checkNotNull(
                   total, r'GetTasksStats200Response', 'total'),
               byStatus: byStatus.build(),
-              byProgress: byProgress.build());
+              byPriority: byPriority.build(),
+              byType: byType.build());
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'byStatus';
         byStatus.build();
-        _$failedField = 'byProgress';
-        byProgress.build();
+        _$failedField = 'byPriority';
+        byPriority.build();
+        _$failedField = 'byType';
+        byType.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             r'GetTasksStats200Response', _$failedField, e.toString());

@@ -10,7 +10,8 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **total** | **num** |  | 
 **byStatus** | **BuiltMap&lt;String, num&gt;** |  | 
-**byProgress** | **BuiltMap&lt;String, num&gt;** |  | 
+**byPriority** | **BuiltMap&lt;String, num&gt;** |  | 
+**byType** | **BuiltMap&lt;String, num&gt;** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
