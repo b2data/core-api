@@ -4348,6 +4348,13 @@ components:
           type: string
           description: Wallet Address
           example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        providerId:
+          type: string
+          description: Provider ID
+        dueDate:
+          type: string
+          format: date-time
+          description: Due Date
         createdAt:
           type: string
           format: date-time
@@ -4432,6 +4439,13 @@ components:
           type: string
           description: Wallet Address
           example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        providerId:
+          type: string
+          description: Provider ID
+        dueDate:
+          type: string
+          format: date-time
+          description: Due Date
         createdAt:
           type: string
           format: date-time
@@ -6056,6 +6070,13 @@ components:
                 type: string
                 description: Wallet Address
                 example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+              providerId:
+                type: string
+                description: Provider ID
+              dueDate:
+                type: string
+                format: date-time
+                description: Due Date
     EditTaskBody:
       content:
         application/json:
@@ -6095,6 +6116,13 @@ components:
                 type: string
                 description: Wallet Address
                 example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+              providerId:
+                type: string
+                description: Provider ID
+              dueDate:
+                type: string
+                format: date-time
+                description: Due Date
   responses:
     AppData:
       description: Successful operation

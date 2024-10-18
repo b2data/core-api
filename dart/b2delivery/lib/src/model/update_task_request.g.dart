@@ -162,6 +162,10 @@ class _$UpdateTaskRequest extends UpdateTaskRequest {
   final TaskData? data;
   @override
   final String? assignee;
+  @override
+  final String? providerId;
+  @override
+  final DateTime? dueDate;
 
   factory _$UpdateTaskRequest(
           [void Function(UpdateTaskRequestBuilder)? updates]) =>
@@ -174,7 +178,9 @@ class _$UpdateTaskRequest extends UpdateTaskRequest {
       this.description,
       this.files,
       this.data,
-      this.assignee})
+      this.assignee,
+      this.providerId,
+      this.dueDate})
       : super._();
 
   @override
@@ -195,7 +201,9 @@ class _$UpdateTaskRequest extends UpdateTaskRequest {
         description == other.description &&
         files == other.files &&
         data == other.data &&
-        assignee == other.assignee;
+        assignee == other.assignee &&
+        providerId == other.providerId &&
+        dueDate == other.dueDate;
   }
 
   @override
@@ -208,6 +216,8 @@ class _$UpdateTaskRequest extends UpdateTaskRequest {
     _$hash = $jc(_$hash, files.hashCode);
     _$hash = $jc(_$hash, data.hashCode);
     _$hash = $jc(_$hash, assignee.hashCode);
+    _$hash = $jc(_$hash, providerId.hashCode);
+    _$hash = $jc(_$hash, dueDate.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -221,7 +231,9 @@ class _$UpdateTaskRequest extends UpdateTaskRequest {
           ..add('description', description)
           ..add('files', files)
           ..add('data', data)
-          ..add('assignee', assignee))
+          ..add('assignee', assignee)
+          ..add('providerId', providerId)
+          ..add('dueDate', dueDate))
         .toString();
   }
 }
@@ -259,6 +271,14 @@ class UpdateTaskRequestBuilder
   String? get assignee => _$this._assignee;
   set assignee(String? assignee) => _$this._assignee = assignee;
 
+  String? _providerId;
+  String? get providerId => _$this._providerId;
+  set providerId(String? providerId) => _$this._providerId = providerId;
+
+  DateTime? _dueDate;
+  DateTime? get dueDate => _$this._dueDate;
+  set dueDate(DateTime? dueDate) => _$this._dueDate = dueDate;
+
   UpdateTaskRequestBuilder() {
     UpdateTaskRequest._defaults(this);
   }
@@ -273,6 +293,8 @@ class UpdateTaskRequestBuilder
       _files = $v.files?.toBuilder();
       _data = $v.data?.toBuilder();
       _assignee = $v.assignee;
+      _providerId = $v.providerId;
+      _dueDate = $v.dueDate;
       _$v = null;
     }
     return this;
@@ -303,7 +325,9 @@ class UpdateTaskRequestBuilder
               description: description,
               files: _files?.build(),
               data: _data?.build(),
-              assignee: assignee);
+              assignee: assignee,
+              providerId: providerId,
+              dueDate: dueDate);
     } catch (_) {
       late String _$failedField;
       try {

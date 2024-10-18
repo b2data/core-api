@@ -247,6 +247,10 @@ class _$Task extends Task {
   @override
   final String? createdBy;
   @override
+  final String? providerId;
+  @override
+  final DateTime? dueDate;
+  @override
   final DateTime createdAt;
   @override
   final DateTime updatedAt;
@@ -268,6 +272,8 @@ class _$Task extends Task {
       required this.data,
       this.assignee,
       this.createdBy,
+      this.providerId,
+      this.dueDate,
       required this.createdAt,
       required this.updatedAt})
       : super._() {
@@ -308,6 +314,8 @@ class _$Task extends Task {
         data == other.data &&
         assignee == other.assignee &&
         createdBy == other.createdBy &&
+        providerId == other.providerId &&
+        dueDate == other.dueDate &&
         createdAt == other.createdAt &&
         updatedAt == other.updatedAt;
   }
@@ -328,6 +336,8 @@ class _$Task extends Task {
     _$hash = $jc(_$hash, data.hashCode);
     _$hash = $jc(_$hash, assignee.hashCode);
     _$hash = $jc(_$hash, createdBy.hashCode);
+    _$hash = $jc(_$hash, providerId.hashCode);
+    _$hash = $jc(_$hash, dueDate.hashCode);
     _$hash = $jc(_$hash, createdAt.hashCode);
     _$hash = $jc(_$hash, updatedAt.hashCode);
     _$hash = $jf(_$hash);
@@ -350,6 +360,8 @@ class _$Task extends Task {
           ..add('data', data)
           ..add('assignee', assignee)
           ..add('createdBy', createdBy)
+          ..add('providerId', providerId)
+          ..add('dueDate', dueDate)
           ..add('createdAt', createdAt)
           ..add('updatedAt', updatedAt))
         .toString();
@@ -411,6 +423,14 @@ class TaskBuilder implements Builder<Task, TaskBuilder> {
   String? get createdBy => _$this._createdBy;
   set createdBy(String? createdBy) => _$this._createdBy = createdBy;
 
+  String? _providerId;
+  String? get providerId => _$this._providerId;
+  set providerId(String? providerId) => _$this._providerId = providerId;
+
+  DateTime? _dueDate;
+  DateTime? get dueDate => _$this._dueDate;
+  set dueDate(DateTime? dueDate) => _$this._dueDate = dueDate;
+
   DateTime? _createdAt;
   DateTime? get createdAt => _$this._createdAt;
   set createdAt(DateTime? createdAt) => _$this._createdAt = createdAt;
@@ -439,6 +459,8 @@ class TaskBuilder implements Builder<Task, TaskBuilder> {
       _data = $v.data.toBuilder();
       _assignee = $v.assignee;
       _createdBy = $v.createdBy;
+      _providerId = $v.providerId;
+      _dueDate = $v.dueDate;
       _createdAt = $v.createdAt;
       _updatedAt = $v.updatedAt;
       _$v = null;
@@ -483,6 +505,8 @@ class TaskBuilder implements Builder<Task, TaskBuilder> {
               data: data.build(),
               assignee: assignee,
               createdBy: createdBy,
+              providerId: providerId,
+              dueDate: dueDate,
               createdAt: BuiltValueNullFieldError.checkNotNull(
                   createdAt, r'Task', 'createdAt'),
               updatedAt: BuiltValueNullFieldError.checkNotNull(

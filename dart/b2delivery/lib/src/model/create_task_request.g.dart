@@ -172,6 +172,10 @@ class _$CreateTaskRequest extends CreateTaskRequest {
   final BuiltList<String>? files;
   @override
   final String? assignee;
+  @override
+  final String? providerId;
+  @override
+  final DateTime? dueDate;
 
   factory _$CreateTaskRequest(
           [void Function(CreateTaskRequestBuilder)? updates]) =>
@@ -183,7 +187,9 @@ class _$CreateTaskRequest extends CreateTaskRequest {
       required this.name,
       this.description,
       this.files,
-      this.assignee})
+      this.assignee,
+      this.providerId,
+      this.dueDate})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(type, r'CreateTaskRequest', 'type');
     BuiltValueNullFieldError.checkNotNull(name, r'CreateTaskRequest', 'name');
@@ -206,7 +212,9 @@ class _$CreateTaskRequest extends CreateTaskRequest {
         name == other.name &&
         description == other.description &&
         files == other.files &&
-        assignee == other.assignee;
+        assignee == other.assignee &&
+        providerId == other.providerId &&
+        dueDate == other.dueDate;
   }
 
   @override
@@ -218,6 +226,8 @@ class _$CreateTaskRequest extends CreateTaskRequest {
     _$hash = $jc(_$hash, description.hashCode);
     _$hash = $jc(_$hash, files.hashCode);
     _$hash = $jc(_$hash, assignee.hashCode);
+    _$hash = $jc(_$hash, providerId.hashCode);
+    _$hash = $jc(_$hash, dueDate.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -230,7 +240,9 @@ class _$CreateTaskRequest extends CreateTaskRequest {
           ..add('name', name)
           ..add('description', description)
           ..add('files', files)
-          ..add('assignee', assignee))
+          ..add('assignee', assignee)
+          ..add('providerId', providerId)
+          ..add('dueDate', dueDate))
         .toString();
   }
 }
@@ -264,6 +276,14 @@ class CreateTaskRequestBuilder
   String? get assignee => _$this._assignee;
   set assignee(String? assignee) => _$this._assignee = assignee;
 
+  String? _providerId;
+  String? get providerId => _$this._providerId;
+  set providerId(String? providerId) => _$this._providerId = providerId;
+
+  DateTime? _dueDate;
+  DateTime? get dueDate => _$this._dueDate;
+  set dueDate(DateTime? dueDate) => _$this._dueDate = dueDate;
+
   CreateTaskRequestBuilder() {
     CreateTaskRequest._defaults(this);
   }
@@ -277,6 +297,8 @@ class CreateTaskRequestBuilder
       _description = $v.description;
       _files = $v.files?.toBuilder();
       _assignee = $v.assignee;
+      _providerId = $v.providerId;
+      _dueDate = $v.dueDate;
       _$v = null;
     }
     return this;
@@ -308,7 +330,9 @@ class CreateTaskRequestBuilder
                   name, r'CreateTaskRequest', 'name'),
               description: description,
               files: _files?.build(),
-              assignee: assignee);
+              assignee: assignee,
+              providerId: providerId,
+              dueDate: dueDate);
     } catch (_) {
       late String _$failedField;
       try {

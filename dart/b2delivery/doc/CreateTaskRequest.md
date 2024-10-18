@@ -14,6 +14,8 @@ Name | Type | Description | Notes
 **description** | **String** | Task description | [optional] 
 **files** | **BuiltList&lt;String&gt;** | Attached files | [optional] 
 **assignee** | **String** | Wallet Address | [optional] 
+**providerId** | **String** | Provider ID | [optional] 
+**dueDate** | [**DateTime**](DateTime.md) | Due Date | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

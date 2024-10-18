@@ -18,6 +18,8 @@ part 'create_task_request.g.dart';
 /// * [description] - Task description
 /// * [files] - Attached files
 /// * [assignee] - Wallet Address
+/// * [providerId] - Provider ID
+/// * [dueDate] - Due Date
 @BuiltValue()
 abstract class CreateTaskRequest implements Built<CreateTaskRequest, CreateTaskRequestBuilder> {
   /// Task type
@@ -45,6 +47,14 @@ abstract class CreateTaskRequest implements Built<CreateTaskRequest, CreateTaskR
   /// Wallet Address
   @BuiltValueField(wireName: r'assignee')
   String? get assignee;
+
+  /// Provider ID
+  @BuiltValueField(wireName: r'providerId')
+  String? get providerId;
+
+  /// Due Date
+  @BuiltValueField(wireName: r'dueDate')
+  DateTime? get dueDate;
 
   CreateTaskRequest._();
 
@@ -105,6 +115,20 @@ class _$CreateTaskRequestSerializer implements PrimitiveSerializer<CreateTaskReq
       yield serializers.serialize(
         object.assignee,
         specifiedType: const FullType(String),
+      );
+    }
+    if (object.providerId != null) {
+      yield r'providerId';
+      yield serializers.serialize(
+        object.providerId,
+        specifiedType: const FullType(String),
+      );
+    }
+    if (object.dueDate != null) {
+      yield r'dueDate';
+      yield serializers.serialize(
+        object.dueDate,
+        specifiedType: const FullType(DateTime),
       );
     }
   }
@@ -171,6 +195,20 @@ class _$CreateTaskRequestSerializer implements PrimitiveSerializer<CreateTaskReq
             specifiedType: const FullType(String),
           ) as String;
           result.assignee = valueDes;
+          break;
+        case r'providerId':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.providerId = valueDes;
+          break;
+        case r'dueDate':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(DateTime),
+          ) as DateTime;
+          result.dueDate = valueDes;
           break;
         default:
           unhandled.add(key);

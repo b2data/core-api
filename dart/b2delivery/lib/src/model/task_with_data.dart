@@ -27,6 +27,8 @@ part 'task_with_data.g.dart';
 /// * [data] 
 /// * [assignee] - Wallet Address
 /// * [createdBy] - Wallet Address
+/// * [providerId] - Provider ID
+/// * [dueDate] - Due Date
 /// * [createdAt] - Creation Date
 /// * [updatedAt] - Last Updating Date
 /// * [createdByData] 
@@ -86,6 +88,14 @@ abstract class TaskWithData implements Built<TaskWithData, TaskWithDataBuilder> 
   /// Wallet Address
   @BuiltValueField(wireName: r'createdBy')
   String? get createdBy;
+
+  /// Provider ID
+  @BuiltValueField(wireName: r'providerId')
+  String? get providerId;
+
+  /// Due Date
+  @BuiltValueField(wireName: r'dueDate')
+  DateTime? get dueDate;
 
   /// Creation Date
   @BuiltValueField(wireName: r'createdAt')
@@ -195,6 +205,20 @@ class _$TaskWithDataSerializer implements PrimitiveSerializer<TaskWithData> {
       yield serializers.serialize(
         object.createdBy,
         specifiedType: const FullType(String),
+      );
+    }
+    if (object.providerId != null) {
+      yield r'providerId';
+      yield serializers.serialize(
+        object.providerId,
+        specifiedType: const FullType(String),
+      );
+    }
+    if (object.dueDate != null) {
+      yield r'dueDate';
+      yield serializers.serialize(
+        object.dueDate,
+        specifiedType: const FullType(DateTime),
       );
     }
     yield r'createdAt';
@@ -334,6 +358,20 @@ class _$TaskWithDataSerializer implements PrimitiveSerializer<TaskWithData> {
             specifiedType: const FullType(String),
           ) as String;
           result.createdBy = valueDes;
+          break;
+        case r'providerId':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.providerId = valueDes;
+          break;
+        case r'dueDate':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(DateTime),
+          ) as DateTime;
+          result.dueDate = valueDes;
           break;
         case r'createdAt':
           final valueDes = serializers.deserialize(

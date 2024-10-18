@@ -21,6 +21,8 @@ Name | Type | Description | Notes
 **data** | [**TaskData**](TaskData.md) |  | 
 **assignee** | **String** | Wallet Address | [optional] 
 **createdBy** | **String** | Wallet Address | [optional] 
+**providerId** | **String** | Provider ID | [optional] 
+**dueDate** | [**DateTime**](DateTime.md) | Due Date | [optional] 
 **createdAt** | [**DateTime**](DateTime.md) | Creation Date | 
 **updatedAt** | [**DateTime**](DateTime.md) | Last Updating Date | 
 **createdByData** | [**User**](User.md) |  | [optional] 
