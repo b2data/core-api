@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **productId** | **String** | Product ID | 
 **itemId** | **String** | Item ID | 
+**itemName** | **String** | Item Name | 
 **amount** | **num** | Amount of IDP | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

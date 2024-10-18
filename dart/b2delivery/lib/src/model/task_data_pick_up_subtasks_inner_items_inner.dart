@@ -13,6 +13,7 @@ part 'task_data_pick_up_subtasks_inner_items_inner.g.dart';
 /// Properties:
 /// * [productId] - Product ID
 /// * [itemId] - Item ID
+/// * [itemName] - Item Name
 /// * [amount] - Amount of IDP
 @BuiltValue()
 abstract class TaskDataPickUpSubtasksInnerItemsInner implements Built<TaskDataPickUpSubtasksInnerItemsInner, TaskDataPickUpSubtasksInnerItemsInnerBuilder> {
@@ -23,6 +24,10 @@ abstract class TaskDataPickUpSubtasksInnerItemsInner implements Built<TaskDataPi
   /// Item ID
   @BuiltValueField(wireName: r'itemId')
   String get itemId;
+
+  /// Item Name
+  @BuiltValueField(wireName: r'itemName')
+  String get itemName;
 
   /// Amount of IDP
   @BuiltValueField(wireName: r'amount')
@@ -59,6 +64,11 @@ class _$TaskDataPickUpSubtasksInnerItemsInnerSerializer implements PrimitiveSeri
     yield r'itemId';
     yield serializers.serialize(
       object.itemId,
+      specifiedType: const FullType(String),
+    );
+    yield r'itemName';
+    yield serializers.serialize(
+      object.itemName,
       specifiedType: const FullType(String),
     );
     yield r'amount';
@@ -102,6 +112,13 @@ class _$TaskDataPickUpSubtasksInnerItemsInnerSerializer implements PrimitiveSeri
             specifiedType: const FullType(String),
           ) as String;
           result.itemId = valueDes;
+          break;
+        case r'itemName':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.itemName = valueDes;
           break;
         case r'amount':
           final valueDes = serializers.deserialize(

@@ -4524,6 +4524,7 @@ components:
                   required:
                     - productId
                     - itemId
+                    - itemName
                     - amount
                   properties:
                     productId:
@@ -4534,6 +4535,9 @@ components:
                       type: string
                       format: uuid
                       description: Item ID
+                    itemName:
+                      type: string
+                      description: Item Name
                     amount:
                       type: number
                       description: Amount of IDP

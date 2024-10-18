@@ -13,6 +13,8 @@ class _$TaskDataPickUpSubtasksInnerItemsInner
   @override
   final String itemId;
   @override
+  final String itemName;
+  @override
   final num amount;
 
   factory _$TaskDataPickUpSubtasksInnerItemsInner(
@@ -22,12 +24,17 @@ class _$TaskDataPickUpSubtasksInnerItemsInner
           ._build();
 
   _$TaskDataPickUpSubtasksInnerItemsInner._(
-      {required this.productId, required this.itemId, required this.amount})
+      {required this.productId,
+      required this.itemId,
+      required this.itemName,
+      required this.amount})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         productId, r'TaskDataPickUpSubtasksInnerItemsInner', 'productId');
     BuiltValueNullFieldError.checkNotNull(
         itemId, r'TaskDataPickUpSubtasksInnerItemsInner', 'itemId');
+    BuiltValueNullFieldError.checkNotNull(
+        itemName, r'TaskDataPickUpSubtasksInnerItemsInner', 'itemName');
     BuiltValueNullFieldError.checkNotNull(
         amount, r'TaskDataPickUpSubtasksInnerItemsInner', 'amount');
   }
@@ -48,6 +55,7 @@ class _$TaskDataPickUpSubtasksInnerItemsInner
     return other is TaskDataPickUpSubtasksInnerItemsInner &&
         productId == other.productId &&
         itemId == other.itemId &&
+        itemName == other.itemName &&
         amount == other.amount;
   }
 
@@ -56,6 +64,7 @@ class _$TaskDataPickUpSubtasksInnerItemsInner
     var _$hash = 0;
     _$hash = $jc(_$hash, productId.hashCode);
     _$hash = $jc(_$hash, itemId.hashCode);
+    _$hash = $jc(_$hash, itemName.hashCode);
     _$hash = $jc(_$hash, amount.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
@@ -67,6 +76,7 @@ class _$TaskDataPickUpSubtasksInnerItemsInner
             r'TaskDataPickUpSubtasksInnerItemsInner')
           ..add('productId', productId)
           ..add('itemId', itemId)
+          ..add('itemName', itemName)
           ..add('amount', amount))
         .toString();
   }
@@ -86,6 +96,10 @@ class TaskDataPickUpSubtasksInnerItemsInnerBuilder
   String? get itemId => _$this._itemId;
   set itemId(String? itemId) => _$this._itemId = itemId;
 
+  String? _itemName;
+  String? get itemName => _$this._itemName;
+  set itemName(String? itemName) => _$this._itemName = itemName;
+
   num? _amount;
   num? get amount => _$this._amount;
   set amount(num? amount) => _$this._amount = amount;
@@ -99,6 +113,7 @@ class TaskDataPickUpSubtasksInnerItemsInnerBuilder
     if ($v != null) {
       _productId = $v.productId;
       _itemId = $v.itemId;
+      _itemName = $v.itemName;
       _amount = $v.amount;
       _$v = null;
     }
@@ -127,6 +142,8 @@ class TaskDataPickUpSubtasksInnerItemsInnerBuilder
                 r'TaskDataPickUpSubtasksInnerItemsInner', 'productId'),
             itemId: BuiltValueNullFieldError.checkNotNull(
                 itemId, r'TaskDataPickUpSubtasksInnerItemsInner', 'itemId'),
+            itemName: BuiltValueNullFieldError.checkNotNull(
+                itemName, r'TaskDataPickUpSubtasksInnerItemsInner', 'itemName'),
             amount: BuiltValueNullFieldError.checkNotNull(
                 amount, r'TaskDataPickUpSubtasksInnerItemsInner', 'amount'));
     replace(_$result);
