@@ -69,25 +69,27 @@ class _$TaskData extends TaskData {
   @override
   final String? itemId;
   @override
+  final String? itemName;
+  @override
   final num? amount;
-  @override
-  final TaskDataIdtWithIdp? idt;
-  @override
-  final BuiltList<TaskDataPickUpSubtasksInner>? pickUpSubtasks;
   @override
   final BuiltList<TaskDataIdtWithIdp>? idtList;
   @override
   final String? placeId;
   @override
+  final BuiltList<TaskDataPickUpSubtasksInner>? pickUpSubtasks;
+  @override
   final String? fromUserId;
   @override
   final String? fromUserName;
   @override
-  final BuiltList<TaskDataPickUpSubtasksInnerItemsInner>? items;
-  @override
   final String? toUserId;
   @override
   final String? toUserName;
+  @override
+  final String? pickUpPlaceId;
+  @override
+  final String? dispatchPlaceId;
   @override
   final BuiltList<OrderWithData>? orders;
   @override
@@ -101,16 +103,17 @@ class _$TaskData extends TaskData {
       this.status,
       this.productId,
       this.itemId,
+      this.itemName,
       this.amount,
-      this.idt,
-      this.pickUpSubtasks,
       this.idtList,
       this.placeId,
+      this.pickUpSubtasks,
       this.fromUserId,
       this.fromUserName,
-      this.items,
       this.toUserId,
       this.toUserName,
+      this.pickUpPlaceId,
+      this.dispatchPlaceId,
       this.orders,
       this.deliveryLogs})
       : super._();
@@ -130,16 +133,17 @@ class _$TaskData extends TaskData {
         status == other.status &&
         productId == other.productId &&
         itemId == other.itemId &&
+        itemName == other.itemName &&
         amount == other.amount &&
-        idt == other.idt &&
-        pickUpSubtasks == other.pickUpSubtasks &&
         idtList == other.idtList &&
         placeId == other.placeId &&
+        pickUpSubtasks == other.pickUpSubtasks &&
         fromUserId == other.fromUserId &&
         fromUserName == other.fromUserName &&
-        items == other.items &&
         toUserId == other.toUserId &&
         toUserName == other.toUserName &&
+        pickUpPlaceId == other.pickUpPlaceId &&
+        dispatchPlaceId == other.dispatchPlaceId &&
         orders == other.orders &&
         deliveryLogs == other.deliveryLogs;
   }
@@ -151,16 +155,17 @@ class _$TaskData extends TaskData {
     _$hash = $jc(_$hash, status.hashCode);
     _$hash = $jc(_$hash, productId.hashCode);
     _$hash = $jc(_$hash, itemId.hashCode);
+    _$hash = $jc(_$hash, itemName.hashCode);
     _$hash = $jc(_$hash, amount.hashCode);
-    _$hash = $jc(_$hash, idt.hashCode);
-    _$hash = $jc(_$hash, pickUpSubtasks.hashCode);
     _$hash = $jc(_$hash, idtList.hashCode);
     _$hash = $jc(_$hash, placeId.hashCode);
+    _$hash = $jc(_$hash, pickUpSubtasks.hashCode);
     _$hash = $jc(_$hash, fromUserId.hashCode);
     _$hash = $jc(_$hash, fromUserName.hashCode);
-    _$hash = $jc(_$hash, items.hashCode);
     _$hash = $jc(_$hash, toUserId.hashCode);
     _$hash = $jc(_$hash, toUserName.hashCode);
+    _$hash = $jc(_$hash, pickUpPlaceId.hashCode);
+    _$hash = $jc(_$hash, dispatchPlaceId.hashCode);
     _$hash = $jc(_$hash, orders.hashCode);
     _$hash = $jc(_$hash, deliveryLogs.hashCode);
     _$hash = $jf(_$hash);
@@ -174,16 +179,17 @@ class _$TaskData extends TaskData {
           ..add('status', status)
           ..add('productId', productId)
           ..add('itemId', itemId)
+          ..add('itemName', itemName)
           ..add('amount', amount)
-          ..add('idt', idt)
-          ..add('pickUpSubtasks', pickUpSubtasks)
           ..add('idtList', idtList)
           ..add('placeId', placeId)
+          ..add('pickUpSubtasks', pickUpSubtasks)
           ..add('fromUserId', fromUserId)
           ..add('fromUserName', fromUserName)
-          ..add('items', items)
           ..add('toUserId', toUserId)
           ..add('toUserName', toUserName)
+          ..add('pickUpPlaceId', pickUpPlaceId)
+          ..add('dispatchPlaceId', dispatchPlaceId)
           ..add('orders', orders)
           ..add('deliveryLogs', deliveryLogs))
         .toString();
@@ -209,21 +215,13 @@ class TaskDataBuilder implements Builder<TaskData, TaskDataBuilder> {
   String? get itemId => _$this._itemId;
   set itemId(String? itemId) => _$this._itemId = itemId;
 
+  String? _itemName;
+  String? get itemName => _$this._itemName;
+  set itemName(String? itemName) => _$this._itemName = itemName;
+
   num? _amount;
   num? get amount => _$this._amount;
   set amount(num? amount) => _$this._amount = amount;
-
-  TaskDataIdtWithIdpBuilder? _idt;
-  TaskDataIdtWithIdpBuilder get idt =>
-      _$this._idt ??= new TaskDataIdtWithIdpBuilder();
-  set idt(TaskDataIdtWithIdpBuilder? idt) => _$this._idt = idt;
-
-  ListBuilder<TaskDataPickUpSubtasksInner>? _pickUpSubtasks;
-  ListBuilder<TaskDataPickUpSubtasksInner> get pickUpSubtasks =>
-      _$this._pickUpSubtasks ??= new ListBuilder<TaskDataPickUpSubtasksInner>();
-  set pickUpSubtasks(
-          ListBuilder<TaskDataPickUpSubtasksInner>? pickUpSubtasks) =>
-      _$this._pickUpSubtasks = pickUpSubtasks;
 
   ListBuilder<TaskDataIdtWithIdp>? _idtList;
   ListBuilder<TaskDataIdtWithIdp> get idtList =>
@@ -235,6 +233,13 @@ class TaskDataBuilder implements Builder<TaskData, TaskDataBuilder> {
   String? get placeId => _$this._placeId;
   set placeId(String? placeId) => _$this._placeId = placeId;
 
+  ListBuilder<TaskDataPickUpSubtasksInner>? _pickUpSubtasks;
+  ListBuilder<TaskDataPickUpSubtasksInner> get pickUpSubtasks =>
+      _$this._pickUpSubtasks ??= new ListBuilder<TaskDataPickUpSubtasksInner>();
+  set pickUpSubtasks(
+          ListBuilder<TaskDataPickUpSubtasksInner>? pickUpSubtasks) =>
+      _$this._pickUpSubtasks = pickUpSubtasks;
+
   String? _fromUserId;
   String? get fromUserId => _$this._fromUserId;
   set fromUserId(String? fromUserId) => _$this._fromUserId = fromUserId;
@@ -243,13 +248,6 @@ class TaskDataBuilder implements Builder<TaskData, TaskDataBuilder> {
   String? get fromUserName => _$this._fromUserName;
   set fromUserName(String? fromUserName) => _$this._fromUserName = fromUserName;
 
-  ListBuilder<TaskDataPickUpSubtasksInnerItemsInner>? _items;
-  ListBuilder<TaskDataPickUpSubtasksInnerItemsInner> get items =>
-      _$this._items ??=
-          new ListBuilder<TaskDataPickUpSubtasksInnerItemsInner>();
-  set items(ListBuilder<TaskDataPickUpSubtasksInnerItemsInner>? items) =>
-      _$this._items = items;
-
   String? _toUserId;
   String? get toUserId => _$this._toUserId;
   set toUserId(String? toUserId) => _$this._toUserId = toUserId;
@@ -257,6 +255,16 @@ class TaskDataBuilder implements Builder<TaskData, TaskDataBuilder> {
   String? _toUserName;
   String? get toUserName => _$this._toUserName;
   set toUserName(String? toUserName) => _$this._toUserName = toUserName;
+
+  String? _pickUpPlaceId;
+  String? get pickUpPlaceId => _$this._pickUpPlaceId;
+  set pickUpPlaceId(String? pickUpPlaceId) =>
+      _$this._pickUpPlaceId = pickUpPlaceId;
+
+  String? _dispatchPlaceId;
+  String? get dispatchPlaceId => _$this._dispatchPlaceId;
+  set dispatchPlaceId(String? dispatchPlaceId) =>
+      _$this._dispatchPlaceId = dispatchPlaceId;
 
   ListBuilder<OrderWithData>? _orders;
   ListBuilder<OrderWithData> get orders =>
@@ -280,16 +288,17 @@ class TaskDataBuilder implements Builder<TaskData, TaskDataBuilder> {
       _status = $v.status;
       _productId = $v.productId;
       _itemId = $v.itemId;
+      _itemName = $v.itemName;
       _amount = $v.amount;
-      _idt = $v.idt?.toBuilder();
-      _pickUpSubtasks = $v.pickUpSubtasks?.toBuilder();
       _idtList = $v.idtList?.toBuilder();
       _placeId = $v.placeId;
+      _pickUpSubtasks = $v.pickUpSubtasks?.toBuilder();
       _fromUserId = $v.fromUserId;
       _fromUserName = $v.fromUserName;
-      _items = $v.items?.toBuilder();
       _toUserId = $v.toUserId;
       _toUserName = $v.toUserName;
+      _pickUpPlaceId = $v.pickUpPlaceId;
+      _dispatchPlaceId = $v.dispatchPlaceId;
       _orders = $v.orders?.toBuilder();
       _deliveryLogs = $v.deliveryLogs?.toBuilder();
       _$v = null;
@@ -320,30 +329,27 @@ class TaskDataBuilder implements Builder<TaskData, TaskDataBuilder> {
               status: status,
               productId: productId,
               itemId: itemId,
+              itemName: itemName,
               amount: amount,
-              idt: _idt?.build(),
-              pickUpSubtasks: _pickUpSubtasks?.build(),
               idtList: _idtList?.build(),
               placeId: placeId,
+              pickUpSubtasks: _pickUpSubtasks?.build(),
               fromUserId: fromUserId,
               fromUserName: fromUserName,
-              items: _items?.build(),
               toUserId: toUserId,
               toUserName: toUserName,
+              pickUpPlaceId: pickUpPlaceId,
+              dispatchPlaceId: dispatchPlaceId,
               orders: _orders?.build(),
               deliveryLogs: _deliveryLogs?.build());
     } catch (_) {
       late String _$failedField;
       try {
-        _$failedField = 'idt';
-        _idt?.build();
-        _$failedField = 'pickUpSubtasks';
-        _pickUpSubtasks?.build();
         _$failedField = 'idtList';
         _idtList?.build();
 
-        _$failedField = 'items';
-        _items?.build();
+        _$failedField = 'pickUpSubtasks';
+        _pickUpSubtasks?.build();
 
         _$failedField = 'orders';
         _orders?.build();

@@ -15,6 +15,7 @@ part 'task_data_idt_with_idp.g.dart';
 /// Properties:
 /// * [id] - Delivery idT
 /// * [key] - Delivery idT unique key in format `A_000001`
+/// * [itemName] - Product Item name
 /// * [contains] - List of idP in idT
 @BuiltValue()
 abstract class TaskDataIdtWithIdp implements Built<TaskDataIdtWithIdp, TaskDataIdtWithIdpBuilder> {
@@ -25,6 +26,10 @@ abstract class TaskDataIdtWithIdp implements Built<TaskDataIdtWithIdp, TaskDataI
   /// Delivery idT unique key in format `A_000001`
   @BuiltValueField(wireName: r'key')
   String get key;
+
+  /// Product Item name
+  @BuiltValueField(wireName: r'itemName')
+  String get itemName;
 
   /// List of idP in idT
   @BuiltValueField(wireName: r'contains')
@@ -61,6 +66,11 @@ class _$TaskDataIdtWithIdpSerializer implements PrimitiveSerializer<TaskDataIdtW
     yield r'key';
     yield serializers.serialize(
       object.key,
+      specifiedType: const FullType(String),
+    );
+    yield r'itemName';
+    yield serializers.serialize(
+      object.itemName,
       specifiedType: const FullType(String),
     );
     yield r'contains';
@@ -104,6 +114,13 @@ class _$TaskDataIdtWithIdpSerializer implements PrimitiveSerializer<TaskDataIdtW
             specifiedType: const FullType(String),
           ) as String;
           result.key = valueDes;
+          break;
+        case r'itemName':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.itemName = valueDes;
           break;
         case r'contains':
           final valueDes = serializers.deserialize(

@@ -127,7 +127,6 @@ import 'package:b2delivery/src/model/task_data.dart';
 import 'package:b2delivery/src/model/task_data_delivery_logs_inner.dart';
 import 'package:b2delivery/src/model/task_data_idt_with_idp.dart';
 import 'package:b2delivery/src/model/task_data_pick_up_subtasks_inner.dart';
-import 'package:b2delivery/src/model/task_data_pick_up_subtasks_inner_items_inner.dart';
 import 'package:b2delivery/src/model/task_with_data.dart';
 import 'package:b2delivery/src/model/unit_info.dart';
 import 'package:b2delivery/src/model/update_delivery_idt_request.dart';
@@ -265,7 +264,6 @@ part 'serializers.g.dart';
   TaskDataDeliveryLogsInner,
   TaskDataIdtWithIdp,
   TaskDataPickUpSubtasksInner,
-  TaskDataPickUpSubtasksInnerItemsInner,
   TaskWithData,
   UnitInfo,
   UpdateDeliveryIdtRequest,

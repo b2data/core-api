@@ -41,7 +41,7 @@ abstract class Task implements Built<Task, TaskBuilder> {
   /// Task type
   @BuiltValueField(wireName: r'type')
   TaskTypeEnum get type;
-  // enum typeEnum {  simpleTask,  productItemReview,  fillIdt,  pickUpIdt,  receiveIdt,  prepareIdtToDelivery,  deliverIdt,  };
+  // enum typeEnum {  simpleTask,  productItemReview,  fillIdt,  pickUpIdt,  receiveIdt,  giveOutIdt,  deliverIdt,  };
 
   /// Task status
   @BuiltValueField(wireName: r'status')
@@ -373,8 +373,8 @@ class TaskTypeEnum extends EnumClass {
   @BuiltValueEnumConst(wireName: r'receiveIdt')
   static const TaskTypeEnum receiveIdt = _$taskTypeEnum_receiveIdt;
   /// Task type
-  @BuiltValueEnumConst(wireName: r'prepareIdtToDelivery')
-  static const TaskTypeEnum prepareIdtToDelivery = _$taskTypeEnum_prepareIdtToDelivery;
+  @BuiltValueEnumConst(wireName: r'giveOutIdt')
+  static const TaskTypeEnum giveOutIdt = _$taskTypeEnum_giveOutIdt;
   /// Task type
   @BuiltValueEnumConst(wireName: r'deliverIdt')
   static const TaskTypeEnum deliverIdt = _$taskTypeEnum_deliverIdt;

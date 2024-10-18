@@ -8,7 +8,6 @@ import 'package:built_collection/built_collection.dart';
 import 'package:b2delivery/src/model/task_data_delivery_logs_inner.dart';
 import 'package:b2delivery/src/model/task_data_idt_with_idp.dart';
 import 'package:b2delivery/src/model/order_with_data.dart';
-import 'package:b2delivery/src/model/task_data_pick_up_subtasks_inner_items_inner.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -21,16 +20,17 @@ part 'task_data.g.dart';
 /// * [status] - ProductItemReview - acceptance status
 /// * [productId] - FillIdt - Product ID
 /// * [itemId] - FillIdt - Item ID
+/// * [itemName] - FillIdt - Item Name
 /// * [amount] - FillIdt - Amount of IDP
-/// * [idt] 
+/// * [idtList] - FillIdt, ReceiveIdt, GiveOutIdt, DeliverIdt
+/// * [placeId] - PickUpIdt, ReceiveIdt, GiveOutIdt - Place ID
 /// * [pickUpSubtasks] - PickUpIdt
-/// * [idtList] - PickUpIdt, ReceiveIdt, PrepareIdtToDelivery, DeliverIdt
-/// * [placeId] - ReceiveIdt, PrepareIdtToDelivery - Place ID
 /// * [fromUserId] - ReceiveIdt - From User ID
 /// * [fromUserName] - ReceiveIdt - From User Name
-/// * [items] - ReceiveIdt
-/// * [toUserId] - PrepareIdtToDelivery - To User ID
-/// * [toUserName] - PrepareIdtToDelivery - To User Name
+/// * [toUserId] - GiveOutIdt - To User ID
+/// * [toUserName] - GiveOutIdt - To User Name
+/// * [pickUpPlaceId] - DeliverIdt - PickUp Place ID
+/// * [dispatchPlaceId] - DeliverIdt - Dispatch Place ID
 /// * [orders] - DeliverIdt
 /// * [deliveryLogs] - DeliverIdt
 @BuiltValue()
@@ -52,24 +52,25 @@ abstract class TaskData implements Built<TaskData, TaskDataBuilder> {
   @BuiltValueField(wireName: r'itemId')
   String? get itemId;
 
+  /// FillIdt - Item Name
+  @BuiltValueField(wireName: r'itemName')
+  String? get itemName;
+
   /// FillIdt - Amount of IDP
   @BuiltValueField(wireName: r'amount')
   num? get amount;
 
-  @BuiltValueField(wireName: r'idt')
-  TaskDataIdtWithIdp? get idt;
+  /// FillIdt, ReceiveIdt, GiveOutIdt, DeliverIdt
+  @BuiltValueField(wireName: r'idtList')
+  BuiltList<TaskDataIdtWithIdp>? get idtList;
+
+  /// PickUpIdt, ReceiveIdt, GiveOutIdt - Place ID
+  @BuiltValueField(wireName: r'placeId')
+  String? get placeId;
 
   /// PickUpIdt
   @BuiltValueField(wireName: r'pickUpSubtasks')
   BuiltList<TaskDataPickUpSubtasksInner>? get pickUpSubtasks;
-
-  /// PickUpIdt, ReceiveIdt, PrepareIdtToDelivery, DeliverIdt
-  @BuiltValueField(wireName: r'idtList')
-  BuiltList<TaskDataIdtWithIdp>? get idtList;
-
-  /// ReceiveIdt, PrepareIdtToDelivery - Place ID
-  @BuiltValueField(wireName: r'placeId')
-  String? get placeId;
 
   /// ReceiveIdt - From User ID
   @BuiltValueField(wireName: r'fromUserId')
@@ -79,17 +80,21 @@ abstract class TaskData implements Built<TaskData, TaskDataBuilder> {
   @BuiltValueField(wireName: r'fromUserName')
   String? get fromUserName;
 
-  /// ReceiveIdt
-  @BuiltValueField(wireName: r'items')
-  BuiltList<TaskDataPickUpSubtasksInnerItemsInner>? get items;
-
-  /// PrepareIdtToDelivery - To User ID
+  /// GiveOutIdt - To User ID
   @BuiltValueField(wireName: r'toUserId')
   String? get toUserId;
 
-  /// PrepareIdtToDelivery - To User Name
+  /// GiveOutIdt - To User Name
   @BuiltValueField(wireName: r'toUserName')
   String? get toUserName;
+
+  /// DeliverIdt - PickUp Place ID
+  @BuiltValueField(wireName: r'pickUpPlaceId')
+  String? get pickUpPlaceId;
+
+  /// DeliverIdt - Dispatch Place ID
+  @BuiltValueField(wireName: r'dispatchPlaceId')
+  String? get dispatchPlaceId;
 
   /// DeliverIdt
   @BuiltValueField(wireName: r'orders')
@@ -150,25 +155,18 @@ class _$TaskDataSerializer implements PrimitiveSerializer<TaskData> {
         specifiedType: const FullType(String),
       );
     }
+    if (object.itemName != null) {
+      yield r'itemName';
+      yield serializers.serialize(
+        object.itemName,
+        specifiedType: const FullType(String),
+      );
+    }
     if (object.amount != null) {
       yield r'amount';
       yield serializers.serialize(
         object.amount,
         specifiedType: const FullType(num),
-      );
-    }
-    if (object.idt != null) {
-      yield r'idt';
-      yield serializers.serialize(
-        object.idt,
-        specifiedType: const FullType(TaskDataIdtWithIdp),
-      );
-    }
-    if (object.pickUpSubtasks != null) {
-      yield r'pickUpSubtasks';
-      yield serializers.serialize(
-        object.pickUpSubtasks,
-        specifiedType: const FullType(BuiltList, [FullType(TaskDataPickUpSubtasksInner)]),
       );
     }
     if (object.idtList != null) {
@@ -185,6 +183,13 @@ class _$TaskDataSerializer implements PrimitiveSerializer<TaskData> {
         specifiedType: const FullType(String),
       );
     }
+    if (object.pickUpSubtasks != null) {
+      yield r'pickUpSubtasks';
+      yield serializers.serialize(
+        object.pickUpSubtasks,
+        specifiedType: const FullType(BuiltList, [FullType(TaskDataPickUpSubtasksInner)]),
+      );
+    }
     if (object.fromUserId != null) {
       yield r'fromUserId';
       yield serializers.serialize(
@@ -199,13 +204,6 @@ class _$TaskDataSerializer implements PrimitiveSerializer<TaskData> {
         specifiedType: const FullType(String),
       );
     }
-    if (object.items != null) {
-      yield r'items';
-      yield serializers.serialize(
-        object.items,
-        specifiedType: const FullType(BuiltList, [FullType(TaskDataPickUpSubtasksInnerItemsInner)]),
-      );
-    }
     if (object.toUserId != null) {
       yield r'toUserId';
       yield serializers.serialize(
@@ -217,6 +215,20 @@ class _$TaskDataSerializer implements PrimitiveSerializer<TaskData> {
       yield r'toUserName';
       yield serializers.serialize(
         object.toUserName,
+        specifiedType: const FullType(String),
+      );
+    }
+    if (object.pickUpPlaceId != null) {
+      yield r'pickUpPlaceId';
+      yield serializers.serialize(
+        object.pickUpPlaceId,
+        specifiedType: const FullType(String),
+      );
+    }
+    if (object.dispatchPlaceId != null) {
+      yield r'dispatchPlaceId';
+      yield serializers.serialize(
+        object.dispatchPlaceId,
         specifiedType: const FullType(String),
       );
     }
@@ -285,26 +297,19 @@ class _$TaskDataSerializer implements PrimitiveSerializer<TaskData> {
           ) as String;
           result.itemId = valueDes;
           break;
+        case r'itemName':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.itemName = valueDes;
+          break;
         case r'amount':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(num),
           ) as num;
           result.amount = valueDes;
-          break;
-        case r'idt':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(TaskDataIdtWithIdp),
-          ) as TaskDataIdtWithIdp;
-          result.idt.replace(valueDes);
-          break;
-        case r'pickUpSubtasks':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(TaskDataPickUpSubtasksInner)]),
-          ) as BuiltList<TaskDataPickUpSubtasksInner>;
-          result.pickUpSubtasks.replace(valueDes);
           break;
         case r'idtList':
           final valueDes = serializers.deserialize(
@@ -320,6 +325,13 @@ class _$TaskDataSerializer implements PrimitiveSerializer<TaskData> {
           ) as String;
           result.placeId = valueDes;
           break;
+        case r'pickUpSubtasks':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(BuiltList, [FullType(TaskDataPickUpSubtasksInner)]),
+          ) as BuiltList<TaskDataPickUpSubtasksInner>;
+          result.pickUpSubtasks.replace(valueDes);
+          break;
         case r'fromUserId':
           final valueDes = serializers.deserialize(
             value,
@@ -334,13 +346,6 @@ class _$TaskDataSerializer implements PrimitiveSerializer<TaskData> {
           ) as String;
           result.fromUserName = valueDes;
           break;
-        case r'items':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(TaskDataPickUpSubtasksInnerItemsInner)]),
-          ) as BuiltList<TaskDataPickUpSubtasksInnerItemsInner>;
-          result.items.replace(valueDes);
-          break;
         case r'toUserId':
           final valueDes = serializers.deserialize(
             value,
@@ -354,6 +359,20 @@ class _$TaskDataSerializer implements PrimitiveSerializer<TaskData> {
             specifiedType: const FullType(String),
           ) as String;
           result.toUserName = valueDes;
+          break;
+        case r'pickUpPlaceId':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.pickUpPlaceId = valueDes;
+          break;
+        case r'dispatchPlaceId':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.dispatchPlaceId = valueDes;
           break;
         case r'orders':
           final valueDes = serializers.deserialize(

@@ -17,9 +17,8 @@ const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_pickUpIdt =
     const SearchTasksRequestTypesEnum._('pickUpIdt');
 const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_receiveIdt =
     const SearchTasksRequestTypesEnum._('receiveIdt');
-const SearchTasksRequestTypesEnum
-    _$searchTasksRequestTypesEnum_prepareIdtToDelivery =
-    const SearchTasksRequestTypesEnum._('prepareIdtToDelivery');
+const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_giveOutIdt =
+    const SearchTasksRequestTypesEnum._('giveOutIdt');
 const SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnum_deliverIdt =
     const SearchTasksRequestTypesEnum._('deliverIdt');
 
@@ -35,8 +34,8 @@ SearchTasksRequestTypesEnum _$searchTasksRequestTypesEnumValueOf(String name) {
       return _$searchTasksRequestTypesEnum_pickUpIdt;
     case 'receiveIdt':
       return _$searchTasksRequestTypesEnum_receiveIdt;
-    case 'prepareIdtToDelivery':
-      return _$searchTasksRequestTypesEnum_prepareIdtToDelivery;
+    case 'giveOutIdt':
+      return _$searchTasksRequestTypesEnum_giveOutIdt;
     case 'deliverIdt':
       return _$searchTasksRequestTypesEnum_deliverIdt;
     default:
@@ -52,7 +51,7 @@ final BuiltSet<SearchTasksRequestTypesEnum>
   _$searchTasksRequestTypesEnum_fillIdt,
   _$searchTasksRequestTypesEnum_pickUpIdt,
   _$searchTasksRequestTypesEnum_receiveIdt,
-  _$searchTasksRequestTypesEnum_prepareIdtToDelivery,
+  _$searchTasksRequestTypesEnum_giveOutIdt,
   _$searchTasksRequestTypesEnum_deliverIdt,
 ]);
 
@@ -142,7 +141,7 @@ class _$SearchTasksRequestTypesEnumSerializer
     'fillIdt': 'fillIdt',
     'pickUpIdt': 'pickUpIdt',
     'receiveIdt': 'receiveIdt',
-    'prepareIdtToDelivery': 'prepareIdtToDelivery',
+    'giveOutIdt': 'giveOutIdt',
     'deliverIdt': 'deliverIdt',
   };
   static const Map<Object, String> _fromWire = const <Object, String>{
@@ -151,7 +150,7 @@ class _$SearchTasksRequestTypesEnumSerializer
     'fillIdt': 'fillIdt',
     'pickUpIdt': 'pickUpIdt',
     'receiveIdt': 'receiveIdt',
-    'prepareIdtToDelivery': 'prepareIdtToDelivery',
+    'giveOutIdt': 'giveOutIdt',
     'deliverIdt': 'deliverIdt',
   };
 

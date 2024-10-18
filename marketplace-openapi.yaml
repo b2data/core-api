@@ -4303,7 +4303,7 @@ components:
             - fillIdt
             - pickUpIdt
             - receiveIdt
-            - prepareIdtToDelivery
+            - giveOutIdt
             - deliverIdt
         status:
           type: string
@@ -4387,7 +4387,7 @@ components:
             - fillIdt
             - pickUpIdt
             - receiveIdt
-            - prepareIdtToDelivery
+            - giveOutIdt
             - deliverIdt
         status:
           type: string
@@ -4449,6 +4449,7 @@ components:
       required:
         - id
         - key
+        - itemName
         - contains
       properties:
         id:
@@ -4458,6 +4459,9 @@ components:
         key:
           type: string
           description: Delivery idT unique key in format `A_000001`
+        itemName:
+          type: string
+          description: Product Item name
         contains:
           type: array
           items:
@@ -4483,12 +4487,20 @@ components:
           type: string
           format: uuid
           description: FillIdt - Item ID
+        itemName:
+          type: string
+          description: FillIdt - Item Name
         amount:
           type: number
           description: FillIdt - Amount of IDP
-        idt:
-          $ref: "#/components/schemas/TaskDataIdtWithIdp"
-          description: FillIdt
+        idtList:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskDataIdtWithIdp"
+          description: FillIdt, ReceiveIdt, GiveOutIdt, DeliverIdt
+        placeId:
+          type: string
+          description: PickUpIdt, ReceiveIdt, GiveOutIdt - Place ID
         pickUpSubtasks:
           type: array
           description: PickUpIdt
@@ -4499,7 +4511,7 @@ components:
               - providerName
               - locationLat
               - locationLong
-              - items
+              - idtList
               - completed
             properties:
               providerId:
@@ -4514,78 +4526,31 @@ components:
               locationLong:
                 type: number
                 description: Location Longitude
+              idtList:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskDataIdtWithIdp"
               completed:
                 type: boolean
                 description: Subtask completed
-              items:
-                type: array
-                items:
-                  type: object
-                  required:
-                    - productId
-                    - itemId
-                    - itemName
-                    - amount
-                  properties:
-                    productId:
-                      type: string
-                      format: uuid
-                      description: Product ID
-                    itemId:
-                      type: string
-                      format: uuid
-                      description: Item ID
-                    itemName:
-                      type: string
-                      description: Item Name
-                    amount:
-                      type: number
-                      description: Amount of IDP
-        idtList:
-          type: array
-          items:
-            $ref: "#/components/schemas/TaskDataIdtWithIdp"
-          description: PickUpIdt, ReceiveIdt, PrepareIdtToDelivery, DeliverIdt
-        placeId:
-          type: string
-          description: ReceiveIdt, PrepareIdtToDelivery - Place ID
         fromUserId:
           type: string
           description: ReceiveIdt - From User ID
         fromUserName:
           type: string
           description: ReceiveIdt - From User Name
-        items:
-          type: array
-          description: ReceiveIdt
-          items:
-            type: object
-            required:
-              - productId
-              - itemId
-              - itemName
-              - amount
-            properties:
-              productId:
-                type: string
-                format: uuid
-                description: Product ID
-              itemId:
-                type: string
-                format: uuid
-                description: Item ID
-              itemName:
-                type: string
-                description: Item Name
-              amount:
-                type: number
-                description: Amount of IDP
         toUserId:
           type: string
-          description: PrepareIdtToDelivery - To User ID
+          description: GiveOutIdt - To User ID
         toUserName:
           type: string
-          description: PrepareIdtToDelivery - To User Name
+          description: GiveOutIdt - To User Name
+        pickUpPlaceId:
+          type: string
+          description: DeliverIdt - PickUp Place ID
+        dispatchPlaceId:
+          type: string
+          description: DeliverIdt - Dispatch Place ID
         orders:
           type: array
           description: DeliverIdt
@@ -6006,7 +5971,7 @@ components:
                     - fillIdt
                     - pickUpIdt
                     - receiveIdt
-                    - prepareIdtToDelivery
+                    - giveOutIdt
                     - deliverIdt
                 description: Task types
               status:
@@ -6067,7 +6032,7 @@ components:
                   - fillIdt
                   - pickUpIdt
                   - receiveIdt
-                  - prepareIdtToDelivery
+                  - giveOutIdt
                   - deliverIdt
               priority:
                 type: string

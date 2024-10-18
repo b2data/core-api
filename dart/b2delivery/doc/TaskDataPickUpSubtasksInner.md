@@ -12,8 +12,8 @@ Name | Type | Description | Notes
 **providerName** | **String** | Provider Name | 
 **locationLat** | **num** | Location Latitude | 
 **locationLong** | **num** | Location Longitude | 
+**idtList** | [**BuiltList&lt;TaskDataIdtWithIdp&gt;**](TaskDataIdtWithIdp.md) |  | 
 **completed** | **bool** | Subtask completed | 
-**items** | [**BuiltList&lt;TaskDataPickUpSubtasksInnerItemsInner&gt;**](TaskDataPickUpSubtasksInnerItemsInner.md) |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

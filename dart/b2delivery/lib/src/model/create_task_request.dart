@@ -23,7 +23,7 @@ abstract class CreateTaskRequest implements Built<CreateTaskRequest, CreateTaskR
   /// Task type
   @BuiltValueField(wireName: r'type')
   CreateTaskRequestTypeEnum get type;
-  // enum typeEnum {  simpleTask,  productItemReview,  fillIdt,  pickUpIdt,  receiveIdt,  prepareIdtToDelivery,  deliverIdt,  };
+  // enum typeEnum {  simpleTask,  productItemReview,  fillIdt,  pickUpIdt,  receiveIdt,  giveOutIdt,  deliverIdt,  };
 
   /// Task priority
   @BuiltValueField(wireName: r'priority')
@@ -219,8 +219,8 @@ class CreateTaskRequestTypeEnum extends EnumClass {
   @BuiltValueEnumConst(wireName: r'receiveIdt')
   static const CreateTaskRequestTypeEnum receiveIdt = _$createTaskRequestTypeEnum_receiveIdt;
   /// Task type
-  @BuiltValueEnumConst(wireName: r'prepareIdtToDelivery')
-  static const CreateTaskRequestTypeEnum prepareIdtToDelivery = _$createTaskRequestTypeEnum_prepareIdtToDelivery;
+  @BuiltValueEnumConst(wireName: r'giveOutIdt')
+  static const CreateTaskRequestTypeEnum giveOutIdt = _$createTaskRequestTypeEnum_giveOutIdt;
   /// Task type
   @BuiltValueEnumConst(wireName: r'deliverIdt')
   static const CreateTaskRequestTypeEnum deliverIdt = _$createTaskRequestTypeEnum_deliverIdt;

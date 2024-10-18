@@ -12,6 +12,8 @@ class _$TaskDataIdtWithIdp extends TaskDataIdtWithIdp {
   @override
   final String key;
   @override
+  final String itemName;
+  @override
   final BuiltList<DeliveryIdpBase> contains;
 
   factory _$TaskDataIdtWithIdp(
@@ -19,10 +21,15 @@ class _$TaskDataIdtWithIdp extends TaskDataIdtWithIdp {
       (new TaskDataIdtWithIdpBuilder()..update(updates))._build();
 
   _$TaskDataIdtWithIdp._(
-      {required this.id, required this.key, required this.contains})
+      {required this.id,
+      required this.key,
+      required this.itemName,
+      required this.contains})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(id, r'TaskDataIdtWithIdp', 'id');
     BuiltValueNullFieldError.checkNotNull(key, r'TaskDataIdtWithIdp', 'key');
+    BuiltValueNullFieldError.checkNotNull(
+        itemName, r'TaskDataIdtWithIdp', 'itemName');
     BuiltValueNullFieldError.checkNotNull(
         contains, r'TaskDataIdtWithIdp', 'contains');
   }
@@ -42,6 +49,7 @@ class _$TaskDataIdtWithIdp extends TaskDataIdtWithIdp {
     return other is TaskDataIdtWithIdp &&
         id == other.id &&
         key == other.key &&
+        itemName == other.itemName &&
         contains == other.contains;
   }
 
@@ -50,6 +58,7 @@ class _$TaskDataIdtWithIdp extends TaskDataIdtWithIdp {
     var _$hash = 0;
     _$hash = $jc(_$hash, id.hashCode);
     _$hash = $jc(_$hash, key.hashCode);
+    _$hash = $jc(_$hash, itemName.hashCode);
     _$hash = $jc(_$hash, contains.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
@@ -60,6 +69,7 @@ class _$TaskDataIdtWithIdp extends TaskDataIdtWithIdp {
     return (newBuiltValueToStringHelper(r'TaskDataIdtWithIdp')
           ..add('id', id)
           ..add('key', key)
+          ..add('itemName', itemName)
           ..add('contains', contains))
         .toString();
   }
@@ -77,6 +87,10 @@ class TaskDataIdtWithIdpBuilder
   String? get key => _$this._key;
   set key(String? key) => _$this._key = key;
 
+  String? _itemName;
+  String? get itemName => _$this._itemName;
+  set itemName(String? itemName) => _$this._itemName = itemName;
+
   ListBuilder<DeliveryIdpBase>? _contains;
   ListBuilder<DeliveryIdpBase> get contains =>
       _$this._contains ??= new ListBuilder<DeliveryIdpBase>();
@@ -92,6 +106,7 @@ class TaskDataIdtWithIdpBuilder
     if ($v != null) {
       _id = $v.id;
       _key = $v.key;
+      _itemName = $v.itemName;
       _contains = $v.contains.toBuilder();
       _$v = null;
     }
@@ -121,6 +136,8 @@ class TaskDataIdtWithIdpBuilder
                   id, r'TaskDataIdtWithIdp', 'id'),
               key: BuiltValueNullFieldError.checkNotNull(
                   key, r'TaskDataIdtWithIdp', 'key'),
+              itemName: BuiltValueNullFieldError.checkNotNull(
+                  itemName, r'TaskDataIdtWithIdp', 'itemName'),
               contains: contains.build());
     } catch (_) {
       late String _$failedField;

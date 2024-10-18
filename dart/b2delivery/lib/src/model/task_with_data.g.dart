@@ -16,8 +16,8 @@ const TaskWithDataTypeEnum _$taskWithDataTypeEnum_pickUpIdt =
     const TaskWithDataTypeEnum._('pickUpIdt');
 const TaskWithDataTypeEnum _$taskWithDataTypeEnum_receiveIdt =
     const TaskWithDataTypeEnum._('receiveIdt');
-const TaskWithDataTypeEnum _$taskWithDataTypeEnum_prepareIdtToDelivery =
-    const TaskWithDataTypeEnum._('prepareIdtToDelivery');
+const TaskWithDataTypeEnum _$taskWithDataTypeEnum_giveOutIdt =
+    const TaskWithDataTypeEnum._('giveOutIdt');
 const TaskWithDataTypeEnum _$taskWithDataTypeEnum_deliverIdt =
     const TaskWithDataTypeEnum._('deliverIdt');
 
@@ -33,8 +33,8 @@ TaskWithDataTypeEnum _$taskWithDataTypeEnumValueOf(String name) {
       return _$taskWithDataTypeEnum_pickUpIdt;
     case 'receiveIdt':
       return _$taskWithDataTypeEnum_receiveIdt;
-    case 'prepareIdtToDelivery':
-      return _$taskWithDataTypeEnum_prepareIdtToDelivery;
+    case 'giveOutIdt':
+      return _$taskWithDataTypeEnum_giveOutIdt;
     case 'deliverIdt':
       return _$taskWithDataTypeEnum_deliverIdt;
     default:
@@ -49,7 +49,7 @@ final BuiltSet<TaskWithDataTypeEnum> _$taskWithDataTypeEnumValues =
   _$taskWithDataTypeEnum_fillIdt,
   _$taskWithDataTypeEnum_pickUpIdt,
   _$taskWithDataTypeEnum_receiveIdt,
-  _$taskWithDataTypeEnum_prepareIdtToDelivery,
+  _$taskWithDataTypeEnum_giveOutIdt,
   _$taskWithDataTypeEnum_deliverIdt,
 ]);
 
@@ -132,7 +132,7 @@ class _$TaskWithDataTypeEnumSerializer
     'fillIdt': 'fillIdt',
     'pickUpIdt': 'pickUpIdt',
     'receiveIdt': 'receiveIdt',
-    'prepareIdtToDelivery': 'prepareIdtToDelivery',
+    'giveOutIdt': 'giveOutIdt',
     'deliverIdt': 'deliverIdt',
   };
   static const Map<Object, String> _fromWire = const <Object, String>{
@@ -141,7 +141,7 @@ class _$TaskWithDataTypeEnumSerializer
     'fillIdt': 'fillIdt',
     'pickUpIdt': 'pickUpIdt',
     'receiveIdt': 'receiveIdt',
-    'prepareIdtToDelivery': 'prepareIdtToDelivery',
+    'giveOutIdt': 'giveOutIdt',
     'deliverIdt': 'deliverIdt',
   };
 

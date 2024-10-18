@@ -31,7 +31,7 @@ abstract class SearchTasksRequest implements Built<SearchTasksRequest, SearchTas
   /// Task types
   @BuiltValueField(wireName: r'types')
   BuiltList<SearchTasksRequestTypesEnum>? get types;
-  // enum typesEnum {  simpleTask,  productItemReview,  fillIdt,  pickUpIdt,  receiveIdt,  prepareIdtToDelivery,  deliverIdt,  };
+  // enum typesEnum {  simpleTask,  productItemReview,  fillIdt,  pickUpIdt,  receiveIdt,  giveOutIdt,  deliverIdt,  };
 
   /// Task status
   @BuiltValueField(wireName: r'status')
@@ -275,8 +275,8 @@ class SearchTasksRequestTypesEnum extends EnumClass {
   static const SearchTasksRequestTypesEnum pickUpIdt = _$searchTasksRequestTypesEnum_pickUpIdt;
   @BuiltValueEnumConst(wireName: r'receiveIdt')
   static const SearchTasksRequestTypesEnum receiveIdt = _$searchTasksRequestTypesEnum_receiveIdt;
-  @BuiltValueEnumConst(wireName: r'prepareIdtToDelivery')
-  static const SearchTasksRequestTypesEnum prepareIdtToDelivery = _$searchTasksRequestTypesEnum_prepareIdtToDelivery;
+  @BuiltValueEnumConst(wireName: r'giveOutIdt')
+  static const SearchTasksRequestTypesEnum giveOutIdt = _$searchTasksRequestTypesEnum_giveOutIdt;
   @BuiltValueEnumConst(wireName: r'deliverIdt')
   static const SearchTasksRequestTypesEnum deliverIdt = _$searchTasksRequestTypesEnum_deliverIdt;
 

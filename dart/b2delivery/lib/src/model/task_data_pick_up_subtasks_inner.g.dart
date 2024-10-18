@@ -16,9 +16,9 @@ class _$TaskDataPickUpSubtasksInner extends TaskDataPickUpSubtasksInner {
   @override
   final num locationLong;
   @override
-  final bool completed;
+  final BuiltList<TaskDataIdtWithIdp> idtList;
   @override
-  final BuiltList<TaskDataPickUpSubtasksInnerItemsInner> items;
+  final bool completed;
 
   factory _$TaskDataPickUpSubtasksInner(
           [void Function(TaskDataPickUpSubtasksInnerBuilder)? updates]) =>
@@ -29,8 +29,8 @@ class _$TaskDataPickUpSubtasksInner extends TaskDataPickUpSubtasksInner {
       required this.providerName,
       required this.locationLat,
       required this.locationLong,
-      required this.completed,
-      required this.items})
+      required this.idtList,
+      required this.completed})
       : super._() {
     BuiltValueNullFieldError.checkNotNull(
         providerId, r'TaskDataPickUpSubtasksInner', 'providerId');
@@ -41,9 +41,9 @@ class _$TaskDataPickUpSubtasksInner extends TaskDataPickUpSubtasksInner {
     BuiltValueNullFieldError.checkNotNull(
         locationLong, r'TaskDataPickUpSubtasksInner', 'locationLong');
     BuiltValueNullFieldError.checkNotNull(
-        completed, r'TaskDataPickUpSubtasksInner', 'completed');
+        idtList, r'TaskDataPickUpSubtasksInner', 'idtList');
     BuiltValueNullFieldError.checkNotNull(
-        items, r'TaskDataPickUpSubtasksInner', 'items');
+        completed, r'TaskDataPickUpSubtasksInner', 'completed');
   }
 
   @override
@@ -63,8 +63,8 @@ class _$TaskDataPickUpSubtasksInner extends TaskDataPickUpSubtasksInner {
         providerName == other.providerName &&
         locationLat == other.locationLat &&
         locationLong == other.locationLong &&
-        completed == other.completed &&
-        items == other.items;
+        idtList == other.idtList &&
+        completed == other.completed;
   }
 
   @override
@@ -74,8 +74,8 @@ class _$TaskDataPickUpSubtasksInner extends TaskDataPickUpSubtasksInner {
     _$hash = $jc(_$hash, providerName.hashCode);
     _$hash = $jc(_$hash, locationLat.hashCode);
     _$hash = $jc(_$hash, locationLong.hashCode);
+    _$hash = $jc(_$hash, idtList.hashCode);
     _$hash = $jc(_$hash, completed.hashCode);
-    _$hash = $jc(_$hash, items.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -87,8 +87,8 @@ class _$TaskDataPickUpSubtasksInner extends TaskDataPickUpSubtasksInner {
           ..add('providerName', providerName)
           ..add('locationLat', locationLat)
           ..add('locationLong', locationLong)
-          ..add('completed', completed)
-          ..add('items', items))
+          ..add('idtList', idtList)
+          ..add('completed', completed))
         .toString();
   }
 }
@@ -115,16 +115,15 @@ class TaskDataPickUpSubtasksInnerBuilder
   num? get locationLong => _$this._locationLong;
   set locationLong(num? locationLong) => _$this._locationLong = locationLong;
 
+  ListBuilder<TaskDataIdtWithIdp>? _idtList;
+  ListBuilder<TaskDataIdtWithIdp> get idtList =>
+      _$this._idtList ??= new ListBuilder<TaskDataIdtWithIdp>();
+  set idtList(ListBuilder<TaskDataIdtWithIdp>? idtList) =>
+      _$this._idtList = idtList;
+
   bool? _completed;
   bool? get completed => _$this._completed;
   set completed(bool? completed) => _$this._completed = completed;
-
-  ListBuilder<TaskDataPickUpSubtasksInnerItemsInner>? _items;
-  ListBuilder<TaskDataPickUpSubtasksInnerItemsInner> get items =>
-      _$this._items ??=
-          new ListBuilder<TaskDataPickUpSubtasksInnerItemsInner>();
-  set items(ListBuilder<TaskDataPickUpSubtasksInnerItemsInner>? items) =>
-      _$this._items = items;
 
   TaskDataPickUpSubtasksInnerBuilder() {
     TaskDataPickUpSubtasksInner._defaults(this);
@@ -137,8 +136,8 @@ class TaskDataPickUpSubtasksInnerBuilder
       _providerName = $v.providerName;
       _locationLat = $v.locationLat;
       _locationLong = $v.locationLong;
+      _idtList = $v.idtList.toBuilder();
       _completed = $v.completed;
-      _items = $v.items.toBuilder();
       _$v = null;
     }
     return this;
@@ -171,14 +170,14 @@ class TaskDataPickUpSubtasksInnerBuilder
                   locationLat, r'TaskDataPickUpSubtasksInner', 'locationLat'),
               locationLong: BuiltValueNullFieldError.checkNotNull(
                   locationLong, r'TaskDataPickUpSubtasksInner', 'locationLong'),
+              idtList: idtList.build(),
               completed: BuiltValueNullFieldError.checkNotNull(
-                  completed, r'TaskDataPickUpSubtasksInner', 'completed'),
-              items: items.build());
+                  completed, r'TaskDataPickUpSubtasksInner', 'completed'));
     } catch (_) {
       late String _$failedField;
       try {
-        _$failedField = 'items';
-        items.build();
+        _$failedField = 'idtList';
+        idtList.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             r'TaskDataPickUpSubtasksInner', _$failedField, e.toString());

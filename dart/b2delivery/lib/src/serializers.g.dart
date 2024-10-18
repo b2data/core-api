@@ -150,7 +150,6 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(TaskDataDeliveryLogsInner.serializer)
       ..add(TaskDataIdtWithIdp.serializer)
       ..add(TaskDataPickUpSubtasksInner.serializer)
-      ..add(TaskDataPickUpSubtasksInnerItemsInner.serializer)
       ..add(TaskDataStatusEnum.serializer)
       ..add(TaskPriorityEnum.serializer)
       ..add(TaskStatusEnum.serializer)
@@ -615,16 +614,15 @@ Serializers _$serializers = (new Serializers().toBuilder()
           const FullType(BuiltList, const [const FullType(Task)]),
           () => new ListBuilder<Task>())
       ..addBuilderFactory(
-          const FullType(
-              BuiltList, const [const FullType(TaskDataPickUpSubtasksInner)]),
-          () => new ListBuilder<TaskDataPickUpSubtasksInner>())
+          const FullType(BuiltList, const [const FullType(TaskDataIdtWithIdp)]),
+          () => new ListBuilder<TaskDataIdtWithIdp>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(TaskDataIdtWithIdp)]),
           () => new ListBuilder<TaskDataIdtWithIdp>())
       ..addBuilderFactory(
-          const FullType(BuiltList,
-              const [const FullType(TaskDataPickUpSubtasksInnerItemsInner)]),
-          () => new ListBuilder<TaskDataPickUpSubtasksInnerItemsInner>())
+          const FullType(
+              BuiltList, const [const FullType(TaskDataPickUpSubtasksInner)]),
+          () => new ListBuilder<TaskDataPickUpSubtasksInner>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(OrderWithData)]),
           () => new ListBuilder<OrderWithData>())
@@ -632,10 +630,6 @@ Serializers _$serializers = (new Serializers().toBuilder()
           const FullType(
               BuiltList, const [const FullType(TaskDataDeliveryLogsInner)]),
           () => new ListBuilder<TaskDataDeliveryLogsInner>())
-      ..addBuilderFactory(
-          const FullType(BuiltList,
-              const [const FullType(TaskDataPickUpSubtasksInnerItemsInner)]),
-          () => new ListBuilder<TaskDataPickUpSubtasksInnerItemsInner>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(User)]),
           () => new ListBuilder<User>())

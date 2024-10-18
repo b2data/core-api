@@ -4,7 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
-import 'package:b2delivery/src/model/task_data_pick_up_subtasks_inner_items_inner.dart';
+import 'package:b2delivery/src/model/task_data_idt_with_idp.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -17,8 +17,8 @@ part 'task_data_pick_up_subtasks_inner.g.dart';
 /// * [providerName] - Provider Name
 /// * [locationLat] - Location Latitude
 /// * [locationLong] - Location Longitude
+/// * [idtList] 
 /// * [completed] - Subtask completed
-/// * [items] 
 @BuiltValue()
 abstract class TaskDataPickUpSubtasksInner implements Built<TaskDataPickUpSubtasksInner, TaskDataPickUpSubtasksInnerBuilder> {
   /// Provider ID
@@ -37,12 +37,12 @@ abstract class TaskDataPickUpSubtasksInner implements Built<TaskDataPickUpSubtas
   @BuiltValueField(wireName: r'locationLong')
   num get locationLong;
 
+  @BuiltValueField(wireName: r'idtList')
+  BuiltList<TaskDataIdtWithIdp> get idtList;
+
   /// Subtask completed
   @BuiltValueField(wireName: r'completed')
   bool get completed;
-
-  @BuiltValueField(wireName: r'items')
-  BuiltList<TaskDataPickUpSubtasksInnerItemsInner> get items;
 
   TaskDataPickUpSubtasksInner._();
 
@@ -87,15 +87,15 @@ class _$TaskDataPickUpSubtasksInnerSerializer implements PrimitiveSerializer<Tas
       object.locationLong,
       specifiedType: const FullType(num),
     );
+    yield r'idtList';
+    yield serializers.serialize(
+      object.idtList,
+      specifiedType: const FullType(BuiltList, [FullType(TaskDataIdtWithIdp)]),
+    );
     yield r'completed';
     yield serializers.serialize(
       object.completed,
       specifiedType: const FullType(bool),
-    );
-    yield r'items';
-    yield serializers.serialize(
-      object.items,
-      specifiedType: const FullType(BuiltList, [FullType(TaskDataPickUpSubtasksInnerItemsInner)]),
     );
   }
 
@@ -148,19 +148,19 @@ class _$TaskDataPickUpSubtasksInnerSerializer implements PrimitiveSerializer<Tas
           ) as num;
           result.locationLong = valueDes;
           break;
+        case r'idtList':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(BuiltList, [FullType(TaskDataIdtWithIdp)]),
+          ) as BuiltList<TaskDataIdtWithIdp>;
+          result.idtList.replace(valueDes);
+          break;
         case r'completed':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(bool),
           ) as bool;
           result.completed = valueDes;
-          break;
-        case r'items':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(TaskDataPickUpSubtasksInnerItemsInner)]),
-          ) as BuiltList<TaskDataPickUpSubtasksInnerItemsInner>;
-          result.items.replace(valueDes);
           break;
         default:
           unhandled.add(key);
