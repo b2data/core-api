@@ -127,7 +127,6 @@ doc/Task.md
 doc/TaskData.md
 doc/TaskDataDeliveryLogsInner.md
 doc/TaskDataIdtWithIdp.md
-doc/TaskDataItemsInner.md
 doc/TaskDataPickUpSubtasksInner.md
 doc/TaskDataPickUpSubtasksInnerItemsInner.md
 doc/TaskWithData.md
@@ -288,7 +287,6 @@ lib/src/model/task.dart
 lib/src/model/task_data.dart
 lib/src/model/task_data_delivery_logs_inner.dart
 lib/src/model/task_data_idt_with_idp.dart
-lib/src/model/task_data_items_inner.dart
 lib/src/model/task_data_pick_up_subtasks_inner.dart
 lib/src/model/task_data_pick_up_subtasks_inner_items_inner.dart
 lib/src/model/task_with_data.dart

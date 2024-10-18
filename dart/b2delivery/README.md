@@ -314,7 +314,6 @@ Class | Method | HTTP request | Description
  - [TaskData](doc/TaskData.md)
  - [TaskDataDeliveryLogsInner](doc/TaskDataDeliveryLogsInner.md)
  - [TaskDataIdtWithIdp](doc/TaskDataIdtWithIdp.md)
- - [TaskDataItemsInner](doc/TaskDataItemsInner.md)
  - [TaskDataPickUpSubtasksInner](doc/TaskDataPickUpSubtasksInner.md)
  - [TaskDataPickUpSubtasksInnerItemsInner](doc/TaskDataPickUpSubtasksInnerItemsInner.md)
  - [TaskWithData](doc/TaskWithData.md)

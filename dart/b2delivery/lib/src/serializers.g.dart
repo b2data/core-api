@@ -149,7 +149,6 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(TaskData.serializer)
       ..add(TaskDataDeliveryLogsInner.serializer)
       ..add(TaskDataIdtWithIdp.serializer)
-      ..add(TaskDataItemsInner.serializer)
       ..add(TaskDataPickUpSubtasksInner.serializer)
       ..add(TaskDataPickUpSubtasksInnerItemsInner.serializer)
       ..add(TaskDataStatusEnum.serializer)
@@ -623,8 +622,9 @@ Serializers _$serializers = (new Serializers().toBuilder()
           const FullType(BuiltList, const [const FullType(TaskDataIdtWithIdp)]),
           () => new ListBuilder<TaskDataIdtWithIdp>())
       ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(TaskDataItemsInner)]),
-          () => new ListBuilder<TaskDataItemsInner>())
+          const FullType(BuiltList,
+              const [const FullType(TaskDataPickUpSubtasksInnerItemsInner)]),
+          () => new ListBuilder<TaskDataPickUpSubtasksInnerItemsInner>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(OrderWithData)]),
           () => new ListBuilder<OrderWithData>())

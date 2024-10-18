@@ -19,7 +19,7 @@ Name | Type | Description | Notes
 **placeId** | **String** | ReceiveIdt, PrepareIdtToDelivery - Place ID | [optional] 
 **fromUserId** | **String** | ReceiveIdt - From User ID | [optional] 
 **fromUserName** | **String** | ReceiveIdt - From User Name | [optional] 
-**items** | [**BuiltList&lt;TaskDataItemsInner&gt;**](TaskDataItemsInner.md) | ReceiveIdt | [optional] 
+**items** | [**BuiltList&lt;TaskDataPickUpSubtasksInnerItemsInner&gt;**](TaskDataPickUpSubtasksInnerItemsInner.md) | ReceiveIdt | [optional] 
 **toUserId** | **String** | PrepareIdtToDelivery - To User ID | [optional] 
 **toUserName** | **String** | PrepareIdtToDelivery - To User Name | [optional] 
 **orders** | [**BuiltList&lt;OrderWithData&gt;**](OrderWithData.md) | DeliverIdt | [optional] 

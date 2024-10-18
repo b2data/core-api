@@ -138,7 +138,6 @@ export 'package:b2delivery/src/model/task.dart';
 export 'package:b2delivery/src/model/task_data.dart';
 export 'package:b2delivery/src/model/task_data_delivery_logs_inner.dart';
 export 'package:b2delivery/src/model/task_data_idt_with_idp.dart';
-export 'package:b2delivery/src/model/task_data_items_inner.dart';
 export 'package:b2delivery/src/model/task_data_pick_up_subtasks_inner.dart';
 export 'package:b2delivery/src/model/task_data_pick_up_subtasks_inner_items_inner.dart';
 export 'package:b2delivery/src/model/task_with_data.dart';

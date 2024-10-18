@@ -4563,8 +4563,8 @@ components:
             required:
               - productId
               - itemId
+              - itemName
               - amount
-              - received
             properties:
               productId:
                 type: string
@@ -4574,12 +4574,12 @@ components:
                 type: string
                 format: uuid
                 description: Item ID
+              itemName:
+                type: string
+                description: Item Name
               amount:
                 type: number
                 description: Amount of IDP
-              received:
-                type: boolean
-                description: Is item received
         toUserId:
           type: string
           description: PrepareIdtToDelivery - To User ID

@@ -6,9 +6,9 @@
 import 'package:b2delivery/src/model/task_data_pick_up_subtasks_inner.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:b2delivery/src/model/task_data_delivery_logs_inner.dart';
-import 'package:b2delivery/src/model/task_data_items_inner.dart';
 import 'package:b2delivery/src/model/task_data_idt_with_idp.dart';
 import 'package:b2delivery/src/model/order_with_data.dart';
+import 'package:b2delivery/src/model/task_data_pick_up_subtasks_inner_items_inner.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -81,7 +81,7 @@ abstract class TaskData implements Built<TaskData, TaskDataBuilder> {
 
   /// ReceiveIdt
   @BuiltValueField(wireName: r'items')
-  BuiltList<TaskDataItemsInner>? get items;
+  BuiltList<TaskDataPickUpSubtasksInnerItemsInner>? get items;
 
   /// PrepareIdtToDelivery - To User ID
   @BuiltValueField(wireName: r'toUserId')
@@ -203,7 +203,7 @@ class _$TaskDataSerializer implements PrimitiveSerializer<TaskData> {
       yield r'items';
       yield serializers.serialize(
         object.items,
-        specifiedType: const FullType(BuiltList, [FullType(TaskDataItemsInner)]),
+        specifiedType: const FullType(BuiltList, [FullType(TaskDataPickUpSubtasksInnerItemsInner)]),
       );
     }
     if (object.toUserId != null) {
@@ -337,8 +337,8 @@ class _$TaskDataSerializer implements PrimitiveSerializer<TaskData> {
         case r'items':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(BuiltList, [FullType(TaskDataItemsInner)]),
-          ) as BuiltList<TaskDataItemsInner>;
+            specifiedType: const FullType(BuiltList, [FullType(TaskDataPickUpSubtasksInnerItemsInner)]),
+          ) as BuiltList<TaskDataPickUpSubtasksInnerItemsInner>;
           result.items.replace(valueDes);
           break;
         case r'toUserId':

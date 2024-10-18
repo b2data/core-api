@@ -83,7 +83,7 @@ class _$TaskData extends TaskData {
   @override
   final String? fromUserName;
   @override
-  final BuiltList<TaskDataItemsInner>? items;
+  final BuiltList<TaskDataPickUpSubtasksInnerItemsInner>? items;
   @override
   final String? toUserId;
   @override
@@ -243,10 +243,12 @@ class TaskDataBuilder implements Builder<TaskData, TaskDataBuilder> {
   String? get fromUserName => _$this._fromUserName;
   set fromUserName(String? fromUserName) => _$this._fromUserName = fromUserName;
 
-  ListBuilder<TaskDataItemsInner>? _items;
-  ListBuilder<TaskDataItemsInner> get items =>
-      _$this._items ??= new ListBuilder<TaskDataItemsInner>();
-  set items(ListBuilder<TaskDataItemsInner>? items) => _$this._items = items;
+  ListBuilder<TaskDataPickUpSubtasksInnerItemsInner>? _items;
+  ListBuilder<TaskDataPickUpSubtasksInnerItemsInner> get items =>
+      _$this._items ??=
+          new ListBuilder<TaskDataPickUpSubtasksInnerItemsInner>();
+  set items(ListBuilder<TaskDataPickUpSubtasksInnerItemsInner>? items) =>
+      _$this._items = items;
 
   String? _toUserId;
   String? get toUserId => _$this._toUserId;
