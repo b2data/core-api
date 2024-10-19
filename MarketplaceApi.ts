@@ -1704,14 +1704,7 @@ export interface Task {
   /** Task key */
   key: string;
   /** Task type */
-  type:
-    | "simpleTask"
-    | "productItemReview"
-    | "fillIdt"
-    | "pickUpIdt"
-    | "receiveIdt"
-    | "prepareIdtToDelivery"
-    | "deliverIdt";
+  type: "simpleTask" | "productItemReview" | "fillIdt" | "pickUpIdt" | "receiveIdt" | "giveOutIdt" | "deliverIdt";
   /** Task status */
   status: "new" | "inProgress" | "review" | "done" | "discard";
   /** Task priority */
@@ -1737,6 +1730,13 @@ export interface Task {
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
    */
   createdBy?: string;
+  /** Provider ID */
+  providerId?: string;
+  /**
+   * Due Date
+   * @format date-time
+   */
+  dueDate?: string;
   /**
    * Creation Date
    * @format date-time
@@ -1758,14 +1758,7 @@ export interface TaskWithData {
   /** Task key */
   key: string;
   /** Task type */
-  type:
-    | "simpleTask"
-    | "productItemReview"
-    | "fillIdt"
-    | "pickUpIdt"
-    | "receiveIdt"
-    | "prepareIdtToDelivery"
-    | "deliverIdt";
+  type: "simpleTask" | "productItemReview" | "fillIdt" | "pickUpIdt" | "receiveIdt" | "giveOutIdt" | "deliverIdt";
   /** Task status */
   status: "new" | "inProgress" | "review" | "done" | "discard";
   /** Task priority */
@@ -1791,6 +1784,13 @@ export interface TaskWithData {
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
    */
   createdBy?: string;
+  /** Provider ID */
+  providerId?: string;
+  /**
+   * Due Date
+   * @format date-time
+   */
+  dueDate?: string;
   /**
    * Creation Date
    * @format date-time
@@ -1813,6 +1813,8 @@ export interface TaskDataIdtWithIdp {
   id: string;
   /** Delivery idT unique key in format `A_000001` */
   key: string;
+  /** Product Item name */
+  itemName: string;
   /** List of idP in idT */
   contains: DeliveryIdpBase[];
 }
@@ -1832,10 +1834,14 @@ export interface TaskData {
    * @format uuid
    */
   itemId?: string;
+  /** FillIdt - Item Name */
+  itemName?: string;
   /** FillIdt - Amount of IDP */
   amount?: number;
-  /** FillIdt */
-  idt?: TaskDataIdtWithIdp;
+  /** FillIdt, ReceiveIdt, GiveOutIdt, DeliverIdt */
+  idtList?: TaskDataIdtWithIdp[];
+  /** PickUpIdt, ReceiveIdt, GiveOutIdt - Place ID */
+  placeId?: string;
   /** PickUpIdt */
   pickUpSubtasks?: {
     /** Provider ID */
@@ -1846,68 +1852,43 @@ export interface TaskData {
     locationLat: number;
     /** Location Longitude */
     locationLong: number;
+    idtList: TaskDataIdtWithIdp[];
     /** Subtask completed */
     completed: boolean;
-    items: {
-      /**
-       * Product ID
-       * @format uuid
-       */
-      productId: string;
-      /**
-       * Item ID
-       * @format uuid
-       */
-      itemId: string;
-      /** Amount of IDP */
-      amount: number;
-    }[];
   }[];
-  /** PickUpIdt, ReceiveIdt, PrepareIdtToDelivery, DeliverIdt */
-  idtList?: TaskDataIdtWithIdp[];
-  /** ReceiveIdt, PrepareIdtToDelivery - Place ID */
-  placeId?: string;
   /** ReceiveIdt - From User ID */
   fromUserId?: string;
   /** ReceiveIdt - From User Name */
   fromUserName?: string;
-  /** ReceiveIdt */
-  items?: {
-    /**
-     * Product ID
-     * @format uuid
-     */
-    productId: string;
-    /**
-     * Item ID
-     * @format uuid
-     */
-    itemId: string;
-    /** Amount of IDP */
-    amount: number;
-    /** Is item received */
-    received: boolean;
-  }[];
-  /** PrepareIdtToDelivery - To User ID */
+  /** GiveOutIdt - To User ID */
   toUserId?: string;
-  /** PrepareIdtToDelivery - To User Name */
+  /** GiveOutIdt - To User Name */
   toUserName?: string;
+  /** DeliverIdt - PickUp Place ID */
+  pickUpPlaceId?: string;
+  /** DeliverIdt - Dispatch Place ID */
+  dispatchPlaceId?: string;
   /** DeliverIdt */
   orders?: OrderWithData[];
   /** DeliverIdt */
   deliveryLogs?: {
     /**
-     * Delivery IDT
+     * idT ID
      * @format uuid
      */
-    id: string;
-    /** IDT key */
-    key: string;
+    idtId: string;
+    /** idT key */
+    idtKey: string;
     /**
      * Order ID
      * @format uuid
      */
     orderId: string;
+    /**
+     * Order key
+     * @format uuid
+     */
+    orderKey: string;
     /**
      * Order Position ID
      * @format uuid
@@ -4599,7 +4580,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
           | "fillIdt"
           | "pickUpIdt"
           | "receiveIdt"
-          | "prepareIdtToDelivery"
+          | "giveOutIdt"
           | "deliverIdt"
         )[];
         /** Task status */
@@ -4644,14 +4625,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     createTask: (
       data: {
         /** Task type */
-        type:
-          | "simpleTask"
-          | "productItemReview"
-          | "fillIdt"
-          | "pickUpIdt"
-          | "receiveIdt"
-          | "prepareIdtToDelivery"
-          | "deliverIdt";
+        type: "simpleTask" | "productItemReview" | "fillIdt" | "pickUpIdt" | "receiveIdt" | "giveOutIdt" | "deliverIdt";
         /** Task priority */
         priority?: "low" | "medium" | "high";
         /** Task name */
@@ -4665,6 +4639,13 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
          * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
          */
         assignee?: string;
+        /** Provider ID */
+        providerId?: string;
+        /**
+         * Due Date
+         * @format date-time
+         */
+        dueDate?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -4672,6 +4653,31 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         path: `/tasks`,
         method: "POST",
         body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Tasks
+     * @name GetTasksStats
+     * @summary Get tasks stats
+     * @request GET:/tasks/stats
+     * @secure
+     */
+    getTasksStats: (params: RequestParams = {}) =>
+      this.http.request<
+        {
+          total: number;
+          byStatus: Record<string, number>;
+          byPriority: Record<string, number>;
+          byType: Record<string, number>;
+        },
+        any
+      >({
+        path: `/tasks/stats`,
+        method: "GET",
         secure: true,
         ...params,
       }),
@@ -4721,6 +4727,13 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
          * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
          */
         assignee?: string;
+        /** Provider ID */
+        providerId?: string;
+        /**
+         * Due Date
+         * @format date-time
+         */
+        dueDate?: string;
       },
       params: RequestParams = {},
     ) =>
