@@ -1,0 +1,2237 @@
+openapi: 3.0.0
+info:
+  title: REST API for B2Data
+  version: 1.0.0
+servers:
+  - url: https://localhost:8080
+  - url: https://b2p.space/api
+tags:
+  - name: Auth
+  - name: Activities
+  - name: Sales
+  - name: Files
+  - name: Tasks
+paths:
+  /auth/start:
+    post:
+      tags:
+        - Auth
+      summary: Start authentication process
+      operationId: startAuth
+      requestBody:
+        $ref: "#/components/requestBodies/EmptyBody"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - proof
+                properties:
+                  proof:
+                    type: string
+  /auth/verify:
+    post:
+      tags:
+        - Auth
+      summary: Verify authentication wallet
+      operationId: verifyAuth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - proof
+                - account
+              properties:
+                spaceId:
+                  type: string
+                  description: Selected Space ID
+                proof:
+                  type: object
+                  required:
+                    - payload
+                    - signature
+                    - timestamp
+                    - domain
+                  properties:
+                    payload:
+                      type: string
+                      description: TON Connect payload
+                    signature:
+                      type: string
+                      description: TON Connect signature
+                    timestamp:
+                      type: number
+                      description: Timestamp of authentication
+                    domain:
+                      type: object
+                      required:
+                        - lengthBytes
+                        - value
+                      properties:
+                        lengthBytes:
+                          type: number
+                        value:
+                          type: string
+                account:
+                  type: object
+                  required:
+                    - address
+                    - network
+                    - publicKey
+                    - walletStateInit
+                  properties:
+                    address:
+                      type: string
+                      description: Wallet Address
+                      example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+                    network:
+                      type: string
+                      description: Blockchain chain
+                    publicKey:
+                      type: string
+                      description: Wallet Public Key
+                    walletStateInit:
+                      type: string
+                      description: Wallet Public Key
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - accessToken
+                  - refreshToken
+                  - profile
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                  profile:
+                    $ref: "#/components/schemas/User"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                errorCode: auth:404
+                message: The proof has not found
+  /auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Refresh Access Token by Refresh token
+      operationId: refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - accessToken
+                - refreshToken
+              properties:
+                spaceId:
+                  type: string
+                  description: Selected Space ID
+                accessToken:
+                  type: string
+                refreshToken:
+                  type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - accessToken
+                  - refreshToken
+                  - profile
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                  profile:
+                    $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+  /auth/profile:
+    get:
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      summary: Get Profile
+      operationId: getProfile
+      responses:
+        "200":
+          $ref: "#/components/responses/UserData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+    patch:
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      summary: Update Profile
+      operationId: updateProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  description: First Name
+                lastName:
+                  type: string
+                  description: Last Name
+                middleName:
+                  type: string
+                  description: Middle Name
+                avatar:
+                  type: string
+                  description: Avatar
+      responses:
+        "200":
+          $ref: "#/components/responses/UserData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+  /activities/search:
+    post:
+      tags:
+        - Activities
+      security:
+        - BearerAuth: []
+      summary: Search activities
+      operationId: searchActivities
+      requestBody:
+        $ref: "#/components/requestBodies/SearchActivitiesBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchActivitiesData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  "/documents/files/{versionId}":
+    get:
+      tags:
+        - Files
+      security:
+        - BearerAuth: []
+      summary: Get file binary
+      operationId: getFileBinary
+      parameters:
+        - $ref: "#/components/parameters/fileVersionIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/FileBinary"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FileNotFound"
+  "/documents/files/{versionId}/info":
+    get:
+      tags:
+        - Files
+      security:
+        - BearerAuth: []
+      summary: Get file information
+      operationId: getFileInfo
+      parameters:
+        - $ref: "#/components/parameters/fileVersionIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/FileData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FileNotFound"
+  /sales/batches/search:
+    post:
+      tags:
+        - Sales
+      security:
+        - BearerAuth: []
+      summary: Search Sale Batches
+      operationId: searchSaleBatches
+      requestBody:
+        $ref: "#/components/requestBodies/SearchSaleBatchesBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchSaleBatchesData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /sales/batches:
+    post:
+      tags:
+        - Sales
+      security:
+        - BearerAuth: []
+      summary: Create Sale Batch
+      operationId: createSaleBatch
+      requestBody:
+        $ref: "#/components/requestBodies/CreateSaleBatchBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SaleBatch"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/sales/batches/{batchId}":
+    get:
+      tags:
+        - Sales
+      security:
+        - BearerAuth: []
+      summary: Get Sale Batch
+      operationId: getSaleBatch
+      parameters:
+        - $ref: "#/components/parameters/saleBatchIdParam"
+      responses:
+        "200":
+          $ref: "#/components/schemas/SaleBatchWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SaleBatchNotFound"
+    delete:
+      tags:
+        - Sales
+      security:
+        - BearerAuth: []
+      summary: Delete Sale Batch
+      operationId: deleteSaleBatch
+      parameters:
+        - $ref: "#/components/parameters/saleBatchIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/SaleBatch"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SaleBatchNotFound"
+  "/sales/batches/{batchId}/prices/search":
+    post:
+      tags:
+        - Sales
+      security:
+        - BearerAuth: []
+      summary: Search Sale Batch Prices
+      operationId: searchSaleBatchPrices
+      parameters:
+        - $ref: "#/components/parameters/saleBatchIdParam"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchModel"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchSaleBatchPricesData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/sales/batches/{batchId}/prices":
+    post:
+      tags:
+        - Sales
+      security:
+        - BearerAuth: []
+      summary: Create Sale Batch Price
+      operationId: createSaleBatchPrice
+      parameters:
+        - $ref: "#/components/parameters/saleBatchIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/CreateSaleBatchPriceBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SaleBatchPrice"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/sales/batches/{batchId}/prices/{priceId}":
+    delete:
+      tags:
+        - Sales
+      security:
+        - BearerAuth: []
+      summary: Delete Sale Batch Price
+      operationId: deleteSaleBatchPrice
+      parameters:
+        - $ref: "#/components/parameters/saleBatchIdParam"
+        - $ref: "#/components/parameters/saleBatchPriceIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/SaleBatchPrice"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SaleBatchPriceNotFound"
+  "/sales/batches/{batchId}/idp/search":
+    post:
+      tags:
+        - Sales
+      security:
+        - BearerAuth: []
+      summary: Search Sale Batch IDP
+      operationId: searchSaleBatchIdp
+      parameters:
+        - $ref: "#/components/parameters/saleBatchIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/SearchSaleBatchIdpBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchSaleBatchIdpData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/sales/batches/{batchId}/idp/{idp}":
+    post:
+      tags:
+        - Sales
+      security:
+        - BearerAuth: []
+      summary: Create Sale Batch IDP
+      operationId: createSaleBatchIdp
+      parameters:
+        - $ref: "#/components/parameters/saleBatchIdParam"
+        - $ref: "#/components/parameters/saleBatchIdpParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/SaleBatchIdp"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    delete:
+      tags:
+        - Sales
+      security:
+        - BearerAuth: []
+      summary: Delete Sale Batch IDP
+      operationId: deleteSaleBatchIdp
+      parameters:
+        - $ref: "#/components/parameters/saleBatchIdParam"
+        - $ref: "#/components/parameters/saleBatchIdpParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/SaleBatchIdp"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SaleBatchIdpNotFound"
+  /sales/orders/search:
+    post:
+      tags:
+        - Sales
+      security:
+        - BearerAuth: []
+      summary: Search Sale Orders
+      operationId: searchSaleOrders
+      requestBody:
+        $ref: "#/components/requestBodies/SearchSaleOrdersBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchSaleOrdersData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/sales/orders/{orderId}":
+    get:
+      tags:
+        - Sales
+      security:
+        - BearerAuth: []
+      summary: Get Sale Order
+      operationId: getSaleOrder
+      parameters:
+        - $ref: "#/components/parameters/saleOrderIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/SaleOrderWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SaleOrderNotFound"
+  "/sales/orders/{orderId}/positions/{posId}":
+    get:
+      tags:
+        - Sales
+      security:
+        - BearerAuth: []
+      summary: Get Sale Order Position (filter order positions)
+      operationId: getSaleOrderPosition
+      parameters:
+        - $ref: "#/components/parameters/saleOrderIdParam"
+        - $ref: "#/components/parameters/saleOrderPositionIdParam"
+      responses:
+        "200":
+          $ref: "#/components/schemas/SaleOrderWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SaleOrderPositionNotFound"
+  /tasks/search:
+    post:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Search tasks
+      operationId: searchTasks
+      requestBody:
+        $ref: "#/components/requestBodies/SearchTasksBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchTasksData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /tasks:
+    post:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Create a new task
+      operationId: createTask
+      requestBody:
+        $ref: "#/components/requestBodies/CreateTaskBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/Task"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/tasks/{id}":
+    get:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Get a task by ID
+      operationId: getTask
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/TaskWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/TaskNotFound"
+    patch:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Edit a task by ID
+      operationId: editTask
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditTaskBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/Task"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/TaskNotFound"
+    delete:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Delete a task by ID
+      operationId: deleteTask
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/Task"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/TaskNotFound"
+  "/tasks/{id}/work-log/search":
+    post:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Search work logs for a task
+      operationId: searchTaskWorkLogs
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/SearchTaskWorkLogsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchTaskWorkLogsData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/TaskNotFound"
+  "/tasks/{id}/work-log":
+    post:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Create a work log for a task
+      operationId: createTaskWorkLog
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/ManageTaskWorkLogBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/TaskWorkLog"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/TaskNotFound"
+  "/tasks/{id}/work-log/{logId}":
+    patch:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Edit a work log by ID
+      operationId: editTaskWorkLog
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+        - $ref: "#/components/parameters/taskLogIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/ManageTaskWorkLogBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/TaskWorkLog"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/TaskNotFound"
+    delete:
+      tags:
+        - Tasks
+      security:
+        - BearerAuth: []
+      summary: Delete a work log by ID
+      operationId: deleteTaskWorkLog
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+        - $ref: "#/components/parameters/taskLogIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/TaskWorkLog"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/TaskNotFound"
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authorization using Auth routes
+    ProviderClientId:
+      type: apiKey
+      name: client-id
+      in: header
+      description: Authorization for providers requests
+    ProviderClientSecret:
+      type: apiKey
+      name: client-secret
+      in: header
+      description: Authorization for providers requests
+    ProviderUserId:
+      type: apiKey
+      name: user-id
+      in: header
+      description: Authorization for providers requests
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - message
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+    SortModel:
+      type: object
+      required:
+        - field
+      properties:
+        field:
+          type: string
+          description: The field for sorting
+        sort:
+          type: string
+          nullable: true
+          enum:
+            - asc
+            - desc
+          description: The sorting order
+    SearchModel:
+      type: object
+      properties:
+        limit:
+          type: number
+          description: Number of return items
+        offset:
+          type: number
+          description: Number of skip items
+        sort:
+          type: array
+          items:
+            $ref: "#/components/schemas/SortModel"
+    User:
+      type: object
+      required:
+        - id
+        - firstName
+      properties:
+        id:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        firstName:
+          type: string
+          description: First Name
+        lastName:
+          type: string
+          description: Last Name
+        middleName:
+          type: string
+          description: Middle Name
+        avatar:
+          type: string
+          description: Avatar
+    ActivityType:
+      type: string
+      description: Activity Type
+    ActivityLog:
+      type: object
+      required:
+        - id
+        - type
+        - userId
+        - spaceId
+        - artefactId
+        - data
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Artefact ID
+        type:
+          $ref: "#/components/schemas/ActivityType"
+        userId:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        spaceId:
+          type: string
+          format: uuid
+          description: Space ID
+        artefactId:
+          type: string
+          format: uuid
+          description: Artefact ID
+        data:
+          type: object
+          description: Activity Data depends on type
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        userData:
+          $ref: "#/components/schemas/User"
+    FileData:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Document Version ID
+        spaceId:
+          type: string
+          format: uuid
+          description: Space ID
+        documentId:
+          type: string
+          format: uuid
+          description: Document ID
+        createdBy:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        key:
+          type: string
+          description: Document Version Unique Key
+        version:
+          type: integer
+          description: Document Version Number
+        current:
+          type: boolean
+          example: false
+          nullable: true
+          description: Is current version
+        latest:
+          type: boolean
+          example: true
+          nullable: true
+          description: Is latest version
+        signed:
+          type: boolean
+          example: false
+          nullable: true
+          description: Is signed version
+        mimeType:
+          type: string
+          description: MIME Type
+        filename:
+          type: string
+          description: Original File Name
+        size:
+          type: number
+          description: File Size
+        encoding:
+          type: string
+          nullable: true
+          description: File Encoding
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Update Date
+    GroupBase:
+      type: object
+      required:
+        - id
+        - spaceId
+        - parentId
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        spaceId:
+          type: string
+          format: uuid
+        parentId:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+    FactoryTaskStatus:
+      type: string
+      enum:
+        - preOrder
+        - inProgress
+        - produced
+        - deleted
+    B2ProductItemStatus:
+      type: string
+      enum:
+        - moderation
+        - published
+        - blocked
+    B2ProductUnitInfo:
+      type: object
+      properties:
+        unit:
+          type: string
+        systemUnit:
+          type: string
+        coeff:
+          type: number
+    SaleBatchStatus:
+      type: string
+      enum:
+        - preOrder
+        - inStorage
+        - inProduce
+        - sold
+        - dispose
+        - deleted
+    SaleBatch:
+      type: object
+      required:
+        - id
+        - spaceId
+        - documentId
+        - versionId
+        - key
+        - name
+        - status
+        - amount
+        - logisticInfo
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        spaceId:
+          type: string
+        documentId:
+          type: string
+        versionId:
+          type: string
+        configId:
+          type: string
+          nullable: true
+        key:
+          type: string
+        name:
+          type: string
+        status:
+          $ref: "#/components/schemas/SaleBatchStatus"
+        amount:
+          type: number
+        logisticInfo:
+          type: object
+          additionalProperties:
+            type: number
+            nullable: true
+        unitInfo:
+          $ref: "#/components/schemas/B2ProductUnitInfo"
+        productItemStatus:
+          $ref: "#/components/schemas/B2ProductItemStatus"
+        latestPrice:
+          type: number
+        registerAmount:
+          type: number
+        orderAmount:
+          type: number
+        orderAmountPrice:
+          type: number
+        deliveryAmount:
+          type: number
+        deliveryAmountPrice:
+          type: number
+        inStorageAmount:
+          type: number
+        outStorageAmount:
+          type: number
+        soldAmount:
+          type: number
+        soldAmountPrice:
+          type: number
+        disputeAmount:
+          type: number
+        disputeAmountPrice:
+          type: number
+        produceInfo:
+          type: object
+          properties:
+            status:
+              $ref: "#/components/schemas/FactoryTaskStatus"
+            condition:
+              type: number
+            duration:
+              type: number
+            planStartDate:
+              type: string
+              format: date-time
+            startDate:
+              type: string
+              format: date-time
+            endDate:
+              type: string
+              format: date-time
+        storageInfo:
+          type: object
+          properties:
+            temperatureMin:
+              type: number
+            temperatureMax:
+              type: number
+            humidityMin:
+              type: number
+            humidityMax:
+              type: number
+            expiryDays:
+              type: number
+            produceDate:
+              type: string
+              format: date-time
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+    SaleBatchInfo:
+      type: object
+      required:
+        - id
+        - key
+        - name
+        - status
+        - amount
+        - versionId
+        - unitInfo
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        status:
+          $ref: "#/components/schemas/SaleBatchStatus"
+        amount:
+          type: number
+        versionId:
+          type: string
+        configId:
+          type: string
+          nullable: true
+        unitInfo:
+          $ref: "#/components/schemas/B2ProductUnitInfo"
+        latestPrice:
+          type: number
+        logisticInfo:
+          type: object
+          additionalProperties:
+            type: number
+            nullable: true
+    SaleBatchWithData:
+      allOf:
+        - $ref: "#/components/schemas/SaleBatch"
+        - type: object
+          required:
+            - createdByData
+          properties:
+            createdByData:
+              $ref: "#/components/schemas/User"
+    SaleBatchPrice:
+      type: object
+      required:
+        - id
+        - batchId
+        - price
+        - startDate
+        - createdBy
+        - createdAt
+      properties:
+        id:
+          type: string
+        batchId:
+          type: string
+        price:
+          type: number
+        startDate:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        createdByData:
+          $ref: "#/components/schemas/User"
+    SaleBatchIdp:
+      type: object
+      required:
+        - id
+        - batchId
+        - spaceId
+        - createdBy
+        - createdAt
+      properties:
+        id:
+          type: string
+        spaceId:
+          type: string
+        createdBy:
+          type: string
+        batchId:
+          type: string
+        isBlocked:
+          type: boolean
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        createdByData:
+          $ref: "#/components/schemas/User"
+    SaleOrderStatus:
+      type: string
+      enum:
+        - created
+        - processing
+        - completed
+        - paid
+        - failed
+        - cancelled
+    SaleOrder:
+      type: object
+      required:
+        - id
+        - spaceId
+        - key
+        - status
+        - totalPrice
+        - placeId
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        spaceId:
+          type: string
+        key:
+          type: string
+        status:
+          $ref: "#/components/schemas/SaleOrderStatus"
+        totalPrice:
+          type: number
+        placeId:
+          type: string
+        txHash:
+          type: string
+          nullable: true
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    SaleOrderPositionStatus:
+      type: string
+      enum:
+        - created
+        - confirmed
+        - production
+        - delivery
+        - cancelling
+        - cancelled
+        - completed
+        - dispute
+        - returned
+        - failed
+    SaleOrderPosition:
+      type: object
+      required:
+        - id
+        - orderId
+        - documentId
+        - versionId
+        - name
+        - status
+        - price
+        - amount
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        orderId:
+          type: string
+        documentId:
+          type: string
+        versionId:
+          type: string
+        configId:
+          type: string
+          nullable: true
+        name:
+          type: string
+        status:
+          $ref: "#/components/schemas/SaleOrderPositionStatus"
+        price:
+          type: number
+        amount:
+          type: number
+        txHash:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    SaleOrderWithData:
+      allOf:
+        - $ref: "#/components/schemas/SaleOrder"
+        - type: object
+          required:
+            - positions
+          properties:
+            positions:
+              type: array
+              items:
+                $ref: "#/components/schemas/SaleOrderPosition"
+    TaskType:
+      type: string
+      enum:
+        - simple
+        - fillIdt
+        - receiveIdt
+        - giveOutIdt
+    TaskSource:
+      type: string
+      enum:
+        - user
+        - process
+        - b2market
+    TaskStatus:
+      type: string
+      enum:
+        - new
+        - inProgress
+        - review
+        - done
+        - discard
+    TaskPriority:
+      type: string
+      enum:
+        - low
+        - medium
+        - high
+    TaskArtefactType:
+      type: string
+      enum:
+        - product
+        - batch
+    BaseTask:
+      type: object
+      required:
+        - id
+        - spaceId
+        - type
+        - source
+        - status
+        - priority
+        - key
+        - name
+        - data
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        spaceId:
+          type: string
+          format: uuid
+        createdBy:
+          type: string
+          nullable: true
+        type:
+          $ref: "#/components/schemas/TaskType"
+        source:
+          $ref: "#/components/schemas/TaskSource"
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+        priority:
+          $ref: "#/components/schemas/TaskPriority"
+        artefactId:
+          type: string
+          nullable: true
+        artefactType:
+          $ref: "#/components/schemas/TaskArtefactType"
+          nullable: true
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        attachments:
+          type: array
+          items:
+            type: string
+          nullable: true
+        storyPoints:
+          type: number
+          nullable: true
+        timeSpent:
+          type: number
+          nullable: true
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        assigneeId:
+          type: string
+          nullable: true
+        assigneeGroupId:
+          type: string
+          nullable: true
+        data:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    TaskSimple:
+      allOf:
+        - $ref: "#/components/schemas/BaseTask"
+        - type: object
+          properties:
+            type:
+              enum:
+                - simple
+            data:
+              type: object
+    TaskFillIdt:
+      allOf:
+        - $ref: "#/components/schemas/BaseTask"
+        - type: object
+          properties:
+            type:
+              enum:
+                - fillIdt
+            data:
+              type: object
+              required:
+                - externalId
+                - productId
+                - versionId
+                - itemId
+                - orders
+                - name
+                - amount
+              properties:
+                externalId:
+                  type: string
+                productId:
+                  type: string
+                versionId:
+                  type: string
+                itemId:
+                  type: string
+                configId:
+                  type: string
+                  nullable: true
+                orders:
+                  type: array
+                  items:
+                    type: string
+                name:
+                  type: string
+                amount:
+                  type: number
+                idtList:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/TaskDataIdtWithIdp"
+                  nullable: true
+    TaskReceiveIdt:
+      allOf:
+        - $ref: "#/components/schemas/BaseTask"
+        - type: object
+          properties:
+            type:
+              enum:
+                - receiveIdt
+            data:
+              type: object
+              required:
+                - externalId
+                - placeId
+                - fromUserId
+                - fromUserName
+                - idtList
+              properties:
+                externalId:
+                  type: string
+                placeId:
+                  type: string
+                fromUserId:
+                  type: string
+                fromUserName:
+                  type: string
+                idtList:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/TaskDataIdtWithIdp"
+    TaskGiveOutIdt:
+      allOf:
+        - $ref: "#/components/schemas/BaseTask"
+        - type: object
+          properties:
+            type:
+              enum:
+                - giveOutIdt
+            data:
+              type: object
+              required:
+                - externalId
+                - placeId
+                - toUserId
+                - toUserName
+                - idtList
+              properties:
+                externalId:
+                  type: string
+                placeId:
+                  type: string
+                toUserId:
+                  type: string
+                toUserName:
+                  type: string
+                idtList:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/TaskDataIdtWithIdp"
+    Task:
+      oneOf:
+        - $ref: "#/components/schemas/TaskSimple"
+        - $ref: "#/components/schemas/TaskFillIdt"
+        - $ref: "#/components/schemas/TaskReceiveIdt"
+        - $ref: "#/components/schemas/TaskGiveOutIdt"
+    TaskWithData:
+      allOf:
+        - $ref: "#/components/schemas/Task"
+        - type: object
+          properties:
+            createdByData:
+              $ref: "#/components/schemas/User"
+              nullable: true
+            assigneeData:
+              $ref: "#/components/schemas/User"
+              nullable: true
+            assigneeGroupData:
+              $ref: "#/components/schemas/GroupBase"
+              nullable: true
+    TaskWorkLog:
+      type: object
+      required:
+        - id
+        - taskId
+        - time
+        - logDate
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        time:
+          type: number
+        logDate:
+          type: string
+          format: date-time
+        comment:
+          type: string
+          nullable: true
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    TaskWorkLogWithData:
+      allOf:
+        - $ref: "#/components/schemas/TaskWorkLog"
+        - type: object
+          required:
+            - createdByData
+          properties:
+            createdByData:
+              $ref: "#/components/schemas/User"
+    TaskDataIdtWithIdp:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Delivery idT
+          format: uuid
+        key:
+          type: string
+          description: Delivery idT unique key in format `A_000001`
+          example: A_000000
+        itemName:
+          type: string
+          description: Product Item name
+        contains:
+          type: array
+          description: List of idP in idT
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              productId:
+                type: string
+                format: uuid
+              itemId:
+                type: string
+                format: uuid
+              batchId:
+                type: string
+                format: uuid
+  requestBodies:
+    EmptyBody:
+      content:
+        application/json:
+          schema:
+            type: object
+    SearchActivitiesBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              artefactId:
+                type: string
+                format: uuid
+                description: Artefact ID
+              spaceId:
+                type: string
+                format: uuid
+                description: Space ID
+              userId:
+                type: string
+                description: Wallet Address
+                example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+              types:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityType"
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    SearchSaleBatchesBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              documents:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+              ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+              status:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SaleBatchStatus"
+              searchTerm:
+                type: string
+              isActive:
+                type: boolean
+                description: Returns only that shows in B2Market
+              isDeleted:
+                type: boolean
+                description: Returns only that deleted
+              limit:
+                type: number
+              offset:
+                type: number
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    CreateSaleBatchBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - documentId
+              - versionId
+              - amount
+              - price
+              - status
+            properties:
+              documentId:
+                type: string
+                format: uuid
+              versionId:
+                type: string
+                format: uuid
+              configId:
+                type: string
+                nullable: true
+              status:
+                type: string
+                enum:
+                  - preOrder
+                  - inStorage
+              amount:
+                type: number
+              price:
+                type: number
+              storageId:
+                type: string
+                format: uuid
+              produceData:
+                type: object
+                required:
+                  - documentId
+                  - versionId
+                  - amount
+                properties:
+                  documentId:
+                    type: string
+                    format: uuid
+                  versionId:
+                    type: string
+                    format: uuid
+                  configId:
+                    type: string
+                    nullable: true
+                  amount:
+                    type: number
+    CreateSaleBatchPriceBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - price
+              - startDate
+            properties:
+              price:
+                type: number
+              startDate:
+                type: string
+                format: date-time
+    SearchSaleBatchIdpBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              searchTerm:
+                type: string
+              ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+              limit:
+                type: number
+              offset:
+                type: number
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    SearchSaleOrdersBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+              documents:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+              status:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SaleOrderStatus"
+              searchTerm:
+                type: string
+              createdAt:
+                type: string
+                format: date
+              limit:
+                type: number
+              offset:
+                type: number
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    SearchTasksBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              types:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskType"
+              status:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskStatus"
+              priority:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskPriority"
+              source:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskSource"
+              searchTerm:
+                type: string
+              assignee:
+                type: array
+                items:
+                  type: string
+              assigneeGroup:
+                type: array
+                items:
+                  type: string
+              artifacts:
+                type: array
+                items:
+                  type: string
+              createdBy:
+                type: array
+                items:
+                  type: string
+    CreateTaskBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              priority:
+                $ref: "#/components/schemas/TaskPriority"
+              name:
+                type: string
+              description:
+                type: string
+                nullable: true
+              attachments:
+                type: array
+                items:
+                  type: string
+                nullable: true
+              storyPoints:
+                type: number
+                nullable: true
+              dueDate:
+                type: string
+                format: date-time
+                nullable: true
+              assigneeId:
+                type: string
+                nullable: true
+              assigneeGroupId:
+                type: string
+                nullable: true
+    EditTaskBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: "#/components/schemas/TaskStatus"
+              priority:
+                $ref: "#/components/schemas/TaskPriority"
+              name:
+                type: string
+              description:
+                type: string
+                nullable: true
+              attachments:
+                type: array
+                items:
+                  type: string
+                nullable: true
+              storyPoints:
+                type: number
+                nullable: true
+              dueDate:
+                type: string
+                format: date-time
+                nullable: true
+              assigneeId:
+                type: string
+                nullable: true
+              assigneeGroupId:
+                type: string
+                nullable: true
+    SearchTaskWorkLogsBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchModel"
+    ManageTaskWorkLogBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - time
+              - logDate
+            properties:
+              time:
+                type: number
+              logDate:
+                type: string
+                format: date-time
+              comment:
+                type: string
+                nullable: true
+  responses:
+    InvalidData:
+      description: Invalid request data
+    Unauthorized:
+      description: Unauthorized
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: api:403
+            message: You don't have access to this method
+    UserData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/User"
+    UserNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: user:404
+            message: User does not exist
+    SearchActivitiesData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLog"
+    FileBinary:
+      description: Successful operation
+      content:
+        text/plain:
+          schema:
+            type: string
+            format: binary
+    FileData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FileData"
+    FileNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: document:404-version
+            message: File not exist
+    SearchSaleBatchesData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SaleBatch"
+              total:
+                type: number
+    SearchSaleBatchPricesData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SaleBatchPrice"
+              total:
+                type: number
+    SearchSaleBatchIdpData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SaleBatchIdp"
+              total:
+                type: number
+    SearchSaleOrdersData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SaleOrderWithData"
+              total:
+                type: number
+    SaleBatch:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SaleBatch"
+    SaleBatchWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SaleBatchWithData"
+    SaleBatchPrice:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SaleBatchPrice"
+    SaleBatchIdp:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SaleBatchIdp"
+    SaleOrderWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SaleOrderWithData"
+    SaleBatchNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: sales:404-batch
+            message: Batch not found
+    SaleBatchPriceNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: sales:404-batch-price
+            message: Batch price not found
+    SaleBatchIdpNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: sales:404-batch-idp
+            message: Batch IDP not found
+    SaleOrderNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: sales:404-order
+            message: Order not found
+    SaleOrderPositionNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: sales:404-order-position
+            message: Order position not found
+    Task:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Task"
+    TaskWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TaskWithData"
+    TaskWorkLog:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TaskWorkLog"
+    TaskWorkLogWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TaskWorkLogWithData"
+    SearchTasksData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskWithData"
+    SearchTaskWorkLogsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskWorkLogWithData"
+    TaskNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: task:404
+            message: Task not found
+  parameters:
+    fileVersionIdParam:
+      in: path
+      name: versionId
+      description: Document Version ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    saleBatchIdParam:
+      in: path
+      name: batchId
+      description: Sale Batch ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    saleBatchPriceIdParam:
+      in: path
+      name: priceId
+      description: Sale Batch Price ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    saleBatchIdpParam:
+      in: path
+      name: idp
+      description: Sale Batch IDP ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    saleOrderIdParam:
+      in: path
+      name: orderId
+      description: Sale Order ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    saleOrderPositionIdParam:
+      in: path
+      name: posId
+      description: Sale Order Position ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    taskIdParam:
+      in: path
+      name: id
+      description: Task ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    taskLogIdParam:
+      in: path
+      name: logId
+      description: Task work log ID
+      required: true
+      schema:
+        type: string
+        format: uuid
