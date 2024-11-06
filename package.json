@@ -1,15 +1,16 @@
 {
   "name": "@b2data/core-api",
   "description": "Core API interfaces",
-  "version": "1.0.50",
+  "version": "1.0.51",
   "scripts": {
     "build": "tsc",
-    "gen": "npm run gen:auth && npm run gen:providers && npm run gen:apps && npm run gen:dictionary && npm run gen:marketplace",
+    "gen": "npm run gen:auth && npm run gen:providers && npm run gen:apps && npm run gen:dictionary && npm run gen:marketplace && npm run gen:b2data",
     "gen:auth": "swagger-typescript-api -p auth-openapi.yaml ${npm_package_config_gen} --api-class-name AuthApi -n AuthApi.ts",
     "gen:providers": "swagger-typescript-api -p providers-openapi.yaml ${npm_package_config_gen} --api-class-name ProvidersApi -n ProvidersApi.ts",
     "gen:apps": "swagger-typescript-api -p apps-openapi.yaml ${npm_package_config_gen} --api-class-name AppsApi -n AppsApi.ts",
     "gen:dictionary": "swagger-typescript-api -p dictionary-openapi.yaml ${npm_package_config_gen} --api-class-name DictionaryApi -n DictionaryApi.ts",
     "gen:marketplace": "swagger-typescript-api -p marketplace-openapi.yaml ${npm_package_config_gen} --api-class-name MarketplaceApi -n MarketplaceApi.ts",
+    "gen:b2data": "swagger-typescript-api -p b2data-openapi.yaml ${npm_package_config_gen} --api-class-name B2DataApi -n B2DataApi.ts",
     "gen:b2delivery": "openapi-generator-cli generate -i marketplace-openapi.yaml -g dart-dio -o ./dart/b2delivery --additional-properties=pubName=b2delivery && cd dart/b2delivery && flutter pub run build_runner build && cd ../../"
   },
   "config": {
