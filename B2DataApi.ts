@@ -307,6 +307,60 @@ export type SaleOrderWithData = SaleOrder & {
   positions: SaleOrderPosition[];
 };
 
+export interface SpaceBase {
+  id?: string;
+  name?: string;
+  logo?: string | null;
+  isPersonal?: boolean | null;
+}
+
+export type Space = SpaceBase & {
+  isAdmin?: boolean;
+  createdBy?: string;
+  createdByData?: User | null;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
+};
+
+export interface SpaceUser {
+  spaceId?: string;
+  userId?: string;
+  groupId?: string | null;
+  isAdmin?: boolean;
+  isActive?: boolean;
+  createdBy?: string;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format date-time */
+  updatedAt?: string;
+}
+
+export type SpaceUserWithData = SpaceUser & {
+  userData?: User;
+  groupData?: GroupBase | null;
+  spaceData?: SpaceBase;
+};
+
+export interface SpaceUserOrGroup {
+  spaceId?: string;
+  userId?: string | null;
+  groupId?: string | null;
+  userData?: User | null;
+  groupData?: GroupBase | null;
+  spaceData?: SpaceBase;
+}
+
+export type SpaceUserSearch = User & {
+  groups?: {
+    groupId?: string | null;
+    isActive?: boolean;
+    isAdmin?: boolean;
+    createdBy?: string;
+  }[];
+};
+
 export type TaskType = "simple" | "fillIdt" | "receiveIdt" | "giveOutIdt";
 
 export type TaskSource = "user" | "process" | "b2market";
@@ -1226,6 +1280,249 @@ export class B2DataApi<SecurityDataType extends unknown> {
       this.http.request<SaleOrderWithData, ErrorResponse>({
         path: `/sales/orders/${orderId}/positions/${posId}`,
         method: "GET",
+        secure: true,
+        ...params,
+      }),
+  };
+  spaces = {
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name GetSpaces
+     * @summary Get my spaces
+     * @request GET:/spaces/my
+     * @secure
+     */
+    getSpaces: (params: RequestParams = {}) =>
+      this.http.request<Space[], any>({
+        path: `/spaces/my`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name SpacesCreate
+     * @summary Create a new space
+     * @request POST:/spaces
+     * @secure
+     */
+    spacesCreate: (
+      data: {
+        name?: string;
+        logo?: string | null;
+        isPersonal?: boolean | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Space, any>({
+        path: `/spaces`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name SpacesPartialUpdate
+     * @summary Edit a space
+     * @request PATCH:/spaces/{id}
+     * @secure
+     */
+    spacesPartialUpdate: (
+      id: string,
+      data: {
+        name?: string | null;
+        logo?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Space, ErrorResponse>({
+        path: `/spaces/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name SpacesDelete
+     * @summary Delete a space
+     * @request DELETE:/spaces/{id}
+     * @secure
+     */
+    spacesDelete: (id: string, params: RequestParams = {}) =>
+      this.http.request<Space, ErrorResponse>({
+        path: `/spaces/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name UsersSearchCreate
+     * @summary Search space users
+     * @request POST:/spaces/users/search
+     * @secure
+     */
+    usersSearchCreate: (
+      data: {
+        searchTerm?: string | null;
+        groups?: string[];
+        isActive?: boolean | null;
+        isAdmin?: boolean | null;
+        ids?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          items?: SpaceUserSearch[];
+          total?: number;
+        },
+        any
+      >({
+        path: `/spaces/users/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name UsersSearchOptionsCreate
+     * @summary Search space users or groups
+     * @request POST:/spaces/users/search-options
+     * @secure
+     */
+    usersSearchOptionsCreate: (
+      data: {
+        searchTerm?: string | null;
+        spaceId: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          items?: SpaceUserOrGroup[];
+          total?: number;
+        },
+        any
+      >({
+        path: `/spaces/users/search-options`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name UsersDetail
+     * @summary Get space user details
+     * @request GET:/spaces/users/{id}
+     * @secure
+     */
+    usersDetail: (id: string, params: RequestParams = {}) =>
+      this.http.request<SpaceUserSearch, any>({
+        path: `/spaces/users/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name UsersCreate
+     * @summary Create a new space user
+     * @request POST:/spaces/users
+     * @secure
+     */
+    usersCreate: (
+      data: {
+        userId?: string;
+        groupId?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<SpaceUserWithData, ErrorResponse>({
+        path: `/spaces/users`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name UsersPartialUpdate
+     * @summary Edit a space user
+     * @request PATCH:/spaces/users
+     * @secure
+     */
+    usersPartialUpdate: (
+      data: {
+        isAdmin?: boolean;
+        userId?: string;
+        groupId?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<SpaceUserWithData, ErrorResponse>({
+        path: `/spaces/users`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name UsersDelete
+     * @summary Delete a space user
+     * @request DELETE:/spaces/users
+     * @secure
+     */
+    usersDelete: (
+      query: {
+        /** User ID */
+        userId: string;
+        /**
+         * Group ID
+         * @format uuid
+         */
+        groupId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<SpaceUserWithData, ErrorResponse>({
+        path: `/spaces/users`,
+        method: "DELETE",
+        query: query,
         secure: true,
         ...params,
       }),

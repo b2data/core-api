@@ -11,6 +11,7 @@ tags:
   - name: Sales
   - name: Files
   - name: Tasks
+  - name: Spaces
 paths:
   /auth/start:
     post:
@@ -527,6 +528,189 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/SaleOrderPositionNotFound"
+  /spaces/my:
+    get:
+      summary: Get my spaces
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceArrayData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /spaces:
+    post:
+      summary: Create a new space
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateSpaceBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  "/spaces/{id}":
+    patch:
+      summary: Edit a space
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/spaceIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditSpaceBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SpaceNotFound"
+    delete:
+      summary: Delete a space
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/spaceIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SpaceNotFound"
+  /spaces/users/search:
+    post:
+      summary: Search space users
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/SearchSpaceUsersBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchSpaceUsersData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /spaces/users/search-options:
+    post:
+      summary: Search space users or groups
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/SearchSpaceUsersGroupsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchSpaceUsersGroupsData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  "/spaces/users/{id}":
+    get:
+      summary: Get space user details
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/userIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceUserSearchData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /spaces/users:
+    post:
+      summary: Create a new space user
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/ModifySpaceUserBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceUserWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    patch:
+      summary: Edit a space user
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/EditSpaceUserBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceUserWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SpaceUserNotFound"
+    delete:
+      summary: Delete a space user
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: query
+          description: User ID
+          required: true
+          schema:
+            type: string
+        - name: groupId
+          in: query
+          description: Group ID
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceUserWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SpaceUserNotFound"
   /tasks/search:
     post:
       tags:
@@ -1267,6 +1451,109 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/SaleOrderPosition"
+    SpaceBase:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        logo:
+          type: string
+          nullable: true
+        isPersonal:
+          type: boolean
+          nullable: true
+    Space:
+      allOf:
+        - $ref: "#/components/schemas/SpaceBase"
+        - type: object
+          properties:
+            isAdmin:
+              type: boolean
+            createdBy:
+              type: string
+            createdByData:
+              $ref: "#/components/schemas/User"
+              nullable: true
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+    SpaceUser:
+      type: object
+      properties:
+        spaceId:
+          type: string
+        userId:
+          type: string
+        groupId:
+          type: string
+          nullable: true
+        isAdmin:
+          type: boolean
+        isActive:
+          type: boolean
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    SpaceUserWithData:
+      allOf:
+        - $ref: "#/components/schemas/SpaceUser"
+        - type: object
+          properties:
+            userData:
+              $ref: "#/components/schemas/User"
+            groupData:
+              $ref: "#/components/schemas/GroupBase"
+              nullable: true
+            spaceData:
+              $ref: "#/components/schemas/SpaceBase"
+    SpaceUserOrGroup:
+      type: object
+      properties:
+        spaceId:
+          type: string
+        userId:
+          type: string
+          nullable: true
+        groupId:
+          type: string
+          nullable: true
+        userData:
+          $ref: "#/components/schemas/User"
+          nullable: true
+        groupData:
+          $ref: "#/components/schemas/GroupBase"
+          nullable: true
+        spaceData:
+          $ref: "#/components/schemas/SpaceBase"
+    SpaceUserSearch:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          properties:
+            groups:
+              type: array
+              items:
+                type: object
+                properties:
+                  groupId:
+                    type: string
+                    nullable: true
+                  isActive:
+                    type: boolean
+                  isAdmin:
+                    type: boolean
+                  createdBy:
+                    type: string
     TaskType:
       type: string
       enum:
@@ -1771,6 +2058,98 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
+    CreateSpaceBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              logo:
+                type: string
+                nullable: true
+              isPersonal:
+                type: boolean
+                nullable: true
+    EditSpaceBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                nullable: true
+              logo:
+                type: string
+                nullable: true
+    SearchSpaceUsersBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              searchTerm:
+                type: string
+                nullable: true
+              groups:
+                type: array
+                items:
+                  type: string
+              isActive:
+                type: boolean
+                nullable: true
+              isAdmin:
+                type: boolean
+                nullable: true
+              ids:
+                type: array
+                items:
+                  type: string
+    SearchSpaceUsersGroupsBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - spaceId
+            properties:
+              searchTerm:
+                type: string
+                nullable: true
+              spaceId:
+                type: string
+    ModifySpaceUserBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              userId:
+                type: string
+              groupId:
+                type: string
+                nullable: true
+    EditSpaceUserBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              isAdmin:
+                type: boolean
+              userId:
+                type: string
+              groupId:
+                type: string
+                nullable: true
     SearchTasksBody:
       content:
         application/json:
@@ -2105,6 +2484,76 @@ components:
           example:
             errorCode: sales:404-order-position
             message: Order position not found
+    SpaceArrayData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Space"
+    SpaceData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Space"
+    SearchSpaceUsersData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpaceUserSearch"
+              total:
+                type: integer
+    SearchSpaceUsersGroupsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpaceUserOrGroup"
+              total:
+                type: integer
+    SpaceUserSearchData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SpaceUserSearch"
+    SpaceUserWithData:
+      description: The created space user
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SpaceUserWithData"
+    SpaceNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: space:404
+            message: Space not found
+    SpaceUserNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: space:404-user
+            message: Space user not found
     Task:
       description: Successful operation
       content:
@@ -2219,6 +2668,21 @@ components:
       schema:
         type: string
         format: uuid
+    spaceIdParam:
+      in: path
+      name: id
+      description: Space ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    userIdParam:
+      in: path
+      name: id
+      description: User ID
+      required: true
+      schema:
+        type: string
     taskIdParam:
       in: path
       name: id
