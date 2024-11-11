@@ -81,6 +81,55 @@ export interface ActivityLog {
   userData?: User;
 }
 
+export interface DocumentBase {
+  id: string;
+  spaceId: string;
+  name: string;
+  type: DocumentType;
+  isPublic?: boolean | null;
+  isSystem?: boolean | null;
+  systemId?: string | null;
+  systemType?: SystemType | null;
+  currentVersion?: DocumentVersionCacheData | null;
+  latestVersion?: DocumentVersionCacheData | null;
+  signedVersion?: DocumentVersionCacheData | null;
+}
+
+export type DocumentType =
+  | "file"
+  | "b2doc"
+  | "b2table"
+  | "b2process"
+  | "b2map"
+  | "b2product"
+  | "b2storage"
+  | "b2counterparty";
+
+export type SystemType = "product" | "storage";
+
+export interface DocumentVersionCacheData {
+  id: string;
+  key: string;
+  type: DocumentType;
+  version: number;
+  data: object;
+}
+
+export type Document = DocumentBase & {
+  createdBy: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  /** @format date-time */
+  deletedAt?: string | null;
+};
+
+export interface SystemData {
+  id: string;
+  name: string;
+}
+
 export interface FileData {
   /**
    * Document Version ID
@@ -141,6 +190,26 @@ export interface FileData {
   updatedAt?: string;
 }
 
+export interface Folder {
+  id: string;
+  spaceId: string;
+  parentId: string | null;
+  name: string;
+  photo?: string | null;
+  order?: number | null;
+  isPublic?: boolean | null;
+  isSystem?: boolean | null;
+  systemId?: string | null;
+  systemType?: SystemType | null;
+  createdBy: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  /** @format date-time */
+  deletedAt?: string | null;
+}
+
 export interface GroupBase {
   /** @format uuid */
   id: string;
@@ -150,6 +219,186 @@ export interface GroupBase {
   parentId: string | null;
   name: string;
 }
+
+export type NotificationType =
+  | "inviteToSpaceAsAdmin"
+  | "excludeFromSpaceAsAdmin"
+  | "inviteToGroup"
+  | "toggleAdminGroup"
+  | "excludeFromGroup"
+  | "addedToFolder"
+  | "modifyAccessInFolder"
+  | "excludeFromFolder"
+  | "addedToDocument"
+  | "modifyAccessInDocument"
+  | "excludeFromDocument"
+  | "addedToModule"
+  | "modifyAccessInModule"
+  | "excludeFromModule"
+  | "newTask";
+
+export type NotificationCallbackAction = "accept" | "deny" | "error";
+
+export interface BaseNotification {
+  id?: string;
+  userId?: string;
+  artefactId?: string;
+  type?: NotificationType;
+  isRead?: boolean;
+  data?: object;
+  callbackAction?: NotificationCallbackAction;
+  createdBy?: string;
+  /** @format date-time */
+  updatedAt?: string;
+  /** @format date-time */
+  createdAt?: string;
+}
+
+export type NotificationAddedToDocument = BaseNotification & {
+  type?: "addedToDocument";
+  data?: {
+    document: Document;
+    systemData?: SystemData;
+    access: PermissionAccess;
+  };
+};
+
+export type NotificationModifyAccessInDocument = BaseNotification & {
+  type?: "modifyAccessInDocument";
+  data?: {
+    document: Document;
+    systemData?: SystemData;
+    access: PermissionAccess;
+  };
+};
+
+export type NotificationExcludeFromDocument = BaseNotification & {
+  type?: "excludeFromDocument";
+  data?: {
+    document: Document;
+    systemData?: SystemData;
+    access: PermissionAccess;
+  };
+};
+
+export type NotificationAddedToFolder = BaseNotification & {
+  type?: "addedToFolder";
+  data?: {
+    folder: Folder;
+    systemData?: SystemData;
+    access: PermissionAccess;
+  };
+};
+
+export type NotificationModifyAccessInFolder = BaseNotification & {
+  type?: "modifyAccessInFolder";
+  data?: {
+    folder: Folder;
+    systemData?: SystemData;
+    access: PermissionAccess;
+  };
+};
+
+export type NotificationExcludeFromFolder = BaseNotification & {
+  type?: "excludeFromFolder";
+  data?: {
+    folder: Folder;
+    systemData?: SystemData;
+    access: PermissionAccess;
+  };
+};
+
+export type NotificationInviteToSpaceAsAdmin = BaseNotification & {
+  type?: "inviteToSpaceAsAdmin";
+  data?: SpaceUserWithData;
+};
+
+export type NotificationExcludeFromSpaceAsAdmin = BaseNotification & {
+  type?: "excludeFromSpaceAsAdmin";
+  data?: SpaceUserWithData;
+};
+
+export type NotificationInviteToGroup = BaseNotification & {
+  type?: "inviteToGroup";
+  data?: SpaceUserWithData;
+};
+
+export type NotificationToggleAdminGroup = BaseNotification & {
+  type?: "toggleAdminGroup";
+  data?: SpaceUserWithData;
+};
+
+export type NotificationExcludeFromGroup = BaseNotification & {
+  type?: "excludeFromGroup";
+  data?: SpaceUserWithData;
+};
+
+export type NotificationAddedToModule = BaseNotification & {
+  type?: "addedToModule";
+  data?: {
+    spaceData: SpaceBase;
+    module: PermissionType;
+    createdByData: User;
+    systemData?: SystemData;
+    systemType?: SystemType;
+    access: PermissionAccess;
+  };
+};
+
+export type NotificationModifyAccessInModule = BaseNotification & {
+  type?: "modifyAccessInModule";
+  data?: {
+    spaceData: SpaceBase;
+    module: PermissionType;
+    createdByData: User;
+    systemData?: SystemData;
+    systemType?: SystemType;
+    access: PermissionAccess;
+  };
+};
+
+export type NotificationExcludeFromModule = BaseNotification & {
+  type?: "excludeFromModule";
+  data?: {
+    spaceData: SpaceBase;
+    module: PermissionType;
+    createdByData: User;
+    systemData?: SystemData;
+    systemType?: SystemType;
+    access: PermissionAccess;
+  };
+};
+
+export type NotificationNewTask = BaseNotification & {
+  type?: "newTask";
+  data?: Task;
+};
+
+export type Notification =
+  | NotificationAddedToDocument
+  | NotificationModifyAccessInDocument
+  | NotificationExcludeFromDocument
+  | NotificationAddedToFolder
+  | NotificationModifyAccessInFolder
+  | NotificationExcludeFromFolder
+  | NotificationInviteToSpaceAsAdmin
+  | NotificationExcludeFromSpaceAsAdmin
+  | NotificationInviteToGroup
+  | NotificationToggleAdminGroup
+  | NotificationExcludeFromGroup
+  | NotificationAddedToModule
+  | NotificationModifyAccessInModule
+  | NotificationExcludeFromModule
+  | NotificationNewTask;
+
+export type NotificationWithData = Notification & {
+  createdByData: User;
+  userData: User;
+};
+
+export type PermissionAccess = "read" | "write" | "sign";
+
+export type PermissionType = "folder" | "document" | "sales" | "factory" | "resources";
 
 export type FactoryTaskStatus = "preOrder" | "inProgress" | "produced" | "deleted";
 
@@ -960,6 +1209,116 @@ export class B2DataApi<SecurityDataType extends unknown> {
         path: `/documents/files/${versionId}/info`,
         method: "GET",
         secure: true,
+        ...params,
+      }),
+  };
+  notifications = {
+    /**
+     * No description
+     *
+     * @tags Notifications
+     * @name GetUnreadNotifications
+     * @summary Get unread notifications
+     * @request GET:/notifications/unread
+     * @secure
+     */
+    getUnreadNotifications: (params: RequestParams = {}) =>
+      this.http.request<number, any>({
+        path: `/notifications/unread`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Notifications
+     * @name SearchNotifications
+     * @summary Search notifications
+     * @request POST:/notifications/search
+     * @secure
+     */
+    searchNotifications: (
+      data: {
+        limit?: number;
+        offset?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total?: number;
+          items?: NotificationWithData[];
+        },
+        any
+      >({
+        path: `/notifications/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Notifications
+     * @name ReadNotification
+     * @summary Set notification as read by ID
+     * @request POST:/notifications/read/{id}
+     * @secure
+     */
+    readNotification: (id: string, params: RequestParams = {}) =>
+      this.http.request<ActivityType, ErrorResponse>({
+        path: `/notifications/read/${id}`,
+        method: "POST",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Notifications
+     * @name ReadAllNotifications
+     * @summary Set all notifications as read
+     * @request POST:/notifications/read/all
+     * @secure
+     */
+    readAllNotifications: (params: RequestParams = {}) =>
+      this.http.request<ActivityType, any>({
+        path: `/notifications/read/all`,
+        method: "POST",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Notifications
+     * @name SendCallbackNotification
+     * @summary Send callback notification
+     * @request POST:/notifications/callback
+     * @secure
+     */
+    sendCallbackNotification: (
+      data: {
+        id?: string;
+        action?: NotificationCallbackAction;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ActivityType, ErrorResponse>({
+        path: `/notifications/callback`,
+        method: "POST",
+        body: data,
+        secure: true,
+        format: "json",
         ...params,
       }),
   };

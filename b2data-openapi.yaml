@@ -8,10 +8,14 @@ servers:
 tags:
   - name: Auth
   - name: Activities
-  - name: Sales
+  - name: Documents
   - name: Files
-  - name: Tasks
+  - name: Folders
+  - name: Notifications
+  - name: Permissions
+  - name: Sales
   - name: Spaces
+  - name: Tasks
 paths:
   /auth/start:
     post:
@@ -272,6 +276,97 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FileNotFound"
+  /notifications/unread:
+    get:
+      summary: Get unread notifications
+      tags:
+        - Notifications
+      security:
+        - BearerAuth: []
+      operationId: getUnreadNotifications
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /notifications/search:
+    post:
+      summary: Search notifications
+      tags:
+        - Notifications
+      security:
+        - BearerAuth: []
+      operationId: searchNotifications
+      requestBody:
+        $ref: "#/components/requestBodies/SearchNotificationsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchNotificationsData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  "/notifications/read/{id}":
+    post:
+      summary: Set notification as read by ID
+      tags:
+        - Notifications
+      security:
+        - BearerAuth: []
+      operationId: readNotification
+      parameters:
+        - $ref: "#/components/parameters/notificationId"
+      responses:
+        "200":
+          description: Notification read response
+          content:
+            application/json:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotificationNotFound"
+  /notifications/read/all:
+    post:
+      summary: Set all notifications as read
+      tags:
+        - Notifications
+      security:
+        - BearerAuth: []
+      operationId: readAllNotifications
+      responses:
+        "200":
+          description: All notifications read response
+          content:
+            application/json:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /notifications/callback:
+    post:
+      summary: Send callback notification
+      tags:
+        - Notifications
+      security:
+        - BearerAuth: []
+      operationId: sendCallbackNotification
+      requestBody:
+        $ref: "#/components/requestBodies/SendCallbackNotificationBody"
+      responses:
+        "200":
+          description: Callback notification response
+          content:
+            application/json:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotificationNotFound"
   /sales/batches/search:
     post:
       tags:
@@ -1019,6 +1114,109 @@ components:
           description: Creation Date
         userData:
           $ref: "#/components/schemas/User"
+    DocumentBase:
+      type: object
+      required:
+        - id
+        - spaceId
+        - name
+        - type
+      properties:
+        id:
+          type: string
+        spaceId:
+          type: string
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/DocumentType"
+        isPublic:
+          type: boolean
+          nullable: true
+        isSystem:
+          type: boolean
+          nullable: true
+        systemId:
+          type: string
+          nullable: true
+        systemType:
+          $ref: "#/components/schemas/SystemType"
+          nullable: true
+        currentVersion:
+          $ref: "#/components/schemas/DocumentVersionCacheData"
+          nullable: true
+        latestVersion:
+          $ref: "#/components/schemas/DocumentVersionCacheData"
+          nullable: true
+        signedVersion:
+          $ref: "#/components/schemas/DocumentVersionCacheData"
+          nullable: true
+    DocumentType:
+      type: string
+      enum:
+        - file
+        - b2doc
+        - b2table
+        - b2process
+        - b2map
+        - b2product
+        - b2storage
+        - b2counterparty
+    SystemType:
+      type: string
+      enum:
+        - product
+        - storage
+    DocumentVersionCacheData:
+      type: object
+      required:
+        - id
+        - key
+        - type
+        - version
+        - data
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        type:
+          $ref: "#/components/schemas/DocumentType"
+        version:
+          type: number
+        data:
+          type: object
+    Document:
+      allOf:
+        - $ref: "#/components/schemas/DocumentBase"
+        - type: object
+          required:
+            - createdBy
+            - createdAt
+            - updatedAt
+          properties:
+            createdBy:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            deletedAt:
+              type: string
+              format: date-time
+              nullable: true
+    SystemData:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
     FileData:
       type: object
       properties:
@@ -1080,6 +1278,56 @@ components:
           type: string
           format: date-time
           description: Update Date
+    Folder:
+      type: object
+      required:
+        - id
+        - spaceId
+        - parentId
+        - name
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        spaceId:
+          type: string
+        parentId:
+          type: string
+          nullable: true
+        name:
+          type: string
+        photo:
+          type: string
+          nullable: true
+        order:
+          type: integer
+          nullable: true
+        isPublic:
+          type: boolean
+          nullable: true
+        isSystem:
+          type: boolean
+          nullable: true
+        systemId:
+          type: string
+          nullable: true
+        systemType:
+          $ref: "#/components/schemas/SystemType"
+          nullable: true
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
     GroupBase:
       type: object
       required:
@@ -1100,6 +1348,362 @@ components:
           nullable: true
         name:
           type: string
+    NotificationType:
+      type: string
+      enum:
+        - inviteToSpaceAsAdmin
+        - excludeFromSpaceAsAdmin
+        - inviteToGroup
+        - toggleAdminGroup
+        - excludeFromGroup
+        - addedToFolder
+        - modifyAccessInFolder
+        - excludeFromFolder
+        - addedToDocument
+        - modifyAccessInDocument
+        - excludeFromDocument
+        - addedToModule
+        - modifyAccessInModule
+        - excludeFromModule
+        - newTask
+    NotificationCallbackAction:
+      type: string
+      enum:
+        - accept
+        - deny
+        - error
+    BaseNotification:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        artefactId:
+          type: string
+        type:
+          $ref: "#/components/schemas/NotificationType"
+        isRead:
+          type: boolean
+        data:
+          type: object
+        callbackAction:
+          $ref: "#/components/schemas/NotificationCallbackAction"
+        createdBy:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    NotificationAddedToDocument:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - addedToDocument
+            data:
+              type: object
+              required:
+                - document
+                - access
+              properties:
+                document:
+                  $ref: "#/components/schemas/Document"
+                systemData:
+                  $ref: "#/components/schemas/SystemData"
+                access:
+                  $ref: "#/components/schemas/PermissionAccess"
+    NotificationModifyAccessInDocument:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - modifyAccessInDocument
+            data:
+              type: object
+              required:
+                - document
+                - access
+              properties:
+                document:
+                  $ref: "#/components/schemas/Document"
+                systemData:
+                  $ref: "#/components/schemas/SystemData"
+                access:
+                  $ref: "#/components/schemas/PermissionAccess"
+    NotificationExcludeFromDocument:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - excludeFromDocument
+            data:
+              type: object
+              required:
+                - document
+                - access
+              properties:
+                document:
+                  $ref: "#/components/schemas/Document"
+                systemData:
+                  $ref: "#/components/schemas/SystemData"
+                access:
+                  $ref: "#/components/schemas/PermissionAccess"
+    NotificationAddedToFolder:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - addedToFolder
+            data:
+              type: object
+              required:
+                - folder
+                - access
+              properties:
+                folder:
+                  $ref: "#/components/schemas/Folder"
+                systemData:
+                  $ref: "#/components/schemas/SystemData"
+                access:
+                  $ref: "#/components/schemas/PermissionAccess"
+    NotificationModifyAccessInFolder:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - modifyAccessInFolder
+            data:
+              type: object
+              required:
+                - folder
+                - access
+              properties:
+                folder:
+                  $ref: "#/components/schemas/Folder"
+                systemData:
+                  $ref: "#/components/schemas/SystemData"
+                access:
+                  $ref: "#/components/schemas/PermissionAccess"
+    NotificationExcludeFromFolder:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - excludeFromFolder
+            data:
+              type: object
+              required:
+                - folder
+                - access
+              properties:
+                folder:
+                  $ref: "#/components/schemas/Folder"
+                systemData:
+                  $ref: "#/components/schemas/SystemData"
+                access:
+                  $ref: "#/components/schemas/PermissionAccess"
+    NotificationInviteToSpaceAsAdmin:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - inviteToSpaceAsAdmin
+            data:
+              $ref: "#/components/schemas/SpaceUserWithData"
+    NotificationExcludeFromSpaceAsAdmin:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - excludeFromSpaceAsAdmin
+            data:
+              $ref: "#/components/schemas/SpaceUserWithData"
+    NotificationInviteToGroup:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - inviteToGroup
+            data:
+              $ref: "#/components/schemas/SpaceUserWithData"
+    NotificationToggleAdminGroup:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - toggleAdminGroup
+            data:
+              $ref: "#/components/schemas/SpaceUserWithData"
+    NotificationExcludeFromGroup:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - excludeFromGroup
+            data:
+              $ref: "#/components/schemas/SpaceUserWithData"
+    NotificationAddedToModule:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - addedToModule
+            data:
+              type: object
+              required:
+                - spaceData
+                - module
+                - createdByData
+                - access
+              properties:
+                spaceData:
+                  $ref: "#/components/schemas/SpaceBase"
+                module:
+                  $ref: "#/components/schemas/PermissionType"
+                createdByData:
+                  $ref: "#/components/schemas/User"
+                systemData:
+                  $ref: "#/components/schemas/SystemData"
+                systemType:
+                  $ref: "#/components/schemas/SystemType"
+                access:
+                  $ref: "#/components/schemas/PermissionAccess"
+    NotificationModifyAccessInModule:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - modifyAccessInModule
+            data:
+              type: object
+              required:
+                - spaceData
+                - module
+                - createdByData
+                - access
+              properties:
+                spaceData:
+                  $ref: "#/components/schemas/SpaceBase"
+                module:
+                  $ref: "#/components/schemas/PermissionType"
+                createdByData:
+                  $ref: "#/components/schemas/User"
+                systemData:
+                  $ref: "#/components/schemas/SystemData"
+                systemType:
+                  $ref: "#/components/schemas/SystemType"
+                access:
+                  $ref: "#/components/schemas/PermissionAccess"
+    NotificationExcludeFromModule:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - excludeFromModule
+            data:
+              type: object
+              required:
+                - spaceData
+                - module
+                - createdByData
+                - access
+              properties:
+                spaceData:
+                  $ref: "#/components/schemas/SpaceBase"
+                module:
+                  $ref: "#/components/schemas/PermissionType"
+                createdByData:
+                  $ref: "#/components/schemas/User"
+                systemData:
+                  $ref: "#/components/schemas/SystemData"
+                systemType:
+                  $ref: "#/components/schemas/SystemType"
+                access:
+                  $ref: "#/components/schemas/PermissionAccess"
+    NotificationNewTask:
+      allOf:
+        - $ref: "#/components/schemas/BaseNotification"
+        - type: object
+          properties:
+            type:
+              enum:
+                - newTask
+            data:
+              $ref: "#/components/schemas/Task"
+    Notification:
+      oneOf:
+        - $ref: "#/components/schemas/NotificationAddedToDocument"
+        - $ref: "#/components/schemas/NotificationModifyAccessInDocument"
+        - $ref: "#/components/schemas/NotificationExcludeFromDocument"
+        - $ref: "#/components/schemas/NotificationAddedToFolder"
+        - $ref: "#/components/schemas/NotificationModifyAccessInFolder"
+        - $ref: "#/components/schemas/NotificationExcludeFromFolder"
+        - $ref: "#/components/schemas/NotificationInviteToSpaceAsAdmin"
+        - $ref: "#/components/schemas/NotificationExcludeFromSpaceAsAdmin"
+        - $ref: "#/components/schemas/NotificationInviteToGroup"
+        - $ref: "#/components/schemas/NotificationToggleAdminGroup"
+        - $ref: "#/components/schemas/NotificationExcludeFromGroup"
+        - $ref: "#/components/schemas/NotificationAddedToModule"
+        - $ref: "#/components/schemas/NotificationModifyAccessInModule"
+        - $ref: "#/components/schemas/NotificationExcludeFromModule"
+        - $ref: "#/components/schemas/NotificationNewTask"
+    NotificationWithData:
+      allOf:
+        - $ref: "#/components/schemas/Notification"
+        - type: object
+          required:
+            - userData
+            - createdByData
+          properties:
+            createdByData:
+              $ref: "#/components/schemas/User"
+            userData:
+              $ref: "#/components/schemas/User"
+    PermissionAccess:
+      type: string
+      enum:
+        - read
+        - write
+        - sign
+    PermissionType:
+      type: string
+      enum:
+        - folder
+        - document
+        - sales
+        - factory
+        - resources
     FactoryTaskStatus:
       type: string
       enum:
@@ -1903,6 +2507,28 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
+    SearchNotificationsBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              limit:
+                type: integer
+              offset:
+                type: integer
+    SendCallbackNotificationBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+              action:
+                $ref: "#/components/schemas/NotificationCallbackAction"
     SearchSaleBatchesBody:
       content:
         application/json:
@@ -2345,6 +2971,28 @@ components:
           example:
             errorCode: document:404-version
             message: File not exist
+    SearchNotificationsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NotificationWithData"
+    NotificationNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: notification:404
+            message: Notification not found
     SearchSaleBatchesData:
       description: Successful operation
       content:
@@ -2628,6 +3276,12 @@ components:
       schema:
         type: string
         format: uuid
+    notificationId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
     saleBatchIdParam:
       in: path
       name: batchId
