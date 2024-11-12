@@ -2782,6 +2782,19 @@ components:
           schema:
             type: object
             properties:
+              mode:
+                type: string
+                enum:
+                  - my
+                  - all
+                  - responsible
+                  - creator
+                  - viewer
+              ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
               types:
                 type: array
                 items:
@@ -2808,10 +2821,12 @@ components:
                 type: array
                 items:
                   type: string
+                  format: uuid
               artifacts:
                 type: array
                 items:
                   type: string
+                  format: uuid
               createdBy:
                 type: array
                 items:

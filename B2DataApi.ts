@@ -1898,6 +1898,8 @@ export class B2DataApi<SecurityDataType extends unknown> {
      */
     searchTasks: (
       data: {
+        mode?: "my" | "all" | "responsible" | "creator" | "viewer";
+        ids?: string[];
         types?: TaskType[];
         status?: TaskStatus[];
         priority?: TaskPriority[];
