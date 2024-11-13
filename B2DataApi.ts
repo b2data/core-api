@@ -220,6 +220,21 @@ export interface GroupBase {
   name: string;
 }
 
+export type Group = GroupBase & {
+  order: number;
+  createdBy: string;
+  createdByData?: User;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+};
+
+export type GroupTreeItem = GroupBase & {
+  children?: any[] | null;
+  hasAccess?: boolean | null;
+};
+
 export type NotificationType =
   | "inviteToSpaceAsAdmin"
   | "excludeFromSpaceAsAdmin"
@@ -1212,6 +1227,151 @@ export class B2DataApi<SecurityDataType extends unknown> {
         ...params,
       }),
   };
+  groups = {
+    /**
+     * No description
+     *
+     * @tags Groups
+     * @name GetMyGroups
+     * @summary Get my groups
+     * @request GET:/groups/my
+     * @secure
+     */
+    getMyGroups: (params: RequestParams = {}) =>
+      this.http.request<GroupTreeItem[], any>({
+        path: `/groups/my`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Groups
+     * @name GetMyAdminGroups
+     * @summary Get my admin groups
+     * @request GET:/groups/my/admin
+     * @secure
+     */
+    getMyAdminGroups: (params: RequestParams = {}) =>
+      this.http.request<string[], any>({
+        path: `/groups/my/admin`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Groups
+     * @name CreateGroup
+     * @summary Create a new group
+     * @request POST:/groups
+     * @secure
+     */
+    createGroup: (
+      data: {
+        /** @format uuid */
+        parentId?: string | null;
+        name: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Group, any>({
+        path: `/groups`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Groups
+     * @name GetGroupById
+     * @summary Get a group by ID
+     * @request GET:/groups/{id}
+     * @secure
+     */
+    getGroupById: (id: string, params: RequestParams = {}) =>
+      this.http.request<Group, ErrorResponse>({
+        path: `/groups/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Groups
+     * @name EditGroup
+     * @summary Edit a group
+     * @request PATCH:/groups/{id}
+     * @secure
+     */
+    editGroup: (
+      id: string,
+      data: {
+        name?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Group, ErrorResponse>({
+        path: `/groups/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Groups
+     * @name DeleteGroup
+     * @summary Delete a group
+     * @request DELETE:/groups/{id}
+     * @secure
+     */
+    deleteGroup: (id: string, params: RequestParams = {}) =>
+      this.http.request<Group, ErrorResponse>({
+        path: `/groups/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Groups
+     * @name MoveGroup
+     * @summary Move a group
+     * @request PUT:/groups/move
+     * @secure
+     */
+    moveGroup: (
+      data: {
+        /** @format uuid */
+        id: string;
+        /** @format uuid */
+        parentId: string;
+        order: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Group, ErrorResponse>({
+        path: `/groups/move`,
+        method: "PUT",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+  };
   notifications = {
     /**
      * No description
@@ -1648,12 +1808,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Spaces
-     * @name GetSpaces
+     * @name GetMySpaces
      * @summary Get my spaces
      * @request GET:/spaces/my
      * @secure
      */
-    getSpaces: (params: RequestParams = {}) =>
+    getMySpaces: (params: RequestParams = {}) =>
       this.http.request<Space[], any>({
         path: `/spaces/my`,
         method: "GET",
@@ -1665,12 +1825,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Spaces
-     * @name SpacesCreate
+     * @name CreateSpace
      * @summary Create a new space
      * @request POST:/spaces
      * @secure
      */
-    spacesCreate: (
+    createSpace: (
       data: {
         name?: string;
         logo?: string | null;
@@ -1690,12 +1850,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Spaces
-     * @name SpacesPartialUpdate
+     * @name EditSpace
      * @summary Edit a space
      * @request PATCH:/spaces/{id}
      * @secure
      */
-    spacesPartialUpdate: (
+    editSpace: (
       id: string,
       data: {
         name?: string | null;
@@ -1715,12 +1875,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Spaces
-     * @name SpacesDelete
+     * @name DeleteSpace
      * @summary Delete a space
      * @request DELETE:/spaces/{id}
      * @secure
      */
-    spacesDelete: (id: string, params: RequestParams = {}) =>
+    deleteSpace: (id: string, params: RequestParams = {}) =>
       this.http.request<Space, ErrorResponse>({
         path: `/spaces/${id}`,
         method: "DELETE",
@@ -1732,12 +1892,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Spaces
-     * @name UsersSearchCreate
+     * @name SearchSpaceUsers
      * @summary Search space users
      * @request POST:/spaces/users/search
      * @secure
      */
-    usersSearchCreate: (
+    searchSpaceUsers: (
       data: {
         searchTerm?: string | null;
         groups?: string[];
@@ -1765,12 +1925,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Spaces
-     * @name UsersSearchOptionsCreate
+     * @name SearchSpaceUsersGroups
      * @summary Search space users or groups
      * @request POST:/spaces/users/search-options
      * @secure
      */
-    usersSearchOptionsCreate: (
+    searchSpaceUsersGroups: (
       data: {
         searchTerm?: string | null;
         spaceId: string;
@@ -1795,12 +1955,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Spaces
-     * @name UsersDetail
+     * @name GetSpaceUser
      * @summary Get space user details
      * @request GET:/spaces/users/{id}
      * @secure
      */
-    usersDetail: (id: string, params: RequestParams = {}) =>
+    getSpaceUser: (id: string, params: RequestParams = {}) =>
       this.http.request<SpaceUserSearch, any>({
         path: `/spaces/users/${id}`,
         method: "GET",
@@ -1812,12 +1972,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Spaces
-     * @name UsersCreate
+     * @name CreateSpaceUser
      * @summary Create a new space user
      * @request POST:/spaces/users
      * @secure
      */
-    usersCreate: (
+    createSpaceUser: (
       data: {
         userId?: string;
         groupId?: string | null;
@@ -1836,12 +1996,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Spaces
-     * @name UsersPartialUpdate
+     * @name EditSpaceUser
      * @summary Edit a space user
      * @request PATCH:/spaces/users
      * @secure
      */
-    usersPartialUpdate: (
+    editSpaceUser: (
       data: {
         isAdmin?: boolean;
         userId?: string;
@@ -1861,12 +2021,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Spaces
-     * @name UsersDelete
+     * @name DeleteSpaceUser
      * @summary Delete a space user
      * @request DELETE:/spaces/users
      * @secure
      */
-    usersDelete: (
+    deleteSpaceUser: (
       query: {
         /** User ID */
         userId: string;

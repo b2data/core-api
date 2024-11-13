@@ -11,6 +11,7 @@ tags:
   - name: Documents
   - name: Files
   - name: Folders
+  - name: Groups
   - name: Notifications
   - name: Permissions
   - name: Sales
@@ -276,6 +277,129 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FileNotFound"
+  /groups/my:
+    get:
+      summary: Get my groups
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      operationId: getMyGroups
+      responses:
+        "200":
+          $ref: "#/components/responses/GroupTreeItemData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /groups/my/admin:
+    get:
+      summary: Get my admin groups
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      operationId: getMyAdminGroups
+      responses:
+        "200":
+          $ref: "#/components/responses/AdminGroupsData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /groups:
+    post:
+      summary: Create a new group
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      operationId: createGroup
+      requestBody:
+        $ref: "#/components/requestBodies/CreateGroupBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/GroupData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  "/groups/{id}":
+    get:
+      summary: Get a group by ID
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      operationId: getGroupById
+      parameters:
+        - $ref: "#/components/parameters/groupId"
+      responses:
+        "200":
+          $ref: "#/components/responses/GroupData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/GroupNotFound"
+    patch:
+      summary: Edit a group
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      operationId: editGroup
+      parameters:
+        - $ref: "#/components/parameters/groupId"
+      requestBody:
+        $ref: "#/components/requestBodies/EditGroupBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/GroupData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/GroupNotFound"
+    delete:
+      summary: Delete a group
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      operationId: deleteGroup
+      parameters:
+        - $ref: "#/components/parameters/groupId"
+      responses:
+        "200":
+          $ref: "#/components/responses/GroupData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/GroupNotFound"
+  /groups/move:
+    put:
+      summary: Move a group
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      operationId: moveGroup
+      requestBody:
+        $ref: "#/components/requestBodies/MoveGroupBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/GroupData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/GroupNotFound"
   /notifications/unread:
     get:
       summary: Get unread notifications
@@ -630,6 +754,7 @@ paths:
         - Spaces
       security:
         - BearerAuth: []
+      operationId: getMySpaces
       responses:
         "200":
           $ref: "#/components/responses/SpaceArrayData"
@@ -642,6 +767,7 @@ paths:
         - Spaces
       security:
         - BearerAuth: []
+      operationId: createSpace
       requestBody:
         $ref: "#/components/requestBodies/CreateSpaceBody"
       responses:
@@ -658,6 +784,7 @@ paths:
         - Spaces
       security:
         - BearerAuth: []
+      operationId: editSpace
       parameters:
         - $ref: "#/components/parameters/spaceIdParam"
       requestBody:
@@ -679,6 +806,7 @@ paths:
         - Spaces
       security:
         - BearerAuth: []
+      operationId: deleteSpace
       parameters:
         - $ref: "#/components/parameters/spaceIdParam"
       responses:
@@ -697,6 +825,7 @@ paths:
         - Spaces
       security:
         - BearerAuth: []
+      operationId: searchSpaceUsers
       requestBody:
         $ref: "#/components/requestBodies/SearchSpaceUsersBody"
       responses:
@@ -713,6 +842,7 @@ paths:
         - Spaces
       security:
         - BearerAuth: []
+      operationId: searchSpaceUsersGroups
       requestBody:
         $ref: "#/components/requestBodies/SearchSpaceUsersGroupsBody"
       responses:
@@ -729,6 +859,7 @@ paths:
         - Spaces
       security:
         - BearerAuth: []
+      operationId: getSpaceUser
       parameters:
         - $ref: "#/components/parameters/userIdParam"
       responses:
@@ -745,6 +876,7 @@ paths:
         - Spaces
       security:
         - BearerAuth: []
+      operationId: createSpaceUser
       requestBody:
         $ref: "#/components/requestBodies/ModifySpaceUserBody"
       responses:
@@ -762,6 +894,7 @@ paths:
         - Spaces
       security:
         - BearerAuth: []
+      operationId: editSpaceUser
       requestBody:
         $ref: "#/components/requestBodies/EditSpaceUserBody"
       responses:
@@ -781,6 +914,7 @@ paths:
         - Spaces
       security:
         - BearerAuth: []
+      operationId: deleteSpaceUser
       parameters:
         - name: userId
           in: query
@@ -1348,6 +1482,41 @@ components:
           nullable: true
         name:
           type: string
+    Group:
+      allOf:
+        - $ref: "#/components/schemas/GroupBase"
+        - type: object
+          required:
+            - order
+            - createdBy
+            - createdAt
+            - updatedAt
+          properties:
+            order:
+              type: integer
+            createdBy:
+              type: string
+            createdByData:
+              $ref: "#/components/schemas/User"
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+    GroupTreeItem:
+      allOf:
+        - $ref: "#/components/schemas/GroupBase"
+        - type: object
+          properties:
+            children:
+              type: array
+              items: null
+              $ref: "#/components/schemas/GroupTreeItem"
+              nullable: true
+            hasAccess:
+              type: boolean
+              nullable: true
     NotificationType:
       type: string
       enum:
@@ -2507,6 +2676,49 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
+    CreateGroupBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              parentId:
+                type: string
+                format: uuid
+                nullable: true
+              name:
+                type: string
+    EditGroupBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+    MoveGroupBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+              - parentId
+              - order
+            properties:
+              id:
+                type: string
+                format: uuid
+              parentId:
+                type: string
+                format: uuid
+              order:
+                type: integer
     SearchNotificationsBody:
       required: true
       content:
@@ -2986,6 +3198,37 @@ components:
           example:
             errorCode: document:404-version
             message: File not exist
+    GroupTreeItemData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/GroupTreeItem"
+    AdminGroupsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: string
+    GroupData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Group"
+    GroupNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: group:404
+            message: Group not found
     SearchNotificationsData:
       description: Successful operation
       content:
@@ -3291,12 +3534,20 @@ components:
       schema:
         type: string
         format: uuid
+    groupId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
     notificationId:
       name: id
       in: path
       required: true
       schema:
         type: string
+        format: uuid
     saleBatchIdParam:
       in: path
       name: batchId
