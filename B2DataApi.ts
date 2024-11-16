@@ -2150,7 +2150,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
         priority?: TaskPriority;
         name?: string;
         description?: string | null;
-        attachments?: string[] | null;
+        attachments?: string[];
         storyPoints?: number | null;
         /** @format date-time */
         dueDate?: string | null;
@@ -2159,7 +2159,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<Task, ErrorResponse>({
+      this.http.request<TaskWithData, ErrorResponse>({
         path: `/tasks/${id}`,
         method: "PATCH",
         body: data,

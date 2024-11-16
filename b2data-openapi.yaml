@@ -1008,7 +1008,7 @@ paths:
         $ref: "#/components/requestBodies/EditTaskBody"
       responses:
         "200":
-          $ref: "#/components/responses/Task"
+          $ref: "#/components/responses/TaskWithData"
         "400":
           $ref: "#/components/responses/InvalidData"
         "401":
@@ -3095,7 +3095,6 @@ components:
                 type: array
                 items:
                   type: string
-                nullable: true
               storyPoints:
                 type: number
                 nullable: true
