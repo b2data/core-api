@@ -191,8 +191,8 @@ export class HttpClient<SecurityDataType = unknown> {
           property instanceof Blob
             ? property
             : typeof property === "object" && property !== null
-            ? JSON.stringify(property)
-            : `${property}`,
+              ? JSON.stringify(property)
+              : `${property}`,
         );
         return formData;
       }, new FormData()),
@@ -265,7 +265,7 @@ export class HttpClient<SecurityDataType = unknown> {
       signal: (cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal) || null,
       body: typeof body === "undefined" || body === null ? null : payloadFormatter(body),
     }).then(async (response) => {
-      const r = response as HttpResponse<T, E>;
+      const r = response.clone() as HttpResponse<T, E>;
       r.data = null as unknown as T;
       r.error = null as unknown as E;
 
@@ -296,11 +296,11 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title REST API for B2Data Payments
+ * @title REST API for B2Payments
  * @version 1.0.0
  * @baseUrl http://localhost:8081
  */
-export class Api<SecurityDataType extends unknown> {
+export class B2PaymentApi<SecurityDataType extends unknown> {
   http: HttpClient<SecurityDataType>;
 
   constructor(http: HttpClient<SecurityDataType>) {

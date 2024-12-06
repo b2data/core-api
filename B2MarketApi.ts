@@ -182,29 +182,6 @@ export interface AdminAccess {
   userData?: User;
 }
 
-export interface DeliveryIdpBase {
-  /**
-   * Delivery idP
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Product ID
-   * @format uuid
-   */
-  productId: string;
-  /**
-   * Item ID
-   * @format uuid
-   */
-  itemId: string;
-  /**
-   * Batch ID
-   * @format uuid
-   */
-  batchId: string;
-}
-
 export interface DeliveryIdtBase {
   /**
    * Delivery idT ID
@@ -224,63 +201,24 @@ export interface DeliveryIdtBase {
   providerId?: string;
 }
 
-export interface DeliveryIdt {
+export interface DeliveryIdp {
   /**
-   * Delivery idT ID
+   * Delivery idP ID
    * @format uuid
    */
   id: string;
-  /** Delivery idT unique key in format `A_000001` */
-  key: string;
-  /** Delivery idT status */
-  status: "created" | "storage" | "delivery" | "provider" | "lost" | "destroyed";
-  /** Wallet of responsible user */
-  responsible: string;
   /**
-   * Provider ID
+   * Product Batch External ID
    * @format uuid
    */
-  providerId?: string;
-  /** List of idP in idT */
-  contains: DeliveryIdpBase[];
-  /** Wallet Address */
-  createdBy: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  /**
-   * Delete Date
-   * @format date-time
-   */
-  deletedAt?: string;
+  batchId: string;
+  /** Product Item Name */
+  name: string;
 }
 
-export interface DeliveryIdtWithData {
-  /**
-   * Delivery idT ID
-   * @format uuid
-   */
-  id: string;
-  /** Delivery idT unique key in format `A_000001` */
-  key: string;
-  /** Delivery idT status */
-  status: "created" | "storage" | "delivery" | "provider" | "lost" | "destroyed";
-  /** Wallet of responsible user */
-  responsible: string;
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  providerId?: string;
+export type DeliveryIdt = DeliveryIdtBase & {
   /** List of idP in idT */
-  contains: DeliveryIdpBase[];
+  contains: DeliveryIdp[];
   /** Wallet Address */
   createdBy: string;
   /**
@@ -298,11 +236,14 @@ export interface DeliveryIdtWithData {
    * @format date-time
    */
   deletedAt?: string;
+};
+
+export type DeliveryIdtWithData = DeliveryIdt & {
   createdByData: User;
   responsibleData: User;
   /** Provider Name */
   providerName?: string;
-}
+};
 
 export interface DictionaryWord {
   /**
@@ -375,6 +316,8 @@ export interface Folder {
   parentId?: string | null;
   /** Folder name */
   name: string;
+  /** Commission that applies to products in this folder */
+  commission: number;
   /** Folder photo */
   photo?: string;
   /** Folder order */
@@ -451,90 +394,14 @@ export interface FolderFilter {
   updatedAt: string;
 }
 
-export interface FolderTreeItem {
-  /**
-   * Folder ID
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Folder parent ID
-   * @format uuid
-   */
-  parentId?: string | null;
-  /** Folder name */
-  name: string;
-  /** Folder photo */
-  photo?: string;
-  /** Folder order */
-  order?: number;
-  /** If `true` - shows everyone, if `null` - on review to make public, if `false` - shows only for creator */
-  isPublic?: boolean;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy: string;
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  providerId?: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
+export type FolderTreeItem = Folder & {
   children?: FolderTreeItem[];
-}
+};
 
-export interface FolderFullData {
-  /**
-   * Folder ID
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Folder parent ID
-   * @format uuid
-   */
-  parentId?: string | null;
-  /** Folder name */
-  name: string;
-  /** Folder photo */
-  photo?: string;
-  /** Folder order */
-  order?: number;
-  /** If `true` - shows everyone, if `null` - on review to make public, if `false` - shows only for creator */
-  isPublic?: boolean;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy: string;
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  providerId?: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  createdByData?: User;
+export type FolderFullData = Folder & {
   filters: FolderFilter[];
-}
+  createdByData?: User;
+};
 
 export interface OrderBase {
   /**
@@ -598,57 +465,11 @@ export interface OrderPositionBase {
   txHash?: string;
 }
 
-export interface OrderPositionBaseWithItemData {
-  /**
-   * Order Position ID
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  providerId: string;
-  /** Order Position price */
-  price: number;
-  /** Amount of idP */
-  amount: number;
-  /** Order Position status */
-  status:
-    | "created"
-    | "confirmed"
-    | "production"
-    | "delivery"
-    | "cancelling"
-    | "cancelled"
-    | "completed"
-    | "dispute"
-    | "returned"
-    | "failed";
-  /** Payment transaction hash */
-  txHash?: string;
+export type OrderPositionBaseWithItemData = OrderPositionBase & {
   itemData: ProductItemBase;
-}
+};
 
-export interface Order {
-  /**
-   * Order ID
-   * @format uuid
-   */
-  id: string;
-  /** Order unique key */
-  key: string;
-  /** Order status */
-  status: "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
-  /**
-   * Pick-up place ID
-   * @format uuid
-   */
-  placeId: string;
-  /** Total order price, can be changed if some position will be canceled */
-  totalPrice: number;
-  /** Payment transaction hash */
-  txHash?: string;
+export type Order = OrderBase & {
   /** Wallet Address */
   createdBy: string;
   /**
@@ -666,128 +487,25 @@ export interface Order {
    * @format date-time
    */
   deletedAt?: string;
-}
+};
 
-export interface OrderWithData {
-  /**
-   * Order ID
-   * @format uuid
-   */
-  id: string;
-  /** Order unique key */
-  key: string;
-  /** Order status */
-  status: "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
-  /**
-   * Pick-up place ID
-   * @format uuid
-   */
-  placeId: string;
-  /** Total order price, can be changed if some position will be canceled */
-  totalPrice: number;
-  /** Payment transaction hash */
-  txHash?: string;
-  /** Wallet Address */
-  createdBy: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  /**
-   * Delete Date
-   * @format date-time
-   */
-  deletedAt?: string;
+export type OrderWithData = Order & {
   createdByData: User;
   positions: OrderPositionBaseWithItemData[];
-}
+};
 
-export interface OrderWithFullData {
-  /**
-   * Order ID
-   * @format uuid
-   */
-  id: string;
-  /** Order unique key */
-  key: string;
-  /** Order status */
-  status: "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
-  /**
-   * Pick-up place ID
-   * @format uuid
-   */
-  placeId: string;
-  /** Total order price, can be changed if some position will be canceled */
-  totalPrice: number;
-  /** Payment transaction hash */
-  txHash?: string;
-  /** Wallet Address */
-  createdBy: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  /**
-   * Delete Date
-   * @format date-time
-   */
-  deletedAt?: string;
+export type OrderWithFullData = Order & {
   createdByData: User;
   positions: OrderPositionWithData[];
   placeData: Place;
-}
+};
 
-export interface OrderPosition {
-  /**
-   * Order Position ID
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  providerId: string;
-  /** Order Position price */
-  price: number;
-  /** Amount of idP */
-  amount: number;
-  /** Order Position status */
-  status:
-    | "created"
-    | "confirmed"
-    | "production"
-    | "delivery"
-    | "cancelling"
-    | "cancelled"
-    | "completed"
-    | "dispute"
-    | "returned"
-    | "failed";
-  /** Payment transaction hash */
-  txHash?: string;
+export type OrderPosition = OrderPositionBase & {
   /**
    * Order ID
    * @format uuid
    */
   orderId: string;
-  /**
-   * Product ID
-   * @format uuid
-   */
-  productId: string;
   /**
    * Product Item ID
    * @format uuid
@@ -808,71 +526,13 @@ export interface OrderPosition {
    * @format date-time
    */
   deletedAt?: string;
-}
+};
 
-export interface OrderPositionWithData {
-  /**
-   * Order Position ID
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  providerId: string;
-  /** Order Position price */
-  price: number;
-  /** Amount of idP */
-  amount: number;
-  /** Order Position status */
-  status:
-    | "created"
-    | "confirmed"
-    | "production"
-    | "delivery"
-    | "cancelling"
-    | "cancelled"
-    | "completed"
-    | "dispute"
-    | "returned"
-    | "failed";
-  /** Payment transaction hash */
-  txHash?: string;
-  /**
-   * Order ID
-   * @format uuid
-   */
-  orderId: string;
-  /**
-   * Product ID
-   * @format uuid
-   */
-  productId: string;
-  /**
-   * Product Item ID
-   * @format uuid
-   */
-  itemId: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  /**
-   * Delete Date
-   * @format date-time
-   */
-  deletedAt?: string;
+export type OrderPositionWithData = OrderPosition & {
   itemData: ProductItemBase;
   /** Provider Name */
   providerName: string;
-}
+};
 
 export interface Place {
   /**
@@ -971,8 +631,6 @@ export interface Product {
    * @format uuid
    */
   providerId: string;
-  /** Provider Name */
-  providerName?: string;
   /** Blocked by B2Market moderation */
   isBlocked?: boolean;
   /**
@@ -992,57 +650,17 @@ export interface Product {
   deletedAt?: string;
 }
 
-export interface ProductWithData {
-  /**
-   * Product ID
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Product External ID form Provider
-   * @format uuid
-   */
-  externalId: string;
-  /** Product name */
-  name: string;
-  /** Product description */
-  description?: string;
-  /** Product photos */
-  photos?: string[];
-  /** Product videos */
-  videos?: string[];
-  /** Wallet Address */
-  createdBy: string;
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  providerId: string;
+export type ProductWithData = Product & {
   /** Provider Name */
-  providerName?: string;
-  /** Blocked by B2Market moderation */
-  isBlocked?: boolean;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  /**
-   * Delete Date
-   * @format date-time
-   */
-  deletedAt?: string;
+  providerName: string;
   /** Catalogs where product is shown */
   folders: string[];
+  /** Product items IDs */
+  items: string[];
   createdByData: User;
   /** Tags that define catalog */
   tagsData: Tag[];
-}
+};
 
 export interface ProductFilter {
   field: string;
@@ -1067,14 +685,17 @@ export interface ProductItemBase {
   name: string;
   /** Product Item photos */
   photos?: string[];
+  /** Amount of available idPacks */
+  amountAvailable: number;
+  /** Amount of pre-order idPacks */
+  amountPreOrder: number;
+  /** Amount idPacks in idTare to start delivery */
+  amountInIdt: number;
+  /** Amount of goods in idPack */
+  amountInIdp: number;
 }
 
-export interface ProductItem {
-  /**
-   * Product Item ID
-   * @format uuid
-   */
-  id: string;
+export type ProductItem = ProductItemBase & {
   /**
    * Product Item External ID form Provider
    * @format uuid
@@ -1095,17 +716,13 @@ export interface ProductItem {
    * @format uuid
    */
   productId: string;
-  /** Product Item name */
-  name: string;
-  /** Product Item photos */
-  photos?: string[];
-  /** Wallet Address */
-  createdBy: string;
   /**
    * Provider ID
    * @format uuid
    */
   providerId: string;
+  /** Wallet Address */
+  createdBy: string;
   /**
    * Creation Date
    * @format date-time
@@ -1121,60 +738,11 @@ export interface ProductItem {
    * @format date-time
    */
   deletedAt?: string;
-}
+  /** Product Item is published */
+  isPublished?: boolean;
+};
 
-export interface ProductItemWithData {
-  /**
-   * Product Item ID
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Product Item External ID form Provider
-   * @format uuid
-   */
-  externalId: string;
-  /**
-   * Product Version External ID form Provider
-   * @format uuid
-   */
-  externalVersionId: string;
-  /**
-   * Product Item Configuration External ID form Provider
-   * @format uuid
-   */
-  externalConfigId?: string;
-  /**
-   * Product ID
-   * @format uuid
-   */
-  productId: string;
-  /** Product Item name */
-  name: string;
-  /** Product Item photos */
-  photos?: string[];
-  /** Wallet Address */
-  createdBy: string;
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  providerId: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  /**
-   * Delete Date
-   * @format date-time
-   */
-  deletedAt?: string;
+export type ProductItemWithData = ProductItem & {
   createdByData: User;
   tagsData: Tag[];
   configurations: ProductCardConfiguration[];
@@ -1182,7 +750,22 @@ export interface ProductItemWithData {
   description?: string;
   unitInfo?: UnitInfo;
   /** Provider Name */
-  providerName?: string;
+  providerName: string;
+};
+
+export interface ProductItemLike {
+  /**
+   * Product Item ID
+   * @format uuid
+   */
+  itemId: string;
+  /** Wallet Address */
+  createdBy: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
 }
 
 export interface ProductBatch {
@@ -1215,7 +798,7 @@ export interface ProductBatch {
    * Product Item ID
    * @format uuid
    */
-  itemId?: string;
+  itemId: string;
   /**
    * Provider ID
    * @format uuid
@@ -1225,40 +808,24 @@ export interface ProductBatch {
   createdBy: string;
   /** Batch key from Provider */
   key: string;
-  /** Batch status */
-  status: "preOrder" | "available" | "inProduction" | "sold" | "canceled";
-  /** Current Batch price */
-  price: number;
+  /** Product Item Name */
+  name: string;
   /** Attachment documents */
   attachments?: string[];
   /** Amount idPacks in the Batch */
   amount: number;
-  /** Amount idPacks in idTare to start delivery */
-  amountInIDT: number;
   /** Amount of goods in idPack */
-  amountInIDP: number;
-  /** Condition of minimum idPack to start production process (for pre-order) */
-  condition?: number;
-  /**
-   * The date when provider decides to start production process (for pre-order)
-   * @format date-time
-   */
-  untilDate?: string;
-  /**
-   * The start date of production process
-   * @format date-time
-   */
-  startDate?: string;
-  /**
-   * The production duration (days)
-   * @format date-time
-   */
-  duration?: string;
+  amountInIdp: number;
   /**
    * The production release date
    * @format date-time
    */
-  releaseDate?: string;
+  produceDate: string;
+  /** Logistic information */
+  logisticInfo: object;
+  /** Storage information */
+  storageInfo: object;
+  unitInfo: UnitInfo;
   /**
    * Creation Date
    * @format date-time
@@ -1276,37 +843,33 @@ export interface ProductBatch {
   deletedAt?: string;
 }
 
-export interface ProductBatchWithData {
+export type ProductBatchWithData = ProductBatch & {
+  createdByData: User;
+  /** Provider Name */
+  providerName: string;
+};
+
+export interface ProductPrice {
   /**
-   * Batch ID
+   * Product Price ID
    * @format uuid
    */
   id: string;
+  /**
+   * Price External ID form Provider
+   * @format uuid
+   */
+  externalId: string;
   /**
    * Product ID
    * @format uuid
    */
   productId: string;
   /**
-   * Batch External ID form Provider
-   * @format uuid
-   */
-  externalId: string;
-  /**
-   * Product Version External ID form Provider
-   * @format uuid
-   */
-  externalVersionId: string;
-  /**
-   * Product Item Configuration External ID form Provider
-   * @format uuid
-   */
-  externalConfigId?: string;
-  /**
    * Product Item ID
    * @format uuid
    */
-  itemId?: string;
+  itemId: string;
   /**
    * Provider ID
    * @format uuid
@@ -1314,42 +877,18 @@ export interface ProductBatchWithData {
   providerId: string;
   /** Wallet Address */
   createdBy: string;
-  /** Batch key from Provider */
-  key: string;
-  /** Batch status */
-  status: "preOrder" | "available" | "inProduction" | "sold" | "canceled";
-  /** Current Batch price */
+  /** Price of the product */
   price: number;
-  /** Attachment documents */
-  attachments?: string[];
-  /** Amount idPacks in the Batch */
-  amount: number;
-  /** Amount idPacks in idTare to start delivery */
-  amountInIDT: number;
-  /** Amount of goods in idPack */
-  amountInIDP: number;
-  /** Condition of minimum idPacks to start production process (for pre-order) */
-  condition?: number;
   /**
-   * The date when provider decides to start production process (for pre-order)
+   * Start date of the price validity
    * @format date-time
    */
-  untilDate?: string;
+  startDate: string;
   /**
-   * The start date of production process
+   * End date of the price validity
    * @format date-time
    */
-  startDate?: string;
-  /**
-   * The production duration (days)
-   * @format date-time
-   */
-  duration?: string;
-  /**
-   * The production release date
-   * @format date-time
-   */
-  releaseDate?: string;
+  endDate?: string | null;
   /**
    * Creation Date
    * @format date-time
@@ -1360,57 +899,66 @@ export interface ProductBatchWithData {
    * @format date-time
    */
   updatedAt: string;
-  /**
-   * Delete Date
-   * @format date-time
-   */
-  deletedAt?: string;
-  createdByData: User;
-  itemData?: ProductItemBase;
-  /** Provider Name */
-  providerName: string;
 }
 
-export interface ProductItemLike {
+export type ProductPriceWithData = ProductPrice & {
+  createdByData: User;
+  itemData: ProductItemBase;
+};
+
+export interface ProductIdp {
   /**
-   * Product Item ID
+   * idP ID
    * @format uuid
    */
-  itemId: string;
+  id: string;
   /** Wallet Address */
   createdBy: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /**
+   * Batch ID
+   * @format uuid
+   */
+  batchId: string;
   /**
    * Creation Date
    * @format date-time
    */
   createdAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string;
 }
+
+export type ProductIdpWithData = ProductIdp & {
+  createdByData: User;
+  batchData: ProductBatchPublic;
+};
 
 export interface ProductCardPrice {
   /**
-   * Batch ID
+   * Product Price ID
    * @format uuid
    */
   id: string;
-  /** Type of price */
-  type?: "preOrder" | "available";
-  /** Current price */
+  /** Price of the product */
   price: number;
-  /** Total amount of idPacks */
-  amount: number;
-  /** Amount idPacks in idTare to start delivery */
-  amountInIDT: number;
-  /** Amount of goods in idPack */
-  amountInIDP: number;
-  /** Amount of idPacks that was ordered */
-  orderedAmount: number;
   /**
-   * The end date for this price
+   * Start date of the price validity
    * @format date-time
    */
-  endDate?: string;
-  /** Condition of minimum idPacks to start production process (for pre-order) */
-  condition?: number;
+  startDate: string;
+  /**
+   * End date of the price validity
+   * @format date-time
+   */
+  endDate?: string | null;
 }
 
 export interface ProductCardConfiguration {
@@ -1423,42 +971,19 @@ export interface ProductCardConfiguration {
   }[];
 }
 
-export interface ProductCard {
-  /**
-   * Product Item ID
-   * @format uuid
-   */
-  id: string;
+export type ProductCard = ProductItemBase & {
   /**
    * Product ID
    * @format uuid
    */
   productId: string;
-  /** Product Item name */
-  name: string;
-  /** Product Item photos */
-  photos?: string[];
-  unitInfo?: UnitInfo;
+  unitInfo: UnitInfo;
   /** Current user liked this card or not */
   isLiked?: boolean;
-  prices: ProductCardPrice[];
-}
+  currentPrice: ProductCardPrice;
+};
 
-export interface ProductCardWithData {
-  /**
-   * Product Item ID
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Product ID
-   * @format uuid
-   */
-  productId: string;
-  /** Product Item name */
-  name: string;
-  /** Product Item photos */
-  photos?: string[];
+export type ProductCardWithData = ProductCard & {
   /**
    * Provider ID
    * @format uuid
@@ -1472,14 +997,10 @@ export interface ProductCardWithData {
   tagsData: Tag[];
   /** Product description */
   description?: string;
-  unitInfo?: UnitInfo;
   /** Provider Name */
-  providerName?: string;
-  /** Current user liked this card or not */
-  isLiked?: boolean;
-  prices: ProductCardPrice[];
+  providerName: string;
   configurations: ProductCardConfiguration[];
-}
+};
 
 export interface ProductBatchPublic {
   /**
@@ -1494,40 +1015,22 @@ export interface ProductBatchPublic {
   providerId: string;
   /** Batch key from Provider */
   key: string;
-  /** Batch status */
-  status: "preOrder" | "available" | "inProduction" | "sold" | "canceled";
-  /** Current Batch price */
-  price: number;
+  /** Product Item Name */
+  name: string;
   /** Attachment documents */
   attachments?: string[];
   /** Amount idPacks in the Batch */
   amount: number;
-  /** Amount idPacks in idTare to start delivery */
-  amountInIDT: number;
   /** Amount of goods in idPack */
-  amountInIDP: number;
-  /** Condition of minimum idPacks to start production process (for pre-order) */
-  condition?: number;
-  /**
-   * The date when provider decides to start production process (for pre-order)
-   * @format date-time
-   */
-  untilDate?: string;
-  /**
-   * The start date of production process
-   * @format date-time
-   */
-  startDate?: string;
-  /**
-   * The production duration (days)
-   * @format date-time
-   */
-  duration?: string;
+  amountInIdp: number;
   /**
    * The production release date
    * @format date-time
    */
-  releaseDate?: string;
+  produceDate: string;
+  /** Storage information */
+  storageInfo: object;
+  unitInfo: UnitInfo;
   /**
    * Creation Date
    * @format date-time
@@ -1538,14 +1041,8 @@ export interface ProductBatchPublic {
    * @format date-time
    */
   updatedAt: string;
-  /**
-   * Delete Date
-   * @format date-time
-   */
-  deletedAt?: string;
-  itemData: ProductItemBase;
   /** Provider Name */
-  providerName?: string;
+  providerName: string;
 }
 
 export interface ProviderProfile {
@@ -1595,62 +1092,18 @@ export interface ProviderProfile {
   deletedAt?: string | null;
 }
 
-export interface ProviderProfileWithData {
-  /**
-   * Provider Profile ID (same as Provider ID)
-   * @format uuid
-   */
-  id: string;
-  /** Provider trade name shows in marketplace */
-  name: string;
-  /** Provider Profile context shows */
-  content?: string;
-  /** Provider Profile photos */
-  photos?: string[];
-  /** Provider Profile intro video */
-  video?: string;
-  /**
-   * Dispatch place ID
-   * @format uuid
-   */
-  dispatchPlaceId?: string;
-  /** External ID of place where provider is mentioned */
-  locationExternalId?: string;
-  /** Place latitude coordinate */
-  locationLat?: number;
-  /** Place longitude coordinate */
-  locationLong?: number;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  /**
-   * Deleted Date
-   * @format date-time
-   */
-  deletedAt?: string | null;
+export type ProviderProfileWithData = ProviderProfile & {
   /** 2d level catalogs in marketplace based on products */
-  produceCategories?: string[];
+  produceCategories: string[];
   /** Number of products that was created on marketplace including deleted */
-  deployProducts?: number;
+  deployProducts: number;
   /** Number of completed orders */
-  completedOrders?: number;
+  completedOrders: number;
   /** Number of active orders */
-  activeOrders?: number;
+  activeOrders: number;
   /** Number of total orders */
-  totalOrders?: number;
-}
+  totalOrders: number;
+};
 
 export interface Tag {
   /**
@@ -1695,214 +1148,143 @@ export interface Tag {
   updatedAt: string;
 }
 
-export interface Task {
-  /**
-   * Task ID
-   * @format uuid
-   */
+export type TaskType =
+  | "productItemReview"
+  | "simpleTask"
+  | "fillIdt"
+  | "pickUpIdt"
+  | "receiveIdt"
+  | "giveOutIdt"
+  | "deliverIdt";
+
+export type TaskStatus = "new" | "todo" | "progress" | "blocked" | "review" | "done" | "discard";
+
+export type TaskPriority = "low" | "medium" | "high";
+
+export type TaskArtefactType = "product";
+
+export interface TaskIdtWithIdp {
   id: string;
-  /** Task key */
   key: string;
-  /** Task type */
-  type: "simpleTask" | "productItemReview" | "fillIdt" | "pickUpIdt" | "receiveIdt" | "giveOutIdt" | "deliverIdt";
-  /** Task status */
-  status: "new" | "inProgress" | "review" | "done" | "discard";
-  /** Task priority */
-  priority: "low" | "medium" | "high";
-  /** Task name */
-  name: string;
-  /** Task description */
-  description: string;
-  /** Attached files */
-  files: string[];
-  /** ID of artefact that link with task */
-  artefactId?: string;
-  /** Type of artefact that link with task */
-  artefactType?: string;
-  data: TaskData;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
+  contains: DeliveryIdp[];
+}
+
+export interface BaseTask {
+  id: string;
+  key: string;
+  type: TaskType;
+  status: TaskStatus;
+  priority: TaskPriority;
   assignee?: string;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy?: string;
-  /** Provider ID */
-  providerId?: string;
-  /**
-   * Due Date
-   * @format date-time
-   */
+  createdBy: string;
+  providerId: string;
+  name: string;
+  description: string;
+  files: string[];
+  /** @format date-time */
   dueDate?: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
+  data: object;
+  artefactId?: string;
+  artefactType?: TaskArtefactType;
+  /** @format date-time */
   createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
+  /** @format date-time */
   updatedAt: string;
 }
 
-export interface TaskWithData {
-  /**
-   * Task ID
-   * @format uuid
-   */
-  id: string;
-  /** Task key */
-  key: string;
-  /** Task type */
-  type: "simpleTask" | "productItemReview" | "fillIdt" | "pickUpIdt" | "receiveIdt" | "giveOutIdt" | "deliverIdt";
-  /** Task status */
-  status: "new" | "inProgress" | "review" | "done" | "discard";
-  /** Task priority */
-  priority: "low" | "medium" | "high";
-  /** Task name */
-  name: string;
-  /** Task description */
-  description: string;
-  /** Attached files */
-  files: string[];
-  /** ID of artefact that link with task */
-  artefactId?: string;
-  /** Type of artefact that link with task */
-  artefactType?: string;
-  data: TaskData;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  assignee?: string;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy?: string;
-  /** Provider ID */
-  providerId?: string;
-  /**
-   * Due Date
-   * @format date-time
-   */
-  dueDate?: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
+export type TaskSimple = BaseTask & {
+  type?: "simpleTask";
+};
+
+export type TaskProductItemReview = BaseTask & {
+  type?: "productItemReview";
+  data?: {
+    comment?: string;
+    status?: "blocked" | "published";
+  };
+};
+
+export type TaskFillIdt = BaseTask & {
+  type?: "fillIdt";
+  data?: {
+    documentId?: string;
+    versionId?: string;
+    configId?: string;
+    orders?: string[];
+    name?: string;
+    amount?: number;
+    idtList?: TaskIdtWithIdp[];
+  };
+};
+
+export type TaskPickUpIdt = BaseTask & {
+  type?: "pickUpIdt";
+  data?: {
+    placeId?: string;
+    pickUpSubtasks?: {
+      providerId?: string;
+      providerName?: string;
+      locationLat?: number;
+      locationLong?: number;
+      idtList?: TaskIdtWithIdp[];
+      completed?: boolean;
+    }[];
+  };
+};
+
+export type TaskReceiveIdt = BaseTask & {
+  type?: "receiveIdt";
+  data?: {
+    placeId?: string;
+    fromUserId?: string;
+    fromUserName?: string;
+    idtList?: TaskIdtWithIdp[];
+  };
+};
+
+export type TaskGiveOutIdt = BaseTask & {
+  type?: "giveOutIdt";
+  data?: {
+    placeId?: string;
+    toUserId?: string;
+    toUserName?: string;
+    idtList?: TaskIdtWithIdp[];
+  };
+};
+
+export type TaskDeliverIdt = BaseTask & {
+  type?: "deliverIdt";
+  data?: {
+    pickUpPlaceId?: string;
+    dispatchPlaceId?: string;
+    idtList?: TaskIdtWithIdp[];
+    orders?: object[];
+    deliveryLogs?: {
+      idtId?: string;
+      idtKey?: string;
+      orderId?: string;
+      orderKey?: string;
+      positionId?: string;
+      amount?: number;
+      /** @format date-time */
+      timestamp?: string;
+    }[];
+  };
+};
+
+export type Task =
+  | TaskSimple
+  | TaskProductItemReview
+  | TaskFillIdt
+  | TaskPickUpIdt
+  | TaskReceiveIdt
+  | TaskGiveOutIdt
+  | TaskDeliverIdt;
+
+export type TaskWithData = Task & {
   createdByData?: User;
   assigneeData?: User;
-}
-
-export interface TaskDataIdtWithIdp {
-  /**
-   * Delivery idT
-   * @format uuid
-   */
-  id: string;
-  /** Delivery idT unique key in format `A_000001` */
-  key: string;
-  /** Product Item name */
-  itemName: string;
-  /** List of idP in idT */
-  contains: DeliveryIdpBase[];
-}
-
-export interface TaskData {
-  /** ProductItemReview - comment from user */
-  comment?: string;
-  /** ProductItemReview - acceptance status */
-  status?: "blocked" | "published";
-  /**
-   * FillIdt - Product ID
-   * @format uuid
-   */
-  productId?: string;
-  /**
-   * FillIdt - Item ID
-   * @format uuid
-   */
-  itemId?: string;
-  /** FillIdt - Item Name */
-  itemName?: string;
-  /** FillIdt - Amount of IDP */
-  amount?: number;
-  /** FillIdt, ReceiveIdt, GiveOutIdt, DeliverIdt */
-  idtList?: TaskDataIdtWithIdp[];
-  /** PickUpIdt, ReceiveIdt, GiveOutIdt - Place ID */
-  placeId?: string;
-  /** PickUpIdt */
-  pickUpSubtasks?: {
-    /** Provider ID */
-    providerId: string;
-    /** Provider Name */
-    providerName: string;
-    /** Location Latitude */
-    locationLat: number;
-    /** Location Longitude */
-    locationLong: number;
-    idtList: TaskDataIdtWithIdp[];
-    /** Subtask completed */
-    completed: boolean;
-  }[];
-  /** ReceiveIdt - From User ID */
-  fromUserId?: string;
-  /** ReceiveIdt - From User Name */
-  fromUserName?: string;
-  /** GiveOutIdt - To User ID */
-  toUserId?: string;
-  /** GiveOutIdt - To User Name */
-  toUserName?: string;
-  /** DeliverIdt - PickUp Place ID */
-  pickUpPlaceId?: string;
-  /** DeliverIdt - Dispatch Place ID */
-  dispatchPlaceId?: string;
-  /** DeliverIdt */
-  orders?: OrderWithData[];
-  /** DeliverIdt */
-  deliveryLogs?: {
-    /**
-     * idT ID
-     * @format uuid
-     */
-    idtId: string;
-    /** idT key */
-    idtKey: string;
-    /**
-     * Order ID
-     * @format uuid
-     */
-    orderId: string;
-    /**
-     * Order key
-     * @format uuid
-     */
-    orderKey: string;
-    /**
-     * Order Position ID
-     * @format uuid
-     */
-    positionId: string;
-    /** Amount of IDP */
-    amount: number;
-    /**
-     * Timestamp
-     * @format date-time
-     */
-    timestamp: string;
-  }[];
-}
+};
 
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
@@ -2119,7 +1501,7 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version 1.0.0
  * @baseUrl https://localhost:8082
  */
-export class MarketplaceApi<SecurityDataType extends unknown> {
+export class B2MarketApi<SecurityDataType extends unknown> {
   http: HttpClient<SecurityDataType>;
 
   constructor(http: HttpClient<SecurityDataType>) {
@@ -2803,7 +2185,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @secure
      */
     searchDeliveryIdt: (
-      data: {
+      data: SearchModel & {
         status?: ("created" | "storage" | "delivery" | "provider" | "lost" | "destroyed")[];
         keys?: string[];
         /** Partial idT key */
@@ -2811,11 +2193,6 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         ids?: string[];
         responsible?: string[];
         providers?: string[];
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
       },
       params: RequestParams = {},
     ) =>
@@ -3044,6 +2421,8 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         name: string;
         /** Folder photo */
         photo?: string;
+        /** Commission that applies to products in this folder */
+        commission: number;
         /**
          * Folder parent ID
          * @format uuid
@@ -3093,6 +2472,8 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         name?: string;
         /** Folder photo */
         photo?: string;
+        /** Commission that applies to products in this folder */
+        commission?: number;
       },
       params: RequestParams = {},
     ) =>
@@ -3295,14 +2676,9 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @request POST:/folders/filters/search
      */
     searchFoldersFilters: (
-      data: {
+      data: SearchModel & {
         /** Search term */
         searchTerm?: string;
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
       },
       params: RequestParams = {},
     ) =>
@@ -3427,18 +2803,13 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @secure
      */
     searchOrders: (
-      data: {
+      data: SearchModel & {
         status?: "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
         places?: string[];
         providers?: string[];
         products?: string[];
         items?: string[];
         createdBy?: string[];
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
       },
       params: RequestParams = {},
     ) =>
@@ -3466,18 +2837,13 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @secure
      */
     searchMyOrders: (
-      data: {
+      data: SearchModel & {
         status?: "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
         places?: string[];
         providers?: string[];
         products?: string[];
         items?: string[];
         ids?: string[];
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
       },
       params: RequestParams = {},
     ) =>
@@ -3784,7 +3150,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @secure
      */
     searchProducts: (
-      data: {
+      data: SearchModel & {
         /** Search term */
         searchTerm?: string;
         providers?: string[];
@@ -3795,11 +3161,6 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         isDeleted?: boolean;
         /** Returns only blocked products */
         isBlocked?: boolean;
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
       },
       params: RequestParams = {},
     ) =>
@@ -3808,7 +3169,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
           total: number;
           items: Product[];
         },
-        any
+        ErrorResponse
       >({
         path: `/products/search`,
         method: "POST",
@@ -3983,7 +3344,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @secure
      */
     searchProductItems: (
-      data: {
+      data: SearchModel & {
         /** Search term */
         searchTerm?: string;
         providers?: string[];
@@ -3993,11 +3354,6 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         filters?: ProductFilter[];
         /** Returns only deleted product items */
         isDeleted?: boolean;
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
       },
       params: RequestParams = {},
     ) =>
@@ -4061,6 +3417,33 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
           value?: string;
           isConfig?: boolean;
         }[];
+        /** Amount of available idPacks */
+        amountAvailable: number;
+        /** Amount of pre-order idPacks */
+        amountPreOrder: number;
+        /** Amount idPacks in idTare to start delivery */
+        amountInIdt: number;
+        /** Amount of goods in idPack */
+        amountInIdp: number;
+        prices: {
+          /**
+           * Price External ID form Provider
+           * @format uuid
+           */
+          externalId: string;
+          /**
+           * Product Item Configuration External ID form Provider
+           * @format uuid
+           */
+          externalConfigId?: string | null;
+          /** Price of the product */
+          price: number;
+          /**
+           * Start date of the price validity
+           * @format date-time
+           */
+          startDate: string;
+        }[];
       },
       params: RequestParams = {},
     ) =>
@@ -4116,6 +3499,14 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
           value?: string;
           isConfig?: boolean;
         }[];
+        /** Amount of available idPacks */
+        amountAvailable?: number;
+        /** Amount of pre-order idPacks */
+        amountPreOrder?: number;
+        /** Amount idPacks in idTare to start delivery */
+        amountInIdt?: number;
+        /** Amount of goods in idPack */
+        amountInIdp?: number;
       },
       params: RequestParams = {},
     ) =>
@@ -4154,20 +3545,12 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @secure
      */
     searchProductBatches: (
-      data: {
+      data: SearchModel & {
         /** Search term */
         searchTerm?: string;
         products?: string[];
         items?: string[];
         ids?: string[];
-        status?: ("preOrder" | "available" | "inProduction" | "sold" | "canceled")[];
-        /** Returns only deleted product batches */
-        isDeleted?: boolean;
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
       },
       params: RequestParams = {},
     ) =>
@@ -4215,43 +3598,27 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
          * Product Item Configuration External ID form Provider
          * @format uuid
          */
-        externalConfigId?: string;
+        externalConfigId?: string | null;
         /** Batch key from Provider */
         key: string;
-        /** Batch status */
-        status: "preOrder" | "available" | "inProduction" | "sold" | "canceled";
-        /** Current Batch price */
-        price: number;
+        /** Product Item Name */
+        name: string;
         /** Attachment documents */
         attachments?: string[];
         /** Amount idPacks in the Batch */
         amount: number;
-        /** Amount idPacks in idTare to start delivery */
-        amountInIDT: number;
         /** Amount of goods in idPack */
-        amountInIDP: number;
-        /** Condition of minimum idPacks to start production process (for pre-order) */
-        condition?: number;
-        /**
-         * The date when provider decides to start production process (for pre-order)
-         * @format date-time
-         */
-        untilDate?: string;
-        /**
-         * The start date of production process
-         * @format date-time
-         */
-        startDate?: string;
-        /**
-         * The production duration (days)
-         * @format date-time
-         */
-        duration?: string;
+        amountInIdp: number;
         /**
          * The production release date
          * @format date-time
          */
-        releaseDate?: string;
+        produceDate: string;
+        /** Logistic information */
+        logisticInfo: object;
+        /** Storage information */
+        storageInfo: object;
+        unitInfo: UnitInfo;
       },
       params: RequestParams = {},
     ) =>
@@ -4292,40 +3659,8 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
     updateProductBatch: (
       id: string,
       data: {
-        /** Batch status */
-        status?: "preOrder" | "available" | "inProduction" | "sold" | "canceled";
-        /** Current Batch price */
-        price?: number;
         /** Attachment documents */
         attachments?: string[];
-        /** Amount idPacks in the Batch */
-        amount?: number;
-        /** Amount idPacks in idT to start delivery */
-        amountInIDT?: number;
-        /** Amount of goods in idPack */
-        amountInIDP?: number;
-        /** Condition of minimum idPacks to start production process (for pre-order) */
-        condition?: number;
-        /**
-         * The date when provider decides to start production process (for pre-order)
-         * @format date-time
-         */
-        untilDate?: string;
-        /**
-         * The start date of production process
-         * @format date-time
-         */
-        startDate?: string;
-        /**
-         * The production duration (days)
-         * @format date-time
-         */
-        duration?: string;
-        /**
-         * The production release date
-         * @format date-time
-         */
-        releaseDate?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -4355,6 +3690,250 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       }),
 
     /**
+     * @description Available for `System Admin` or `providers` (own data only)
+     *
+     * @tags Products, Available Providers
+     * @name SearchProductPrices
+     * @summary Search product prices
+     * @request POST:/products/prices/search
+     * @secure
+     */
+    searchProductPrices: (
+      data: SearchModel & {
+        /** Search term */
+        searchTerm?: string;
+        products?: string[];
+        items?: string[];
+        ids?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: ProductPriceWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/products/prices/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`
+     *
+     * @tags Products, Available Providers
+     * @name CreateProductPrice
+     * @summary Create new product price
+     * @request POST:/products/prices
+     * @secure
+     */
+    createProductPrice: (
+      data: {
+        /**
+         * Price External ID form Provider
+         * @format uuid
+         */
+        externalId: string;
+        /**
+         * Product External ID form Provider
+         * @format uuid
+         */
+        externalProductId: string;
+        /**
+         * Product Version External ID form Provider
+         * @format uuid
+         */
+        externalVersionId: string;
+        /**
+         * Product Item Configuration External ID form Provider
+         * @format uuid
+         */
+        externalConfigId?: string | null;
+        /** Price of the product */
+        price: number;
+        /**
+         * Start date of the price validity
+         * @format date-time
+         */
+        startDate: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProductPrice, ErrorResponse>({
+        path: `/products/prices`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin` or `providers` (own data only)
+     *
+     * @tags Products, Available Providers
+     * @name GetProductPrice
+     * @summary Get product price with full data
+     * @request GET:/products/prices/{id}
+     * @secure
+     */
+    getProductPrice: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProductPriceWithData, ErrorResponse>({
+        path: `/products/prices/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`
+     *
+     * @tags Products, Available Providers
+     * @name UpdateProductPrice
+     * @summary Update product price data
+     * @request PATCH:/products/prices/{id}
+     * @secure
+     */
+    updateProductPrice: (
+      id: string,
+      data: {
+        /** Price of the product */
+        price?: number;
+        /**
+         * Start date of the price validity
+         * @format date-time
+         */
+        startDate?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProductPriceWithData, ErrorResponse>({
+        path: `/products/prices/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`. Mark that product price as deleted.
+     *
+     * @tags Products, Available Providers
+     * @name DeleteProductPrice
+     * @summary Delete product price
+     * @request DELETE:/products/prices/{id}
+     * @secure
+     */
+    deleteProductPrice: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProductPrice, ErrorResponse>({
+        path: `/products/prices/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin` or `providers` (own data only)
+     *
+     * @tags Products, Available Providers
+     * @name SearchProductIdp
+     * @summary Search idP
+     * @request POST:/products/idp/search
+     * @secure
+     */
+    searchProductIdp: (
+      data: SearchModel & {
+        /** Search term */
+        searchTerm?: string;
+        ids?: string[];
+        batches?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: ProductIdpWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/products/idp/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`
+     *
+     * @tags Products, Available Providers
+     * @name CreateProductIdp
+     * @summary Create new idP
+     * @request POST:/products/idp
+     * @secure
+     */
+    createProductIdp: (
+      data: {
+        /**
+         * idP ID
+         * @format uuid
+         */
+        id: string;
+        /**
+         * Batch External ID form Provider
+         * @format uuid
+         */
+        externalBatchId: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProductIdp, ErrorResponse>({
+        path: `/products/idp`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin` or `providers` (own data only)
+     *
+     * @tags Products, Available Providers
+     * @name GetProductIdp
+     * @summary Get idP with full data
+     * @request GET:/products/idp/{id}
+     * @secure
+     */
+    getProductIdp: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProductIdpWithData, ErrorResponse>({
+        path: `/products/idp/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`. Mark that idP as deleted.
+     *
+     * @tags Products, Available Providers
+     * @name DeleteProductIdp
+     * @summary Delete idP
+     * @request DELETE:/products/idp/{id}
+     * @secure
+     */
+    deleteProductIdp: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProductIdp, ErrorResponse>({
+        path: `/products/idp/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
      * No description
      *
      * @tags Products, Available Public
@@ -4363,7 +3942,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @request POST:/products/cards/search
      */
     searchProductCards: (
-      data: {
+      data: SearchModel & {
         /** Search term */
         searchTerm?: string;
         /**
@@ -4379,11 +3958,6 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         isLiked?: boolean;
         /** Returns bought items (only for authorized requests) */
         isBought?: boolean;
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
       },
       params: RequestParams = {},
     ) =>
@@ -4409,13 +3983,9 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @request POST:/products/cards/search/suggester
      */
     searchProductNameSuggester: (
-      data: {
+      data: SearchModel & {
         /** Search term */
         searchTerm?: string;
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
       },
       params: RequestParams = {},
     ) =>
@@ -4529,7 +4099,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
      * @request POST:/tags/search
      */
     searchTags: (
-      data: {
+      data: SearchModel & {
         /** Search term */
         searchTerm?: string;
         /** Tag ids */
@@ -4538,11 +4108,6 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         fields?: string[];
         /** Tag value */
         values?: string[];
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
       },
       params: RequestParams = {},
     ) =>
@@ -4584,7 +4149,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
           | "deliverIdt"
         )[];
         /** Task status */
-        status?: ("new" | "inProgress" | "review" | "done" | "discard")[];
+        status?: ("new" | "todo" | "progress" | "blocked" | "review" | "done" | "discard")[];
         /** Task priority */
         priority?: ("low" | "medium" | "high")[];
         /** Assignee IDs */
@@ -4712,7 +4277,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
       id: string,
       data: {
         /** Task status */
-        status?: "new" | "inProgress" | "review" | "done" | "discard";
+        status?: "new" | "todo" | "progress" | "blocked" | "review" | "done" | "discard";
         /** Task priority */
         priority?: "low" | "medium" | "high";
         /** Task name */
@@ -4721,7 +4286,7 @@ export class MarketplaceApi<SecurityDataType extends unknown> {
         description?: string;
         /** Attached files */
         files?: string[];
-        data?: TaskData;
+        data?: object;
         /**
          * Wallet Address
          * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
