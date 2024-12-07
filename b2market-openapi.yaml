@@ -553,6 +553,7 @@ paths:
     get:
       tags:
         - Delivery
+        - Available Public
       summary: Get public data of delivery idT
       operationId: getDeliveryIdtPublic
       parameters:
@@ -562,6 +563,20 @@ paths:
           $ref: "#/components/responses/DeliveryIdtBase"
         "404":
           $ref: "#/components/responses/DeliveryIdtNotFound"
+  "/delivery/idp/{id}/info":
+    get:
+      tags:
+        - Delivery
+        - Available Public
+      summary: Get public data of delivery idP
+      operationId: getDeliveryIdpPublic
+      parameters:
+        - $ref: "#/components/parameters/idPParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DeliveryIdpBase"
+        "404":
+          $ref: "#/components/responses/DeliveryIdpNotFound"
   /delivery/idt/search:
     post:
       tags:
@@ -681,6 +696,66 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DeliveryIdtNotFound"
+  /delivery/idp/search:
+    post:
+      tags:
+        - Delivery
+      security:
+        - BearerAuth: []
+      summary: Search delivery idP
+      description: Available for `System Admin`
+      operationId: searchDeliveryIdp
+      requestBody:
+        $ref: "#/components/requestBodies/SearchDeliveryIdpBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchDeliveryIdp"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /delivery/idp:
+    post:
+      tags:
+        - Delivery
+      security:
+        - BearerAuth: []
+      summary: Create new delivery idP
+      description: Available for `System Admin`
+      operationId: createDeliveryIdp
+      requestBody:
+        $ref: "#/components/requestBodies/CreateDeliveryIdpBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DeliveryIdpWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/delivery/idp/{id}":
+    get:
+      tags:
+        - Delivery
+      security:
+        - BearerAuth: []
+      summary: Get delivery idP
+      description: Available for `System Admin`
+      operationId: getDeliveryIdp
+      parameters:
+        - $ref: "#/components/parameters/idPParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DeliveryIdpWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DeliveryIdpNotFound"
   /files:
     post:
       tags:
@@ -2060,6 +2135,24 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/ProviderNotFound"
+  /providers/profile/search:
+    get:
+      tags:
+        - Providers
+      security:
+        - BearerAuth: []
+      summary: Search provider profiles
+      description: Available for `System Admin`
+      operationId: searchProviderProfiles
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProviderProfilesBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProviderProfilesData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "403":
+          $ref: "#/components/responses/Forbidden"
   /tags/search:
     post:
       tags:
@@ -2433,24 +2526,6 @@ components:
           type: string
           format: uuid
           description: Provider ID
-    DeliveryIdp:
-      type: object
-      required:
-        - id
-        - batchId
-        - name
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Delivery idP ID
-        batchId:
-          type: string
-          format: uuid
-          description: Product Batch External ID
-        name:
-          type: string
-          description: Product Item Name
     DeliveryIdt:
       allOf:
         - $ref: "#/components/schemas/DeliveryIdtBase"
@@ -2464,7 +2539,19 @@ components:
             contains:
               type: array
               items:
-                $ref: "#/components/schemas/DeliveryIdp"
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: Delivery idP ID
+                  batchId:
+                    type: string
+                    format: uuid
+                    description: Product Batch External ID
+                  name:
+                    type: string
+                    description: Product Item Name
               description: List of idP in idT
             createdBy:
               type: string
@@ -2496,6 +2583,43 @@ components:
             providerName:
               type: string
               description: Provider Name
+    DeliveryIdpBase:
+      type: object
+      required:
+        - id
+        - number
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Delivery idP ID
+        number:
+          type: string
+          description: Delivery idP unique auto-incremented number
+    DeliveryIdp:
+      allOf:
+        - $ref: "#/components/schemas/DeliveryIdpBase"
+        - type: object
+          required:
+            - createdBy
+            - createdAt
+          properties:
+            createdBy:
+              type: string
+              description: Wallet Address
+            createdAt:
+              type: string
+              format: date-time
+              description: Creation Date
+    DeliveryIdpWithData:
+      allOf:
+        - $ref: "#/components/schemas/DeliveryIdp"
+        - type: object
+          required:
+            - createdByData
+          properties:
+            createdByData:
+              $ref: "#/components/schemas/User"
     DictionaryWord:
       type: object
       required:
@@ -3764,6 +3888,24 @@ components:
             totalOrders:
               type: number
               description: Number of total orders
+    ProviderWithProfile:
+      allOf:
+        - $ref: "#/components/schemas/ProviderProfile"
+        - type: object
+          required:
+            - address
+            - callback
+            - blocked
+          properties:
+            address:
+              type: string
+              description: Provider address
+            callback:
+              type: string
+              description: Provider callback
+            blocked:
+              type: boolean
+              description: Provider is blocked
     Tag:
       type: object
       required:
@@ -4147,6 +4289,14 @@ components:
       required: true
       schema:
         type: string
+    idPParam:
+      in: path
+      name: id
+      description: Delivery idP ID
+      required: true
+      schema:
+        type: string
+        format: uuid
     fileIdParam:
       in: path
       name: id
@@ -4452,6 +4602,7 @@ components:
             type: object
             required:
               - prefix
+              - amount
             properties:
               prefix:
                 type: string
@@ -4462,7 +4613,7 @@ components:
                 type: number
                 minimum: 1
                 maximum: 1000
-                description: Number of idT keys
+                description: Number of idT to create
     EditDeliveryIdtBody:
       content:
         application/json:
@@ -4482,6 +4633,58 @@ components:
               responsible:
                 type: string
                 description: Wallet of responsible user
+    SearchDeliveryIdpBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  status:
+                    type: array
+                    items:
+                      type: string
+                      enum:
+                        - created
+                        - storage
+                        - delivery
+                        - provider
+                        - lost
+                        - destroyed
+                  keys:
+                    type: array
+                    items:
+                      type: string
+                      description: Delivery idT unique key in format `A_000001`
+                  searchTerm:
+                    type: string
+                    description: Partial idT key
+                  fromNumber:
+                    type: number
+                    description: Delivery idP number from
+                  toNumber:
+                    type: number
+                    description: Delivery idP number to
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                      description: Delivery idT ID
+    CreateDeliveryIdpBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - amount
+            properties:
+              amount:
+                type: number
+                minimum: 1
+                maximum: 1000
+                description: Number of idP to create
     UploadFileBody:
       content:
         multipart/form-data:
@@ -5483,6 +5686,20 @@ components:
               locationLong:
                 type: number
                 description: Place longitude coordinate
+    SearchProviderProfilesBody:
+      allOf:
+        - $ref: "#/components/schemas/SearchModel"
+        - type: object
+          properties:
+            searchTerm:
+              type: string
+              description: Search term
+            ids:
+              type: array
+              description: Provider ids
+              items:
+                type: string
+                format: uuid
     SearchTagsBody:
       content:
         application/json:
@@ -5901,6 +6118,34 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/DeliveryIdtWithData"
+    DeliveryIdpBase:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DeliveryIdpBase"
+    DeliveryIdpWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DeliveryIdpWithData"
+    SearchDeliveryIdp:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeliveryIdpWithData"
     DeliveryIdtNotFound:
       description: Not found
       content:
@@ -5910,6 +6155,15 @@ components:
           example:
             errorCode: delivery:idt:404
             message: Delivery idT not found
+    DeliveryIdpNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: delivery:idp:404
+            message: Delivery idP not found
     DeliveryIdtPrefixes:
       description: Not found
       content:
@@ -6475,6 +6729,22 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ProviderProfileWithData"
+    SearchProviderProfilesData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProviderWithProfile"
     SearchTagsData:
       description: Successful operation
       content:

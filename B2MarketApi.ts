@@ -201,24 +201,22 @@ export interface DeliveryIdtBase {
   providerId?: string;
 }
 
-export interface DeliveryIdp {
-  /**
-   * Delivery idP ID
-   * @format uuid
-   */
-  id: string;
-  /**
-   * Product Batch External ID
-   * @format uuid
-   */
-  batchId: string;
-  /** Product Item Name */
-  name: string;
-}
-
 export type DeliveryIdt = DeliveryIdtBase & {
   /** List of idP in idT */
-  contains: DeliveryIdp[];
+  contains: {
+    /**
+     * Delivery idP ID
+     * @format uuid
+     */
+    id?: string;
+    /**
+     * Product Batch External ID
+     * @format uuid
+     */
+    batchId?: string;
+    /** Product Item Name */
+    name?: string;
+  }[];
   /** Wallet Address */
   createdBy: string;
   /**
@@ -243,6 +241,30 @@ export type DeliveryIdtWithData = DeliveryIdt & {
   responsibleData: User;
   /** Provider Name */
   providerName?: string;
+};
+
+export interface DeliveryIdpBase {
+  /**
+   * Delivery idP ID
+   * @format uuid
+   */
+  id: string;
+  /** Delivery idP unique auto-incremented number */
+  number: string;
+}
+
+export type DeliveryIdp = DeliveryIdpBase & {
+  /** Wallet Address */
+  createdBy: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+};
+
+export type DeliveryIdpWithData = DeliveryIdp & {
+  createdByData: User;
 };
 
 export interface DictionaryWord {
@@ -1103,6 +1125,15 @@ export type ProviderProfileWithData = ProviderProfile & {
   activeOrders: number;
   /** Number of total orders */
   totalOrders: number;
+};
+
+export type ProviderWithProfile = ProviderProfile & {
+  /** Provider address */
+  address: string;
+  /** Provider callback */
+  callback: string;
+  /** Provider is blocked */
+  blocked: boolean;
 };
 
 export interface Tag {
@@ -1982,6 +2013,30 @@ export class B2MarketApi<SecurityDataType extends unknown> {
         secure: true,
         ...params,
       }),
+
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Providers
+     * @name SearchProviderProfiles
+     * @summary Search provider profiles
+     * @request GET:/providers/profile/search
+     * @secure
+     */
+    searchProviderProfiles: (data: any, params: RequestParams = {}) =>
+      this.http.request<
+        {
+          total: number;
+          items: ProviderWithProfile[];
+        },
+        ErrorResponse
+      >({
+        path: `/providers/profile/search`,
+        method: "GET",
+        body: data,
+        secure: true,
+        ...params,
+      }),
   };
   activities = {
     /**
@@ -2163,7 +2218,7 @@ export class B2MarketApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Delivery
+     * @tags Delivery, Available Public
      * @name GetDeliveryIdtPublic
      * @summary Get public data of delivery idT
      * @request GET:/delivery/idt/{id}/info
@@ -2171,6 +2226,21 @@ export class B2MarketApi<SecurityDataType extends unknown> {
     getDeliveryIdtPublic: (id: string, params: RequestParams = {}) =>
       this.http.request<DeliveryIdtBase, ErrorResponse>({
         path: `/delivery/idt/${id}/info`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Delivery, Available Public
+     * @name GetDeliveryIdpPublic
+     * @summary Get public data of delivery idP
+     * @request GET:/delivery/idp/{id}/info
+     */
+    getDeliveryIdpPublic: (id: string, params: RequestParams = {}) =>
+      this.http.request<DeliveryIdpBase, ErrorResponse>({
+        path: `/delivery/idp/${id}/info`,
         method: "GET",
         ...params,
       }),
@@ -2245,11 +2315,11 @@ export class B2MarketApi<SecurityDataType extends unknown> {
          */
         prefix: string;
         /**
-         * Number of idT keys
+         * Number of idT to create
          * @min 1
          * @max 1000
          */
-        amount?: number;
+        amount: number;
       },
       params: RequestParams = {},
     ) =>
@@ -2318,6 +2388,88 @@ export class B2MarketApi<SecurityDataType extends unknown> {
       this.http.request<DeliveryIdtWithData, ErrorResponse>({
         path: `/delivery/idt/${id}/rebuild`,
         method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Delivery
+     * @name SearchDeliveryIdp
+     * @summary Search delivery idP
+     * @request POST:/delivery/idp/search
+     * @secure
+     */
+    searchDeliveryIdp: (
+      data: SearchModel & {
+        status?: ("created" | "storage" | "delivery" | "provider" | "lost" | "destroyed")[];
+        keys?: string[];
+        /** Partial idT key */
+        searchTerm?: string;
+        /** Delivery idP number from */
+        fromNumber?: number;
+        /** Delivery idP number to */
+        toNumber?: number;
+        ids?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: DeliveryIdpWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/delivery/idp/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Delivery
+     * @name CreateDeliveryIdp
+     * @summary Create new delivery idP
+     * @request POST:/delivery/idp
+     * @secure
+     */
+    createDeliveryIdp: (
+      data: {
+        /**
+         * Number of idP to create
+         * @min 1
+         * @max 1000
+         */
+        amount: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DeliveryIdpWithData, ErrorResponse>({
+        path: `/delivery/idp`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Delivery
+     * @name GetDeliveryIdp
+     * @summary Get delivery idP
+     * @request GET:/delivery/idp/{id}
+     * @secure
+     */
+    getDeliveryIdp: (id: string, params: RequestParams = {}) =>
+      this.http.request<DeliveryIdpWithData, ErrorResponse>({
+        path: `/delivery/idp/${id}`,
+        method: "GET",
         secure: true,
         ...params,
       }),
