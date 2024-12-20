@@ -8,15 +8,14 @@ servers:
 tags:
   - name: Auth
   - name: Activities
+  - name: B2Task
   - name: Documents
   - name: Files
-  - name: Folders
   - name: Groups
   - name: Notifications
   - name: Permissions
   - name: Sales
   - name: Spaces
-  - name: Tasks
 paths:
   /auth/start:
     post:
@@ -239,7 +238,379 @@ paths:
           $ref: "#/components/responses/InvalidData"
         "401":
           $ref: "#/components/responses/Unauthorized"
-  "/documents/files/{versionId}":
+  "/documents/b2task/{taskId}/info":
+    get:
+      tags:
+        - B2Task
+      security:
+        - BearerAuth: []
+      summary: Get task by ID
+      operationId: getTaskInfo
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2TaskWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2task/{taskId}":
+    patch:
+      tags:
+        - B2Task
+      security:
+        - BearerAuth: []
+      summary: Edit task by ID
+      operationId: editTask
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditB2TaskBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2TaskWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2task/{taskId}/work-logs/search":
+    post:
+      tags:
+        - B2Task
+      security:
+        - BearerAuth: []
+      summary: Search work logs for a task
+      operationId: searchTaskWorkLogs
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/SearchB2TaskWorkLogsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchB2TaskWorkLogsData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2task/{taskId}/work-log":
+    post:
+      tags:
+        - B2Task
+      security:
+        - BearerAuth: []
+      summary: Create a work log for a task
+      operationId: createTaskWorkLog
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/ManageB2TaskWorkLogBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2TaskWorkLog"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2task/{taskId}/work-logs/{logId}":
+    patch:
+      tags:
+        - B2Task
+      security:
+        - BearerAuth: []
+      summary: Edit task work log by ID
+      operationId: editTaskWorkLog
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+        - $ref: "#/components/parameters/taskLogIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/ManageB2TaskWorkLogBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2TaskWorkLog"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+    delete:
+      tags:
+        - B2Task
+      security:
+        - BearerAuth: []
+      summary: Delete task work log by ID
+      operationId: deleteTaskWorkLog
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+        - $ref: "#/components/parameters/taskLogIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2TaskWorkLog"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2task/{taskId}/comment/search":
+    post:
+      tags:
+        - B2Task
+      security:
+        - BearerAuth: []
+      summary: Search comments for a task
+      operationId: searchTaskComments
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/SearchB2TaskCommentsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchB2TaskCommentsData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2task/{taskId}/comment":
+    post:
+      tags:
+        - B2Task
+      security:
+        - BearerAuth: []
+      summary: Create a comment for a task
+      operationId: createTaskComment
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/ManageB2TaskCommentBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2TaskComment"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2task/{taskId}/comment/{commentId}":
+    patch:
+      tags:
+        - B2Task
+      security:
+        - BearerAuth: []
+      summary: Edit task comment by ID
+      operationId: editTaskComment
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+        - $ref: "#/components/parameters/taskCommentIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/ManageB2TaskCommentBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2TaskComment"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+    delete:
+      tags:
+        - B2Task
+      security:
+        - BearerAuth: []
+      summary: Delete task comment by ID
+      operationId: deleteTaskComment
+      parameters:
+        - $ref: "#/components/parameters/taskIdParam"
+        - $ref: "#/components/parameters/taskCommentIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2TaskComment"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/{docId}/info":
+    get:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Get document info
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+      operationId: getDocumentInfo
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/{docId}":
+    patch:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Edit document
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+      operationId: editDocument
+      requestBody:
+        $ref: "#/components/requestBodies/EditDocumentBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+    delete:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Delete document
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+        - in: query
+          name: version
+          schema:
+            type: number
+          description: Version to delete
+      operationId: deleteDocument
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                description: List of deleted document versions and documentId
+                items:
+                  type: string
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  /document:
+    post:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Create document
+      operationId: createDocument
+      requestBody:
+        $ref: "#/components/requestBodies/CreateDocumentBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentWithFolders"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /documents/search:
+    post:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Search documents
+      operationId: searchDocuments
+      requestBody:
+        $ref: "#/components/requestBodies/SearchDocumentsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchDocumentsData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/documents/{docId}/restore":
+    post:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Restore document
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+      operationId: restoreDocument
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentWithFolders"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/{docId}/tags":
+    put:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Edit document tags
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+      operationId: editDocumentTags
+      requestBody:
+        $ref: "#/components/requestBodies/EditDocumentTagsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/TagWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/files/{fileId}":
     get:
       tags:
         - Files
@@ -248,7 +619,7 @@ paths:
       summary: Get file binary
       operationId: getFileBinary
       parameters:
-        - $ref: "#/components/parameters/fileVersionIdParam"
+        - $ref: "#/components/parameters/fileId"
       responses:
         "200":
           $ref: "#/components/responses/FileBinary"
@@ -257,8 +628,8 @@ paths:
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
-          $ref: "#/components/responses/FileNotFound"
-  "/documents/files/{versionId}/info":
+          $ref: "#/components/responses/DocumentVersionNotFound"
+  "/documents/files/{fileId}/info":
     get:
       tags:
         - Files
@@ -267,7 +638,7 @@ paths:
       summary: Get file information
       operationId: getFileInfo
       parameters:
-        - $ref: "#/components/parameters/fileVersionIdParam"
+        - $ref: "#/components/parameters/fileId"
       responses:
         "200":
           $ref: "#/components/responses/FileData"
@@ -276,7 +647,7 @@ paths:
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
-          $ref: "#/components/responses/FileNotFound"
+          $ref: "#/components/responses/DocumentVersionNotFound"
   /groups/my:
     get:
       summary: Get my groups
@@ -300,7 +671,20 @@ paths:
       operationId: getMyAdminGroups
       responses:
         "200":
-          $ref: "#/components/responses/AdminGroupsData"
+          $ref: "#/components/responses/GroupsIdsData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /groups/my/supervisor:
+    get:
+      summary: Get my supervisor groups
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      operationId: getMySupervisorGroups
+      responses:
+        "200":
+          $ref: "#/components/responses/GroupsIdsData"
         "401":
           $ref: "#/components/responses/Unauthorized"
   /groups:
@@ -320,14 +704,14 @@ paths:
           $ref: "#/components/responses/InvalidData"
         "401":
           $ref: "#/components/responses/Unauthorized"
-  "/groups/{id}":
+  "/groups/{groupId}":
     get:
       summary: Get a group by ID
       tags:
         - Groups
       security:
         - BearerAuth: []
-      operationId: getGroupById
+      operationId: getGroup
       parameters:
         - $ref: "#/components/parameters/groupId"
       responses:
@@ -491,204 +875,184 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotificationNotFound"
-  /sales/batches/search:
-    post:
-      tags:
-        - Sales
-      security:
-        - BearerAuth: []
-      summary: Search Sale Batches
-      operationId: searchSaleBatches
-      requestBody:
-        $ref: "#/components/requestBodies/SearchSaleBatchesBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchSaleBatchesData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-  /sales/batches:
-    post:
-      tags:
-        - Sales
-      security:
-        - BearerAuth: []
-      summary: Create Sale Batch
-      operationId: createSaleBatch
-      requestBody:
-        $ref: "#/components/requestBodies/CreateSaleBatchBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SaleBatch"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-  "/sales/batches/{batchId}":
+  /permissions/search:
     get:
       tags:
-        - Sales
+        - Permissions
+      summary: Search permissions
+      operationId: searchPermissions
       security:
         - BearerAuth: []
-      summary: Get Sale Batch
-      operationId: getSaleBatch
-      parameters:
-        - $ref: "#/components/parameters/saleBatchIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/SearchPermissionsBody"
       responses:
         "200":
-          $ref: "#/components/schemas/SaleBatchWithData"
+          $ref: "#/components/responses/SearchPermissionsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /permissions/search-options:
+    post:
+      tags:
+        - Permissions
+      summary: Search permissions options
+      operationId: searchPermissionsOptions
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/SearchPermissionsOptionsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchPermissionsOptionsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /permissions/search-unique:
+    post:
+      tags:
+        - Permissions
+      summary: Search unique permissions
+      operationId: searchPermissionsUnique
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/SearchPermissionsUniqueBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchPermissionsUniqueResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /permissions/search-by-system:
+    post:
+      tags:
+        - Permissions
+      summary: Search permissions by system
+      operationId: searchPermissionsBySystem
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/SearchPermissionsBySystemBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchPermissionsBySystemResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /permissions/search-by-assignee:
+    post:
+      tags:
+        - Permissions
+      summary: Search permissions by assignee
+      operationId: searchPermissionsByAssignee
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/SearchPermissionsByAssigneeBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchPermissionsByAssigneeResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /permissions:
+    post:
+      tags:
+        - Permissions
+      summary: Create permission
+      operationId: createPermission
+      security:
+        - BearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreatePermissionBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/PermissionResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/permissions/{permissionId}":
+    patch:
+      tags:
+        - Permissions
+      summary: Edit permission
+      operationId: editPermission
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/permissionId"
+      requestBody:
+        $ref: "#/components/requestBodies/EditPermissionBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/PermissionResponse"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
-          $ref: "#/components/responses/SaleBatchNotFound"
+          $ref: "#/components/responses/PermissionNotFound"
     delete:
       tags:
-        - Sales
+        - Permissions
+      summary: Delete permission
+      operationId: deletePermission
       security:
         - BearerAuth: []
-      summary: Delete Sale Batch
-      operationId: deleteSaleBatch
       parameters:
-        - $ref: "#/components/parameters/saleBatchIdParam"
+        - $ref: "#/components/parameters/permissionId"
       responses:
-        "200":
-          $ref: "#/components/responses/SaleBatch"
+        "204":
+          description: Successful operation
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
-          $ref: "#/components/responses/SaleBatchNotFound"
-  "/sales/batches/{batchId}/prices/search":
-    post:
+          $ref: "#/components/responses/PermissionNotFound"
+  /permissions/statistics:
+    get:
       tags:
-        - Sales
+        - Permissions
+      summary: Get permissions statistics
+      operationId: getPermissionsStatistics
       security:
         - BearerAuth: []
-      summary: Search Sale Batch Prices
-      operationId: searchSaleBatchPrices
       parameters:
-        - $ref: "#/components/parameters/saleBatchIdParam"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SearchModel"
+        - $ref: "#/components/parameters/permissionArtefactId"
+        - $ref: "#/components/parameters/permissionType"
       responses:
         "200":
-          $ref: "#/components/responses/SearchSaleBatchPricesData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
+          $ref: "#/components/responses/GetPermissionsStatisticsResponse"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
-  "/sales/batches/{batchId}/prices":
-    post:
+  /permissions/check-access:
+    get:
       tags:
-        - Sales
+        - Permissions
+      summary: Check permissions access
+      operationId: checkPermissionsAccess
       security:
         - BearerAuth: []
-      summary: Create Sale Batch Price
-      operationId: createSaleBatchPrice
       parameters:
-        - $ref: "#/components/parameters/saleBatchIdParam"
-      requestBody:
-        $ref: "#/components/requestBodies/CreateSaleBatchPriceBody"
+        - $ref: "#/components/parameters/permissionArtefactId"
+        - $ref: "#/components/parameters/permissionType"
+        - $ref: "#/components/parameters/permissionSystemId"
       responses:
         "200":
-          $ref: "#/components/responses/SaleBatchPrice"
-        "400":
-          $ref: "#/components/responses/InvalidData"
+          $ref: "#/components/responses/CheckPermissionsAccessResponse"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
-  "/sales/batches/{batchId}/prices/{priceId}":
-    delete:
-      tags:
-        - Sales
-      security:
-        - BearerAuth: []
-      summary: Delete Sale Batch Price
-      operationId: deleteSaleBatchPrice
-      parameters:
-        - $ref: "#/components/parameters/saleBatchIdParam"
-        - $ref: "#/components/parameters/saleBatchPriceIdParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/SaleBatchPrice"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/SaleBatchPriceNotFound"
-  "/sales/batches/{batchId}/idp/search":
-    post:
-      tags:
-        - Sales
-      security:
-        - BearerAuth: []
-      summary: Search Sale Batch IDP
-      operationId: searchSaleBatchIdp
-      parameters:
-        - $ref: "#/components/parameters/saleBatchIdParam"
-      requestBody:
-        $ref: "#/components/requestBodies/SearchSaleBatchIdpBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchSaleBatchIdpData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-  "/sales/batches/{batchId}/idp/{idp}":
-    post:
-      tags:
-        - Sales
-      security:
-        - BearerAuth: []
-      summary: Create Sale Batch IDP
-      operationId: createSaleBatchIdp
-      parameters:
-        - $ref: "#/components/parameters/saleBatchIdParam"
-        - $ref: "#/components/parameters/saleBatchIdpParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/SaleBatchIdp"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-    delete:
-      tags:
-        - Sales
-      security:
-        - BearerAuth: []
-      summary: Delete Sale Batch IDP
-      operationId: deleteSaleBatchIdp
-      parameters:
-        - $ref: "#/components/parameters/saleBatchIdParam"
-        - $ref: "#/components/parameters/saleBatchIdpParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/SaleBatchIdp"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/SaleBatchIdpNotFound"
   /sales/orders/search:
     post:
       tags:
@@ -940,190 +1304,6 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/SpaceUserNotFound"
-  /tasks/search:
-    post:
-      tags:
-        - Tasks
-      security:
-        - BearerAuth: []
-      summary: Search tasks
-      operationId: searchTasks
-      requestBody:
-        $ref: "#/components/requestBodies/SearchTasksBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchTasksData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-  /tasks:
-    post:
-      tags:
-        - Tasks
-      security:
-        - BearerAuth: []
-      summary: Create a new task
-      operationId: createTask
-      requestBody:
-        $ref: "#/components/requestBodies/CreateTaskBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/Task"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-  "/tasks/{id}":
-    get:
-      tags:
-        - Tasks
-      security:
-        - BearerAuth: []
-      summary: Get a task by ID
-      operationId: getTask
-      parameters:
-        - $ref: "#/components/parameters/taskIdParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/TaskWithData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/TaskNotFound"
-    patch:
-      tags:
-        - Tasks
-      security:
-        - BearerAuth: []
-      summary: Edit a task by ID
-      operationId: editTask
-      parameters:
-        - $ref: "#/components/parameters/taskIdParam"
-      requestBody:
-        $ref: "#/components/requestBodies/EditTaskBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/TaskWithData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/TaskNotFound"
-    delete:
-      tags:
-        - Tasks
-      security:
-        - BearerAuth: []
-      summary: Delete a task by ID
-      operationId: deleteTask
-      parameters:
-        - $ref: "#/components/parameters/taskIdParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/Task"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/TaskNotFound"
-  "/tasks/{id}/work-log/search":
-    post:
-      tags:
-        - Tasks
-      security:
-        - BearerAuth: []
-      summary: Search work logs for a task
-      operationId: searchTaskWorkLogs
-      parameters:
-        - $ref: "#/components/parameters/taskIdParam"
-      requestBody:
-        $ref: "#/components/requestBodies/SearchTaskWorkLogsBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchTaskWorkLogsData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/TaskNotFound"
-  "/tasks/{id}/work-log":
-    post:
-      tags:
-        - Tasks
-      security:
-        - BearerAuth: []
-      summary: Create a work log for a task
-      operationId: createTaskWorkLog
-      parameters:
-        - $ref: "#/components/parameters/taskIdParam"
-      requestBody:
-        $ref: "#/components/requestBodies/ManageTaskWorkLogBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/TaskWorkLog"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/TaskNotFound"
-  "/tasks/{id}/work-log/{logId}":
-    patch:
-      tags:
-        - Tasks
-      security:
-        - BearerAuth: []
-      summary: Edit a work log by ID
-      operationId: editTaskWorkLog
-      parameters:
-        - $ref: "#/components/parameters/taskIdParam"
-        - $ref: "#/components/parameters/taskLogIdParam"
-      requestBody:
-        $ref: "#/components/requestBodies/ManageTaskWorkLogBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/TaskWorkLog"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/TaskNotFound"
-    delete:
-      tags:
-        - Tasks
-      security:
-        - BearerAuth: []
-      summary: Delete a work log by ID
-      operationId: deleteTaskWorkLog
-      parameters:
-        - $ref: "#/components/parameters/taskIdParam"
-        - $ref: "#/components/parameters/taskLogIdParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/TaskWorkLog"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/TaskNotFound"
 components:
   securitySchemes:
     BearerAuth:
@@ -1224,7 +1404,6 @@ components:
         id:
           type: string
           format: uuid
-          description: Artefact ID
         type:
           $ref: "#/components/schemas/ActivityType"
         userId:
@@ -1234,20 +1413,713 @@ components:
         spaceId:
           type: string
           format: uuid
-          description: Space ID
         artefactId:
           type: string
           format: uuid
-          description: Artefact ID
         data:
           type: object
           description: Activity Data depends on type
         createdAt:
           type: string
           format: date-time
-          description: Creation Date
         userData:
           $ref: "#/components/schemas/User"
+    B2CounterpartyType:
+      type: string
+      enum:
+        - personality
+        - organization
+    B2CounterpartyWorkPlace:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        position:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        current:
+          type: boolean
+    B2CounterpartyData:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/B2CounterpartyType"
+        birthday:
+          type: string
+          format: date-time
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+        ogrn:
+          type: string
+        site:
+          type: string
+        wallet:
+          type: string
+        photos:
+          type: array
+          items:
+            type: string
+        workPlaces:
+          type: array
+          items:
+            $ref: "#/components/schemas/B2CounterpartyWorkPlace"
+    B2CounterpartySearchQuery:
+      type: object
+      properties:
+        types:
+          type: array
+          items:
+            $ref: "#/components/schemas/B2CounterpartyType"
+        ids:
+          type: array
+          items:
+            type: string
+    B2ProductCardStatus:
+      type: string
+      enum:
+        - moderation
+        - published
+        - blocked
+    B2ProductUnitInfo:
+      type: object
+      properties:
+        unit:
+          type: string
+        systemUnit:
+          type: string
+        coeff:
+          type: number
+    B2ProductData:
+      type: object
+      properties:
+        description:
+          type: string
+        photos:
+          type: array
+          items:
+            type: string
+        unitInfo:
+          $ref: "#/components/schemas/B2ProductUnitInfo"
+        processId:
+          type: string
+        structureId:
+          type: string
+        requirementId:
+          type: string
+        configId:
+          type: string
+    TaskType:
+      type: string
+      enum:
+        - simple
+        - fillIdt
+        - receiveIdt
+        - giveOutIdt
+        - factoryTask
+    TaskSource:
+      type: string
+      enum:
+        - user
+        - b2process
+        - b2market
+        - b2doc
+    TaskStatus:
+      type: string
+      enum:
+        - new
+        - todo
+        - progress
+        - blocked
+        - review
+        - done
+        - discard
+    TaskPriority:
+      type: string
+      enum:
+        - low
+        - medium
+        - high
+    TaskArtefactType:
+      type: string
+      enum:
+        - product
+        - batch
+    TaskParticipant:
+      type: object
+      required:
+        - name
+      properties:
+        userId:
+          type: string
+        groupId:
+          type: string
+        name:
+          type: string
+    TaskParticipantWithData:
+      allOf:
+        - $ref: "#/components/schemas/TaskParticipant"
+        - type: object
+          properties:
+            userData:
+              $ref: "#/components/schemas/User"
+              nullable: true
+            groupData:
+              $ref: "#/components/schemas/GroupBase"
+              nullable: true
+    BaseB2TaskData:
+      type: object
+      required:
+        - id
+        - type
+        - source
+        - status
+        - priority
+        - priorityLevel
+        - key
+        - name
+        - data
+      properties:
+        type:
+          $ref: "#/components/schemas/TaskType"
+        source:
+          $ref: "#/components/schemas/TaskSource"
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+        priority:
+          $ref: "#/components/schemas/TaskPriority"
+        priorityLevel:
+          type: number
+        artefactId:
+          type: string
+          nullable: true
+        artefactType:
+          $ref: "#/components/schemas/TaskArtefactType"
+          nullable: true
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        attachments:
+          type: array
+          items:
+            type: string
+          nullable: true
+        data:
+          type: object
+        storyPoints:
+          type: number
+          nullable: true
+        timeSpent:
+          type: number
+          nullable: true
+        startDate:
+          type: string
+          format: date-time
+          nullable: true
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        assigneeId:
+          type: string
+          nullable: true
+        assigneeGroupId:
+          type: string
+          nullable: true
+        controlId:
+          type: string
+          nullable: true
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskParticipant"
+          nullable: true
+        createdBy:
+          type: string
+          nullable: true
+        systemId:
+          type: string
+          nullable: true
+    B2TaskDataSimple:
+      allOf:
+        - $ref: "#/components/schemas/BaseB2TaskData"
+        - type: object
+          properties:
+            type:
+              enum:
+                - simple
+            data:
+              type: object
+    B2TaskDataFillIdt:
+      allOf:
+        - $ref: "#/components/schemas/BaseB2TaskData"
+        - type: object
+          properties:
+            type:
+              enum:
+                - fillIdt
+            data:
+              type: object
+              required:
+                - externalId
+                - productId
+                - versionId
+                - itemId
+                - orders
+                - name
+                - amount
+              properties:
+                externalId:
+                  type: string
+                productId:
+                  type: string
+                versionId:
+                  type: string
+                itemId:
+                  type: string
+                configId:
+                  type: string
+                  nullable: true
+                orders:
+                  type: array
+                  items:
+                    type: string
+                name:
+                  type: string
+                amount:
+                  type: number
+                idtList:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/TaskDataIdtWithIdp"
+                  nullable: true
+    B2TaskDataReceiveIdt:
+      allOf:
+        - $ref: "#/components/schemas/BaseB2TaskData"
+        - type: object
+          properties:
+            type:
+              enum:
+                - receiveIdt
+            data:
+              type: object
+              required:
+                - externalId
+                - placeId
+                - fromUserId
+                - fromUserName
+                - idtList
+              properties:
+                externalId:
+                  type: string
+                placeId:
+                  type: string
+                fromUserId:
+                  type: string
+                fromUserName:
+                  type: string
+                idtList:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/TaskDataIdtWithIdp"
+    B2TaskDataGiveOutIdt:
+      allOf:
+        - $ref: "#/components/schemas/BaseB2TaskData"
+        - type: object
+          properties:
+            type:
+              enum:
+                - giveOutIdt
+            data:
+              type: object
+              required:
+                - externalId
+                - placeId
+                - toUserId
+                - toUserName
+                - idtList
+              properties:
+                externalId:
+                  type: string
+                placeId:
+                  type: string
+                toUserId:
+                  type: string
+                toUserName:
+                  type: string
+                idtList:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/TaskDataIdtWithIdp"
+    B2TaskDataFactoryTask:
+      allOf:
+        - $ref: "#/components/schemas/BaseB2TaskData"
+        - type: object
+          properties:
+            type:
+              enum:
+                - factoryTask
+            data:
+              type: object
+              required:
+                - type
+                - documentId
+                - versionId
+                - amount
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - plan
+                    - preOrder
+                documentId:
+                  type: string
+                versionId:
+                  type: string
+                configId:
+                  type: string
+                  nullable: true
+                amount:
+                  type: number
+                duration:
+                  type: number
+                  nullable: true
+                condition:
+                  type: number
+                  nullable: true
+                startDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                endDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+                storages:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - storageId
+                      - amount
+                    properties:
+                      storageId:
+                        type: string
+                      amount:
+                        type: number
+                  nullable: true
+    B2TaskData:
+      oneOf:
+        - $ref: "#/components/schemas/B2TaskDataSimple"
+        - $ref: "#/components/schemas/B2TaskDataFillIdt"
+        - $ref: "#/components/schemas/B2TaskDataReceiveIdt"
+        - $ref: "#/components/schemas/B2TaskDataGiveOutIdt"
+        - $ref: "#/components/schemas/B2TaskDataFactoryTask"
+    B2Task:
+      allOf:
+        - $ref: "#/components/schemas/DocumentDataCommon"
+        - $ref: "#/components/schemas/B2TaskData"
+        - type: object
+          properties:
+            documentId:
+              type: string
+              description: This property does not used in B2Task
+              nullable: true
+    B2TaskWithData:
+      allOf:
+        - $ref: "#/components/schemas/B2Task"
+        - type: object
+          properties:
+            createdByData:
+              $ref: "#/components/schemas/User"
+              nullable: true
+            assigneeData:
+              $ref: "#/components/schemas/User"
+              nullable: true
+            assigneeGroupData:
+              $ref: "#/components/schemas/GroupBase"
+              nullable: true
+            controlData:
+              $ref: "#/components/schemas/User"
+              nullable: true
+            participantsData:
+              type: array
+              items:
+                $ref: "#/components/schemas/TaskParticipantWithData"
+              nullable: true
+    B2TaskWorkLog:
+      type: object
+      required:
+        - id
+        - taskId
+        - time
+        - logDate
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        time:
+          type: number
+        logDate:
+          type: string
+          format: date-time
+        comment:
+          type: string
+          nullable: true
+        createdBy:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    B2TaskWorkLogWithData:
+      allOf:
+        - $ref: "#/components/schemas/B2TaskWorkLog"
+        - type: object
+          properties:
+            createdByData:
+              $ref: "#/components/schemas/User"
+    B2TaskComment:
+      type: object
+      required:
+        - id
+        - taskId
+        - comment
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        comment:
+          type: string
+        attachments:
+          type: array
+          items:
+            type: string
+          nullable: true
+        createdBy:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    B2TaskCommentWithData:
+      allOf:
+        - $ref: "#/components/schemas/B2TaskComment"
+        - type: object
+          properties:
+            createdByData:
+              $ref: "#/components/schemas/User"
+    TaskDataIdtWithIdp:
+      type: object
+      required:
+        - id
+        - key
+        - itemName
+        - contains
+      properties:
+        id:
+          type: string
+          description: Delivery idT
+          format: uuid
+        key:
+          type: string
+          description: Delivery idT unique key in format `A_000001`
+          example: A_000000
+        itemName:
+          type: string
+          description: Product Item name
+        contains:
+          type: array
+          description: List of idP in idT
+          items:
+            type: object
+            required:
+              - id
+              - productId
+              - itemId
+              - batchId
+            properties:
+              id:
+                type: string
+                format: uuid
+              productId:
+                type: string
+                format: uuid
+              itemId:
+                type: string
+                format: uuid
+              batchId:
+                type: string
+                format: uuid
+    B2TaskSearchQuery:
+      type: object
+      properties:
+        view:
+          type: string
+          enum:
+            - all
+            - assignee
+            - participant
+            - control
+            - creator
+        ids:
+          type: array
+          items:
+            type: string
+        types:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskType"
+        source:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskSource"
+        status:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskStatus"
+        notStatus:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskStatus"
+        priority:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskPriority"
+        assignee:
+          type: array
+          items:
+            type: string
+        assigneeGroup:
+          type: array
+          items:
+            type: string
+        control:
+          type: array
+          items:
+            type: string
+        artifacts:
+          type: array
+          items:
+            type: string
+        createdBy:
+          type: array
+          items:
+            type: string
+        systemId:
+          type: string
+    CreateB2TaskBody:
+      type: object
+      required:
+        - type
+        - source
+        - priority
+        - data
+      properties:
+        type:
+          $ref: "#/components/schemas/TaskType"
+        source:
+          $ref: "#/components/schemas/TaskSource"
+        priority:
+          $ref: "#/components/schemas/TaskPriority"
+        priorityLevel:
+          type: number
+        artefactId:
+          type: string
+          nullable: true
+        artefactType:
+          $ref: "#/components/schemas/TaskArtefactType"
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        attachments:
+          type: array
+          items:
+            type: string
+          nullable: true
+        data:
+          type: object
+        storyPoints:
+          type: number
+          nullable: true
+        startDate:
+          type: string
+          format: date-time
+          nullable: true
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        assigneeId:
+          type: string
+          nullable: true
+        assigneeGroupId:
+          type: string
+          nullable: true
+        controlId:
+          type: string
+          nullable: true
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskParticipant"
+          nullable: true
+    DictionaryWord:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        photo:
+          type: string
+          nullable: true
+        unit:
+          type: string
+          nullable: true
+        systemUnit:
+          type: string
+          nullable: true
+        coeff:
+          type: number
+          nullable: true
     DocumentBase:
       type: object
       required:
@@ -1296,11 +2168,22 @@ components:
         - b2product
         - b2storage
         - b2counterparty
+        - b2task
     SystemType:
       type: string
       enum:
         - product
         - storage
+    SystemData:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
     DocumentVersionCacheData:
       type: object
       required:
@@ -1325,7 +2208,6 @@ components:
         - $ref: "#/components/schemas/DocumentBase"
         - type: object
           required:
-            - createdBy
             - createdAt
             - updatedAt
           properties:
@@ -1341,77 +2223,107 @@ components:
               type: string
               format: date-time
               nullable: true
-    SystemData:
+    DocumentWithFolders:
+      allOf:
+        - $ref: "#/components/schemas/Document"
+        - type: object
+          required:
+            - folders
+            - spaceData
+          properties:
+            folders:
+              type: array
+              items:
+                type: string
+            spaceData:
+              $ref: "#/components/schemas/SpaceBase"
+            createdByData:
+              $ref: "#/components/schemas/User"
+            hasAccess:
+              type: boolean
+    DocumentWithData:
+      allOf:
+        - $ref: "#/components/schemas/Document"
+        - type: object
+          required:
+            - data
+          properties:
+            access:
+              $ref: "#/components/schemas/PermissionAccess"
+            spaceData:
+              $ref: "#/components/schemas/SpaceBase"
+            createdByData:
+              $ref: "#/components/schemas/User"
+            tagsData:
+              type: array
+              items:
+                $ref: "#/components/schemas/TagWithData"
+            versions:
+              type: array
+              items:
+                type: object
+                description: Need to formalize
+            fromPublic:
+              type: boolean
+            fromDeleted:
+              type: boolean
+    DocumentDataCommon:
       type: object
       required:
         - id
-        - name
+        - spaceId
+        - documentId
+        - key
+        - version
+        - createdAt
+        - updatedAt
       properties:
         id:
           type: string
-        name:
-          type: string
-    FileData:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Document Version ID
         spaceId:
           type: string
-          format: uuid
-          description: Space ID
         documentId:
           type: string
-          format: uuid
-          description: Document ID
         createdBy:
           type: string
-          description: Wallet Address
-          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
         key:
           type: string
-          description: Document Version Unique Key
         version:
-          type: integer
-          description: Document Version Number
+          type: number
         current:
           type: boolean
-          example: false
-          nullable: true
-          description: Is current version
         latest:
           type: boolean
-          example: true
-          nullable: true
-          description: Is latest version
         signed:
           type: boolean
-          example: false
-          nullable: true
-          description: Is signed version
-        mimeType:
-          type: string
-          description: MIME Type
-        filename:
-          type: string
-          description: Original File Name
-        size:
-          type: number
-          description: File Size
-        encoding:
-          type: string
-          nullable: true
-          description: File Encoding
         createdAt:
           type: string
           format: date-time
-          description: Creation Date
         updatedAt:
           type: string
           format: date-time
-          description: Update Date
+    FileData:
+      allOf:
+        - $ref: "#/components/schemas/DocumentDataCommon"
+        - type: object
+          required:
+            - mimeType
+            - filename
+            - size
+          properties:
+            mimeType:
+              type: string
+              description: MIME Type
+            filename:
+              type: string
+              description: Original File Name
+            size:
+              type: number
+              description: File Size
+            encoding:
+              type: string
+              nullable: true
+              description: File Encoding
     Folder:
       type: object
       required:
@@ -1488,22 +2400,29 @@ components:
         - type: object
           required:
             - order
-            - createdBy
             - createdAt
             - updatedAt
           properties:
             order:
               type: integer
+            description:
+              type: string
+              nullable: true
             createdBy:
               type: string
-            createdByData:
-              $ref: "#/components/schemas/User"
             createdAt:
               type: string
               format: date-time
             updatedAt:
               type: string
               format: date-time
+    GroupWithData:
+      allOf:
+        - $ref: "#/components/schemas/Group"
+        - type: object
+          properties:
+            createdByData:
+              $ref: "#/components/schemas/User"
     GroupTreeItem:
       allOf:
         - $ref: "#/components/schemas/GroupBase"
@@ -1543,6 +2462,14 @@ components:
         - error
     BaseNotification:
       type: object
+      required:
+        - id
+        - userId
+        - artefactId
+        - type
+        - data
+        - updatedAt
+        - createdAt
       properties:
         id:
           type: string
@@ -1749,7 +2676,6 @@ components:
               required:
                 - spaceData
                 - module
-                - createdByData
                 - access
               properties:
                 spaceData:
@@ -1777,7 +2703,6 @@ components:
               required:
                 - spaceData
                 - module
-                - createdByData
                 - access
               properties:
                 spaceData:
@@ -1805,7 +2730,6 @@ components:
               required:
                 - spaceData
                 - module
-                - createdByData
                 - access
               properties:
                 spaceData:
@@ -1829,7 +2753,7 @@ components:
               enum:
                 - newTask
             data:
-              $ref: "#/components/schemas/Task"
+              $ref: "#/components/schemas/B2TaskWithData"
     Notification:
       oneOf:
         - $ref: "#/components/schemas/NotificationAddedToDocument"
@@ -1873,246 +2797,103 @@ components:
         - sales
         - factory
         - resources
-    FactoryTaskStatus:
-      type: string
-      enum:
-        - preOrder
-        - inProgress
-        - produced
-        - deleted
-    B2ProductItemStatus:
-      type: string
-      enum:
-        - moderation
-        - published
-        - blocked
-    B2ProductUnitInfo:
-      type: object
-      properties:
-        unit:
-          type: string
-        systemUnit:
-          type: string
-        coeff:
-          type: number
-    SaleBatchStatus:
-      type: string
-      enum:
-        - preOrder
-        - inStorage
-        - inProduce
-        - sold
-        - dispose
-        - deleted
-    SaleBatch:
+        - products
+        - storages
+    Permission:
       type: object
       required:
         - id
+        - artefactId
+        - type
+        - access
         - spaceId
-        - documentId
-        - versionId
-        - key
-        - name
-        - status
-        - amount
-        - logisticInfo
-        - createdBy
         - createdAt
         - updatedAt
       properties:
         id:
           type: string
+        artefactId:
+          type: string
+        type:
+          $ref: "#/components/schemas/PermissionType"
+        access:
+          $ref: "#/components/schemas/PermissionAccess"
         spaceId:
           type: string
-        documentId:
-          type: string
-        versionId:
-          type: string
-        configId:
+        groupId:
           type: string
           nullable: true
-        key:
+        userId:
           type: string
-        name:
+          nullable: true
+        systemId:
           type: string
-        status:
-          $ref: "#/components/schemas/SaleBatchStatus"
-        amount:
-          type: number
-        logisticInfo:
-          type: object
-          additionalProperties:
-            type: number
-            nullable: true
-        unitInfo:
-          $ref: "#/components/schemas/B2ProductUnitInfo"
-        productItemStatus:
-          $ref: "#/components/schemas/B2ProductItemStatus"
-        latestPrice:
-          type: number
-        registerAmount:
-          type: number
-        orderAmount:
-          type: number
-        orderAmountPrice:
-          type: number
-        deliveryAmount:
-          type: number
-        deliveryAmountPrice:
-          type: number
-        inStorageAmount:
-          type: number
-        outStorageAmount:
-          type: number
-        soldAmount:
-          type: number
-        soldAmountPrice:
-          type: number
-        disputeAmount:
-          type: number
-        disputeAmountPrice:
-          type: number
-        produceInfo:
-          type: object
-          properties:
-            status:
-              $ref: "#/components/schemas/FactoryTaskStatus"
-            condition:
-              type: number
-            duration:
-              type: number
-            planStartDate:
-              type: string
-              format: date-time
-            startDate:
-              type: string
-              format: date-time
-            endDate:
-              type: string
-              format: date-time
-        storageInfo:
-          type: object
-          properties:
-            temperatureMin:
-              type: number
-            temperatureMax:
-              type: number
-            humidityMin:
-              type: number
-            humidityMax:
-              type: number
-            expiryDays:
-              type: number
-            produceDate:
-              type: string
-              format: date-time
+          nullable: true
+        systemType:
+          type: string
+          nullable: true
         createdBy:
           type: string
+          nullable: true
         createdAt:
           type: string
           format: date-time
         updatedAt:
           type: string
           format: date-time
-        deletedAt:
-          type: string
-          format: date-time
-          nullable: true
-    SaleBatchInfo:
-      type: object
-      required:
-        - id
-        - key
-        - name
-        - status
-        - amount
-        - versionId
-        - unitInfo
-      properties:
-        id:
-          type: string
-        key:
-          type: string
-        name:
-          type: string
-        status:
-          $ref: "#/components/schemas/SaleBatchStatus"
-        amount:
-          type: number
-        versionId:
-          type: string
-        configId:
-          type: string
-          nullable: true
-        unitInfo:
-          $ref: "#/components/schemas/B2ProductUnitInfo"
-        latestPrice:
-          type: number
-        logisticInfo:
-          type: object
-          additionalProperties:
-            type: number
-            nullable: true
-    SaleBatchWithData:
+    PermissionWithData:
       allOf:
-        - $ref: "#/components/schemas/SaleBatch"
+        - $ref: "#/components/schemas/Permission"
         - type: object
           required:
-            - createdByData
+            - spaceData
           properties:
-            createdByData:
+            userData:
               $ref: "#/components/schemas/User"
-    SaleBatchPrice:
+            groupData:
+              $ref: "#/components/schemas/GroupBase"
+            spaceData:
+              $ref: "#/components/schemas/SpaceBase"
+    PermissionWithArtefactData:
+      allOf:
+        - $ref: "#/components/schemas/PermissionWithData"
+        - type: object
+          properties:
+            artefactData:
+              oneOf:
+                - $ref: "#/components/schemas/Document"
+                - $ref: "#/components/schemas/Folder"
+            systemData:
+              $ref: "#/components/schemas/SystemData"
+    PermissionSearchOption:
       type: object
       required:
-        - id
-        - batchId
-        - price
-        - startDate
-        - createdBy
-        - createdAt
-      properties:
-        id:
-          type: string
-        batchId:
-          type: string
-        price:
-          type: number
-        startDate:
-          type: string
-          format: date-time
-        createdBy:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        createdByData:
-          $ref: "#/components/schemas/User"
-    SaleBatchIdp:
-      type: object
-      required:
-        - id
-        - batchId
         - spaceId
-        - createdBy
-        - createdAt
+        - spaceData
       properties:
-        id:
+        userId:
           type: string
+          nullable: true
+        groupId:
+          type: string
+          nullable: true
         spaceId:
           type: string
-        createdBy:
-          type: string
-        batchId:
-          type: string
-        isBlocked:
-          type: boolean
-          nullable: true
-        createdAt:
-          type: string
-          format: date-time
-        createdByData:
+        userData:
           $ref: "#/components/schemas/User"
+        groupData:
+          $ref: "#/components/schemas/GroupBase"
+        spaceData:
+          $ref: "#/components/schemas/SpaceBase"
+    AssigneePermissions:
+      allOf:
+        - $ref: "#/components/schemas/PermissionSearchOption"
+        - type: object
+          required:
+            - permissions
+          properties:
+            permissions:
+              type: number
     SaleOrderStatus:
       type: string
       enum:
@@ -2226,6 +3007,9 @@ components:
                 $ref: "#/components/schemas/SaleOrderPosition"
     SpaceBase:
       type: object
+      required:
+        - id
+        - name
       properties:
         id:
           type: string
@@ -2241,6 +3025,10 @@ components:
       allOf:
         - $ref: "#/components/schemas/SpaceBase"
         - type: object
+          required:
+            - isAdmin
+            - createdAt
+            - updatedAt
           properties:
             isAdmin:
               type: boolean
@@ -2257,6 +3045,15 @@ components:
               format: date-time
     SpaceUser:
       type: object
+      required:
+        - spaceId
+        - userId
+        - groupId
+        - isAdmin
+        - isActive
+        - isSupervisor
+        - createdAt
+        - updatedAt
       properties:
         spaceId:
           type: string
@@ -2268,6 +3065,8 @@ components:
         isAdmin:
           type: boolean
         isActive:
+          type: boolean
+        isSupervisor:
           type: boolean
         createdBy:
           type: string
@@ -2281,6 +3080,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/SpaceUser"
         - type: object
+          required:
+            - userData
+            - spaceData
           properties:
             userData:
               $ref: "#/components/schemas/User"
@@ -2291,6 +3093,9 @@ components:
               $ref: "#/components/schemas/SpaceBase"
     SpaceUserOrGroup:
       type: object
+      required:
+        - spaceId
+        - spaceData
       properties:
         spaceId:
           type: string
@@ -2317,327 +3122,67 @@ components:
               type: array
               items:
                 type: object
+                required:
+                  - spaceId
+                  - spaceName
+                  - groupId
+                  - isActive
+                  - isAdmin
+                  - isSupervisor
                 properties:
+                  spaceId:
+                    type: string
+                    format: uuid
+                  spaceName:
+                    type: string
                   groupId:
+                    type: string
+                    nullable: true
+                  groupName:
                     type: string
                     nullable: true
                   isActive:
                     type: boolean
                   isAdmin:
                     type: boolean
+                  isSupervisor:
+                    type: boolean
                   createdBy:
                     type: string
-    TaskType:
-      type: string
-      enum:
-        - simple
-        - fillIdt
-        - receiveIdt
-        - giveOutIdt
-    TaskSource:
-      type: string
-      enum:
-        - user
-        - process
-        - b2market
-    TaskStatus:
-      type: string
-      enum:
-        - new
-        - inProgress
-        - review
-        - done
-        - discard
-    TaskPriority:
-      type: string
-      enum:
-        - low
-        - medium
-        - high
-    TaskArtefactType:
-      type: string
-      enum:
-        - product
-        - batch
-    BaseTask:
+    TagData:
       type: object
-      required:
-        - id
-        - spaceId
-        - type
-        - source
-        - status
-        - priority
-        - key
-        - name
-        - data
-        - createdAt
-        - updatedAt
       properties:
         id:
           type: string
-          format: uuid
         spaceId:
           type: string
-          format: uuid
-        createdBy:
+        category:
           type: string
           nullable: true
-        type:
-          $ref: "#/components/schemas/TaskType"
-        source:
-          $ref: "#/components/schemas/TaskSource"
-        status:
-          $ref: "#/components/schemas/TaskStatus"
-        priority:
-          $ref: "#/components/schemas/TaskPriority"
-        artefactId:
+        field:
           type: string
-          nullable: true
-        artefactType:
-          $ref: "#/components/schemas/TaskArtefactType"
-          nullable: true
-        key:
+        value:
           type: string
-        name:
-          type: string
-        description:
-          type: string
-          nullable: true
-        attachments:
-          type: array
-          items:
-            type: string
-          nullable: true
-        storyPoints:
-          type: number
-          nullable: true
-        timeSpent:
-          type: number
-          nullable: true
-        dueDate:
-          type: string
-          format: date-time
-          nullable: true
-        assigneeId:
-          type: string
-          nullable: true
-        assigneeGroupId:
-          type: string
-          nullable: true
-        data:
-          type: object
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-    TaskSimple:
-      allOf:
-        - $ref: "#/components/schemas/BaseTask"
-        - type: object
-          properties:
-            type:
-              enum:
-                - simple
-            data:
-              type: object
-    TaskFillIdt:
-      allOf:
-        - $ref: "#/components/schemas/BaseTask"
-        - type: object
-          properties:
-            type:
-              enum:
-                - fillIdt
-            data:
-              type: object
-              required:
-                - externalId
-                - productId
-                - versionId
-                - itemId
-                - orders
-                - name
-                - amount
-              properties:
-                externalId:
-                  type: string
-                productId:
-                  type: string
-                versionId:
-                  type: string
-                itemId:
-                  type: string
-                configId:
-                  type: string
-                  nullable: true
-                orders:
-                  type: array
-                  items:
-                    type: string
-                name:
-                  type: string
-                amount:
-                  type: number
-                idtList:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/TaskDataIdtWithIdp"
-                  nullable: true
-    TaskReceiveIdt:
-      allOf:
-        - $ref: "#/components/schemas/BaseTask"
-        - type: object
-          properties:
-            type:
-              enum:
-                - receiveIdt
-            data:
-              type: object
-              required:
-                - externalId
-                - placeId
-                - fromUserId
-                - fromUserName
-                - idtList
-              properties:
-                externalId:
-                  type: string
-                placeId:
-                  type: string
-                fromUserId:
-                  type: string
-                fromUserName:
-                  type: string
-                idtList:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/TaskDataIdtWithIdp"
-    TaskGiveOutIdt:
-      allOf:
-        - $ref: "#/components/schemas/BaseTask"
-        - type: object
-          properties:
-            type:
-              enum:
-                - giveOutIdt
-            data:
-              type: object
-              required:
-                - externalId
-                - placeId
-                - toUserId
-                - toUserName
-                - idtList
-              properties:
-                externalId:
-                  type: string
-                placeId:
-                  type: string
-                toUserId:
-                  type: string
-                toUserName:
-                  type: string
-                idtList:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/TaskDataIdtWithIdp"
-    Task:
-      oneOf:
-        - $ref: "#/components/schemas/TaskSimple"
-        - $ref: "#/components/schemas/TaskFillIdt"
-        - $ref: "#/components/schemas/TaskReceiveIdt"
-        - $ref: "#/components/schemas/TaskGiveOutIdt"
-    TaskWithData:
-      allOf:
-        - $ref: "#/components/schemas/Task"
-        - type: object
-          properties:
-            createdByData:
-              $ref: "#/components/schemas/User"
-              nullable: true
-            assigneeData:
-              $ref: "#/components/schemas/User"
-              nullable: true
-            assigneeGroupData:
-              $ref: "#/components/schemas/GroupBase"
-              nullable: true
-    TaskWorkLog:
-      type: object
-      required:
-        - id
-        - taskId
-        - time
-        - logDate
-        - createdBy
-        - createdAt
-        - updatedAt
-      properties:
-        id:
-          type: string
-          format: uuid
-        taskId:
-          type: string
-          format: uuid
-        time:
-          type: number
-        logDate:
-          type: string
-          format: date-time
-        comment:
-          type: string
-          nullable: true
+        isSystem:
+          type: boolean
+        isConfig:
+          type: boolean
         createdBy:
           type: string
         createdAt:
           type: string
           format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-    TaskWorkLogWithData:
+    TagWithData:
       allOf:
-        - $ref: "#/components/schemas/TaskWorkLog"
+        - $ref: "#/components/schemas/TagData"
         - type: object
-          required:
-            - createdByData
           properties:
-            createdByData:
-              $ref: "#/components/schemas/User"
-    TaskDataIdtWithIdp:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Delivery idT
-          format: uuid
-        key:
-          type: string
-          description: Delivery idT unique key in format `A_000001`
-          example: A_000000
-        itemName:
-          type: string
-          description: Product Item name
-        contains:
-          type: array
-          description: List of idP in idT
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                format: uuid
-              productId:
-                type: string
-                format: uuid
-              itemId:
-                type: string
-                format: uuid
-              batchId:
-                type: string
-                format: uuid
+            categoryData:
+              $ref: "#/components/schemas/DictionaryWord"
+            fieldData:
+              $ref: "#/components/schemas/DictionaryWord"
+            valueData:
+              $ref: "#/components/schemas/DictionaryWord"
   requestBodies:
     EmptyBody:
       content:
@@ -2650,18 +3195,20 @@ components:
           schema:
             type: object
             properties:
-              artefactId:
-                type: string
-                format: uuid
-                description: Artefact ID
+              artifacts:
+                type: array
+                items:
+                  type: string
+                  format: uuid
               spaceId:
                 type: string
                 format: uuid
-                description: Space ID
-              userId:
-                type: string
-                description: Wallet Address
-                example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+              users:
+                type: array
+                items:
+                  type: string
+                  description: Wallet Address
+                  example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
               types:
                 type: array
                 items:
@@ -2676,6 +3223,250 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
+    EditB2TaskBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: "#/components/schemas/TaskStatus"
+              priority:
+                $ref: "#/components/schemas/TaskPriority"
+              priorityLevel:
+                type: number
+              name:
+                type: string
+              description:
+                type: string
+                nullable: true
+              attachments:
+                type: array
+                items:
+                  type: string
+              data:
+                type: object
+              storyPoints:
+                type: number
+                nullable: true
+              startDate:
+                type: string
+                format: date-time
+                nullable: true
+              dueDate:
+                type: string
+                format: date-time
+                nullable: true
+              assigneeId:
+                type: string
+                nullable: true
+              assigneeGroupId:
+                type: string
+                nullable: true
+              controlId:
+                type: string
+                nullable: true
+              participants:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskParticipant"
+                nullable: true
+    SearchB2TaskWorkLogsBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              createdBy:
+                type: array
+                items:
+                  type: string
+              limit:
+                type: number
+              offset:
+                type: number
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    SearchB2TaskCommentsBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              createdBy:
+                type: array
+                items:
+                  type: string
+              limit:
+                type: number
+              offset:
+                type: number
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    ManageB2TaskWorkLogBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - time
+              - logDate
+            properties:
+              time:
+                type: number
+              logDate:
+                type: string
+                format: date-time
+              comment:
+                type: string
+                nullable: true
+    ManageB2TaskCommentBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - comment
+            properties:
+              comment:
+                type: string
+              attachments:
+                type: array
+                items:
+                  type: string
+                nullable: true
+    SearchDocumentsBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              ids:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+              searchTerm:
+                type: string
+                description: Partly match
+              search:
+                type: string
+                description: Exactly match
+              spaceId:
+                type: string
+                format: uuid
+              folderId:
+                type: string
+                format: uuid
+              types:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DocumentType"
+              systemId:
+                type: string
+                format: uuid
+              tags:
+                type: array
+                items:
+                  type: string
+              withoutFolders:
+                type: boolean
+              isSigned:
+                type: boolean
+              isShared:
+                type: boolean
+              isSystem:
+                type: boolean
+              isDeleted:
+                type: boolean
+              withShared:
+                type: boolean
+              b2taskQuery:
+                $ref: "#/components/schemas/B2TaskSearchQuery"
+              b2counterpartyQuery:
+                $ref: "#/components/schemas/B2CounterpartySearchQuery"
+              limit:
+                type: number
+              offset:
+                type: number
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    CreateDocumentBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - spaceId
+              - name
+              - type
+            properties:
+              spaceId:
+                type: string
+              name:
+                type: string
+              type:
+                $ref: "#/components/schemas/DocumentType"
+              documentId:
+                type: string
+                description: If set, new version will be created from this document
+                nullable: true
+              isPublic:
+                type: boolean
+                nullable: true
+              systemId:
+                type: string
+                nullable: true
+              systemType:
+                $ref: "#/components/schemas/SystemType"
+                nullable: true
+              tags:
+                type: array
+                items:
+                  $ref: "#/components/requestBodies/EditTagContent"
+              productVersionData:
+                $ref: "#/components/schemas/B2ProductData"
+              taskVersionData:
+                $ref: "#/components/schemas/CreateB2TaskBody"
+              counterpartyVersionData:
+                $ref: "#/components/schemas/B2CounterpartyData"
+    EditDocumentBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              isPublic:
+                type: boolean
+                nullable: true
+              currentVersion:
+                type: number
+    EditDocumentTagsBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - action
+              - tags
+            properties:
+              action:
+                type: string
+                enum:
+                  - set
+                  - append
+              tags:
+                type: array
+                items:
+                  $ref: "#/components/requestBodies/EditTagContent"
     CreateGroupBody:
       required: true
       content:
@@ -2741,128 +3532,168 @@ components:
                 type: string
               action:
                 $ref: "#/components/schemas/NotificationCallbackAction"
-    SearchSaleBatchesBody:
+    SearchPermissionsBody:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              documents:
-                type: array
-                items:
-                  type: string
-                  format: uuid
-              ids:
-                type: array
-                items:
-                  type: string
-                  format: uuid
-              status:
-                type: array
-                items:
-                  $ref: "#/components/schemas/SaleBatchStatus"
-              searchTerm:
-                type: string
-              isActive:
-                type: boolean
-                description: Returns only that shows in B2Market
-              isDeleted:
-                type: boolean
-                description: Returns only that deleted
-              limit:
-                type: number
-              offset:
-                type: number
-              sort:
-                type: array
-                items:
-                  $ref: "#/components/schemas/SortModel"
-    CreateSaleBatchBody:
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - documentId
-              - versionId
-              - amount
-              - price
-              - status
-            properties:
-              documentId:
-                type: string
-                format: uuid
-              versionId:
-                type: string
-                format: uuid
-              configId:
-                type: string
-                nullable: true
-              status:
-                type: string
-                enum:
-                  - preOrder
-                  - inStorage
-              amount:
-                type: number
-              price:
-                type: number
-              storageId:
-                type: string
-                format: uuid
-              produceData:
-                type: object
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
                 required:
-                  - documentId
-                  - versionId
-                  - amount
+                  - artefactId
+                  - type
                 properties:
-                  documentId:
+                  artefactId:
                     type: string
-                    format: uuid
-                  versionId:
+                  type:
+                    $ref: "#/components/schemas/PermissionType"
+                  access:
+                    $ref: "#/components/schemas/PermissionAccess"
+                    nullable: true
+                  variant:
                     type: string
-                    format: uuid
-                  configId:
+                    enum:
+                      - all
+                      - users
+                      - groups
+                    nullable: true
+                  searchTerm:
                     type: string
                     nullable: true
-                  amount:
-                    type: number
-    CreateSaleBatchPriceBody:
+                  systemId:
+                    type: string
+                    nullable: true
+                  assignee:
+                    type: array
+                    items:
+                      type: string
+    SearchPermissionsOptionsBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                required:
+                  - artefactId
+                  - type
+                properties:
+                  artefactId:
+                    type: string
+                  type:
+                    $ref: "#/components/schemas/PermissionType"
+                  searchTerm:
+                    type: string
+                    nullable: true
+                  systemId:
+                    type: string
+                    nullable: true
+    SearchPermissionsUniqueBody:
       content:
         application/json:
           schema:
             type: object
             required:
-              - price
-              - startDate
+              - artefactId
+              - type
+              - column
             properties:
-              price:
-                type: number
-              startDate:
+              artefactId:
                 type: string
-                format: date-time
-    SearchSaleBatchIdpBody:
+              type:
+                $ref: "#/components/schemas/PermissionType"
+              column:
+                type: string
+                enum:
+                  - spaceId
+                  - userId
+                  - groupId
+    SearchPermissionsBySystemBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                required:
+                  - systemId
+                properties:
+                  systemId:
+                    type: string
+                  spaceId:
+                    type: string
+                    nullable: true
+                  access:
+                    $ref: "#/components/schemas/PermissionAccess"
+                    nullable: true
+                  searchTerm:
+                    type: string
+                    nullable: true
+    SearchPermissionsByAssigneeBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  groupId:
+                    type: string
+                    nullable: true
+                  userId:
+                    type: string
+                    nullable: true
+                  systemId:
+                    type: string
+                    nullable: true
+                    types:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/PermissionType"
+                      nullable: true
+                    access:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/PermissionAccess"
+                      nullable: true
+    CreatePermissionBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - artefactId
+              - type
+              - access
+            properties:
+              artefactId:
+                type: string
+              type:
+                $ref: "#/components/schemas/PermissionType"
+              access:
+                $ref: "#/components/schemas/PermissionAccess"
+              systemType:
+                type: string
+                nullable: true
+              systemId:
+                type: string
+                nullable: true
+              users:
+                type: array
+                items:
+                  type: string
+              groups:
+                type: array
+                items:
+                  type: string
+    EditPermissionBody:
       content:
         application/json:
           schema:
             type: object
             properties:
-              searchTerm:
-                type: string
-              ids:
-                type: array
-                items:
-                  type: string
-                  format: uuid
-              limit:
-                type: number
-              offset:
-                type: number
-              sort:
-                type: array
-                items:
-                  $ref: "#/components/schemas/SortModel"
+              access:
+                $ref: "#/components/schemas/PermissionAccess"
     SearchSaleOrdersBody:
       content:
         application/json:
@@ -2902,6 +3733,8 @@ components:
         application/json:
           schema:
             type: object
+            required:
+              - name
             properties:
               name:
                 type: string
@@ -2941,6 +3774,9 @@ components:
               isActive:
                 type: boolean
                 nullable: true
+              isSupervisor:
+                type: boolean
+                nullable: true
               isAdmin:
                 type: boolean
                 nullable: true
@@ -2948,6 +3784,16 @@ components:
                 type: array
                 items:
                   type: string
+              limit:
+                type: number
+                nullable: true
+              offset:
+                type: number
+                nullable: true
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
     SearchSpaceUsersGroupsBody:
       required: true
       content:
@@ -2962,6 +3808,16 @@ components:
                 nullable: true
               spaceId:
                 type: string
+              limit:
+                type: number
+                nullable: true
+              offset:
+                type: number
+                nullable: true
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
     ModifySpaceUserBody:
       required: true
       content:
@@ -2988,148 +3844,24 @@ components:
               groupId:
                 type: string
                 nullable: true
-    SearchTasksBody:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              mode:
-                type: string
-                enum:
-                  - my
-                  - all
-                  - responsible
-                  - creator
-                  - viewer
-              ids:
-                type: array
-                items:
-                  type: string
-                  format: uuid
-              types:
-                type: array
-                items:
-                  $ref: "#/components/schemas/TaskType"
-              status:
-                type: array
-                items:
-                  $ref: "#/components/schemas/TaskStatus"
-              priority:
-                type: array
-                items:
-                  $ref: "#/components/schemas/TaskPriority"
-              source:
-                type: array
-                items:
-                  $ref: "#/components/schemas/TaskSource"
-              searchTerm:
-                type: string
-              assignee:
-                type: array
-                items:
-                  type: string
-              assigneeGroup:
-                type: array
-                items:
-                  type: string
-                  format: uuid
-              artifacts:
-                type: array
-                items:
-                  type: string
-                  format: uuid
-              createdBy:
-                type: array
-                items:
-                  type: string
-    CreateTaskBody:
+    EditTagContent:
+      required: true
       content:
         application/json:
           schema:
             type: object
             required:
-              - name
+              - field
+              - value
             properties:
-              priority:
-                $ref: "#/components/schemas/TaskPriority"
-              name:
+              field:
                 type: string
-              description:
+              value:
                 type: string
-                nullable: true
-              attachments:
-                type: array
-                items:
-                  type: string
-                nullable: true
-              storyPoints:
-                type: number
-                nullable: true
-              dueDate:
+              category:
                 type: string
-                format: date-time
-                nullable: true
-              assigneeId:
-                type: string
-                nullable: true
-              assigneeGroupId:
-                type: string
-                nullable: true
-    EditTaskBody:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status:
-                $ref: "#/components/schemas/TaskStatus"
-              priority:
-                $ref: "#/components/schemas/TaskPriority"
-              name:
-                type: string
-              description:
-                type: string
-                nullable: true
-              attachments:
-                type: array
-                items:
-                  type: string
-              storyPoints:
-                type: number
-                nullable: true
-              dueDate:
-                type: string
-                format: date-time
-                nullable: true
-              assigneeId:
-                type: string
-                nullable: true
-              assigneeGroupId:
-                type: string
-                nullable: true
-    SearchTaskWorkLogsBody:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/SearchModel"
-    ManageTaskWorkLogBody:
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - time
-              - logDate
-            properties:
-              time:
-                type: number
-              logDate:
-                type: string
-                format: date-time
-              comment:
-                type: string
-                nullable: true
+              isConfig:
+                type: boolean
   responses:
     InvalidData:
       description: Invalid request data
@@ -3175,6 +3907,120 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/ActivityLog"
+    B2Task:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2Task"
+    B2TaskWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2TaskWithData"
+    B2TaskWorkLog:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2TaskWorkLog"
+    B2TaskWorkLogWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2TaskWorkLogWithData"
+    B2TaskComment:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2TaskComment"
+    B2TasCommentWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2TaskCommentWithData"
+    SearchB2TaskWorkLogsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/B2TaskWorkLogWithData"
+    SearchB2TaskCommentsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/B2TaskCommentWithData"
+    DocumentNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: document:404
+            message: Document not found
+    DocumentVersionNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: document:404-version
+            message: Document version not found
+    DocumentWithFolders:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DocumentWithFolders"
+    DocumentWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DocumentWithData"
+    SearchDocumentsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DocumentWithFolders"
     FileBinary:
       description: Successful operation
       content:
@@ -3188,15 +4034,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/FileData"
-    FileNotFound:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            errorCode: document:404-version
-            message: File not exist
     GroupTreeItemData:
       description: Successful operation
       content:
@@ -3205,7 +4042,7 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/GroupTreeItem"
-    AdminGroupsData:
+    GroupsIdsData:
       description: Successful operation
       content:
         application/json:
@@ -3250,54 +4087,146 @@ components:
           example:
             errorCode: notification:404
             message: Notification not found
-    SearchSaleBatchesData:
+    PermissionResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Permission"
+    PermissionWithDataResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PermissionWithData"
+    PermissionsWithDataResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/PermissionWithData"
+    SearchPermissionsResponse:
       description: Successful operation
       content:
         application/json:
           schema:
             type: object
             required:
-              - total
               - items
+              - total
             properties:
               items:
                 type: array
                 items:
-                  $ref: "#/components/schemas/SaleBatch"
+                  $ref: "#/components/schemas/PermissionWithData"
               total:
                 type: number
-    SearchSaleBatchPricesData:
+    SearchPermissionsOptionsResponse:
       description: Successful operation
       content:
         application/json:
           schema:
             type: object
             required:
-              - total
               - items
+              - total
             properties:
               items:
                 type: array
                 items:
-                  $ref: "#/components/schemas/SaleBatchPrice"
+                  $ref: "#/components/schemas/PermissionSearchOption"
               total:
                 type: number
-    SearchSaleBatchIdpData:
+    SearchPermissionsUniqueResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/PermissionSearchOption"
+    SearchPermissionsBySystemResponse:
       description: Successful operation
       content:
         application/json:
           schema:
             type: object
             required:
-              - total
               - items
+              - total
             properties:
               items:
                 type: array
                 items:
-                  $ref: "#/components/schemas/SaleBatchIdp"
+                  $ref: "#/components/schemas/AssigneePermissions"
               total:
                 type: number
+    SearchPermissionsByAssigneeResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+              - total
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PermissionWithArtefactData"
+              total:
+                type: number
+    GetPermissionsStatisticsResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - users
+              - groups
+            properties:
+              users:
+                type: number
+              groups:
+                type: number
+              total:
+                type: number
+                description: returns only if has write/sign access to artefact
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PermissionWithData"
+                description: returns only if has write/sign access to artefact. max 5 items
+    CheckPermissionsAccessResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - hasReadAccess
+              - hasEditAccess
+              - hasSignAccess
+            properties:
+              hasReadAccess:
+                type: boolean
+              hasEditAccess:
+                type: boolean
+              hasSignAccess:
+                type: boolean
+    PermissionNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: permission:404
+            message: Permission not found
     SearchSaleOrdersData:
       description: Successful operation
       content:
@@ -3314,63 +4243,12 @@ components:
                   $ref: "#/components/schemas/SaleOrderWithData"
               total:
                 type: number
-    SaleBatch:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/SaleBatch"
-    SaleBatchWithData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/SaleBatchWithData"
-    SaleBatchPrice:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/SaleBatchPrice"
-    SaleBatchIdp:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/SaleBatchIdp"
     SaleOrderWithData:
       description: Successful operation
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/SaleOrderWithData"
-    SaleBatchNotFound:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            errorCode: sales:404-batch
-            message: Batch not found
-    SaleBatchPriceNotFound:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            errorCode: sales:404-batch-price
-            message: Batch price not found
-    SaleBatchIdpNotFound:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            errorCode: sales:404-batch-idp
-            message: Batch IDP not found
     SaleOrderNotFound:
       description: Not found
       content:
@@ -3459,82 +4337,55 @@ components:
           example:
             errorCode: space:404-user
             message: Space user not found
-    Task:
+    TagWithData:
       description: Successful operation
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Task"
-    TaskWithData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/TaskWithData"
-    TaskWorkLog:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/TaskWorkLog"
-    TaskWorkLogWithData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/TaskWorkLogWithData"
-    SearchTasksData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - total
-              - items
-            properties:
-              total:
-                type: integer
-              items:
-                type: array
-                items:
-                  $ref: "#/components/schemas/TaskWithData"
-    SearchTaskWorkLogsData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - total
-              - items
-            properties:
-              total:
-                type: integer
-              items:
-                type: array
-                items:
-                  $ref: "#/components/schemas/TaskWorkLogWithData"
-    TaskNotFound:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            errorCode: task:404
-            message: Task not found
+            $ref: "#/components/schemas/TagWithData"
   parameters:
-    fileVersionIdParam:
+    taskIdParam:
       in: path
-      name: versionId
+      name: taskId
+      description: Task ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    taskLogIdParam:
+      in: path
+      name: logId
+      description: Task work log ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    taskCommentIdParam:
+      in: path
+      name: commentId
+      description: Task comment ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    documentId:
+      name: docId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Document ID
+    fileId:
+      in: path
+      name: fileId
       description: Document Version ID
       required: true
       schema:
         type: string
         format: uuid
     groupId:
-      name: id
+      name: groupId
       in: path
       required: true
       schema:
@@ -3547,30 +4398,34 @@ components:
       schema:
         type: string
         format: uuid
-    saleBatchIdParam:
+    permissionId:
+      name: permissionId
       in: path
-      name: batchId
-      description: Sale Batch ID
       required: true
       schema:
         type: string
-        format: uuid
-    saleBatchPriceIdParam:
-      in: path
-      name: priceId
-      description: Sale Batch Price ID
+      description: Permission ID
+    permissionArtefactId:
+      name: artefactId
+      in: query
       required: true
       schema:
         type: string
-        format: uuid
-    saleBatchIdpParam:
-      in: path
-      name: idp
-      description: Sale Batch IDP ID
+      description: Artefact ID
+    permissionType:
+      name: type
+      in: query
+      required: true
+      schema:
+        $ref: "#/components/schemas/PermissionType"
+      description: Permission type
+    permissionSystemId:
+      name: systemId
+      in: query
       required: true
       schema:
         type: string
-        format: uuid
+      description: System ID
     saleOrderIdParam:
       in: path
       name: orderId
@@ -3602,19 +4457,3 @@ components:
       required: true
       schema:
         type: string
-    taskIdParam:
-      in: path
-      name: id
-      description: Task ID
-      required: true
-      schema:
-        type: string
-        format: uuid
-    taskLogIdParam:
-      in: path
-      name: logId
-      description: Task work log ID
-      required: true
-      schema:
-        type: string
-        format: uuid

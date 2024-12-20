@@ -49,10 +49,7 @@ export interface User {
 export type ActivityType = string;
 
 export interface ActivityLog {
-  /**
-   * Artefact ID
-   * @format uuid
-   */
+  /** @format uuid */
   id: string;
   /** Activity Type */
   type: ActivityType;
@@ -61,24 +58,310 @@ export interface ActivityLog {
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
    */
   userId: string;
-  /**
-   * Space ID
-   * @format uuid
-   */
+  /** @format uuid */
   spaceId: string;
-  /**
-   * Artefact ID
-   * @format uuid
-   */
+  /** @format uuid */
   artefactId: string;
   /** Activity Data depends on type */
   data: object;
-  /**
-   * Creation Date
-   * @format date-time
-   */
+  /** @format date-time */
   createdAt: string;
   userData?: User;
+}
+
+export type B2CounterpartyType = "personality" | "organization";
+
+export interface B2CounterpartyWorkPlace {
+  name: string;
+  position?: string;
+  scopes?: string[];
+  /** @format date-time */
+  startDate?: string;
+  /** @format date-time */
+  endDate?: string;
+  current?: boolean;
+}
+
+export interface B2CounterpartyData {
+  type?: B2CounterpartyType;
+  /** @format date-time */
+  birthday?: string;
+  phone?: string;
+  /** @format email */
+  email?: string;
+  ogrn?: string;
+  site?: string;
+  wallet?: string;
+  photos?: string[];
+  workPlaces?: B2CounterpartyWorkPlace[];
+}
+
+export interface B2CounterpartySearchQuery {
+  types?: B2CounterpartyType[];
+  ids?: string[];
+}
+
+export type B2ProductCardStatus = "moderation" | "published" | "blocked";
+
+export interface B2ProductUnitInfo {
+  unit?: string;
+  systemUnit?: string;
+  coeff?: number;
+}
+
+export interface B2ProductData {
+  description?: string;
+  photos?: string[];
+  unitInfo?: B2ProductUnitInfo;
+  processId?: string;
+  structureId?: string;
+  requirementId?: string;
+  configId?: string;
+}
+
+export type TaskType = "simple" | "fillIdt" | "receiveIdt" | "giveOutIdt" | "factoryTask";
+
+export type TaskSource = "user" | "b2process" | "b2market" | "b2doc";
+
+export type TaskStatus = "new" | "todo" | "progress" | "blocked" | "review" | "done" | "discard";
+
+export type TaskPriority = "low" | "medium" | "high";
+
+export type TaskArtefactType = "product" | "batch";
+
+export interface TaskParticipant {
+  userId?: string;
+  groupId?: string;
+  name: string;
+}
+
+export type TaskParticipantWithData = TaskParticipant & {
+  userData?: User | null;
+  groupData?: GroupBase | null;
+};
+
+export interface BaseB2TaskData {
+  type: TaskType;
+  source: TaskSource;
+  status: TaskStatus;
+  priority: TaskPriority;
+  priorityLevel: number;
+  artefactId?: string | null;
+  artefactType?: TaskArtefactType | null;
+  key: string;
+  name: string;
+  description?: string | null;
+  attachments?: string[] | null;
+  data: object;
+  storyPoints?: number | null;
+  timeSpent?: number | null;
+  /** @format date-time */
+  startDate?: string | null;
+  /** @format date-time */
+  dueDate?: string | null;
+  assigneeId?: string | null;
+  assigneeGroupId?: string | null;
+  controlId?: string | null;
+  participants?: TaskParticipant[] | null;
+  createdBy?: string | null;
+  systemId?: string | null;
+}
+
+export type B2TaskDataSimple = BaseB2TaskData & {
+  type?: "simple";
+  data?: object;
+};
+
+export type B2TaskDataFillIdt = BaseB2TaskData & {
+  type?: "fillIdt";
+  data?: {
+    externalId: string;
+    productId: string;
+    versionId: string;
+    itemId: string;
+    configId?: string | null;
+    orders: string[];
+    name: string;
+    amount: number;
+    idtList?: TaskDataIdtWithIdp[] | null;
+  };
+};
+
+export type B2TaskDataReceiveIdt = BaseB2TaskData & {
+  type?: "receiveIdt";
+  data?: {
+    externalId: string;
+    placeId: string;
+    fromUserId: string;
+    fromUserName: string;
+    idtList: TaskDataIdtWithIdp[];
+  };
+};
+
+export type B2TaskDataGiveOutIdt = BaseB2TaskData & {
+  type?: "giveOutIdt";
+  data?: {
+    externalId: string;
+    placeId: string;
+    toUserId: string;
+    toUserName: string;
+    idtList: TaskDataIdtWithIdp[];
+  };
+};
+
+export type B2TaskDataFactoryTask = BaseB2TaskData & {
+  type?: "factoryTask";
+  data?: {
+    type: "plan" | "preOrder";
+    documentId: string;
+    versionId: string;
+    configId?: string | null;
+    amount: number;
+    duration?: number | null;
+    condition?: number | null;
+    /** @format date-time */
+    startDate?: string | null;
+    /** @format date-time */
+    endDate?: string | null;
+    storages?:
+      | {
+          storageId: string;
+          amount: number;
+        }[]
+      | null;
+  };
+};
+
+export type B2TaskData =
+  | B2TaskDataSimple
+  | B2TaskDataFillIdt
+  | B2TaskDataReceiveIdt
+  | B2TaskDataGiveOutIdt
+  | B2TaskDataFactoryTask;
+
+export type B2Task = DocumentDataCommon &
+  B2TaskData & {
+    /** This property does not used in B2Task */
+    documentId?: string | null;
+  };
+
+export type B2TaskWithData = B2Task & {
+  createdByData?: User | null;
+  assigneeData?: User | null;
+  assigneeGroupData?: GroupBase | null;
+  controlData?: User | null;
+  participantsData?: TaskParticipantWithData[] | null;
+};
+
+export interface B2TaskWorkLog {
+  /** @format uuid */
+  id: string;
+  /** @format uuid */
+  taskId: string;
+  time: number;
+  /** @format date-time */
+  logDate: string;
+  comment?: string | null;
+  createdBy?: string | null;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
+export type B2TaskWorkLogWithData = B2TaskWorkLog & {
+  createdByData?: User;
+};
+
+export interface B2TaskComment {
+  /** @format uuid */
+  id: string;
+  /** @format uuid */
+  taskId: string;
+  comment: string;
+  attachments?: string[] | null;
+  createdBy?: string | null;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
+export type B2TaskCommentWithData = B2TaskComment & {
+  createdByData?: User;
+};
+
+export interface TaskDataIdtWithIdp {
+  /**
+   * Delivery idT
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Delivery idT unique key in format `A_000001`
+   * @example "A_000000"
+   */
+  key: string;
+  /** Product Item name */
+  itemName: string;
+  /** List of idP in idT */
+  contains: {
+    /** @format uuid */
+    id: string;
+    /** @format uuid */
+    productId: string;
+    /** @format uuid */
+    itemId: string;
+    /** @format uuid */
+    batchId: string;
+  }[];
+}
+
+export interface B2TaskSearchQuery {
+  view?: "all" | "assignee" | "participant" | "control" | "creator";
+  ids?: string[];
+  types?: TaskType[];
+  source?: TaskSource[];
+  status?: TaskStatus[];
+  notStatus?: TaskStatus[];
+  priority?: TaskPriority[];
+  assignee?: string[];
+  assigneeGroup?: string[];
+  control?: string[];
+  artifacts?: string[];
+  createdBy?: string[];
+  systemId?: string;
+}
+
+export interface CreateB2TaskBody {
+  type: TaskType;
+  source: TaskSource;
+  priority: TaskPriority;
+  priorityLevel?: number;
+  artefactId?: string | null;
+  artefactType?: TaskArtefactType | null;
+  description?: string | null;
+  attachments?: string[] | null;
+  data: object;
+  storyPoints?: number | null;
+  /** @format date-time */
+  startDate?: string | null;
+  /** @format date-time */
+  dueDate?: string | null;
+  assigneeId?: string | null;
+  assigneeGroupId?: string | null;
+  controlId?: string | null;
+  participants?: TaskParticipant[] | null;
+}
+
+export interface DictionaryWord {
+  id?: string;
+  name?: string;
+  description?: string | null;
+  photo?: string | null;
+  unit?: string | null;
+  systemUnit?: string | null;
+  coeff?: number | null;
 }
 
 export interface DocumentBase {
@@ -103,9 +386,15 @@ export type DocumentType =
   | "b2map"
   | "b2product"
   | "b2storage"
-  | "b2counterparty";
+  | "b2counterparty"
+  | "b2task";
 
 export type SystemType = "product" | "storage";
+
+export interface SystemData {
+  id: string;
+  name: string;
+}
 
 export interface DocumentVersionCacheData {
   id: string;
@@ -116,7 +405,7 @@ export interface DocumentVersionCacheData {
 }
 
 export type Document = DocumentBase & {
-  createdBy: string;
+  createdBy?: string;
   /** @format date-time */
   createdAt: string;
   /** @format date-time */
@@ -125,70 +414,49 @@ export type Document = DocumentBase & {
   deletedAt?: string | null;
 };
 
-export interface SystemData {
+export type DocumentWithFolders = Document & {
+  folders: string[];
+  spaceData: SpaceBase;
+  createdByData?: User;
+  hasAccess?: boolean;
+};
+
+export type DocumentWithData = Document & {
+  access?: PermissionAccess;
+  spaceData?: SpaceBase;
+  createdByData?: User;
+  tagsData?: TagWithData[];
+  versions?: object[];
+  fromPublic?: boolean;
+  fromDeleted?: boolean;
+};
+
+export interface DocumentDataCommon {
   id: string;
-  name: string;
+  spaceId: string;
+  documentId: string;
+  createdBy?: string;
+  key: string;
+  version: number;
+  current?: boolean;
+  latest?: boolean;
+  signed?: boolean;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
 }
 
-export interface FileData {
-  /**
-   * Document Version ID
-   * @format uuid
-   */
-  id?: string;
-  /**
-   * Space ID
-   * @format uuid
-   */
-  spaceId?: string;
-  /**
-   * Document ID
-   * @format uuid
-   */
-  documentId?: string;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy?: string;
-  /** Document Version Unique Key */
-  key?: string;
-  /** Document Version Number */
-  version?: number;
-  /**
-   * Is current version
-   * @example false
-   */
-  current?: boolean | null;
-  /**
-   * Is latest version
-   * @example true
-   */
-  latest?: boolean | null;
-  /**
-   * Is signed version
-   * @example false
-   */
-  signed?: boolean | null;
+export type FileData = DocumentDataCommon & {
   /** MIME Type */
-  mimeType?: string;
+  mimeType: string;
   /** Original File Name */
-  filename?: string;
+  filename: string;
   /** File Size */
-  size?: number;
+  size: number;
   /** File Encoding */
   encoding?: string | null;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt?: string;
-  /**
-   * Update Date
-   * @format date-time
-   */
-  updatedAt?: string;
-}
+};
 
 export interface Folder {
   id: string;
@@ -222,12 +490,16 @@ export interface GroupBase {
 
 export type Group = GroupBase & {
   order: number;
-  createdBy: string;
-  createdByData?: User;
+  description?: string | null;
+  createdBy?: string;
   /** @format date-time */
   createdAt: string;
   /** @format date-time */
   updatedAt: string;
+};
+
+export type GroupWithData = Group & {
+  createdByData?: User;
 };
 
 export type GroupTreeItem = GroupBase & {
@@ -255,18 +527,18 @@ export type NotificationType =
 export type NotificationCallbackAction = "accept" | "deny" | "error";
 
 export interface BaseNotification {
-  id?: string;
-  userId?: string;
-  artefactId?: string;
-  type?: NotificationType;
+  id: string;
+  userId: string;
+  artefactId: string;
+  type: NotificationType;
   isRead?: boolean;
-  data?: object;
+  data: object;
   callbackAction?: NotificationCallbackAction;
   createdBy?: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
 }
 
 export type NotificationAddedToDocument = BaseNotification & {
@@ -353,7 +625,7 @@ export type NotificationAddedToModule = BaseNotification & {
   data?: {
     spaceData: SpaceBase;
     module: PermissionType;
-    createdByData: User;
+    createdByData?: User;
     systemData?: SystemData;
     systemType?: SystemType;
     access: PermissionAccess;
@@ -365,7 +637,7 @@ export type NotificationModifyAccessInModule = BaseNotification & {
   data?: {
     spaceData: SpaceBase;
     module: PermissionType;
-    createdByData: User;
+    createdByData?: User;
     systemData?: SystemData;
     systemType?: SystemType;
     access: PermissionAccess;
@@ -377,7 +649,7 @@ export type NotificationExcludeFromModule = BaseNotification & {
   data?: {
     spaceData: SpaceBase;
     module: PermissionType;
-    createdByData: User;
+    createdByData?: User;
     systemData?: SystemData;
     systemType?: SystemType;
     access: PermissionAccess;
@@ -386,7 +658,7 @@ export type NotificationExcludeFromModule = BaseNotification & {
 
 export type NotificationNewTask = BaseNotification & {
   type?: "newTask";
-  data?: Task;
+  data?: B2TaskWithData;
 };
 
 export type Notification =
@@ -413,113 +685,48 @@ export type NotificationWithData = Notification & {
 
 export type PermissionAccess = "read" | "write" | "sign";
 
-export type PermissionType = "folder" | "document" | "sales" | "factory" | "resources";
+export type PermissionType = "folder" | "document" | "sales" | "factory" | "resources" | "products" | "storages";
 
-export type FactoryTaskStatus = "preOrder" | "inProgress" | "produced" | "deleted";
-
-export type B2ProductItemStatus = "moderation" | "published" | "blocked";
-
-export interface B2ProductUnitInfo {
-  unit?: string;
-  systemUnit?: string;
-  coeff?: number;
-}
-
-export type SaleBatchStatus = "preOrder" | "inStorage" | "inProduce" | "sold" | "dispose" | "deleted";
-
-export interface SaleBatch {
+export interface Permission {
   id: string;
+  artefactId: string;
+  type: PermissionType;
+  access: PermissionAccess;
   spaceId: string;
-  documentId: string;
-  versionId: string;
-  configId?: string | null;
-  key: string;
-  name: string;
-  status: SaleBatchStatus;
-  amount: number;
-  logisticInfo: Record<string, number | null>;
-  unitInfo?: B2ProductUnitInfo;
-  productItemStatus?: B2ProductItemStatus;
-  latestPrice?: number;
-  registerAmount?: number;
-  orderAmount?: number;
-  orderAmountPrice?: number;
-  deliveryAmount?: number;
-  deliveryAmountPrice?: number;
-  inStorageAmount?: number;
-  outStorageAmount?: number;
-  soldAmount?: number;
-  soldAmountPrice?: number;
-  disputeAmount?: number;
-  disputeAmountPrice?: number;
-  produceInfo?: {
-    status?: FactoryTaskStatus;
-    condition?: number;
-    duration?: number;
-    /** @format date-time */
-    planStartDate?: string;
-    /** @format date-time */
-    startDate?: string;
-    /** @format date-time */
-    endDate?: string;
-  };
-  storageInfo?: {
-    temperatureMin?: number;
-    temperatureMax?: number;
-    humidityMin?: number;
-    humidityMax?: number;
-    expiryDays?: number;
-    /** @format date-time */
-    produceDate?: string;
-  };
-  createdBy: string;
+  groupId?: string | null;
+  userId?: string | null;
+  systemId?: string | null;
+  systemType?: string | null;
+  createdBy?: string | null;
   /** @format date-time */
   createdAt: string;
   /** @format date-time */
   updatedAt: string;
-  /** @format date-time */
-  deletedAt?: string | null;
 }
 
-export interface SaleBatchInfo {
-  id: string;
-  key: string;
-  name: string;
-  status: SaleBatchStatus;
-  amount: number;
-  versionId: string;
-  configId?: string | null;
-  unitInfo: B2ProductUnitInfo;
-  latestPrice?: number;
-  logisticInfo?: Record<string, number | null>;
-}
-
-export type SaleBatchWithData = SaleBatch & {
-  createdByData: User;
+export type PermissionWithData = Permission & {
+  userData?: User;
+  groupData?: GroupBase;
+  spaceData: SpaceBase;
 };
 
-export interface SaleBatchPrice {
-  id: string;
-  batchId: string;
-  price: number;
-  /** @format date-time */
-  startDate: string;
-  createdBy: string;
-  /** @format date-time */
-  createdAt: string;
-  createdByData?: User;
+export type PermissionWithArtefactData = PermissionWithData & {
+  artefactData?: Document | Folder;
+  systemData?: SystemData;
+};
+
+export interface PermissionSearchOption {
+  userId?: string | null;
+  groupId?: string | null;
+  spaceId: string;
+  userData?: User;
+  groupData?: GroupBase;
+  spaceData: SpaceBase;
 }
 
-export interface SaleBatchIdp {
-  id: string;
-  spaceId: string;
-  createdBy: string;
-  batchId: string;
-  isBlocked?: boolean | null;
-  /** @format date-time */
-  createdAt: string;
-  createdByData?: User;
-}
+export type AssigneePermissions = PermissionSearchOption & {
+  permissions: number;
+};
 
 export type SaleOrderStatus = "created" | "processing" | "completed" | "paid" | "failed" | "cancelled";
 
@@ -572,193 +779,83 @@ export type SaleOrderWithData = SaleOrder & {
 };
 
 export interface SpaceBase {
-  id?: string;
-  name?: string;
+  id: string;
+  name: string;
   logo?: string | null;
   isPersonal?: boolean | null;
 }
 
 export type Space = SpaceBase & {
-  isAdmin?: boolean;
+  isAdmin: boolean;
   createdBy?: string;
   createdByData?: User | null;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 };
 
 export interface SpaceUser {
-  spaceId?: string;
-  userId?: string;
-  groupId?: string | null;
-  isAdmin?: boolean;
-  isActive?: boolean;
+  spaceId: string;
+  userId: string;
+  groupId: string | null;
+  isAdmin: boolean;
+  isActive: boolean;
+  isSupervisor: boolean;
   createdBy?: string;
   /** @format date-time */
-  createdAt?: string;
+  createdAt: string;
   /** @format date-time */
-  updatedAt?: string;
+  updatedAt: string;
 }
 
 export type SpaceUserWithData = SpaceUser & {
-  userData?: User;
+  userData: User;
   groupData?: GroupBase | null;
-  spaceData?: SpaceBase;
+  spaceData: SpaceBase;
 };
 
 export interface SpaceUserOrGroup {
-  spaceId?: string;
+  spaceId: string;
   userId?: string | null;
   groupId?: string | null;
   userData?: User | null;
   groupData?: GroupBase | null;
-  spaceData?: SpaceBase;
+  spaceData: SpaceBase;
 }
 
 export type SpaceUserSearch = User & {
   groups?: {
-    groupId?: string | null;
-    isActive?: boolean;
-    isAdmin?: boolean;
+    /** @format uuid */
+    spaceId: string;
+    spaceName: string;
+    groupId: string | null;
+    groupName?: string | null;
+    isActive: boolean;
+    isAdmin: boolean;
+    isSupervisor: boolean;
     createdBy?: string;
   }[];
 };
 
-export type TaskType = "simple" | "fillIdt" | "receiveIdt" | "giveOutIdt";
-
-export type TaskSource = "user" | "process" | "b2market";
-
-export type TaskStatus = "new" | "inProgress" | "review" | "done" | "discard";
-
-export type TaskPriority = "low" | "medium" | "high";
-
-export type TaskArtefactType = "product" | "batch";
-
-export interface BaseTask {
-  /** @format uuid */
-  id: string;
-  /** @format uuid */
-  spaceId: string;
-  createdBy?: string | null;
-  type: TaskType;
-  source: TaskSource;
-  status: TaskStatus;
-  priority: TaskPriority;
-  artefactId?: string | null;
-  artefactType?: TaskArtefactType | null;
-  key: string;
-  name: string;
-  description?: string | null;
-  attachments?: string[] | null;
-  storyPoints?: number | null;
-  timeSpent?: number | null;
-  /** @format date-time */
-  dueDate?: string | null;
-  assigneeId?: string | null;
-  assigneeGroupId?: string | null;
-  data: object;
-  /** @format date-time */
-  createdAt: string;
-  /** @format date-time */
-  updatedAt: string;
-}
-
-export type TaskSimple = BaseTask & {
-  type?: "simple";
-  data?: object;
-};
-
-export type TaskFillIdt = BaseTask & {
-  type?: "fillIdt";
-  data?: {
-    externalId: string;
-    productId: string;
-    versionId: string;
-    itemId: string;
-    configId?: string | null;
-    orders: string[];
-    name: string;
-    amount: number;
-    idtList?: TaskDataIdtWithIdp[] | null;
-  };
-};
-
-export type TaskReceiveIdt = BaseTask & {
-  type?: "receiveIdt";
-  data?: {
-    externalId: string;
-    placeId: string;
-    fromUserId: string;
-    fromUserName: string;
-    idtList: TaskDataIdtWithIdp[];
-  };
-};
-
-export type TaskGiveOutIdt = BaseTask & {
-  type?: "giveOutIdt";
-  data?: {
-    externalId: string;
-    placeId: string;
-    toUserId: string;
-    toUserName: string;
-    idtList: TaskDataIdtWithIdp[];
-  };
-};
-
-export type Task = TaskSimple | TaskFillIdt | TaskReceiveIdt | TaskGiveOutIdt;
-
-export type TaskWithData = Task & {
-  createdByData?: User | null;
-  assigneeData?: User | null;
-  assigneeGroupData?: GroupBase | null;
-};
-
-export interface TaskWorkLog {
-  /** @format uuid */
-  id: string;
-  /** @format uuid */
-  taskId: string;
-  time: number;
-  /** @format date-time */
-  logDate: string;
-  comment?: string | null;
-  createdBy: string;
-  /** @format date-time */
-  createdAt: string;
-  /** @format date-time */
-  updatedAt: string;
-}
-
-export type TaskWorkLogWithData = TaskWorkLog & {
-  createdByData: User;
-};
-
-export interface TaskDataIdtWithIdp {
-  /**
-   * Delivery idT
-   * @format uuid
-   */
+export interface TagData {
   id?: string;
-  /**
-   * Delivery idT unique key in format `A_000001`
-   * @example "A_000000"
-   */
-  key?: string;
-  /** Product Item name */
-  itemName?: string;
-  /** List of idP in idT */
-  contains?: {
-    /** @format uuid */
-    id?: string;
-    /** @format uuid */
-    productId?: string;
-    /** @format uuid */
-    itemId?: string;
-    /** @format uuid */
-    batchId?: string;
-  }[];
+  spaceId?: string;
+  category?: string | null;
+  field?: string;
+  value?: string;
+  isSystem?: boolean;
+  isConfig?: boolean;
+  createdBy?: string;
+  /** @format date-time */
+  createdAt?: string;
 }
+
+export type TagWithData = TagData & {
+  categoryData?: DictionaryWord;
+  fieldData?: DictionaryWord;
+  valueData?: DictionaryWord;
+};
 
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
@@ -1154,21 +1251,10 @@ export class B2DataApi<SecurityDataType extends unknown> {
      */
     searchActivities: (
       data: {
-        /**
-         * Artefact ID
-         * @format uuid
-         */
-        artefactId?: string;
-        /**
-         * Space ID
-         * @format uuid
-         */
+        artifacts?: string[];
+        /** @format uuid */
         spaceId?: string;
-        /**
-         * Wallet Address
-         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-         */
-        userId?: string;
+        users?: string[];
         types?: ActivityType[];
         /** Number of return items */
         limit?: number;
@@ -1192,6 +1278,467 @@ export class B2DataApi<SecurityDataType extends unknown> {
         ...params,
       }),
   };
+  b2Task = {
+    /**
+     * No description
+     *
+     * @tags B2Task
+     * @name GetTaskInfo
+     * @summary Get task by ID
+     * @request GET:/documents/b2task/{taskId}/info
+     * @secure
+     */
+    getTaskInfo: (taskId: string, params: RequestParams = {}) =>
+      this.http.request<B2TaskWithData, ErrorResponse>({
+        path: `/documents/b2task/${taskId}/info`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Task
+     * @name EditTask
+     * @summary Edit task by ID
+     * @request PATCH:/documents/b2task/{taskId}
+     * @secure
+     */
+    editTask: (
+      taskId: string,
+      data: {
+        status?: TaskStatus;
+        priority?: TaskPriority;
+        priorityLevel?: number;
+        name?: string;
+        description?: string | null;
+        attachments?: string[];
+        data?: object;
+        storyPoints?: number | null;
+        /** @format date-time */
+        startDate?: string | null;
+        /** @format date-time */
+        dueDate?: string | null;
+        assigneeId?: string | null;
+        assigneeGroupId?: string | null;
+        controlId?: string | null;
+        participants?: TaskParticipant[] | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<B2TaskWithData, ErrorResponse>({
+        path: `/documents/b2task/${taskId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Task
+     * @name SearchTaskWorkLogs
+     * @summary Search work logs for a task
+     * @request POST:/documents/b2task/{taskId}/work-logs/search
+     * @secure
+     */
+    searchTaskWorkLogs: (
+      taskId: string,
+      data: {
+        createdBy?: string[];
+        limit?: number;
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: B2TaskWorkLogWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2task/${taskId}/work-logs/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Task
+     * @name CreateTaskWorkLog
+     * @summary Create a work log for a task
+     * @request POST:/documents/b2task/{taskId}/work-log
+     * @secure
+     */
+    createTaskWorkLog: (
+      taskId: string,
+      data: {
+        time: number;
+        /** @format date-time */
+        logDate: string;
+        comment?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<B2TaskWorkLog, ErrorResponse>({
+        path: `/documents/b2task/${taskId}/work-log`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Task
+     * @name EditTaskWorkLog
+     * @summary Edit task work log by ID
+     * @request PATCH:/documents/b2task/{taskId}/work-logs/{logId}
+     * @secure
+     */
+    editTaskWorkLog: (
+      taskId: string,
+      logId: string,
+      data: {
+        time: number;
+        /** @format date-time */
+        logDate: string;
+        comment?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<B2TaskWorkLog, ErrorResponse>({
+        path: `/documents/b2task/${taskId}/work-logs/${logId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Task
+     * @name DeleteTaskWorkLog
+     * @summary Delete task work log by ID
+     * @request DELETE:/documents/b2task/{taskId}/work-logs/{logId}
+     * @secure
+     */
+    deleteTaskWorkLog: (taskId: string, logId: string, params: RequestParams = {}) =>
+      this.http.request<B2TaskWorkLog, ErrorResponse>({
+        path: `/documents/b2task/${taskId}/work-logs/${logId}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Task
+     * @name SearchTaskComments
+     * @summary Search comments for a task
+     * @request POST:/documents/b2task/{taskId}/comment/search
+     * @secure
+     */
+    searchTaskComments: (
+      taskId: string,
+      data: {
+        createdBy?: string[];
+        limit?: number;
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: B2TaskCommentWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2task/${taskId}/comment/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Task
+     * @name CreateTaskComment
+     * @summary Create a comment for a task
+     * @request POST:/documents/b2task/{taskId}/comment
+     * @secure
+     */
+    createTaskComment: (
+      taskId: string,
+      data: {
+        comment: string;
+        attachments?: string[] | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<B2TaskComment, ErrorResponse>({
+        path: `/documents/b2task/${taskId}/comment`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Task
+     * @name EditTaskComment
+     * @summary Edit task comment by ID
+     * @request PATCH:/documents/b2task/{taskId}/comment/{commentId}
+     * @secure
+     */
+    editTaskComment: (
+      taskId: string,
+      commentId: string,
+      data: {
+        comment: string;
+        attachments?: string[] | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<B2TaskComment, ErrorResponse>({
+        path: `/documents/b2task/${taskId}/comment/${commentId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Task
+     * @name DeleteTaskComment
+     * @summary Delete task comment by ID
+     * @request DELETE:/documents/b2task/{taskId}/comment/{commentId}
+     * @secure
+     */
+    deleteTaskComment: (taskId: string, commentId: string, params: RequestParams = {}) =>
+      this.http.request<B2TaskComment, ErrorResponse>({
+        path: `/documents/b2task/${taskId}/comment/${commentId}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+  };
+  documents = {
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name GetDocumentInfo
+     * @summary Get document info
+     * @request GET:/documents/{docId}/info
+     * @secure
+     */
+    getDocumentInfo: (docId: string, params: RequestParams = {}) =>
+      this.http.request<DocumentWithData, ErrorResponse>({
+        path: `/documents/${docId}/info`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name EditDocument
+     * @summary Edit document
+     * @request PATCH:/documents/{docId}
+     * @secure
+     */
+    editDocument: (
+      docId: string,
+      data: {
+        name?: string;
+        isPublic?: boolean | null;
+        currentVersion?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DocumentWithData, ErrorResponse>({
+        path: `/documents/${docId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name DeleteDocument
+     * @summary Delete document
+     * @request DELETE:/documents/{docId}
+     * @secure
+     */
+    deleteDocument: (
+      docId: string,
+      query?: {
+        /** Version to delete */
+        version?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<string[], ErrorResponse>({
+        path: `/documents/${docId}`,
+        method: "DELETE",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name CreateDocument
+     * @summary Create document
+     * @request POST:/document
+     * @secure
+     */
+    createDocument: (
+      data: {
+        spaceId: string;
+        name: string;
+        type: DocumentType;
+        /** If set, new version will be created from this document */
+        documentId?: string | null;
+        isPublic?: boolean | null;
+        systemId?: string | null;
+        systemType?: SystemType | null;
+        tags?: EditTagContent[];
+        productVersionData?: B2ProductData;
+        taskVersionData?: CreateB2TaskBody;
+        counterpartyVersionData?: B2CounterpartyData;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DocumentWithFolders, ErrorResponse>({
+        path: `/document`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name SearchDocuments
+     * @summary Search documents
+     * @request POST:/documents/search
+     * @secure
+     */
+    searchDocuments: (
+      data: {
+        ids?: string[];
+        /** Partly match */
+        searchTerm?: string;
+        /** Exactly match */
+        search?: string;
+        /** @format uuid */
+        spaceId?: string;
+        /** @format uuid */
+        folderId?: string;
+        types?: DocumentType[];
+        /** @format uuid */
+        systemId?: string;
+        tags?: string[];
+        withoutFolders?: boolean;
+        isSigned?: boolean;
+        isShared?: boolean;
+        isSystem?: boolean;
+        isDeleted?: boolean;
+        withShared?: boolean;
+        b2taskQuery?: B2TaskSearchQuery;
+        b2counterpartyQuery?: B2CounterpartySearchQuery;
+        limit?: number;
+        offset?: number;
+        sort?: SortModel[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: DocumentWithFolders[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name RestoreDocument
+     * @summary Restore document
+     * @request POST:/documents/{docId}/restore
+     * @secure
+     */
+    restoreDocument: (docId: string, params: RequestParams = {}) =>
+      this.http.request<DocumentWithFolders, ErrorResponse>({
+        path: `/documents/${docId}/restore`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name EditDocumentTags
+     * @summary Edit document tags
+     * @request PUT:/documents/{docId}/tags
+     * @secure
+     */
+    editDocumentTags: (
+      docId: string,
+      data: {
+        action: "set" | "append";
+        tags: EditTagContent[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<TagWithData, ErrorResponse>({
+        path: `/documents/${docId}/tags`,
+        method: "PUT",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+  };
   files = {
     /**
      * No description
@@ -1199,12 +1746,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @tags Files
      * @name GetFileBinary
      * @summary Get file binary
-     * @request GET:/documents/files/{versionId}
+     * @request GET:/documents/files/{fileId}
      * @secure
      */
-    getFileBinary: (versionId: string, params: RequestParams = {}) =>
+    getFileBinary: (fileId: string, params: RequestParams = {}) =>
       this.http.request<File, ErrorResponse>({
-        path: `/documents/files/${versionId}`,
+        path: `/documents/files/${fileId}`,
         method: "GET",
         secure: true,
         ...params,
@@ -1216,12 +1763,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @tags Files
      * @name GetFileInfo
      * @summary Get file information
-     * @request GET:/documents/files/{versionId}/info
+     * @request GET:/documents/files/{fileId}/info
      * @secure
      */
-    getFileInfo: (versionId: string, params: RequestParams = {}) =>
+    getFileInfo: (fileId: string, params: RequestParams = {}) =>
       this.http.request<FileData, ErrorResponse>({
-        path: `/documents/files/${versionId}/info`,
+        path: `/documents/files/${fileId}/info`,
         method: "GET",
         secure: true,
         ...params,
@@ -1266,6 +1813,23 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Groups
+     * @name GetMySupervisorGroups
+     * @summary Get my supervisor groups
+     * @request GET:/groups/my/supervisor
+     * @secure
+     */
+    getMySupervisorGroups: (params: RequestParams = {}) =>
+      this.http.request<string[], any>({
+        path: `/groups/my/supervisor`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Groups
      * @name CreateGroup
      * @summary Create a new group
      * @request POST:/groups
@@ -1291,14 +1855,14 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Groups
-     * @name GetGroupById
+     * @name GetGroup
      * @summary Get a group by ID
-     * @request GET:/groups/{id}
+     * @request GET:/groups/{groupId}
      * @secure
      */
-    getGroupById: (id: string, params: RequestParams = {}) =>
+    getGroup: (groupId: string, params: RequestParams = {}) =>
       this.http.request<Group, ErrorResponse>({
-        path: `/groups/${id}`,
+        path: `/groups/${groupId}`,
         method: "GET",
         secure: true,
         ...params,
@@ -1310,18 +1874,18 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @tags Groups
      * @name EditGroup
      * @summary Edit a group
-     * @request PATCH:/groups/{id}
+     * @request PATCH:/groups/{groupId}
      * @secure
      */
     editGroup: (
-      id: string,
+      groupId: string,
       data: {
         name?: string;
       },
       params: RequestParams = {},
     ) =>
       this.http.request<Group, ErrorResponse>({
-        path: `/groups/${id}`,
+        path: `/groups/${groupId}`,
         method: "PATCH",
         body: data,
         secure: true,
@@ -1334,12 +1898,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @tags Groups
      * @name DeleteGroup
      * @summary Delete a group
-     * @request DELETE:/groups/{id}
+     * @request DELETE:/groups/{groupId}
      * @secure
      */
-    deleteGroup: (id: string, params: RequestParams = {}) =>
+    deleteGroup: (groupId: string, params: RequestParams = {}) =>
       this.http.request<Group, ErrorResponse>({
-        path: `/groups/${id}`,
+        path: `/groups/${groupId}`,
         method: "DELETE",
         secure: true,
         ...params,
@@ -1482,166 +2046,37 @@ export class B2DataApi<SecurityDataType extends unknown> {
         ...params,
       }),
   };
-  sales = {
+  permissions = {
     /**
      * No description
      *
-     * @tags Sales
-     * @name SearchSaleBatches
-     * @summary Search Sale Batches
-     * @request POST:/sales/batches/search
+     * @tags Permissions
+     * @name SearchPermissions
+     * @summary Search permissions
+     * @request GET:/permissions/search
      * @secure
      */
-    searchSaleBatches: (
-      data: {
-        documents?: string[];
-        ids?: string[];
-        status?: SaleBatchStatus[];
-        searchTerm?: string;
-        /** Returns only that shows in B2Market */
-        isActive?: boolean;
-        /** Returns only that deleted */
-        isDeleted?: boolean;
-        limit?: number;
-        offset?: number;
-        sort?: SortModel[];
+    searchPermissions: (
+      data: SearchModel & {
+        artefactId: string;
+        type: PermissionType;
+        access?: PermissionAccess | null;
+        variant?: "all" | "users" | "groups" | null;
+        searchTerm?: string | null;
+        systemId?: string | null;
+        assignee?: string[];
       },
       params: RequestParams = {},
     ) =>
       this.http.request<
         {
-          items: SaleBatch[];
+          items: PermissionWithData[];
           total: number;
         },
         ErrorResponse
       >({
-        path: `/sales/batches/search`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Sales
-     * @name CreateSaleBatch
-     * @summary Create Sale Batch
-     * @request POST:/sales/batches
-     * @secure
-     */
-    createSaleBatch: (
-      data: {
-        /** @format uuid */
-        documentId: string;
-        /** @format uuid */
-        versionId: string;
-        configId?: string | null;
-        status: "preOrder" | "inStorage";
-        amount: number;
-        price: number;
-        /** @format uuid */
-        storageId?: string;
-        produceData?: {
-          /** @format uuid */
-          documentId: string;
-          /** @format uuid */
-          versionId: string;
-          configId?: string | null;
-          amount: number;
-        };
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<SaleBatch, ErrorResponse>({
-        path: `/sales/batches`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Sales
-     * @name GetSaleBatch
-     * @summary Get Sale Batch
-     * @request GET:/sales/batches/{batchId}
-     * @secure
-     */
-    getSaleBatch: (batchId: string, params: RequestParams = {}) =>
-      this.http.request<SaleBatchWithData, ErrorResponse>({
-        path: `/sales/batches/${batchId}`,
+        path: `/permissions/search`,
         method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Sales
-     * @name DeleteSaleBatch
-     * @summary Delete Sale Batch
-     * @request DELETE:/sales/batches/{batchId}
-     * @secure
-     */
-    deleteSaleBatch: (batchId: string, params: RequestParams = {}) =>
-      this.http.request<SaleBatch, ErrorResponse>({
-        path: `/sales/batches/${batchId}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Sales
-     * @name SearchSaleBatchPrices
-     * @summary Search Sale Batch Prices
-     * @request POST:/sales/batches/{batchId}/prices/search
-     * @secure
-     */
-    searchSaleBatchPrices: (batchId: string, data: SearchModel, params: RequestParams = {}) =>
-      this.http.request<
-        {
-          items: SaleBatchPrice[];
-          total: number;
-        },
-        ErrorResponse
-      >({
-        path: `/sales/batches/${batchId}/prices/search`,
-        method: "POST",
-        body: data,
-        secure: true,
-        type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Sales
-     * @name CreateSaleBatchPrice
-     * @summary Create Sale Batch Price
-     * @request POST:/sales/batches/{batchId}/prices
-     * @secure
-     */
-    createSaleBatchPrice: (
-      batchId: string,
-      data: {
-        price: number;
-        /** @format date-time */
-        startDate: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<SaleBatchPrice, ErrorResponse>({
-        path: `/sales/batches/${batchId}/prices`,
-        method: "POST",
         body: data,
         secure: true,
         ...params,
@@ -1650,48 +2085,29 @@ export class B2DataApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Sales
-     * @name DeleteSaleBatchPrice
-     * @summary Delete Sale Batch Price
-     * @request DELETE:/sales/batches/{batchId}/prices/{priceId}
+     * @tags Permissions
+     * @name SearchPermissionsOptions
+     * @summary Search permissions options
+     * @request POST:/permissions/search-options
      * @secure
      */
-    deleteSaleBatchPrice: (batchId: string, priceId: string, params: RequestParams = {}) =>
-      this.http.request<SaleBatchPrice, ErrorResponse>({
-        path: `/sales/batches/${batchId}/prices/${priceId}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Sales
-     * @name SearchSaleBatchIdp
-     * @summary Search Sale Batch IDP
-     * @request POST:/sales/batches/{batchId}/idp/search
-     * @secure
-     */
-    searchSaleBatchIdp: (
-      batchId: string,
-      data: {
-        searchTerm?: string;
-        ids?: string[];
-        limit?: number;
-        offset?: number;
-        sort?: SortModel[];
+    searchPermissionsOptions: (
+      data: SearchModel & {
+        artefactId: string;
+        type: PermissionType;
+        searchTerm?: string | null;
+        systemId?: string | null;
       },
       params: RequestParams = {},
     ) =>
       this.http.request<
         {
-          items: SaleBatchIdp[];
+          items: PermissionSearchOption[];
           total: number;
         },
         ErrorResponse
       >({
-        path: `/sales/batches/${batchId}/idp/search`,
+        path: `/permissions/search-options`,
         method: "POST",
         body: data,
         secure: true,
@@ -1701,16 +2117,24 @@ export class B2DataApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Sales
-     * @name CreateSaleBatchIdp
-     * @summary Create Sale Batch IDP
-     * @request POST:/sales/batches/{batchId}/idp/{idp}
+     * @tags Permissions
+     * @name SearchPermissionsUnique
+     * @summary Search unique permissions
+     * @request POST:/permissions/search-unique
      * @secure
      */
-    createSaleBatchIdp: (batchId: string, idp: string, params: RequestParams = {}) =>
-      this.http.request<SaleBatchIdp, ErrorResponse>({
-        path: `/sales/batches/${batchId}/idp/${idp}`,
+    searchPermissionsUnique: (
+      data: {
+        artefactId: string;
+        type: PermissionType;
+        column: "spaceId" | "userId" | "groupId";
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<PermissionSearchOption[], ErrorResponse>({
+        path: `/permissions/search-unique`,
         method: "POST",
+        body: data,
         secure: true,
         ...params,
       }),
@@ -1718,20 +2142,208 @@ export class B2DataApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Sales
-     * @name DeleteSaleBatchIdp
-     * @summary Delete Sale Batch IDP
-     * @request DELETE:/sales/batches/{batchId}/idp/{idp}
+     * @tags Permissions
+     * @name SearchPermissionsBySystem
+     * @summary Search permissions by system
+     * @request POST:/permissions/search-by-system
      * @secure
      */
-    deleteSaleBatchIdp: (batchId: string, idp: string, params: RequestParams = {}) =>
-      this.http.request<SaleBatchIdp, ErrorResponse>({
-        path: `/sales/batches/${batchId}/idp/${idp}`,
+    searchPermissionsBySystem: (
+      data: SearchModel & {
+        systemId: string;
+        spaceId?: string | null;
+        access?: PermissionAccess | null;
+        searchTerm?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          items: AssigneePermissions[];
+          total: number;
+        },
+        ErrorResponse
+      >({
+        path: `/permissions/search-by-system`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Permissions
+     * @name SearchPermissionsByAssignee
+     * @summary Search permissions by assignee
+     * @request POST:/permissions/search-by-assignee
+     * @secure
+     */
+    searchPermissionsByAssignee: (
+      data: SearchModel & {
+        groupId?: string | null;
+        userId?: string | null;
+        systemId?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          items: PermissionWithArtefactData[];
+          total: number;
+        },
+        ErrorResponse
+      >({
+        path: `/permissions/search-by-assignee`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Permissions
+     * @name CreatePermission
+     * @summary Create permission
+     * @request POST:/permissions
+     * @secure
+     */
+    createPermission: (
+      data: {
+        artefactId: string;
+        type: PermissionType;
+        access: PermissionAccess;
+        systemType?: string | null;
+        systemId?: string | null;
+        users?: string[];
+        groups?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Permission, ErrorResponse>({
+        path: `/permissions`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Permissions
+     * @name EditPermission
+     * @summary Edit permission
+     * @request PATCH:/permissions/{permissionId}
+     * @secure
+     */
+    editPermission: (
+      permissionId: string,
+      data: {
+        access?: PermissionAccess;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Permission, ErrorResponse>({
+        path: `/permissions/${permissionId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Permissions
+     * @name DeletePermission
+     * @summary Delete permission
+     * @request DELETE:/permissions/{permissionId}
+     * @secure
+     */
+    deletePermission: (permissionId: string, params: RequestParams = {}) =>
+      this.http.request<void, ErrorResponse>({
+        path: `/permissions/${permissionId}`,
         method: "DELETE",
         secure: true,
         ...params,
       }),
 
+    /**
+     * No description
+     *
+     * @tags Permissions
+     * @name GetPermissionsStatistics
+     * @summary Get permissions statistics
+     * @request GET:/permissions/statistics
+     * @secure
+     */
+    getPermissionsStatistics: (
+      query: {
+        /** Artefact ID */
+        artefactId: string;
+        /** Permission type */
+        type: PermissionType;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          users: number;
+          groups: number;
+          /** returns only if has write/sign access to artefact */
+          total?: number;
+          /** returns only if has write/sign access to artefact. max 5 items */
+          items?: PermissionWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/permissions/statistics`,
+        method: "GET",
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Permissions
+     * @name CheckPermissionsAccess
+     * @summary Check permissions access
+     * @request GET:/permissions/check-access
+     * @secure
+     */
+    checkPermissionsAccess: (
+      query: {
+        /** Artefact ID */
+        artefactId: string;
+        /** Permission type */
+        type: PermissionType;
+        /** System ID */
+        systemId: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          hasReadAccess: boolean;
+          hasEditAccess: boolean;
+          hasSignAccess: boolean;
+        },
+        ErrorResponse
+      >({
+        path: `/permissions/check-access`,
+        method: "GET",
+        query: query,
+        secure: true,
+        ...params,
+      }),
+  };
+  sales = {
     /**
      * No description
      *
@@ -1832,7 +2444,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      */
     createSpace: (
       data: {
-        name?: string;
+        name: string;
         logo?: string | null;
         isPersonal?: boolean | null;
       },
@@ -1902,8 +2514,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
         searchTerm?: string | null;
         groups?: string[];
         isActive?: boolean | null;
+        isSupervisor?: boolean | null;
         isAdmin?: boolean | null;
         ids?: string[];
+        limit?: number | null;
+        offset?: number | null;
+        sort?: SortModel[];
       },
       params: RequestParams = {},
     ) =>
@@ -1934,6 +2550,9 @@ export class B2DataApi<SecurityDataType extends unknown> {
       data: {
         searchTerm?: string | null;
         spaceId: string;
+        limit?: number | null;
+        offset?: number | null;
+        sort?: SortModel[];
       },
       params: RequestParams = {},
     ) =>
@@ -2042,240 +2661,6 @@ export class B2DataApi<SecurityDataType extends unknown> {
         path: `/spaces/users`,
         method: "DELETE",
         query: query,
-        secure: true,
-        ...params,
-      }),
-  };
-  tasks = {
-    /**
-     * No description
-     *
-     * @tags Tasks
-     * @name SearchTasks
-     * @summary Search tasks
-     * @request POST:/tasks/search
-     * @secure
-     */
-    searchTasks: (
-      data: {
-        mode?: "my" | "all" | "responsible" | "creator" | "viewer";
-        ids?: string[];
-        types?: TaskType[];
-        status?: TaskStatus[];
-        priority?: TaskPriority[];
-        source?: TaskSource[];
-        searchTerm?: string;
-        assignee?: string[];
-        assigneeGroup?: string[];
-        artifacts?: string[];
-        createdBy?: string[];
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<
-        {
-          total: number;
-          items: TaskWithData[];
-        },
-        any
-      >({
-        path: `/tasks/search`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Tasks
-     * @name CreateTask
-     * @summary Create a new task
-     * @request POST:/tasks
-     * @secure
-     */
-    createTask: (
-      data: {
-        priority?: TaskPriority;
-        name: string;
-        description?: string | null;
-        attachments?: string[] | null;
-        storyPoints?: number | null;
-        /** @format date-time */
-        dueDate?: string | null;
-        assigneeId?: string | null;
-        assigneeGroupId?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<Task, ErrorResponse>({
-        path: `/tasks`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Tasks
-     * @name GetTask
-     * @summary Get a task by ID
-     * @request GET:/tasks/{id}
-     * @secure
-     */
-    getTask: (id: string, params: RequestParams = {}) =>
-      this.http.request<TaskWithData, ErrorResponse>({
-        path: `/tasks/${id}`,
-        method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Tasks
-     * @name EditTask
-     * @summary Edit a task by ID
-     * @request PATCH:/tasks/{id}
-     * @secure
-     */
-    editTask: (
-      id: string,
-      data: {
-        status?: TaskStatus;
-        priority?: TaskPriority;
-        name?: string;
-        description?: string | null;
-        attachments?: string[];
-        storyPoints?: number | null;
-        /** @format date-time */
-        dueDate?: string | null;
-        assigneeId?: string | null;
-        assigneeGroupId?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<TaskWithData, ErrorResponse>({
-        path: `/tasks/${id}`,
-        method: "PATCH",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Tasks
-     * @name DeleteTask
-     * @summary Delete a task by ID
-     * @request DELETE:/tasks/{id}
-     * @secure
-     */
-    deleteTask: (id: string, params: RequestParams = {}) =>
-      this.http.request<Task, ErrorResponse>({
-        path: `/tasks/${id}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Tasks
-     * @name SearchTaskWorkLogs
-     * @summary Search work logs for a task
-     * @request POST:/tasks/{id}/work-log/search
-     * @secure
-     */
-    searchTaskWorkLogs: (id: string, data: SearchModel, params: RequestParams = {}) =>
-      this.http.request<
-        {
-          total: number;
-          items: TaskWorkLogWithData[];
-        },
-        ErrorResponse
-      >({
-        path: `/tasks/${id}/work-log/search`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Tasks
-     * @name CreateTaskWorkLog
-     * @summary Create a work log for a task
-     * @request POST:/tasks/{id}/work-log
-     * @secure
-     */
-    createTaskWorkLog: (
-      id: string,
-      data: {
-        time: number;
-        /** @format date-time */
-        logDate: string;
-        comment?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<TaskWorkLog, ErrorResponse>({
-        path: `/tasks/${id}/work-log`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Tasks
-     * @name EditTaskWorkLog
-     * @summary Edit a work log by ID
-     * @request PATCH:/tasks/{id}/work-log/{logId}
-     * @secure
-     */
-    editTaskWorkLog: (
-      id: string,
-      logId: string,
-      data: {
-        time: number;
-        /** @format date-time */
-        logDate: string;
-        comment?: string | null;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<TaskWorkLog, ErrorResponse>({
-        path: `/tasks/${id}/work-log/${logId}`,
-        method: "PATCH",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Tasks
-     * @name DeleteTaskWorkLog
-     * @summary Delete a work log by ID
-     * @request DELETE:/tasks/{id}/work-log/{logId}
-     * @secure
-     */
-    deleteTaskWorkLog: (id: string, logId: string, params: RequestParams = {}) =>
-      this.http.request<TaskWorkLog, ErrorResponse>({
-        path: `/tasks/${id}/work-log/${logId}`,
-        method: "DELETE",
         secure: true,
         ...params,
       }),
