@@ -203,20 +203,15 @@ export interface DeliveryIdtBase {
 
 export type DeliveryIdt = DeliveryIdtBase & {
   /** List of idP in idT */
-  contains: {
-    /**
-     * Delivery idP ID
-     * @format uuid
-     */
-    id?: string;
+  contains: (DeliveryIdpBase & {
     /**
      * Product Batch External ID
      * @format uuid
      */
-    batchId?: string;
+    batchId: string;
     /** Product Item Name */
-    name?: string;
-  }[];
+    name: string;
+  })[];
   /** Wallet Address */
   createdBy: string;
   /**
@@ -325,7 +320,7 @@ export interface FileData {
   updatedAt: string;
 }
 
-export interface Folder {
+export interface FolderBase {
   /**
    * Folder ID
    * @format uuid
@@ -338,14 +333,17 @@ export interface Folder {
   parentId?: string | null;
   /** Folder name */
   name: string;
-  /** Commission that applies to products in this folder */
-  commission: number;
   /** Folder photo */
   photo?: string;
   /** Folder order */
   order?: number;
   /** If `true` - shows everyone, if `null` - on review to make public, if `false` - shows only for creator */
   isPublic?: boolean;
+}
+
+export type Folder = FolderBase & {
+  /** Commission that applies to products in this folder */
+  commission: number;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -366,7 +364,7 @@ export interface Folder {
    * @format date-time
    */
   updatedAt: string;
-}
+};
 
 /** Formula operator */
 export type FolderFormulaOperator = "equal" | "not_equal";
@@ -425,6 +423,25 @@ export type FolderFullData = Folder & {
   createdByData?: User;
 };
 
+/** Order status */
+export type OrderStatus = "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
+
+/** Order Position status */
+export type OrderPositionStatus =
+  | "created"
+  | "paid"
+  | "confirmed"
+  | "declined"
+  | "production"
+  | "deliveryReady"
+  | "delivery"
+  | "cancelling"
+  | "cancelled"
+  | "completed"
+  | "dispute"
+  | "returned"
+  | "failed";
+
 export interface OrderBase {
   /**
    * Order ID
@@ -434,7 +451,7 @@ export interface OrderBase {
   /** Order unique key */
   key: string;
   /** Order status */
-  status: "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
+  status: OrderStatus;
   /**
    * Pick-up place ID
    * @format uuid
@@ -472,17 +489,7 @@ export interface OrderPositionBase {
   /** Amount of idP */
   amount: number;
   /** Order Position status */
-  status:
-    | "created"
-    | "confirmed"
-    | "production"
-    | "delivery"
-    | "cancelling"
-    | "cancelled"
-    | "completed"
-    | "dispute"
-    | "returned"
-    | "failed";
+  status: OrderPositionStatus;
   /** Payment transaction hash */
   txHash?: string;
 }
@@ -554,6 +561,22 @@ export type OrderPositionWithData = OrderPosition & {
   itemData: ProductItemBase;
   /** Provider Name */
   providerName: string;
+  /** Order unique key */
+  orderKey: string;
+};
+
+export type ItemOrdersPositions = ProductItemBase & {
+  placeData: Place;
+  positions: (OrderPositionBase & {
+    /**
+     * Order ID
+     * @format uuid
+     */
+    orderId: string;
+    createdByData: User;
+    /** Payment transaction hash */
+    paymentHash?: string;
+  })[];
 };
 
 export interface Place {
@@ -707,10 +730,6 @@ export interface ProductItemBase {
   name: string;
   /** Product Item photos */
   photos?: string[];
-  /** Amount of available idPacks */
-  amountAvailable: number;
-  /** Amount of pre-order idPacks */
-  amountPreOrder: number;
   /** Amount idPacks in idTare to start delivery */
   amountInIdt: number;
   /** Amount of goods in idPack */
@@ -928,6 +947,74 @@ export type ProductPriceWithData = ProductPrice & {
   itemData: ProductItemBase;
 };
 
+export interface ProductAmount {
+  /**
+   * Product Amount ID
+   * @format uuid
+   */
+  id: string;
+  /**
+   * Storage ID or PreOrderId based on type from Provider
+   * @format uuid
+   */
+  externalId: string;
+  /**
+   * Product ID
+   * @format uuid
+   */
+  productId: string;
+  /**
+   * Product Item ID
+   * @format uuid
+   */
+  itemId: string;
+  /**
+   * Provider ID
+   * @format uuid
+   */
+  providerId: string;
+  /** Wallet Address */
+  createdBy: string;
+  /** Type of product amount */
+  type: "available" | "preOrder";
+  /** Amount in pcs */
+  amount: number;
+  /** Minimum amount in pcs to start produce (for preOrder) */
+  minAmount?: number | null;
+  /**
+   * Start date (for preOrder)
+   * @format date-time
+   */
+  startDate?: string | null;
+  /**
+   * End date (for preOrder)
+   * @format date-time
+   */
+  endDate?: string | null;
+  /** Produce duration in days (for preOrder) */
+  produceDuration?: number | null;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt: string;
+  /**
+   * Delete Date
+   * @format date-time
+   */
+  deletedAt?: string | null;
+}
+
+export type ProductAmountWithData = ProductAmount & {
+  createdByData: User;
+  itemData: ProductItemBase;
+};
+
 export interface ProductIdp {
   /**
    * idP ID
@@ -983,6 +1070,25 @@ export interface ProductCardPrice {
   endDate?: string | null;
 }
 
+export interface ProductCardAmount {
+  /** Amount in pcs */
+  amount: number;
+  /** Minimum amount in pcs to start produce (for preOrder) */
+  minAmount?: number | null;
+  /**
+   * Start date (for preOrder)
+   * @format date-time
+   */
+  startDate?: string | null;
+  /**
+   * End date (for preOrder)
+   * @format date-time
+   */
+  endDate?: string | null;
+  /** Produce duration in days (for preOrder) */
+  produceDuration?: number | null;
+}
+
 export interface ProductCardConfiguration {
   field: string;
   fieldData: DictionaryWord;
@@ -1003,6 +1109,8 @@ export type ProductCard = ProductItemBase & {
   /** Current user liked this card or not */
   isLiked?: boolean;
   currentPrice: ProductCardPrice;
+  availableAmount?: ProductCardAmount;
+  preOrderAmount?: ProductCardAmount;
 };
 
 export type ProductCardWithData = ProductCard & {
@@ -1197,7 +1305,15 @@ export type TaskArtefactType = "product";
 export interface TaskIdtWithIdp {
   id: string;
   key: string;
-  contains: DeliveryIdp[];
+  contains: (DeliveryIdpBase & {
+    /**
+     * Product Batch External ID
+     * @format uuid
+     */
+    batchId: string;
+    /** Product Item Name */
+    name: string;
+  })[];
 }
 
 export interface BaseTask {
@@ -1238,12 +1354,12 @@ export type TaskProductItemReview = BaseTask & {
 export type TaskFillIdt = BaseTask & {
   type?: "fillIdt";
   data?: {
-    documentId?: string;
-    versionId?: string;
+    documentId: string;
+    versionId: string;
     configId?: string;
-    orders?: string[];
-    name?: string;
-    amount?: number;
+    orders: string[];
+    name: string;
+    amount: number;
     idtList?: TaskIdtWithIdp[];
   };
 };
@@ -1251,8 +1367,8 @@ export type TaskFillIdt = BaseTask & {
 export type TaskPickUpIdt = BaseTask & {
   type?: "pickUpIdt";
   data?: {
-    placeId?: string;
-    pickUpSubtasks?: {
+    placeId: string;
+    pickUpSubtasks: {
       providerId?: string;
       providerName?: string;
       locationLat?: number;
@@ -1266,39 +1382,39 @@ export type TaskPickUpIdt = BaseTask & {
 export type TaskReceiveIdt = BaseTask & {
   type?: "receiveIdt";
   data?: {
-    placeId?: string;
-    fromUserId?: string;
-    fromUserName?: string;
-    idtList?: TaskIdtWithIdp[];
+    placeId: string;
+    fromUserId: string;
+    fromUserName: string;
+    idtList: TaskIdtWithIdp[];
   };
 };
 
 export type TaskGiveOutIdt = BaseTask & {
   type?: "giveOutIdt";
   data?: {
-    placeId?: string;
-    toUserId?: string;
-    toUserName?: string;
-    idtList?: TaskIdtWithIdp[];
+    placeId: string;
+    toUserId: string;
+    toUserName: string;
+    idtList: TaskIdtWithIdp[];
   };
 };
 
 export type TaskDeliverIdt = BaseTask & {
   type?: "deliverIdt";
   data?: {
-    pickUpPlaceId?: string;
-    dispatchPlaceId?: string;
-    idtList?: TaskIdtWithIdp[];
-    orders?: object[];
+    pickUpPlaceId: string;
+    dispatchPlaceId: string;
+    idtList: TaskIdtWithIdp[];
+    orders: object[];
     deliveryLogs?: {
-      idtId?: string;
-      idtKey?: string;
-      orderId?: string;
-      orderKey?: string;
-      positionId?: string;
-      amount?: number;
+      idtId: string;
+      idtKey: string;
+      orderId: string;
+      orderKey: string;
+      positionId: string;
+      amount: number;
       /** @format date-time */
-      timestamp?: string;
+      timestamp: string;
     }[];
   };
 };
@@ -2020,10 +2136,18 @@ export class B2MarketApi<SecurityDataType extends unknown> {
      * @tags Providers
      * @name SearchProviderProfiles
      * @summary Search provider profiles
-     * @request GET:/providers/profile/search
+     * @request POST:/providers/profile/search
      * @secure
      */
-    searchProviderProfiles: (data: any, params: RequestParams = {}) =>
+    searchProviderProfiles: (
+      data: SearchModel & {
+        /** Search term */
+        searchTerm?: string;
+        /** Provider ids */
+        ids?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
       this.http.request<
         {
           total: number;
@@ -2032,7 +2156,7 @@ export class B2MarketApi<SecurityDataType extends unknown> {
         ErrorResponse
       >({
         path: `/providers/profile/search`,
-        method: "GET",
+        method: "POST",
         body: data,
         secure: true,
         ...params,
@@ -2598,11 +2722,11 @@ export class B2MarketApi<SecurityDataType extends unknown> {
      *
      * @tags Folders, Available Public
      * @name GetFolder
-     * @summary Get full folder data
+     * @summary Get folder public data
      * @request GET:/folders/{id}
      */
     getFolder: (id: string, params: RequestParams = {}) =>
-      this.http.request<FolderFullData, ErrorResponse>({
+      this.http.request<FolderBase, ErrorResponse>({
         path: `/folders/${id}`,
         method: "GET",
         ...params,
@@ -2651,6 +2775,21 @@ export class B2MarketApi<SecurityDataType extends unknown> {
         path: `/folders/${id}`,
         method: "DELETE",
         secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Folders
+     * @name GetFolderInfo
+     * @summary Get folder full data
+     * @request GET:/folders/{id}/info
+     */
+    getFolderInfo: (id: string, params: RequestParams = {}) =>
+      this.http.request<FolderFullData, ErrorResponse>({
+        path: `/folders/${id}/info`,
+        method: "GET",
         ...params,
       }),
 
@@ -2956,7 +3095,8 @@ export class B2MarketApi<SecurityDataType extends unknown> {
      */
     searchOrders: (
       data: SearchModel & {
-        status?: "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
+        /** Order status */
+        status?: OrderStatus;
         places?: string[];
         providers?: string[];
         products?: string[];
@@ -3149,6 +3289,114 @@ export class B2MarketApi<SecurityDataType extends unknown> {
         secure: true,
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags Orders
+     * @name SearchOrdersPositions
+     * @summary Search orders positions
+     * @request POST:/orders/positions/search
+     * @secure
+     */
+    searchOrdersPositions: (
+      data: SearchModel & {
+        /** Order Position status */
+        status?: OrderPositionStatus;
+        places?: string[];
+        providers?: string[];
+        products?: string[];
+        items?: string[];
+        createdBy?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: OrderPositionWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/orders/positions/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`
+     *
+     * @tags Orders
+     * @name UpdateOrderPosition
+     * @request PATCH:/orders/positions/{id}
+     * @secure
+     */
+    updateOrderPosition: (
+      id: string,
+      data: {
+        status?: "confirmed" | "declined" | "production" | "deliveryReady";
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<OrderPosition, ErrorResponse>({
+        path: `/orders/positions/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Orders
+     * @name SearchItemsOrdersPositions
+     * @summary Get orders positions by items
+     * @request POST:/orders/items-positions/search
+     * @secure
+     */
+    searchItemsOrdersPositions: (
+      data: SearchModel & {
+        places?: string[];
+        providers?: string[];
+        products?: string[];
+        items?: string[];
+        createdBy?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: ItemOrdersPositions[];
+        },
+        ErrorResponse
+      >({
+        path: `/orders/items-positions/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Orders
+     * @name GetItemOrdersPositions
+     * @summary Get orders positions by item
+     * @request GET:/orders/items-positions/{id}
+     * @secure
+     */
+    getItemOrdersPositions: (id: string, params: RequestParams = {}) =>
+      this.http.request<ItemOrdersPositions, ErrorResponse>({
+        path: `/orders/items-positions/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
   };
   places = {
     /**
@@ -3293,9 +3541,9 @@ export class B2MarketApi<SecurityDataType extends unknown> {
   };
   products = {
     /**
-     * @description Available for `System Admin` or `providers` (own data only)
+     * @description Available for `System Admin`
      *
-     * @tags Products, Available Providers
+     * @tags Products
      * @name SearchProducts
      * @summary Search products
      * @request POST:/products/search
@@ -3487,9 +3735,9 @@ export class B2MarketApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `System Admin` or `providers` (own data only)
+     * @description Available for `System Admin`
      *
-     * @tags Products, Available Providers
+     * @tags Products
      * @name SearchProductItems
      * @summary Search product items
      * @request POST:/products/items/search
@@ -3569,10 +3817,6 @@ export class B2MarketApi<SecurityDataType extends unknown> {
           value?: string;
           isConfig?: boolean;
         }[];
-        /** Amount of available idPacks */
-        amountAvailable: number;
-        /** Amount of pre-order idPacks */
-        amountPreOrder: number;
         /** Amount idPacks in idTare to start delivery */
         amountInIdt: number;
         /** Amount of goods in idPack */
@@ -3651,10 +3895,6 @@ export class B2MarketApi<SecurityDataType extends unknown> {
           value?: string;
           isConfig?: boolean;
         }[];
-        /** Amount of available idPacks */
-        amountAvailable?: number;
-        /** Amount of pre-order idPacks */
-        amountPreOrder?: number;
         /** Amount idPacks in idTare to start delivery */
         amountInIdt?: number;
         /** Amount of goods in idPack */
@@ -3688,9 +3928,9 @@ export class B2MarketApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `System Admin` or `providers` (own data only)
+     * @description Available for `System Admin`
      *
-     * @tags Products, Available Providers
+     * @tags Products
      * @name SearchProductBatches
      * @summary Search product batches
      * @request POST:/products/batches/search
@@ -3703,6 +3943,8 @@ export class B2MarketApi<SecurityDataType extends unknown> {
         products?: string[];
         items?: string[];
         ids?: string[];
+        /** Returns only deleted product batches */
+        isDeleted?: boolean;
       },
       params: RequestParams = {},
     ) =>
@@ -3842,9 +4084,9 @@ export class B2MarketApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `System Admin` or `providers` (own data only)
+     * @description Available for `System Admin`
      *
-     * @tags Products, Available Providers
+     * @tags Products
      * @name SearchProductPrices
      * @summary Search product prices
      * @request POST:/products/prices/search
@@ -3857,6 +4099,8 @@ export class B2MarketApi<SecurityDataType extends unknown> {
         products?: string[];
         items?: string[];
         ids?: string[];
+        /** Returns only deleted product prices */
+        isDeleted?: boolean;
       },
       params: RequestParams = {},
     ) =>
@@ -3988,9 +4232,177 @@ export class B2MarketApi<SecurityDataType extends unknown> {
       }),
 
     /**
+     * @description Available for `System Admin`
+     *
+     * @tags Products
+     * @name SearchProductAmounts
+     * @summary Search product amounts
+     * @request POST:/products/amounts/search
+     * @secure
+     */
+    searchProductAmounts: (
+      data: SearchModel & {
+        /** Search term */
+        searchTerm?: string;
+        products?: string[];
+        items?: string[];
+        ids?: string[];
+        /** Returns only deleted product amounts */
+        isDeleted?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: ProductAmountWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/products/amounts/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`
+     *
+     * @tags Products, Available Providers
+     * @name CreateProductAmount
+     * @summary Create new product amount
+     * @request POST:/products/amounts
+     * @secure
+     */
+    createProductAmount: (
+      data: {
+        /**
+         * Storage ID or PreOrder ID based on `type`
+         * @format uuid
+         */
+        externalId: string;
+        /**
+         * Product External ID form Provider
+         * @format uuid
+         */
+        externalProductId: string;
+        /**
+         * Product Version External ID form Provider
+         * @format uuid
+         */
+        externalVersionId: string;
+        /**
+         * Product Item Configuration External ID form Provider
+         * @format uuid
+         */
+        externalConfigId?: string | null;
+        /** Type of product amount */
+        type: "available" | "preOrder";
+        /** Amount in pcs */
+        amount: number;
+        /** Minimum amount in pcs to start produce (for preOrder) */
+        minAmount?: number | null;
+        /**
+         * Start date (for preOrder)
+         * @format date-time
+         */
+        startDate?: string | null;
+        /**
+         * End date (for preOrder)
+         * @format date-time
+         */
+        endDate?: string | null;
+        /** Produce duration in days (for preOrder) */
+        produceDuration?: number | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProductAmountWithData, ErrorResponse>({
+        path: `/products/amounts`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
      * @description Available for `System Admin` or `providers` (own data only)
      *
      * @tags Products, Available Providers
+     * @name GetProductAmount
+     * @summary Get product amount with full data
+     * @request GET:/products/amounts/{id}
+     * @secure
+     */
+    getProductAmount: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProductAmountWithData, ErrorResponse>({
+        path: `/products/amounts/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`
+     *
+     * @tags Products, Available Providers
+     * @name UpdateProductAmount
+     * @summary Update product amount data
+     * @request PATCH:/products/amounts/{id}
+     * @secure
+     */
+    updateProductAmount: (
+      id: string,
+      data: {
+        /** Amount in pcs */
+        amount?: number;
+        /** Minimum amount in pcs to start produce (for preOrder) */
+        minAmount?: number | null;
+        /**
+         * Start date (for preOrder)
+         * @format date-time
+         */
+        startDate?: string | null;
+        /**
+         * End date (for preOrder)
+         * @format date-time
+         */
+        endDate?: string | null;
+        /** Produce duration in days (for preOrder) */
+        produceDuration?: number | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProductAmountWithData, ErrorResponse>({
+        path: `/products/amounts/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `providers`. Mark that product amount as deleted.
+     *
+     * @tags Products, Available Providers
+     * @name DeleteProductAmount
+     * @summary Delete product amount
+     * @request DELETE:/products/amounts/{id}
+     * @secure
+     */
+    deleteProductAmount: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProductAmount, ErrorResponse>({
+        path: `/products/amounts/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Available for `System Admin`
+     *
+     * @tags Products
      * @name SearchProductIdp
      * @summary Search idP
      * @request POST:/products/idp/search
