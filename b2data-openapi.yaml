@@ -876,7 +876,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotificationNotFound"
   /permissions/search:
-    get:
+    post:
       tags:
         - Permissions
       summary: Search permissions
@@ -1488,12 +1488,6 @@ components:
           type: array
           items:
             type: string
-    B2ProductCardStatus:
-      type: string
-      enum:
-        - moderation
-        - published
-        - blocked
     B2ProductUnitInfo:
       type: object
       properties:
@@ -3183,6 +3177,20 @@ components:
               $ref: "#/components/schemas/DictionaryWord"
             valueData:
               $ref: "#/components/schemas/DictionaryWord"
+    EditTagContentBody:
+      type: object
+      required:
+        - field
+        - value
+      properties:
+        field:
+          type: string
+        value:
+          type: string
+        category:
+          type: string
+        isConfig:
+          type: boolean
   requestBodies:
     EmptyBody:
       content:
@@ -3429,7 +3437,7 @@ components:
               tags:
                 type: array
                 items:
-                  $ref: "#/components/requestBodies/EditTagContent"
+                  $ref: "#/components/schemas/EditTagContentBody"
               productVersionData:
                 $ref: "#/components/schemas/B2ProductData"
               taskVersionData:
@@ -3466,7 +3474,7 @@ components:
               tags:
                 type: array
                 items:
-                  $ref: "#/components/requestBodies/EditTagContent"
+                  $ref: "#/components/schemas/EditTagContentBody"
     CreateGroupBody:
       required: true
       content:
@@ -3646,16 +3654,16 @@ components:
                   systemId:
                     type: string
                     nullable: true
-                    types:
-                      type: array
-                      items:
-                        $ref: "#/components/schemas/PermissionType"
-                      nullable: true
-                    access:
-                      type: array
-                      items:
-                        $ref: "#/components/schemas/PermissionAccess"
-                      nullable: true
+                  types:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PermissionType"
+                    nullable: true
+                  access:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PermissionAccess"
+                    nullable: true
     CreatePermissionBody:
       content:
         application/json:
@@ -3844,24 +3852,6 @@ components:
               groupId:
                 type: string
                 nullable: true
-    EditTagContent:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - field
-              - value
-            properties:
-              field:
-                type: string
-              value:
-                type: string
-              category:
-                type: string
-              isConfig:
-                type: boolean
   responses:
     InvalidData:
       description: Invalid request data

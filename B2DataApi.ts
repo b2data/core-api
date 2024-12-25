@@ -101,8 +101,6 @@ export interface B2CounterpartySearchQuery {
   ids?: string[];
 }
 
-export type B2ProductCardStatus = "moderation" | "published" | "blocked";
-
 export interface B2ProductUnitInfo {
   unit?: string;
   systemUnit?: string;
@@ -856,6 +854,13 @@ export type TagWithData = TagData & {
   fieldData?: DictionaryWord;
   valueData?: DictionaryWord;
 };
+
+export interface EditTagContentBody {
+  field: string;
+  value: string;
+  category?: string;
+  isConfig?: boolean;
+}
 
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
@@ -1630,7 +1635,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
         isPublic?: boolean | null;
         systemId?: string | null;
         systemType?: SystemType | null;
-        tags?: EditTagContent[];
+        tags?: EditTagContentBody[];
         productVersionData?: B2ProductData;
         taskVersionData?: CreateB2TaskBody;
         counterpartyVersionData?: B2CounterpartyData;
@@ -1727,7 +1732,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
       docId: string,
       data: {
         action: "set" | "append";
-        tags: EditTagContent[];
+        tags: EditTagContentBody[];
       },
       params: RequestParams = {},
     ) =>
@@ -2053,7 +2058,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @tags Permissions
      * @name SearchPermissions
      * @summary Search permissions
-     * @request GET:/permissions/search
+     * @request POST:/permissions/search
      * @secure
      */
     searchPermissions: (
@@ -2076,7 +2081,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
         ErrorResponse
       >({
         path: `/permissions/search`,
-        method: "GET",
+        method: "POST",
         body: data,
         secure: true,
         ...params,
@@ -2185,6 +2190,8 @@ export class B2DataApi<SecurityDataType extends unknown> {
         groupId?: string | null;
         userId?: string | null;
         systemId?: string | null;
+        types?: PermissionType[] | null;
+        access?: PermissionAccess[] | null;
       },
       params: RequestParams = {},
     ) =>
