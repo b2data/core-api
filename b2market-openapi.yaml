@@ -5475,6 +5475,7 @@ components:
                   - declined
                   - production
                   - deliveryReady
+                  - delivery
     CreatePlaceBody:
       content:
         application/json:

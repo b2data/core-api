@@ -3336,7 +3336,7 @@ export class B2MarketApi<SecurityDataType extends unknown> {
     updateOrderPosition: (
       id: string,
       data: {
-        status?: "confirmed" | "declined" | "production" | "deliveryReady";
+        status?: "confirmed" | "declined" | "production" | "deliveryReady" | "delivery";
       },
       params: RequestParams = {},
     ) =>
