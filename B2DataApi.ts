@@ -1288,6 +1288,49 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags B2Task
+     * @name SearchTasks
+     * @summary Search tasks
+     * @request POST:/documents/b2task/search
+     * @secure
+     */
+    searchTasks: (
+      data: SearchModel & {
+        view?: "all" | "assignee" | "participant" | "control" | "creator";
+        searchTerm?: string;
+        ids?: string[];
+        types?: TaskType[];
+        notTypes?: TaskType[];
+        source?: TaskSource[];
+        status?: TaskStatus[];
+        notStatus?: TaskStatus[];
+        priority?: TaskPriority[];
+        assignee?: string[];
+        assigneeGroup?: string[];
+        control?: string[];
+        artifacts?: string[];
+        createdBy?: string[];
+        systemId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: B2TaskWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2task/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Task
      * @name GetTaskInfo
      * @summary Get task by ID
      * @request GET:/documents/b2task/{taskId}/info
@@ -1351,11 +1394,8 @@ export class B2DataApi<SecurityDataType extends unknown> {
      */
     searchTaskWorkLogs: (
       taskId: string,
-      data: {
+      data: SearchModel & {
         createdBy?: string[];
-        limit?: number;
-        offset?: number;
-        sort?: SortModel[];
       },
       params: RequestParams = {},
     ) =>
@@ -1456,11 +1496,8 @@ export class B2DataApi<SecurityDataType extends unknown> {
      */
     searchTaskComments: (
       taskId: string,
-      data: {
+      data: SearchModel & {
         createdBy?: string[];
-        limit?: number;
-        offset?: number;
-        sort?: SortModel[];
       },
       params: RequestParams = {},
     ) =>
@@ -2067,6 +2104,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
         type: PermissionType;
         access?: PermissionAccess | null;
         variant?: "all" | "users" | "groups" | null;
+        ids?: string[] | null;
         searchTerm?: string | null;
         systemId?: string | null;
         assignee?: string[];

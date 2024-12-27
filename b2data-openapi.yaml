@@ -238,6 +238,25 @@ paths:
           $ref: "#/components/responses/InvalidData"
         "401":
           $ref: "#/components/responses/Unauthorized"
+  /documents/b2task/search:
+    post:
+      tags:
+        - B2Task
+      security:
+        - BearerAuth: []
+      summary: Search tasks
+      operationId: searchTasks
+      requestBody:
+        $ref: "#/components/requestBodies/SearchB2TaskBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchB2TaskData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
   "/documents/b2task/{taskId}/info":
     get:
       tags:
@@ -3231,6 +3250,74 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
+    SearchB2TaskBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  view:
+                    type: string
+                    enum:
+                      - all
+                      - assignee
+                      - participant
+                      - control
+                      - creator
+                  searchTerm:
+                    type: string
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                  types:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaskType"
+                  notTypes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaskType"
+                  source:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaskSource"
+                  status:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaskStatus"
+                  notStatus:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaskStatus"
+                  priority:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaskPriority"
+                  assignee:
+                    type: array
+                    items:
+                      type: string
+                  assigneeGroup:
+                    type: array
+                    items:
+                      type: string
+                  control:
+                    type: array
+                    items:
+                      type: string
+                  artifacts:
+                    type: array
+                    items:
+                      type: string
+                  createdBy:
+                    type: array
+                    items:
+                      type: string
+                  systemId:
+                    type: string
     EditB2TaskBody:
       content:
         application/json:
@@ -3283,38 +3370,26 @@ components:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              createdBy:
-                type: array
-                items:
-                  type: string
-              limit:
-                type: number
-              offset:
-                type: number
-              sort:
-                type: array
-                items:
-                  $ref: "#/components/schemas/SortModel"
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  createdBy:
+                    type: array
+                    items:
+                      type: string
     SearchB2TaskCommentsBody:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              createdBy:
-                type: array
-                items:
-                  type: string
-              limit:
-                type: number
-              offset:
-                type: number
-              sort:
-                type: array
-                items:
-                  $ref: "#/components/schemas/SortModel"
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  createdBy:
+                    type: array
+                    items:
+                      type: string
     ManageB2TaskWorkLogBody:
       content:
         application/json:
@@ -3564,6 +3639,11 @@ components:
                       - all
                       - users
                       - groups
+                    nullable: true
+                  ids:
+                    type: array
+                    items:
+                      type: string
                     nullable: true
                   searchTerm:
                     type: string
@@ -3933,6 +4013,22 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/B2TaskCommentWithData"
+    SearchB2TaskData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/B2TaskWithData"
     SearchB2TaskWorkLogsData:
       description: Successful operation
       content:
