@@ -1573,12 +1573,12 @@ components:
         - batch
     TaskParticipant:
       type: object
-      required:
-        - name
       properties:
         userId:
           type: string
         groupId:
+          type: string
+        spaceId:
           type: string
         name:
           type: string
@@ -1589,10 +1589,10 @@ components:
           properties:
             userData:
               $ref: "#/components/schemas/User"
-              nullable: true
             groupData:
               $ref: "#/components/schemas/GroupBase"
-              nullable: true
+            spaceData:
+              $ref: "#/components/schemas/SpaceBase"
     BaseB2TaskData:
       type: object
       required:
@@ -1862,21 +1862,16 @@ components:
           properties:
             createdByData:
               $ref: "#/components/schemas/User"
-              nullable: true
             assigneeData:
               $ref: "#/components/schemas/User"
-              nullable: true
             assigneeGroupData:
               $ref: "#/components/schemas/GroupBase"
-              nullable: true
             controlData:
               $ref: "#/components/schemas/User"
-              nullable: true
             participantsData:
               type: array
               items:
                 $ref: "#/components/schemas/TaskParticipantWithData"
-              nullable: true
     B2TaskWorkLog:
       type: object
       required:
@@ -3639,11 +3634,6 @@ components:
                       - all
                       - users
                       - groups
-                    nullable: true
-                  ids:
-                    type: array
-                    items:
-                      type: string
                     nullable: true
                   searchTerm:
                     type: string

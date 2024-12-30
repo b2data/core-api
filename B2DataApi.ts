@@ -130,12 +130,14 @@ export type TaskArtefactType = "product" | "batch";
 export interface TaskParticipant {
   userId?: string;
   groupId?: string;
-  name: string;
+  spaceId?: string;
+  name?: string;
 }
 
 export type TaskParticipantWithData = TaskParticipant & {
-  userData?: User | null;
-  groupData?: GroupBase | null;
+  userData?: User;
+  groupData?: GroupBase;
+  spaceData?: SpaceBase;
 };
 
 export interface BaseB2TaskData {
@@ -244,11 +246,11 @@ export type B2Task = DocumentDataCommon &
   };
 
 export type B2TaskWithData = B2Task & {
-  createdByData?: User | null;
-  assigneeData?: User | null;
-  assigneeGroupData?: GroupBase | null;
-  controlData?: User | null;
-  participantsData?: TaskParticipantWithData[] | null;
+  createdByData?: User;
+  assigneeData?: User;
+  assigneeGroupData?: GroupBase;
+  controlData?: User;
+  participantsData?: TaskParticipantWithData[];
 };
 
 export interface B2TaskWorkLog {
@@ -2104,7 +2106,6 @@ export class B2DataApi<SecurityDataType extends unknown> {
         type: PermissionType;
         access?: PermissionAccess | null;
         variant?: "all" | "users" | "groups" | null;
-        ids?: string[] | null;
         searchTerm?: string | null;
         systemId?: string | null;
         assignee?: string[];
