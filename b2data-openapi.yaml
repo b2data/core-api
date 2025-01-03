@@ -2061,6 +2061,8 @@ components:
           $ref: "#/components/schemas/TaskType"
         source:
           $ref: "#/components/schemas/TaskSource"
+        status:
+          $ref: "#/components/schemas/TaskStatus"
         priority:
           $ref: "#/components/schemas/TaskPriority"
         priorityLevel:

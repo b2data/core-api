@@ -336,6 +336,7 @@ export interface B2TaskSearchQuery {
 export interface CreateB2TaskBody {
   type: TaskType;
   source: TaskSource;
+  status?: TaskStatus;
   priority: TaskPriority;
   priorityLevel?: number;
   artefactId?: string | null;
