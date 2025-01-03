@@ -1661,7 +1661,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @tags Documents
      * @name CreateDocument
      * @summary Create document
-     * @request POST:/document
+     * @request POST:/documents
      * @secure
      */
     createDocument: (
@@ -1682,7 +1682,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
       params: RequestParams = {},
     ) =>
       this.http.request<DocumentWithFolders, ErrorResponse>({
-        path: `/document`,
+        path: `/documents`,
         method: "POST",
         body: data,
         secure: true,

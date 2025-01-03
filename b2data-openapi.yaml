@@ -549,7 +549,7 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DocumentNotFound"
-  /document:
+  /documents:
     post:
       tags:
         - Documents
