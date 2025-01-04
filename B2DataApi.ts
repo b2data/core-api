@@ -117,6 +117,10 @@ export interface B2ProductData {
   configId?: string;
 }
 
+export type B2ProductWithData = DocumentDataCommon & B2ProductData;
+
+export type B2StorageWithData = DocumentDataCommon;
+
 export type TaskType = "simple" | "fillIdt" | "receiveIdt" | "giveOutIdt" | "factoryTask";
 
 export type TaskSource = "user" | "b2process" | "b2market" | "b2doc";
@@ -1282,6 +1286,42 @@ export class B2DataApi<SecurityDataType extends unknown> {
         path: `/activities/search`,
         method: "POST",
         body: data,
+        secure: true,
+        ...params,
+      }),
+  };
+  b2Product = {
+    /**
+     * No description
+     *
+     * @tags B2Product
+     * @name GetProductInfo
+     * @summary Get product by ID
+     * @request GET:/documents/b2product/{productId}/info
+     * @secure
+     */
+    getProductInfo: (productId: string, params: RequestParams = {}) =>
+      this.http.request<B2ProductWithData, ErrorResponse>({
+        path: `/documents/b2product/${productId}/info`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+  };
+  b2Storage = {
+    /**
+     * No description
+     *
+     * @tags B2Storage
+     * @name GetStorageInfo
+     * @summary Get storage by ID
+     * @request GET:/documents/b2storage/{storageId}/info
+     * @secure
+     */
+    getStorageInfo: (storageId: string, params: RequestParams = {}) =>
+      this.http.request<B2StorageWithData, ErrorResponse>({
+        path: `/documents/b2storage/${storageId}/info`,
+        method: "GET",
         secure: true,
         ...params,
       }),

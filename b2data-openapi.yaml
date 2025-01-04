@@ -9,6 +9,8 @@ tags:
   - name: Auth
   - name: Activities
   - name: B2Task
+  - name: B2Product
+  - name: B2Storage
   - name: Documents
   - name: Files
   - name: Groups
@@ -238,6 +240,44 @@ paths:
           $ref: "#/components/responses/InvalidData"
         "401":
           $ref: "#/components/responses/Unauthorized"
+  "/documents/b2product/{productId}/info":
+    get:
+      tags:
+        - B2Product
+      security:
+        - BearerAuth: []
+      summary: Get product by ID
+      operationId: getProductInfo
+      parameters:
+        - $ref: "#/components/parameters/productIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2ProductWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2storage/{storageId}/info":
+    get:
+      tags:
+        - B2Storage
+      security:
+        - BearerAuth: []
+      summary: Get storage by ID
+      operationId: getStorageInfo
+      parameters:
+        - $ref: "#/components/parameters/storageIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2StorageWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
   /documents/b2task/search:
     post:
       tags:
@@ -1535,6 +1575,13 @@ components:
           type: string
         configId:
           type: string
+    B2ProductWithData:
+      allOf:
+        - $ref: "#/components/schemas/DocumentDataCommon"
+        - $ref: "#/components/schemas/B2ProductData"
+    B2StorageWithData:
+      allOf:
+        - $ref: "#/components/schemas/DocumentDataCommon"
     TaskType:
       type: string
       enum:
@@ -3969,6 +4016,18 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/ActivityLog"
+    B2ProductWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2ProductWithData"
+    B2StorageWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2StorageWithData"
     B2Task:
       description: Successful operation
       content:
@@ -4422,6 +4481,22 @@ components:
           schema:
             $ref: "#/components/schemas/TagWithData"
   parameters:
+    productIdParam:
+      in: path
+      name: productId
+      description: Product ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    storageIdParam:
+      in: path
+      name: storageId
+      description: Storage ID
+      required: true
+      schema:
+        type: string
+        format: uuid
     taskIdParam:
       in: path
       name: taskId
