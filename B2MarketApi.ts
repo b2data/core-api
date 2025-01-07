@@ -579,28 +579,31 @@ export type ItemOrdersPositions = ProductItemBase & {
   })[];
 };
 
-export interface Place {
+export interface PlaceBase {
   /**
    * Place ID
    * @format uuid
    */
   id: string;
-  /** Place Type */
-  type: "pick-up" | "dispatch";
   /** Place name */
   name: string;
   /** Place description */
   description?: string;
   /** Place photos */
   photos?: string[];
-  /** Place working hours */
-  workHours?: PlaceWorkHours;
-  /** Place color showing on map */
-  color?: string;
   /** Place latitude coordinate */
   lat: number;
   /** Place longitude coordinate */
   long: number;
+}
+
+export type Place = PlaceBase & {
+  /** Place Type */
+  type: "pick-up" | "dispatch";
+  /** Place working hours */
+  workHours?: PlaceWorkHours;
+  /** Place color showing on map */
+  color?: string;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -621,7 +624,7 @@ export interface Place {
    * @format date-time
    */
   deletedAt?: string | null;
-}
+};
 
 export interface PlaceWorkHours {
   /** @example ["HH:MM","HH:MM"] */
@@ -1190,16 +1193,14 @@ export interface ProviderProfile {
   /** Provider Profile intro video */
   video?: string;
   /**
-   * Dispatch place ID
+   * Place to where provider is ready to deliver idTara by himself
    * @format uuid
    */
   dispatchPlaceId?: string;
-  /** External ID of place where provider is mentioned */
-  locationExternalId?: string;
-  /** Place latitude coordinate */
-  locationLat?: number;
-  /** Place longitude coordinate */
-  locationLong?: number;
+  /** Place where provider is mentioned */
+  locationPlace?: PlaceBase;
+  /** Place where provider is ready to give out idTara */
+  pickUpPlace?: PlaceBase;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -1302,15 +1303,6 @@ export type TaskPriority = "low" | "medium" | "high";
 
 export type TaskArtefactType = "product";
 
-export interface TaskDataPlace {
-  id: string;
-  name: string;
-  description?: string;
-  photos?: string[];
-  lat: number;
-  long: number;
-}
-
 export interface TaskIdtWithIdp {
   id: string;
   key: string;
@@ -1363,9 +1355,18 @@ export type TaskProductItemReview = BaseTask & {
 export type TaskFillIdt = BaseTask & {
   type?: "fillIdt";
   data?: {
+    /** Product ID in B2Market */
     productId: string;
-    versionId: string;
-    configId?: string;
+    /** Product Items ID in B2Market */
+    itemId: string;
+    providerData: {
+      /** Product ID from Provider */
+      productId?: string;
+      /** Product Version ID from Provider */
+      versionId?: string;
+      /** Product Config ID from Provider */
+      configId?: string | null;
+    };
     orders: string[];
     name: string;
     amount: number;
@@ -1376,13 +1377,13 @@ export type TaskFillIdt = BaseTask & {
 export type TaskPickUpIdt = BaseTask & {
   type?: "pickUpIdt";
   data?: {
-    dispatchPlace: any;
+    dispatchPlace: PlaceBase;
     pickUpSubtasks: {
       provider?: {
         id?: string;
         name?: string;
       };
-      place?: any;
+      place?: PlaceBase;
       idtList?: TaskIdtWithIdp[];
       completed?: boolean;
     }[];
@@ -1392,7 +1393,7 @@ export type TaskPickUpIdt = BaseTask & {
 export type TaskReceiveIdt = BaseTask & {
   type?: "receiveIdt";
   data?: {
-    place: any;
+    place: PlaceBase;
     fromUserId: string;
     fromUserName: string;
     idtList: TaskIdtWithIdp[];
@@ -1402,7 +1403,7 @@ export type TaskReceiveIdt = BaseTask & {
 export type TaskGiveOutIdt = BaseTask & {
   type?: "giveOutIdt";
   data?: {
-    place: any;
+    place: PlaceBase;
     toUserId: string;
     toUserName: string;
     idtList: TaskIdtWithIdp[];
@@ -1412,8 +1413,8 @@ export type TaskGiveOutIdt = BaseTask & {
 export type TaskDeliverIdt = BaseTask & {
   type?: "deliverIdt";
   data?: {
-    pickUpPlace: any;
-    dispatchPlace: any;
+    pickUpPlace: PlaceBase;
+    dispatchPlace: PlaceBase;
     idtList: TaskIdtWithIdp[];
     orders: object[];
     deliveryLogs?: {
@@ -2123,12 +2124,8 @@ export class B2MarketApi<SecurityDataType extends unknown> {
          * @format uuid
          */
         dispatchPlaceId?: string;
-        /** External ID of place where provider is mentioned */
-        locationExternalId?: string;
-        /** Place latitude coordinate */
-        locationLat?: number;
-        /** Place longitude coordinate */
-        locationLong?: number;
+        locationPlace?: PlaceBase;
+        pickUpPlace?: PlaceBase;
       },
       params: RequestParams = {},
     ) =>
