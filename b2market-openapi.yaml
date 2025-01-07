@@ -4335,6 +4335,28 @@ components:
       type: string
       enum:
         - product
+    TaskDataPlace:
+      type: object
+      required:
+        - id
+        - name
+        - lat
+        - long
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        photos:
+          type: array
+          items:
+            type: string
+        lat:
+          type: number
+        long:
+          type: number
     TaskIdtWithIdp:
       type: object
       required:
@@ -4457,13 +4479,13 @@ components:
             data:
               type: object
               required:
-                - documentId
+                - productId
                 - versionId
                 - orders
                 - name
                 - amount
               properties:
-                documentId:
+                productId:
                   type: string
                 versionId:
                   type: string
@@ -4492,30 +4514,29 @@ components:
             data:
               type: object
               required:
-                - placeId
+                - dispatchPlace
                 - pickUpSubtasks
               properties:
-                placeId:
-                  type: string
+                dispatchPlace:
+                  ref: "#/components/schemas/TaskDataPlace"
                 pickUpSubtasks:
                   type: array
                   required:
-                    - providerId
-                    - providerName
-                    - locationLat
-                    - locationLong
+                    - provider
+                    - place
                     - idtList
                   items:
                     type: object
                     properties:
-                      providerId:
-                        type: string
-                      providerName:
-                        type: string
-                      locationLat:
-                        type: number
-                      locationLong:
-                        type: number
+                      provider:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                      place:
+                        ref: "#/components/schemas/TaskDataPlace"
                       idtList:
                         type: array
                         items:
@@ -4533,13 +4554,13 @@ components:
             data:
               type: object
               required:
-                - placeId
+                - place
                 - fromUserId
                 - fromUserName
                 - idtList
               properties:
-                placeId:
-                  type: string
+                place:
+                  ref: "#/components/schemas/TaskDataPlace"
                 fromUserId:
                   type: string
                 fromUserName:
@@ -4559,13 +4580,13 @@ components:
             data:
               type: object
               required:
-                - placeId
+                - place
                 - toUserId
                 - toUserName
                 - idtList
               properties:
-                placeId:
-                  type: string
+                place:
+                  ref: "#/components/schemas/TaskDataPlace"
                 toUserId:
                   type: string
                 toUserName:
@@ -4585,15 +4606,15 @@ components:
             data:
               type: object
               required:
-                - pickUpPlaceId
-                - dispatchPlaceId
+                - pickUpPlace
+                - dispatchPlace
                 - idtList
                 - orders
               properties:
-                pickUpPlaceId:
-                  type: string
-                dispatchPlaceId:
-                  type: string
+                pickUpPlace:
+                  ref: "#/components/schemas/TaskDataPlace"
+                dispatchPlace:
+                  ref: "#/components/schemas/TaskDataPlace"
                 idtList:
                   type: array
                   items:

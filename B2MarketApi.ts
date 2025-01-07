@@ -1302,6 +1302,15 @@ export type TaskPriority = "low" | "medium" | "high";
 
 export type TaskArtefactType = "product";
 
+export interface TaskDataPlace {
+  id: string;
+  name: string;
+  description?: string;
+  photos?: string[];
+  lat: number;
+  long: number;
+}
+
 export interface TaskIdtWithIdp {
   id: string;
   key: string;
@@ -1354,7 +1363,7 @@ export type TaskProductItemReview = BaseTask & {
 export type TaskFillIdt = BaseTask & {
   type?: "fillIdt";
   data?: {
-    documentId: string;
+    productId: string;
     versionId: string;
     configId?: string;
     orders: string[];
@@ -1367,12 +1376,13 @@ export type TaskFillIdt = BaseTask & {
 export type TaskPickUpIdt = BaseTask & {
   type?: "pickUpIdt";
   data?: {
-    placeId: string;
+    dispatchPlace: any;
     pickUpSubtasks: {
-      providerId?: string;
-      providerName?: string;
-      locationLat?: number;
-      locationLong?: number;
+      provider?: {
+        id?: string;
+        name?: string;
+      };
+      place?: any;
       idtList?: TaskIdtWithIdp[];
       completed?: boolean;
     }[];
@@ -1382,7 +1392,7 @@ export type TaskPickUpIdt = BaseTask & {
 export type TaskReceiveIdt = BaseTask & {
   type?: "receiveIdt";
   data?: {
-    placeId: string;
+    place: any;
     fromUserId: string;
     fromUserName: string;
     idtList: TaskIdtWithIdp[];
@@ -1392,7 +1402,7 @@ export type TaskReceiveIdt = BaseTask & {
 export type TaskGiveOutIdt = BaseTask & {
   type?: "giveOutIdt";
   data?: {
-    placeId: string;
+    place: any;
     toUserId: string;
     toUserName: string;
     idtList: TaskIdtWithIdp[];
@@ -1402,8 +1412,8 @@ export type TaskGiveOutIdt = BaseTask & {
 export type TaskDeliverIdt = BaseTask & {
   type?: "deliverIdt";
   data?: {
-    pickUpPlaceId: string;
-    dispatchPlaceId: string;
+    pickUpPlace: any;
+    dispatchPlace: any;
     idtList: TaskIdtWithIdp[];
     orders: object[];
     deliveryLogs?: {
