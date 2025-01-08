@@ -213,7 +213,7 @@ export type B2TaskDataFillIdt = BaseB2TaskData & {
     orders: string[];
     name: string;
     amount: number;
-    idtList?: any[];
+    idtList?: TaskDataIdtWithIdp[];
   };
 };
 
@@ -281,6 +281,7 @@ export type B2TaskWithData = B2Task & {
   assigneeGroupData?: GroupBase;
   controlData?: User;
   participantsData?: TaskParticipantWithData[];
+  spaceData: SpaceBase;
 };
 
 export interface B2TaskWorkLog {
@@ -332,17 +333,21 @@ export interface TaskDataIdtWithIdp {
    * @example "A_000000"
    */
   key: string;
-  /** Product Item name */
-  itemName: string;
   /** List of idP in idT */
   contains: {
-    /** @format uuid */
+    /**
+     * idP unique ID
+     * @format uuid
+     */
     id: string;
-    /** @format uuid */
-    productId: string;
-    /** @format uuid */
-    itemId: string;
-    /** @format uuid */
+    /** idP number in B2Market */
+    number: number;
+    /** Product Item name */
+    name: string;
+    /**
+     * Product Batch ID
+     * @format uuid
+     */
     batchId: string;
   }[];
 }

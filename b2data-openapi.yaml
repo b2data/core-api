@@ -1807,7 +1807,7 @@ components:
                 idtList:
                   type: array
                   items:
-                    $ref: "#/components/schemas/TaskIdtWithIdp"
+                    $ref: "#/components/schemas/TaskDataIdtWithIdp"
     B2TaskDataReceiveIdt:
       allOf:
         - $ref: "#/components/schemas/BaseB2TaskData"
@@ -1944,6 +1944,8 @@ components:
       allOf:
         - $ref: "#/components/schemas/B2Task"
         - type: object
+          required:
+            - spaceData
           properties:
             createdByData:
               $ref: "#/components/schemas/User"
@@ -1957,6 +1959,8 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/TaskParticipantWithData"
+            spaceData:
+              $ref: "#/components/schemas/SpaceBase"
     B2TaskWorkLog:
       type: object
       required:
@@ -2040,7 +2044,6 @@ components:
       required:
         - id
         - key
-        - itemName
         - contains
       properties:
         id:
@@ -2051,9 +2054,6 @@ components:
           type: string
           description: Delivery idT unique key in format `A_000001`
           example: A_000000
-        itemName:
-          type: string
-          description: Product Item name
         contains:
           type: array
           description: List of idP in idT
@@ -2061,22 +2061,24 @@ components:
             type: object
             required:
               - id
-              - productId
-              - itemId
+              - number
+              - name
               - batchId
             properties:
               id:
                 type: string
                 format: uuid
-              productId:
+                description: idP unique ID
+              number:
+                type: number
+                description: idP number in B2Market
+              name:
                 type: string
-                format: uuid
-              itemId:
-                type: string
-                format: uuid
+                description: Product Item name
               batchId:
                 type: string
                 format: uuid
+                description: Product Batch ID
     B2TaskSearchQuery:
       type: object
       properties:
