@@ -101,6 +101,24 @@ export interface B2CounterpartySearchQuery {
   ids?: string[];
 }
 
+export interface PlaceBase {
+  /**
+   * Place ID
+   * @format uuid
+   */
+  id: string;
+  /** Place name */
+  name: string;
+  /** Place description */
+  description?: string;
+  /** Place photos */
+  photos?: string[];
+  /** Place latitude coordinate */
+  lat: number;
+  /** Place longitude coordinate */
+  long: number;
+}
+
 export interface B2ProductUnitInfo {
   unit?: string;
   systemUnit?: string;
@@ -180,14 +198,22 @@ export type B2TaskDataFillIdt = BaseB2TaskData & {
   type?: "fillIdt";
   data?: {
     externalId: string;
+    /** Product ID in B2Market */
     productId: string;
-    versionId: string;
+    /** Product Items ID in B2Market */
     itemId: string;
-    configId?: string | null;
+    providerData: {
+      /** Product ID from Provider */
+      productId?: string;
+      /** Product Version ID from Provider */
+      versionId?: string;
+      /** Product Config ID from Provider */
+      configId?: string | null;
+    };
     orders: string[];
     name: string;
     amount: number;
-    idtList?: TaskDataIdtWithIdp[] | null;
+    idtList?: any[];
   };
 };
 
@@ -195,7 +221,7 @@ export type B2TaskDataReceiveIdt = BaseB2TaskData & {
   type?: "receiveIdt";
   data?: {
     externalId: string;
-    placeId: string;
+    place: PlaceBase;
     fromUserId: string;
     fromUserName: string;
     idtList: TaskDataIdtWithIdp[];
@@ -206,7 +232,7 @@ export type B2TaskDataGiveOutIdt = BaseB2TaskData & {
   type?: "giveOutIdt";
   data?: {
     externalId: string;
-    placeId: string;
+    place: PlaceBase;
     toUserId: string;
     toUserName: string;
     idtList: TaskDataIdtWithIdp[];

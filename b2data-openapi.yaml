@@ -1547,6 +1547,35 @@ components:
           type: array
           items:
             type: string
+    PlaceBase:
+      type: object
+      required:
+        - id
+        - name
+        - lat
+        - long
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Place ID
+        name:
+          type: string
+          description: Place name
+        description:
+          type: string
+          description: Place description
+        photos:
+          type: array
+          items:
+            type: string
+          description: Place photos
+        lat:
+          type: number
+          description: Place latitude coordinate
+        long:
+          type: number
+          description: Place longitude coordinate
     B2ProductUnitInfo:
       type: object
       properties:
@@ -1740,8 +1769,8 @@ components:
               required:
                 - externalId
                 - productId
-                - versionId
                 - itemId
+                - providerData
                 - orders
                 - name
                 - amount
@@ -1750,13 +1779,23 @@ components:
                   type: string
                 productId:
                   type: string
-                versionId:
-                  type: string
+                  description: Product ID in B2Market
                 itemId:
                   type: string
-                configId:
-                  type: string
-                  nullable: true
+                  description: Product Items ID in B2Market
+                providerData:
+                  type: object
+                  properties:
+                    productId:
+                      type: string
+                      description: Product ID from Provider
+                    versionId:
+                      type: string
+                      description: Product Version ID from Provider
+                    configId:
+                      type: string
+                      description: Product Config ID from Provider
+                      nullable: true
                 orders:
                   type: array
                   items:
@@ -1768,8 +1807,7 @@ components:
                 idtList:
                   type: array
                   items:
-                    $ref: "#/components/schemas/TaskDataIdtWithIdp"
-                  nullable: true
+                    $ref: "#/components/schemas/TaskIdtWithIdp"
     B2TaskDataReceiveIdt:
       allOf:
         - $ref: "#/components/schemas/BaseB2TaskData"
@@ -1782,15 +1820,15 @@ components:
               type: object
               required:
                 - externalId
-                - placeId
+                - place
                 - fromUserId
                 - fromUserName
                 - idtList
               properties:
                 externalId:
                   type: string
-                placeId:
-                  type: string
+                place:
+                  $ref: "#/components/schemas/PlaceBase"
                 fromUserId:
                   type: string
                 fromUserName:
@@ -1811,15 +1849,15 @@ components:
               type: object
               required:
                 - externalId
-                - placeId
+                - place
                 - toUserId
                 - toUserName
                 - idtList
               properties:
                 externalId:
                   type: string
-                placeId:
-                  type: string
+                place:
+                  $ref: "#/components/schemas/PlaceBase"
                 toUserId:
                   type: string
                 toUserName:
