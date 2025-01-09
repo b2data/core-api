@@ -137,6 +137,11 @@ export interface B2ProductData {
 
 export type B2ProductWithData = DocumentDataCommon & B2ProductData;
 
+export interface B2ProductConfigRow {
+  id?: string;
+  columns?: Record<string, string>;
+}
+
 export type B2StorageWithData = DocumentDataCommon;
 
 export type TaskType = "simple" | "fillIdt" | "receiveIdt" | "giveOutIdt" | "factoryTask";
@@ -1334,6 +1339,23 @@ export class B2DataApi<SecurityDataType extends unknown> {
     getProductInfo: (productId: string, params: RequestParams = {}) =>
       this.http.request<B2ProductWithData, ErrorResponse>({
         path: `/documents/b2product/${productId}/info`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Product
+     * @name GetProductConfigurationData
+     * @summary Get product configuration data
+     * @request GET:/documents/b2product/{productId}/configuration/{configId}
+     * @secure
+     */
+    getProductConfigurationData: (productId: string, configId: string, params: RequestParams = {}) =>
+      this.http.request<B2ProductConfigRow, ErrorResponse>({
+        path: `/documents/b2product/${productId}/configuration/${configId}`,
         method: "GET",
         secure: true,
         ...params,

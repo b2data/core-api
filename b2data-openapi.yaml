@@ -259,6 +259,26 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2product/{productId}/configuration/{configId}":
+    get:
+      tags:
+        - B2Product
+      security:
+        - BearerAuth: []
+      summary: Get product configuration data
+      operationId: getProductConfigurationData
+      parameters:
+        - $ref: "#/components/parameters/productIdParam"
+        - $ref: "#/components/parameters/productConfigIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2ProductConfigRow"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
   "/documents/b2storage/{storageId}/info":
     get:
       tags:
@@ -1608,6 +1628,15 @@ components:
       allOf:
         - $ref: "#/components/schemas/DocumentDataCommon"
         - $ref: "#/components/schemas/B2ProductData"
+    B2ProductConfigRow:
+      type: object
+      properties:
+        id:
+          type: string
+        columns:
+          type: object
+          additionalProperties:
+            type: string
     B2StorageWithData:
       allOf:
         - $ref: "#/components/schemas/DocumentDataCommon"
@@ -4062,6 +4091,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/B2ProductWithData"
+    B2ProductConfigRow:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2ProductConfigRow"
     B2StorageWithData:
       description: Successful operation
       content:
@@ -4525,6 +4560,14 @@ components:
       in: path
       name: productId
       description: Product ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    productConfigIdParam:
+      in: path
+      name: configId
+      description: Product Configuration ID
       required: true
       schema:
         type: string
