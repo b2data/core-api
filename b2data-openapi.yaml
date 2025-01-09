@@ -1803,6 +1803,7 @@ components:
                 - orders
                 - name
                 - amount
+                - amountInIdt
               properties:
                 externalId:
                   type: string
@@ -1832,6 +1833,8 @@ components:
                 name:
                   type: string
                 amount:
+                  type: number
+                amountInIdt:
                   type: number
                 idtList:
                   type: array

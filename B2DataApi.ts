@@ -218,6 +218,7 @@ export type B2TaskDataFillIdt = BaseB2TaskData & {
     orders: string[];
     name: string;
     amount: number;
+    amountInIdt: number;
     idtList?: TaskDataIdtWithIdp[];
   };
 };
