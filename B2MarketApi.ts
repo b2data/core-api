@@ -1370,6 +1370,7 @@ export type TaskFillIdt = BaseTask & {
     orders: string[];
     name: string;
     amount: number;
+    amountInIdt: number;
     idtList?: TaskIdtWithIdp[];
   };
 };

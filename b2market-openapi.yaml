@@ -2426,6 +2426,9 @@ paths:
         - Tasks
       security:
         - BearerAuth: []
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
       summary: Update task
       operationId: updateTask
       parameters:
@@ -4466,6 +4469,7 @@ components:
                 - orders
                 - name
                 - amount
+                - amountInIdt
               properties:
                 productId:
                   type: string
@@ -4493,6 +4497,8 @@ components:
                 name:
                   type: string
                 amount:
+                  type: number
+                amountInIdt:
                   type: number
                 idtList:
                   type: array
