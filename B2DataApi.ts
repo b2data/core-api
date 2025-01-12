@@ -142,7 +142,106 @@ export interface B2ProductConfigRow {
   columns?: Record<string, string>;
 }
 
+export type B2ProductBatchStatus = "inStorage" | "sold" | "dispose" | "deleted";
+
+export interface B2ProductBatchInfo {
+  id: string;
+  documentId: string;
+  versionId: string;
+  configId?: string | null;
+  key: string;
+  name: string;
+  status: B2ProductBatchStatus;
+  amount: number;
+  unitInfo: B2ProductUnitInfo;
+  /** @format date-time */
+  produceDate: string;
+  latestPrice?: number | null;
+  amountInIdp?: number | null;
+}
+
+export type B2ProductBatch = B2ProductBatchInfo & {
+  spaceId: string;
+  logisticInfo: Record<string, number | null>;
+  storageInfo: Record<string, number | null>;
+  registerAmount?: number | null;
+  inStorageAmount?: number | null;
+  outStorageAmount?: number | null;
+  deliveryAmount?: number | null;
+  deliveryAmountPrice?: number | null;
+  soldAmount?: number | null;
+  soldAmountPrice?: number | null;
+  disputeAmount?: number | null;
+  disputeAmountPrice?: number | null;
+  createdBy?: string | null;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  /** @format date-time */
+  deletedAt?: string | null;
+};
+
+export type B2ProductBatchWithData = B2ProductBatch & {
+  createdByData?: User;
+};
+
 export type B2StorageWithData = DocumentDataCommon;
+
+export type B2StorageOperationType = "incoming" | "outgoing" | "movement";
+
+export interface B2StorageBalance {
+  id: string;
+  spaceId: string;
+  storageId: string;
+  resourceId?: string | null;
+  batchId?: string | null;
+  amount: number;
+  /** @format date-time */
+  produceDate?: string | null;
+  expiryDays?: number | null;
+  temperatureMin?: number | null;
+  temperatureMax?: number | null;
+  humidityMin?: number | null;
+  humidityMax?: number | null;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
+export type B2StorageBalanceWithData = B2StorageBalance & {
+  /** @format date */
+  expireDate?: string;
+  remainingDays?: number;
+  storageName: string;
+  resourceData?: ResourceInfo;
+  batchData?: B2ProductBatchInfo;
+};
+
+export interface B2StorageOperation {
+  id: string;
+  spaceId: string;
+  storageId: string;
+  resourceId?: string | null;
+  batchId?: string | null;
+  key: string;
+  type: B2StorageOperationType;
+  amount: number;
+  counterpartyId?: string | null;
+  createdBy?: string | null;
+  /** @format date-time */
+  createdAt: string;
+}
+
+export type B2StorageOperationWithData = B2StorageOperation & {
+  storageName: string;
+  counterpartyName?: string | null;
+  resourceData?: ResourceInfo | null;
+  batchData?: B2ProductBatchInfo | null;
+  spaceData: SpaceBase;
+  createdByData?: User | null;
+};
 
 export type TaskType = "simple" | "fillIdt" | "receiveIdt" | "giveOutIdt" | "factoryTask";
 
@@ -770,6 +869,34 @@ export type AssigneePermissions = PermissionSearchOption & {
   permissions: number;
 };
 
+export type ResourceStatus = "draft" | "inUse" | "archive";
+
+export type ResourceType = "idt" | "material" | "mechanism" | "worker" | "animal" | "plant" | "fossil" | "workCenter";
+
+export interface ResourceInfo {
+  id: string;
+  type: ResourceType;
+  name: string;
+  unit?: string | null;
+  systemUnit?: string | null;
+  coeff?: number | null;
+}
+
+export type Resource = ResourceInfo & {
+  spaceId: string;
+  createdBy?: string | null;
+  status: ResourceStatus;
+  description?: string | null;
+  photos?: string[] | null;
+  storageAmount?: number | null;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  /** @format date-time */
+  deletedAt?: string | null;
+};
+
 export type SaleOrderStatus = "created" | "processing" | "completed" | "paid" | "failed" | "cancelled";
 
 export interface SaleOrder {
@@ -1361,6 +1488,23 @@ export class B2DataApi<SecurityDataType extends unknown> {
         secure: true,
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags B2Product
+     * @name GetProductBatch
+     * @summary Get product batch by ID
+     * @request GET:/documents/b2product/batches/{batchId}
+     * @secure
+     */
+    getProductBatch: (batchId: string, params: RequestParams = {}) =>
+      this.http.request<B2ProductBatchWithData, ErrorResponse>({
+        path: `/documents/b2product/batches/${batchId}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
   };
   b2Storage = {
     /**
@@ -1375,6 +1519,143 @@ export class B2DataApi<SecurityDataType extends unknown> {
     getStorageInfo: (storageId: string, params: RequestParams = {}) =>
       this.http.request<B2StorageWithData, ErrorResponse>({
         path: `/documents/b2storage/${storageId}/info`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Storage
+     * @name SearchStorageBalances
+     * @summary Search storage balances
+     * @request POST:/documents/b2storage/balances/search
+     * @secure
+     */
+    searchStorageBalances: (
+      data: SearchModel & {
+        ids?: string[];
+        storages?: string[];
+        batches?: string[];
+        searchTerm?: string;
+        expired?: boolean;
+        positive?: boolean;
+        ownProduction?: boolean;
+        batchQuery?: {
+          products?: string[];
+          versions?: string[];
+          configs?: (string | null)[];
+        };
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: B2StorageBalanceWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2storage/balances/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Storage
+     * @name GetStorageBalance
+     * @summary Get storage balance by ID
+     * @request GET:/documents/b2storage/balances/{balanceId}
+     * @secure
+     */
+    getStorageBalance: (balanceId: string, params: RequestParams = {}) =>
+      this.http.request<B2StorageBalanceWithData, ErrorResponse>({
+        path: `/documents/b2storage/balances/${balanceId}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Storage
+     * @name SearchStorageOperations
+     * @summary Search storage operations
+     * @request POST:/documents/b2storage/operations/search
+     * @secure
+     */
+    searchStorageOperations: (
+      data: SearchModel & {
+        ids?: string[];
+        storages?: string[];
+        products?: string[];
+        searchTerm?: string;
+        type?: B2StorageOperationType[];
+        counterpartyId?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: B2StorageOperationWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2storage/operations/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Storage
+     * @name CreateStorageOperation
+     * @summary Create storage operation
+     * @request POST:/documents/b2storage/operations
+     * @secure
+     */
+    createStorageOperation: (
+      data: {
+        storageId: string;
+        type: B2StorageOperationType;
+        amount: number;
+        batchId?: string | null;
+        resourceId?: string | null;
+        counterpartyId?: string | null;
+        balanceId?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<B2StorageOperation, ErrorResponse>({
+        path: `/documents/b2storage/operations`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Storage
+     * @name GetStorageOperation
+     * @summary Get storage operation by ID
+     * @request GET:/documents/b2storage/operations/{operationId}
+     * @secure
+     */
+    getStorageOperation: (operationId: string, params: RequestParams = {}) =>
+      this.http.request<B2StorageOperationWithData, ErrorResponse>({
+        path: `/documents/b2storage/operations/${operationId}`,
         method: "GET",
         secure: true,
         ...params,

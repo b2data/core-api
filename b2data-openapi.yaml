@@ -16,6 +16,7 @@ tags:
   - name: Groups
   - name: Notifications
   - name: Permissions
+  - name: Resources
   - name: Sales
   - name: Spaces
 paths:
@@ -279,6 +280,25 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2product/batches/{batchId}":
+    get:
+      tags:
+        - B2Product
+      security:
+        - BearerAuth: []
+      summary: Get product batch by ID
+      operationId: getProductBatch
+      parameters:
+        - $ref: "#/components/parameters/productBatchIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2ProductBatchWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProductBatchNotFound"
   "/documents/b2storage/{storageId}/info":
     get:
       tags:
@@ -298,6 +318,95 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DocumentNotFound"
+  /documents/b2storage/balances/search:
+    post:
+      tags:
+        - B2Storage
+      security:
+        - BearerAuth: []
+      summary: Search storage balances
+      operationId: searchStorageBalances
+      requestBody:
+        $ref: "#/components/requestBodies/SearchB2StorageBalances"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2StorageBalancesSearchData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/documents/b2storage/balances/{balanceId}":
+    get:
+      tags:
+        - B2Storage
+      security:
+        - BearerAuth: []
+      summary: Get storage balance by ID
+      operationId: getStorageBalance
+      parameters:
+        - $ref: "#/components/parameters/storageBalanceId"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2StorageBalanceWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/B2StorageBalanceNotFound"
+  /documents/b2storage/operations/search:
+    post:
+      tags:
+        - B2Storage
+      security:
+        - BearerAuth: []
+      summary: Search storage operations
+      operationId: searchStorageOperations
+      requestBody:
+        $ref: "#/components/requestBodies/SearchB2StorageOperations"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2StorageOperationsSearchData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /documents/b2storage/operations:
+    post:
+      tags:
+        - B2Storage
+      security:
+        - BearerAuth: []
+      summary: Create storage operation
+      operationId: createStorageOperation
+      requestBody:
+        $ref: "#/components/requestBodies/CreateB2StorageOperation"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2StorageOperation"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/documents/b2storage/operations/{operationId}":
+    get:
+      tags:
+        - B2Storage
+      security:
+        - BearerAuth: []
+      summary: Get storage operation by ID
+      operationId: getStorageOperation
+      parameters:
+        - $ref: "#/components/parameters/storageOperationId"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2StorageOperationWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/B2StorageOperationNotFound"
   /documents/b2task/search:
     post:
       tags:
@@ -1637,9 +1746,262 @@ components:
           type: object
           additionalProperties:
             type: string
+    B2ProductBatchStatus:
+      type: string
+      enum:
+        - inStorage
+        - sold
+        - dispose
+        - deleted
+    B2ProductBatchInfo:
+      type: object
+      required:
+        - id
+        - documentId
+        - versionId
+        - key
+        - name
+        - status
+        - amount
+        - unitInfo
+        - produceDate
+      properties:
+        id:
+          type: string
+        documentId:
+          type: string
+        versionId:
+          type: string
+        configId:
+          type: string
+          nullable: true
+        key:
+          type: string
+        name:
+          type: string
+        status:
+          $ref: "#/components/schemas/B2ProductBatchStatus"
+        amount:
+          type: number
+        unitInfo:
+          $ref: "#/components/schemas/B2ProductUnitInfo"
+        produceDate:
+          type: string
+          format: date-time
+        latestPrice:
+          type: number
+          nullable: true
+        amountInIdp:
+          type: number
+          nullable: true
+    B2ProductBatch:
+      allOf:
+        - $ref: "#/components/schemas/B2ProductBatchInfo"
+        - type: object
+          required:
+            - spaceId
+            - logisticInfo
+            - storageInfo
+            - createdAt
+            - updatedAt
+          properties:
+            spaceId:
+              type: string
+            logisticInfo:
+              type: object
+              additionalProperties:
+                type: number
+                nullable: true
+            storageInfo:
+              type: object
+              additionalProperties:
+                type: number
+                nullable: true
+            registerAmount:
+              type: number
+              nullable: true
+            inStorageAmount:
+              type: number
+              nullable: true
+            outStorageAmount:
+              type: number
+              nullable: true
+            deliveryAmount:
+              type: number
+              nullable: true
+            deliveryAmountPrice:
+              type: number
+              nullable: true
+            soldAmount:
+              type: number
+              nullable: true
+            soldAmountPrice:
+              type: number
+              nullable: true
+            disputeAmount:
+              type: number
+              nullable: true
+            disputeAmountPrice:
+              type: number
+              nullable: true
+            createdBy:
+              type: string
+              nullable: true
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            deletedAt:
+              type: string
+              format: date-time
+              nullable: true
+    B2ProductBatchWithData:
+      allOf:
+        - $ref: "#/components/schemas/B2ProductBatch"
+        - type: object
+          properties:
+            createdByData:
+              $ref: "#/components/schemas/User"
     B2StorageWithData:
       allOf:
         - $ref: "#/components/schemas/DocumentDataCommon"
+    B2StorageOperationType:
+      type: string
+      enum:
+        - incoming
+        - outgoing
+        - movement
+    B2StorageBalance:
+      type: object
+      required:
+        - id
+        - spaceId
+        - storageId
+        - amount
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        spaceId:
+          type: string
+        storageId:
+          type: string
+        resourceId:
+          type: string
+          nullable: true
+        batchId:
+          type: string
+          nullable: true
+        amount:
+          type: number
+        produceDate:
+          type: string
+          format: date-time
+          nullable: true
+        expiryDays:
+          type: number
+          nullable: true
+        temperatureMin:
+          type: number
+          nullable: true
+        temperatureMax:
+          type: number
+          nullable: true
+        humidityMin:
+          type: number
+          nullable: true
+        humidityMax:
+          type: number
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    B2StorageBalanceWithData:
+      allOf:
+        - $ref: "#/components/schemas/B2StorageBalance"
+        - type: object
+          required:
+            - storageName
+          properties:
+            expireDate:
+              type: string
+              format: date
+            remainingDays:
+              type: number
+            storageName:
+              type: string
+            resourceData:
+              $ref: "#/components/schemas/ResourceInfo"
+            batchData:
+              $ref: "#/components/schemas/B2ProductBatchInfo"
+    B2StorageOperation:
+      type: object
+      required:
+        - id
+        - spaceId
+        - storageId
+        - key
+        - type
+        - amount
+        - createdAt
+      properties:
+        id:
+          type: string
+        spaceId:
+          type: string
+        storageId:
+          type: string
+        resourceId:
+          type: string
+          nullable: true
+        batchId:
+          type: string
+          nullable: true
+        key:
+          type: string
+        type:
+          $ref: "#/components/schemas/B2StorageOperationType"
+        amount:
+          type: number
+        counterpartyId:
+          type: string
+          nullable: true
+        createdBy:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+    B2StorageOperationWithData:
+      allOf:
+        - $ref: "#/components/schemas/B2StorageOperation"
+        - type: object
+          required:
+            - storageName
+            - spaceData
+          properties:
+            storageName:
+              type: string
+            counterpartyName:
+              type: string
+              nullable: true
+            resourceData:
+              $ref: "#/components/schemas/ResourceInfo"
+              nullable: true
+            batchData:
+              $ref: "#/components/schemas/B2ProductBatchInfo"
+              nullable: true
+            spaceData:
+              $ref: "#/components/schemas/SpaceBase"
+            createdByData:
+              $ref: "#/components/schemas/User"
+              nullable: true
     TaskType:
       type: string
       enum:
@@ -3023,6 +3385,84 @@ components:
           properties:
             permissions:
               type: number
+    ResourceStatus:
+      type: string
+      enum:
+        - draft
+        - inUse
+        - archive
+    ResourceType:
+      type: string
+      enum:
+        - idt
+        - material
+        - mechanism
+        - worker
+        - animal
+        - plant
+        - fossil
+        - workCenter
+    ResourceInfo:
+      type: object
+      required:
+        - id
+        - spaceId
+        - type
+        - name
+      properties:
+        id:
+          type: string
+        type:
+          $ref: "#/components/schemas/ResourceType"
+        name:
+          type: string
+        unit:
+          type: string
+          nullable: true
+        systemUnit:
+          type: string
+          nullable: true
+        coeff:
+          type: number
+          nullable: true
+    Resource:
+      allOf:
+        - $ref: "#/components/schemas/ResourceInfo"
+        - type: object
+          required:
+            - spaceId
+            - status
+            - createdAt
+            - updatedAt
+          properties:
+            spaceId:
+              type: string
+            createdBy:
+              type: string
+              nullable: true
+            status:
+              $ref: "#/components/schemas/ResourceStatus"
+            description:
+              type: string
+              nullable: true
+            photos:
+              type: array
+              items:
+                type: string
+              nullable: true
+            storageAmount:
+              type: number
+              nullable: true
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            deletedAt:
+              type: string
+              format: date-time
+              nullable: true
     SaleOrderStatus:
       type: string
       enum:
@@ -3366,6 +3806,108 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
+    SearchB2StorageBalances:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                  storages:
+                    type: array
+                    items:
+                      type: string
+                  batches:
+                    type: array
+                    items:
+                      type: string
+                  searchTerm:
+                    type: string
+                  expired:
+                    type: boolean
+                  positive:
+                    type: boolean
+                  ownProduction:
+                    type: boolean
+                  batchQuery:
+                    type: object
+                    properties:
+                      products:
+                        type: array
+                        items:
+                          type: string
+                      versions:
+                        type: array
+                        items:
+                          type: string
+                      configs:
+                        type: array
+                        items:
+                          type: string
+                          nullable: true
+    SearchB2StorageOperations:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                  storages:
+                    type: array
+                    items:
+                      type: string
+                  products:
+                    type: array
+                    items:
+                      type: string
+                  searchTerm:
+                    type: string
+                  type:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/B2StorageOperationType"
+                  counterpartyId:
+                    type: array
+                    items:
+                      type: string
+    CreateB2StorageOperation:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - storageId
+              - type
+              - amount
+            properties:
+              storageId:
+                type: string
+              type:
+                $ref: "#/components/schemas/B2StorageOperationType"
+              amount:
+                type: number
+              batchId:
+                type: string
+                nullable: true
+              resourceId:
+                type: string
+                nullable: true
+              counterpartyId:
+                type: string
+                nullable: true
+              balanceId:
+                type: string
+                nullable: true
     SearchB2TaskBody:
       content:
         application/json:
@@ -4100,12 +4642,95 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/B2ProductConfigRow"
+    B2ProductBatchWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2ProductBatchWithData"
+    ProductBatchNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: document:b2product:404-batch
+            message: B2Product batch not found
     B2StorageWithData:
       description: Successful operation
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/B2StorageWithData"
+    B2StorageBalanceWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2StorageBalanceWithData"
+    B2StorageOperation:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2StorageOperation"
+    B2StorageOperationWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2StorageOperationWithData"
+    B2StorageBalancesSearchData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/B2StorageBalanceWithData"
+    B2StorageOperationsSearchData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/B2StorageOperationWithData"
+    B2StorageBalanceNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: document:b2storage:404-balance
+            message: B2Storage balance not found
+    B2StorageOperationNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: document:b2storage:404-operation
+            message: B2Storage operation not found
     B2Task:
       description: Successful operation
       content:
@@ -4575,10 +5200,34 @@ components:
       schema:
         type: string
         format: uuid
+    productBatchIdParam:
+      in: path
+      name: batchId
+      description: Product Batch ID
+      required: true
+      schema:
+        type: string
+        format: uuid
     storageIdParam:
       in: path
       name: storageId
       description: Storage ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    storageBalanceId:
+      in: path
+      name: balanceId
+      description: Storage Balance ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    storageOperationId:
+      in: path
+      name: operationId
+      description: Storage Operation ID
       required: true
       schema:
         type: string
