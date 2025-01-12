@@ -245,7 +245,7 @@ export interface DeliveryIdpBase {
    */
   id: string;
   /** Delivery idP unique auto-incremented number */
-  number: string;
+  number: number;
 }
 
 export type DeliveryIdp = DeliveryIdpBase & {

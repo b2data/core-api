@@ -2786,7 +2786,7 @@ components:
           format: uuid
           description: Delivery idP ID
         number:
-          type: string
+          type: number
           description: Delivery idP unique auto-incremented number
     DeliveryIdp:
       allOf:
