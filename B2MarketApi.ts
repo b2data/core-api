@@ -1074,6 +1074,13 @@ export interface ProductCardPrice {
 }
 
 export interface ProductCardAmount {
+  /**
+   * External Amount ID form Provider
+   * @format uuid
+   */
+  externalId: string;
+  /** Available Amount in pcs (exclude reservation from existing orders) */
+  availableAmount: number;
   /** Amount in pcs */
   amount: number;
   /** Minimum amount in pcs to start produce (for preOrder) */
@@ -3081,7 +3088,8 @@ export class B2MarketApi<SecurityDataType extends unknown> {
         Record<
           string,
           {
-            productsCount?: number;
+            productsCount: number;
+            cardsCount: number;
           }
         >,
         any

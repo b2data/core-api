@@ -3986,8 +3986,17 @@ components:
     ProductCardAmount:
       type: object
       required:
+        - externalId
+        - availableAmount
         - amount
       properties:
+        externalId:
+          type: string
+          format: uuid
+          description: External Amount ID form Provider
+        availableAmount:
+          type: number
+          description: Available Amount in pcs (exclude reservation from existing orders)
         amount:
           type: number
           description: Amount in pcs
@@ -6958,8 +6967,13 @@ components:
             type: object
             additionalProperties:
               type: object
+              required:
+                - productsCount
+                - cardsCount
               properties:
                 productsCount:
+                  type: number
+                cardsCount:
                   type: number
     OrderWithData:
       description: Successful operation
