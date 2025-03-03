@@ -9,6 +9,8 @@ tags:
   - name: Auth
   - name: Activities
   - name: B2Task
+  - name: B2Doc
+  - name: B2Form
   - name: B2Product
   - name: B2Storage
   - name: Documents
@@ -241,6 +243,168 @@ paths:
           $ref: "#/components/responses/InvalidData"
         "401":
           $ref: "#/components/responses/Unauthorized"
+  "/documents/b2doc/{docId}":
+    get:
+      tags:
+        - B2Doc
+      security:
+        - BearerAuth: []
+      summary: Get document binary data
+      operationId: getDocBinary
+      parameters:
+        - $ref: "#/components/parameters/docIdParam"
+        - in: query
+          name: format
+          description: Document format (pdf or md)
+          required: false
+          schema:
+            type: string
+            enum:
+              - pdf
+              - md
+      responses:
+        "200":
+          $ref: "#/components/responses/B2DocBinary"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+    patch:
+      tags:
+        - B2Doc
+      security:
+        - BearerAuth: []
+      summary: Update document info
+      operationId: updateDocInfo
+      parameters:
+        - $ref: "#/components/parameters/docIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditB2DocBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2DocData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2doc/{docId}/info":
+    get:
+      tags:
+        - B2Doc
+      security:
+        - BearerAuth: []
+      summary: Get document info
+      operationId: getDocInfo
+      parameters:
+        - $ref: "#/components/parameters/docIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2DocData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2doc/{docId}/data":
+    post:
+      tags:
+        - B2Doc
+      security:
+        - BearerAuth: []
+      summary: Get document blocks data
+      operationId: getDocBlocksData
+      parameters:
+        - $ref: "#/components/parameters/docIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2DocBlockData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2doc/{docId}/prefixes":
+    get:
+      tags:
+        - B2Doc
+      security:
+        - BearerAuth: []
+      summary: Get document block prefixes
+      operationId: getDocBlockPrefixes
+      parameters:
+        - $ref: "#/components/parameters/docIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2DocBlockPrefixes"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2doc/{formId}\"":
+    get:
+      tags:
+        - B2Form
+      security:
+        - BearerAuth: []
+      summary: Export b2form to CSV
+      operationId: getFormBinary
+      parameters:
+        - $ref: "#/components/parameters/formIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2FormBinary"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2form/{formId}/info":
+    get:
+      tags:
+        - B2Form
+      security:
+        - BearerAuth: []
+      summary: Get form info
+      operationId: getFormInfo
+      parameters:
+        - $ref: "#/components/parameters/formIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2FormData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2form/{formId}/data":
+    get:
+      tags:
+        - B2Form
+      security:
+        - BearerAuth: []
+      summary: Get form fields data
+      operationId: getFormFieldsData
+      parameters:
+        - $ref: "#/components/parameters/formIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2FormFieldsData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
   "/documents/b2product/{productId}/info":
     get:
       tags:
@@ -1676,6 +1840,520 @@ components:
           type: array
           items:
             type: string
+    B2DocConfig:
+      type: object
+      properties:
+        showPrefix:
+          type: boolean
+        showIndentOffset:
+          type: boolean
+        showNavigation:
+          type: boolean
+        excludeDocumentName:
+          type: boolean
+    B2DocData:
+      allOf:
+        - $ref: "#/components/schemas/DocumentDataCommon"
+        - type: object
+          properties:
+            config:
+              $ref: "#/components/schemas/B2DocConfig"
+    B2DocBlockType:
+      type: string
+      enum:
+        - text
+        - heading
+        - task
+        - actors
+        - sign
+    B2DocBlockBase:
+      type: object
+      required:
+        - id
+        - type
+        - prefix
+        - offset
+      properties:
+        id:
+          type: string
+        type:
+          $ref: "#/components/schemas/B2DocBlockType"
+        prefix:
+          type: string
+        offset:
+          type: number
+        hidePrefix:
+          type: boolean
+    B2DocBlock:
+      allOf:
+        - $ref: "#/components/schemas/B2DocBlockBase"
+        - type: object
+          required:
+            - spaceId
+            - createdAt
+            - updatedAt
+          properties:
+            spaceId:
+              type: string
+            isTemplate:
+              type: boolean
+            createdBy:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+    B2DocBlockVariantVote:
+      type: object
+      required:
+        - variantId
+        - createdAt
+      properties:
+        variantId:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    B2DocBlockVariantVoteWithData:
+      allOf:
+        - $ref: "#/components/schemas/B2DocBlockVariantVote"
+        - type: object
+          properties:
+            createdByData:
+              type: object
+              description: User data
+    B2DocBlockMention:
+      type: object
+      required:
+        - from
+        - to
+        - id
+        - name
+      properties:
+        from:
+          type: number
+        to:
+          type: number
+        id:
+          type: string
+        name:
+          type: string
+        detailId:
+          type: string
+        detailLabel:
+          type: string
+    B2DocBlockReference:
+      type: object
+      required:
+        - from
+        - to
+        - docId
+        - docName
+      properties:
+        from:
+          type: number
+        to:
+          type: number
+        docId:
+          type: string
+        docName:
+          type: string
+        versionId:
+          type: string
+        versionName:
+          type: string
+        blockId:
+          type: string
+        blockName:
+          type: string
+    B2DocBlockVariantBase:
+      type: object
+      required:
+        - id
+        - blockId
+        - isCurrent
+        - data
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        blockId:
+          type: string
+        isCurrent:
+          type: boolean
+        data:
+          type: object
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    B2DocBlockVariantText:
+      allOf:
+        - $ref: "#/components/schemas/B2DocBlockVariantBase"
+        - type: object
+          properties:
+            data:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                variables:
+                  type: array
+                  items:
+                    type: string
+                align:
+                  type: string
+                  enum:
+                    - center
+                    - left
+                    - right
+                    - justify
+                width:
+                  type: string
+                  enum:
+                    - r/4
+                    - r/3
+                    - r/2
+                    - l/4
+                    - l/3
+                    - l/2
+                    - c/4
+                    - c/3
+                    - c/2
+                    - full
+                mentions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/B2DocBlockMention"
+                references:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/B2DocBlockReference"
+    B2DocBlockVariantHeading:
+      allOf:
+        - $ref: "#/components/schemas/B2DocBlockVariantBase"
+        - type: object
+          properties:
+            data:
+              type: object
+              required:
+                - text
+                - level
+              properties:
+                text:
+                  type: string
+                level:
+                  type: number
+                  minimum: 1
+                  maximum: 6
+    B2DocBlockVariantTask:
+      allOf:
+        - $ref: "#/components/schemas/B2DocBlockVariantBase"
+        - type: object
+          properties:
+            data:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                taskId:
+                  type: string
+                taskData:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    assigneeId:
+                      type: string
+                    dueDate:
+                      type: string
+                      format: date-time
+                    controlId:
+                      type: string
+    B2DocBlockVariantActors:
+      allOf:
+        - $ref: "#/components/schemas/B2DocBlockVariantBase"
+        - type: object
+          properties:
+            data:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                actors:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: "#/components/schemas/B2DocBlockMention"
+                      - type: object
+                        required:
+                          - isUser
+                        properties:
+                          isUser:
+                            type: boolean
+    B2DocBlockVariantSign:
+      allOf:
+        - $ref: "#/components/schemas/B2DocBlockVariantBase"
+        - type: object
+          properties:
+            data:
+              type: object
+              required:
+                - text
+                - users
+              properties:
+                text:
+                  type: string
+                users:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: "#/components/schemas/B2DocBlockMention"
+                      - type: object
+                        properties:
+                          order:
+                            type: number
+    B2DocBlockVariant:
+      oneOf:
+        - $ref: "#/components/schemas/B2DocBlockVariantText"
+        - $ref: "#/components/schemas/B2DocBlockVariantHeading"
+        - $ref: "#/components/schemas/B2DocBlockVariantTask"
+        - $ref: "#/components/schemas/B2DocBlockVariantActors"
+        - $ref: "#/components/schemas/B2DocBlockVariantSign"
+    B2DocBlockVariantWithData:
+      allOf:
+        - $ref: "#/components/schemas/B2DocBlockVariant"
+        - type: object
+          properties:
+            createdByData:
+              type: object
+              description: User data
+            votes:
+              type: array
+              items:
+                $ref: "#/components/schemas/B2DocBlockVariantVoteWithData"
+    B2DocStructure:
+      type: object
+      required:
+        - documentId
+        - versionId
+        - blockId
+        - order
+      properties:
+        documentId:
+          type: string
+        versionId:
+          type: string
+        blockId:
+          type: string
+        order:
+          type: integer
+    B2DocStructureWithData:
+      allOf:
+        - $ref: "#/components/schemas/B2DocStructure"
+        - type: object
+          required:
+            - type
+            - prefix
+            - offset
+            - variants
+          properties:
+            type:
+              type: string
+              enum:
+                - text
+                - heading
+                - task
+                - actors
+                - sign
+            prefix:
+              type: string
+            offset:
+              type: number
+            isTemplate:
+              type: boolean
+            variants:
+              type: array
+              items:
+                $ref: "#/components/schemas/B2DocBlockVariantWithData"
+    B2FormFieldType:
+      type: string
+      enum:
+        - text
+        - number
+        - date
+        - select
+        - multiSelect
+        - dictionary
+        - checkbox
+        - attachments
+    B2FormFieldLayout:
+      type: object
+      required:
+        - x
+        - y
+        - h
+        - w
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        h:
+          type: number
+        w:
+          type: number
+        maxH:
+          type: number
+        minH:
+          type: number
+        maxW:
+          type: number
+        minW:
+          type: number
+    B2FormFieldConfig:
+      type: object
+      properties:
+        placeholder:
+          type: string
+        helperText:
+          type: string
+        dateOnly:
+          type: boolean
+        multiple:
+          type: boolean
+        refDocId:
+          type: string
+          nullable: true
+          description: Reference to external 'b2table' document
+        refColumn:
+          type: string
+          nullable: true
+        refDictContext:
+          type: string
+          nullable: true
+          description: Context key from 'dictionary'
+        tags:
+          type: array
+          items:
+            type: string
+            description: Tags that add to uploaded files
+    B2FormFieldValidation:
+      type: object
+      properties:
+        required:
+          type: boolean
+        regExp:
+          type: string
+        minLength:
+          type: number
+        maxLength:
+          type: number
+        min:
+          type: number
+        max:
+          type: number
+        minDate:
+          type: string
+        maxDate:
+          type: string
+        accept:
+          type: string
+    B2FormField:
+      type: object
+      required:
+        - id
+        - spaceId
+        - key
+        - label
+        - type
+        - config
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        spaceId:
+          type: string
+        key:
+          type: string
+        label:
+          type: string
+        type:
+          $ref: "#/components/schemas/B2FormFieldType"
+        config:
+          $ref: "#/components/schemas/B2FormFieldConfig"
+        validation:
+          $ref: "#/components/schemas/B2FormFieldValidation"
+        createdBy:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    B2FormStructure:
+      type: object
+      required:
+        - documentId
+        - versionId
+        - fieldId
+      properties:
+        documentId:
+          type: string
+        versionId:
+          type: string
+        fieldId:
+          type: string
+        layoutMobile:
+          $ref: "#/components/schemas/B2FormFieldLayout"
+          nullable: true
+        layoutTablet:
+          $ref: "#/components/schemas/B2FormFieldLayout"
+          nullable: true
+        layoutDesktop:
+          $ref: "#/components/schemas/B2FormFieldLayout"
+          nullable: true
+    B2FormStructureWithData:
+      allOf:
+        - $ref: "#/components/schemas/B2FormStructure"
+        - type: object
+          required:
+            - id
+            - key
+            - label
+            - type
+            - config
+          properties:
+            id:
+              type: string
+            key:
+              type: string
+            label:
+              type: string
+            type:
+              $ref: "#/components/schemas/B2FormFieldType"
+            config:
+              $ref: "#/components/schemas/B2FormFieldConfig"
+            validation:
+              $ref: "#/components/schemas/B2FormFieldValidation"
     PlaceBase:
       type: object
       required:
@@ -3806,6 +4484,14 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/SortModel"
+    EditB2DocBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              config:
+                $ref: "#/components/schemas/B2DocConfig"
     SearchB2StorageBalances:
       content:
         application/json:
@@ -4630,6 +5316,76 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/ActivityLog"
+    B2DocData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2DocData"
+    B2DocBinary:
+      description: Successful operation
+      content:
+        text/plain:
+          schema:
+            type: string
+            format: binary
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    B2DocBlockData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/B2DocStructureWithData"
+    B2DocBlockPrefixes:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+    B2FormBinary:
+      description: Successful operation
+      content:
+        text/csv:
+          schema:
+            type: string
+            format: binary
+    B2FormData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DocumentDataCommon"
+    B2FormFieldsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/B2FormStructureWithData"
     B2ProductWithData:
       description: Successful operation
       content:
@@ -5184,6 +5940,22 @@ components:
           schema:
             $ref: "#/components/schemas/TagWithData"
   parameters:
+    docIdParam:
+      in: path
+      name: docId
+      description: Document ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    formIdParam:
+      in: path
+      name: formId
+      description: Form ID
+      required: true
+      schema:
+        type: string
+        format: uuid
     productIdParam:
       in: path
       name: productId

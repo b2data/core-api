@@ -101,6 +101,242 @@ export interface B2CounterpartySearchQuery {
   ids?: string[];
 }
 
+export interface B2DocConfig {
+  showPrefix?: boolean;
+  showIndentOffset?: boolean;
+  showNavigation?: boolean;
+  excludeDocumentName?: boolean;
+}
+
+export type B2DocData = DocumentDataCommon & {
+  config?: B2DocConfig;
+};
+
+export type B2DocBlockType = "text" | "heading" | "task" | "actors" | "sign";
+
+export interface B2DocBlockBase {
+  id: string;
+  type: B2DocBlockType;
+  prefix: string;
+  offset: number;
+  hidePrefix?: boolean;
+}
+
+export type B2DocBlock = B2DocBlockBase & {
+  spaceId: string;
+  isTemplate?: boolean;
+  createdBy?: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+};
+
+export interface B2DocBlockVariantVote {
+  variantId: string;
+  createdBy?: string;
+  /** @format date-time */
+  createdAt: string;
+}
+
+export type B2DocBlockVariantVoteWithData = B2DocBlockVariantVote & {
+  /** User data */
+  createdByData?: object;
+};
+
+export interface B2DocBlockMention {
+  from: number;
+  to: number;
+  id: string;
+  name: string;
+  detailId?: string;
+  detailLabel?: string;
+}
+
+export interface B2DocBlockReference {
+  from: number;
+  to: number;
+  docId: string;
+  docName: string;
+  versionId?: string;
+  versionName?: string;
+  blockId?: string;
+  blockName?: string;
+}
+
+export interface B2DocBlockVariantBase {
+  id: string;
+  blockId: string;
+  isCurrent: boolean;
+  data: object;
+  createdBy?: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
+export type B2DocBlockVariantText = B2DocBlockVariantBase & {
+  data?: {
+    text: string;
+    variables?: string[];
+    align?: "center" | "left" | "right" | "justify";
+    width?: "r/4" | "r/3" | "r/2" | "l/4" | "l/3" | "l/2" | "c/4" | "c/3" | "c/2" | "full";
+    mentions?: B2DocBlockMention[];
+    references?: B2DocBlockReference[];
+  };
+};
+
+export type B2DocBlockVariantHeading = B2DocBlockVariantBase & {
+  data?: {
+    text: string;
+    /**
+     * @min 1
+     * @max 6
+     */
+    level: number;
+  };
+};
+
+export type B2DocBlockVariantTask = B2DocBlockVariantBase & {
+  data?: {
+    text: string;
+    taskId?: string;
+    taskData?: {
+      name?: string;
+      assigneeId?: string;
+      /** @format date-time */
+      dueDate?: string;
+      controlId?: string;
+    };
+  };
+};
+
+export type B2DocBlockVariantActors = B2DocBlockVariantBase & {
+  data?: {
+    text: string;
+    actors?: (B2DocBlockMention & {
+      isUser: boolean;
+    })[];
+  };
+};
+
+export type B2DocBlockVariantSign = B2DocBlockVariantBase & {
+  data?: {
+    text: string;
+    users: (B2DocBlockMention & {
+      order?: number;
+    })[];
+  };
+};
+
+export type B2DocBlockVariant =
+  | B2DocBlockVariantText
+  | B2DocBlockVariantHeading
+  | B2DocBlockVariantTask
+  | B2DocBlockVariantActors
+  | B2DocBlockVariantSign;
+
+export type B2DocBlockVariantWithData = B2DocBlockVariant & {
+  /** User data */
+  createdByData?: object;
+  votes?: B2DocBlockVariantVoteWithData[];
+};
+
+export interface B2DocStructure {
+  documentId: string;
+  versionId: string;
+  blockId: string;
+  order: number;
+}
+
+export type B2DocStructureWithData = B2DocStructure & {
+  type: "text" | "heading" | "task" | "actors" | "sign";
+  prefix: string;
+  offset: number;
+  isTemplate?: boolean;
+  variants: B2DocBlockVariantWithData[];
+};
+
+export type B2FormFieldType =
+  | "text"
+  | "number"
+  | "date"
+  | "select"
+  | "multiSelect"
+  | "dictionary"
+  | "checkbox"
+  | "attachments";
+
+export interface B2FormFieldLayout {
+  x: number;
+  y: number;
+  h: number;
+  w: number;
+  maxH?: number;
+  minH?: number;
+  maxW?: number;
+  minW?: number;
+}
+
+export interface B2FormFieldConfig {
+  placeholder?: string;
+  helperText?: string;
+  dateOnly?: boolean;
+  multiple?: boolean;
+  /** Reference to external 'b2table' document */
+  refDocId?: string | null;
+  refColumn?: string | null;
+  /** Context key from 'dictionary' */
+  refDictContext?: string | null;
+  tags?: string[];
+}
+
+export interface B2FormFieldValidation {
+  required?: boolean;
+  regExp?: string;
+  minLength?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  minDate?: string;
+  maxDate?: string;
+  accept?: string;
+}
+
+export interface B2FormField {
+  id: string;
+  spaceId: string;
+  key: string;
+  label: string;
+  type: B2FormFieldType;
+  config: B2FormFieldConfig;
+  validation?: B2FormFieldValidation;
+  createdBy?: string | null;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
+export interface B2FormStructure {
+  documentId: string;
+  versionId: string;
+  fieldId: string;
+  layoutMobile?: B2FormFieldLayout | null;
+  layoutTablet?: B2FormFieldLayout | null;
+  layoutDesktop?: B2FormFieldLayout | null;
+}
+
+export type B2FormStructureWithData = B2FormStructure & {
+  id: string;
+  key: string;
+  label: string;
+  type: B2FormFieldType;
+  config: B2FormFieldConfig;
+  validation?: B2FormFieldValidation;
+};
+
 export interface PlaceBase {
   /**
    * Place ID
@@ -1450,6 +1686,171 @@ export class B2DataApi<SecurityDataType extends unknown> {
         path: `/activities/search`,
         method: "POST",
         body: data,
+        secure: true,
+        ...params,
+      }),
+  };
+  b2Doc = {
+    /**
+     * No description
+     *
+     * @tags B2Doc
+     * @name GetDocBinary
+     * @summary Get document binary data
+     * @request GET:/documents/b2doc/{docId}
+     * @secure
+     */
+    getDocBinary: (
+      docId: string,
+      query?: {
+        /** Document format (pdf or md) */
+        format?: "pdf" | "md";
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<File, ErrorResponse>({
+        path: `/documents/b2doc/${docId}`,
+        method: "GET",
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Doc
+     * @name UpdateDocInfo
+     * @summary Update document info
+     * @request PATCH:/documents/b2doc/{docId}
+     * @secure
+     */
+    updateDocInfo: (
+      docId: string,
+      data: {
+        config?: B2DocConfig;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<B2DocData, ErrorResponse>({
+        path: `/documents/b2doc/${docId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Doc
+     * @name GetDocInfo
+     * @summary Get document info
+     * @request GET:/documents/b2doc/{docId}/info
+     * @secure
+     */
+    getDocInfo: (docId: string, params: RequestParams = {}) =>
+      this.http.request<B2DocData, ErrorResponse>({
+        path: `/documents/b2doc/${docId}/info`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Doc
+     * @name GetDocBlocksData
+     * @summary Get document blocks data
+     * @request POST:/documents/b2doc/{docId}/data
+     * @secure
+     */
+    getDocBlocksData: (docId: string, params: RequestParams = {}) =>
+      this.http.request<
+        {
+          total: number;
+          items: B2DocStructureWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2doc/${docId}/data`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Doc
+     * @name GetDocBlockPrefixes
+     * @summary Get document block prefixes
+     * @request GET:/documents/b2doc/{docId}/prefixes
+     * @secure
+     */
+    getDocBlockPrefixes: (docId: string, params: RequestParams = {}) =>
+      this.http.request<Record<string, string>, ErrorResponse>({
+        path: `/documents/b2doc/${docId}/prefixes`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+  };
+  b2Form = {
+    /**
+     * No description
+     *
+     * @tags B2Form
+     * @name GetFormBinary
+     * @summary Export b2form to CSV
+     * @request GET:/documents/b2doc/{formId}"
+     * @secure
+     */
+    getFormBinary: (formId: string, params: RequestParams = {}) =>
+      this.http.request<File, ErrorResponse>({
+        path: `/documents/b2doc/${formId}"`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Form
+     * @name GetFormInfo
+     * @summary Get form info
+     * @request GET:/documents/b2form/{formId}/info
+     * @secure
+     */
+    getFormInfo: (formId: string, params: RequestParams = {}) =>
+      this.http.request<DocumentDataCommon, ErrorResponse>({
+        path: `/documents/b2form/${formId}/info`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Form
+     * @name GetFormFieldsData
+     * @summary Get form fields data
+     * @request GET:/documents/b2form/{formId}/data
+     * @secure
+     */
+    getFormFieldsData: (formId: string, params: RequestParams = {}) =>
+      this.http.request<
+        {
+          total: number;
+          items: B2FormStructureWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2form/${formId}/data`,
+        method: "GET",
         secure: true,
         ...params,
       }),
