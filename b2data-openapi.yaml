@@ -10,6 +10,7 @@ tags:
   - name: Activities
   - name: B2Task
   - name: B2Doc
+  - name: B2Table
   - name: B2Form
   - name: B2Product
   - name: B2Storage
@@ -571,6 +572,123 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/B2StorageOperationNotFound"
+  "/documents/b2table/{tableId}":
+    get:
+      tags:
+        - B2Table
+      security:
+        - BearerAuth: []
+      summary: Export b2table to CSV
+      operationId: getTableBinary
+      parameters:
+        - $ref: "#/components/parameters/tableIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2TableBinary"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+    patch:
+      tags:
+        - B2Table
+      security:
+        - BearerAuth: []
+      summary: Edit b2table info
+      operationId: editTableInfo
+      parameters:
+        - $ref: "#/components/parameters/tableIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditB2TableBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2Table"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2table/{tableId}/info":
+    get:
+      tags:
+        - B2Table
+      security:
+        - BearerAuth: []
+      summary: Get table info
+      operationId: getTableInfo
+      parameters:
+        - $ref: "#/components/parameters/tableIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2Table"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2table/{tableId}/rows":
+    post:
+      tags:
+        - B2Table
+      security:
+        - BearerAuth: []
+      summary: Search b2table rows
+      operationId: searchTableRows
+      parameters:
+        - $ref: "#/components/parameters/tableIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/SearchB2TableRowsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchB2TableRowWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  /documents/b2table/search-references:
+    post:
+      tags:
+        - B2Table
+      security:
+        - BearerAuth: []
+      summary: Search b2table references
+      operationId: searchTableReferences
+      requestBody:
+        $ref: "#/components/requestBodies/SearchB2TableReferencesBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchB2TableReference"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  /documents/b2table/search-references-options:
+    post:
+      tags:
+        - B2Table
+      security:
+        - BearerAuth: []
+      summary: Search b2table references options
+      operationId: searchTableReferencesOptions
+      requestBody:
+        $ref: "#/components/requestBodies/SearchB2TableReferencesOptionsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchB2TableReferencesOptions"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
   /documents/b2task/search:
     post:
       tags:
@@ -2194,11 +2312,11 @@ components:
     B2FormFieldType:
       type: string
       enum:
+        - info
         - text
         - number
         - date
         - select
-        - multiSelect
         - dictionary
         - checkbox
         - attachments
@@ -2336,14 +2454,11 @@ components:
         - $ref: "#/components/schemas/B2FormStructure"
         - type: object
           required:
-            - id
             - key
             - label
             - type
             - config
           properties:
-            id:
-              type: string
             key:
               type: string
             label:
@@ -2680,6 +2795,201 @@ components:
             createdByData:
               $ref: "#/components/schemas/User"
               nullable: true
+    B2Table:
+      allOf:
+        - $ref: "#/components/schemas/DocumentDataCommon"
+        - type: object
+          properties:
+            config:
+              $ref: "#/components/schemas/B2TableConfig"
+    B2TableColType:
+      type: string
+      enum:
+        - string
+        - number
+        - date
+        - dateTime
+        - boolean
+        - select
+        - selectRef
+        - dictionary
+        - photos
+        - logistic
+    B2TableColAlignment:
+      type: string
+      enum:
+        - left
+        - right
+        - center
+    B2TableColumn:
+      type: object
+      description: Represents a column definition in a B2Table.
+      required:
+        - field
+      properties:
+        field:
+          type: string
+          description: The column identifier
+        headerName:
+          type: string
+          description: The title of the column rendered in the column header cell.
+        width:
+          type: number
+          description: Set the width of the column.
+          default: 100
+        minWidth:
+          type: number
+          description: Sets the minimum width of a column.
+          default: 50
+        maxWidth:
+          type: number
+          description: Sets the maximum width of a column.
+        hideable:
+          type: boolean
+          description: If false, removes the buttons for hiding this column.
+          default: true
+        sortable:
+          type: boolean
+          description: If true, the column is sortable.
+          default: true
+        resizable:
+          type: boolean
+          description: If true, the column is resizable.
+          default: true
+        pinnable:
+          type: boolean
+          description: If false, the menu items for column pinning menu will not be
+            rendered.
+          default: true
+        type:
+          $ref: "#/components/schemas/B2TableColType"
+          description: The type of the column.
+          default: string
+        align:
+          $ref: "#/components/schemas/B2TableColAlignment"
+          description: Allows to align the column values in cells.
+        headerAlign:
+          $ref: "#/components/schemas/B2TableColAlignment"
+          description: Header cell element alignment.
+        disableReorder:
+          type: boolean
+          description: If true, this column cannot be reordered.
+          default: false
+        refDocId:
+          type: string
+          description: Reference to external b2table document.
+        refColumn:
+          type: string
+          description: Reference to external b2table column.
+        refColumnType:
+          allOf:
+            - $ref: "#/components/schemas/B2TableColType"
+          nullable: true
+          description: Reference to external b2table column type.
+        refWordId:
+          type: string
+          description: Reference to external dictionary-word.
+    B2TableRow:
+      type: object
+      required:
+        - documentId
+        - versionId
+        - number
+        - id
+      properties:
+        documentId:
+          type: string
+        versionId:
+          type: string
+        number:
+          type: number
+        id:
+          type: string
+      additionalProperties:
+        type: string
+    B2TableRowWithData:
+      allOf:
+        - $ref: "#/components/schemas/B2TableRow"
+        - type: object
+          properties:
+            refData:
+              type: object
+              description: Map of reference data keyed by field name.
+              additionalProperties:
+                type: object
+                additionalProperties:
+                  type: string
+            refWord:
+              type: object
+              description: Map of dictionary words keyed by field name.
+              additionalProperties:
+                $ref: "#/components/schemas/DictionaryWord"
+    B2TableConfig:
+      type: object
+      properties:
+        columns:
+          type: array
+          items:
+            $ref: "#/components/schemas/B2TableColumn"
+        pinnedColumns:
+          type: object
+          properties:
+            left:
+              type: array
+              items:
+                type: string
+            right:
+              type: array
+              items:
+                type: string
+        pinnedRows:
+          type: object
+          properties:
+            top:
+              type: array
+              items:
+                type: string
+            bottom:
+              type: array
+              items:
+                type: string
+    B2TableReference:
+      type: object
+      required:
+        - id
+        - name
+        - latestVersion
+        - columns
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        latestVersion:
+          type: string
+        columns:
+          type: array
+          items:
+            $ref: "#/components/schemas/B2TableReferenceColumn"
+    B2TableReferenceColumn:
+      type: object
+      required:
+        - id
+        - name
+        - type
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/B2TableColType"
+        refWordId:
+          type: string
+        refDocId:
+          type: string
+        refColumn:
+          type: string
     TaskType:
       type: string
       enum:
@@ -4594,6 +4904,87 @@ components:
               balanceId:
                 type: string
                 nullable: true
+    EditB2TableBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - config
+            properties:
+              config:
+                $ref: "#/components/schemas/B2TableConfig"
+    SearchB2TableRowsBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                  searchTerm:
+                    type: string
+    SearchB2TableReferencesBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                required:
+                  - spaceId
+                properties:
+                  spaceId:
+                    type: string
+                    format: uuid
+                  systemId:
+                    type: string
+                    format: uuid
+                  searchTerm:
+                    type: string
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+    SearchB2TableReferencesOptionsBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                required:
+                  - columns
+                properties:
+                  columns:
+                    type: array
+                    items:
+                      type: string
+                  fromDocumentId:
+                    type: string
+                    format: uuid
+                  versionId:
+                    type: string
+                    format: uuid
+                  documentId:
+                    type: string
+                    format: uuid
+                  searchTerm:
+                    type: string
+                  searchColumn:
+                    type: string
+                  rows:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                  uniqueValues:
+                    type: boolean
     SearchB2TaskBody:
       content:
         application/json:
@@ -5487,6 +5878,67 @@ components:
           example:
             errorCode: document:b2storage:404-operation
             message: B2Storage operation not found
+    B2TableBinary:
+      description: Successful operation
+      content:
+        text/csv:
+          schema:
+            type: string
+            format: binary
+    B2Table:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2Table"
+    SearchB2TableRowWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+              - total
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/B2TableRowWithData"
+              total:
+                type: integer
+    SearchB2TableReference:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+              - total
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/B2TableReference"
+              total:
+                type: integer
+    SearchB2TableReferencesOptions:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+              - total
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/B2TableRowWithData"
+              total:
+                type: integer
     B2Task:
       description: Successful operation
       content:
@@ -6000,6 +6452,14 @@ components:
       in: path
       name: operationId
       description: Storage Operation ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    tableIdParam:
+      in: path
+      name: tableId
+      description: Table ID
       required: true
       schema:
         type: string

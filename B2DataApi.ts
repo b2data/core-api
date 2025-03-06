@@ -259,11 +259,11 @@ export type B2DocStructureWithData = B2DocStructure & {
 };
 
 export type B2FormFieldType =
+  | "info"
   | "text"
   | "number"
   | "date"
   | "select"
-  | "multiSelect"
   | "dictionary"
   | "checkbox"
   | "attachments";
@@ -329,7 +329,6 @@ export interface B2FormStructure {
 }
 
 export type B2FormStructureWithData = B2FormStructure & {
-  id: string;
   key: string;
   label: string;
   type: B2FormFieldType;
@@ -478,6 +477,129 @@ export type B2StorageOperationWithData = B2StorageOperation & {
   spaceData: SpaceBase;
   createdByData?: User | null;
 };
+
+export type B2Table = DocumentDataCommon & {
+  config?: B2TableConfig;
+};
+
+export type B2TableColType =
+  | "string"
+  | "number"
+  | "date"
+  | "dateTime"
+  | "boolean"
+  | "select"
+  | "selectRef"
+  | "dictionary"
+  | "photos"
+  | "logistic";
+
+export type B2TableColAlignment = "left" | "right" | "center";
+
+/** Represents a column definition in a B2Table. */
+export interface B2TableColumn {
+  /** The column identifier */
+  field: string;
+  /** The title of the column rendered in the column header cell. */
+  headerName?: string;
+  /**
+   * Set the width of the column.
+   * @default 100
+   */
+  width?: number;
+  /**
+   * Sets the minimum width of a column.
+   * @default 50
+   */
+  minWidth?: number;
+  /** Sets the maximum width of a column. */
+  maxWidth?: number;
+  /**
+   * If false, removes the buttons for hiding this column.
+   * @default true
+   */
+  hideable?: boolean;
+  /**
+   * If true, the column is sortable.
+   * @default true
+   */
+  sortable?: boolean;
+  /**
+   * If true, the column is resizable.
+   * @default true
+   */
+  resizable?: boolean;
+  /**
+   * If false, the menu items for column pinning menu will not be rendered.
+   * @default true
+   */
+  pinnable?: boolean;
+  /**
+   * The type of the column.
+   * @default "string"
+   */
+  type?: B2TableColType;
+  /** Allows to align the column values in cells. */
+  align?: B2TableColAlignment;
+  /** Header cell element alignment. */
+  headerAlign?: B2TableColAlignment;
+  /**
+   * If true, this column cannot be reordered.
+   * @default false
+   */
+  disableReorder?: boolean;
+  /** Reference to external b2table document. */
+  refDocId?: string;
+  /** Reference to external b2table column. */
+  refColumn?: string;
+  /** Reference to external b2table column type. */
+  refColumnType?: B2TableColType | null;
+  /** Reference to external dictionary-word. */
+  refWordId?: string;
+}
+
+export interface B2TableRow {
+  documentId: string;
+  versionId: string;
+  number: number;
+  id: string;
+  [key: string]: any;
+}
+
+export type B2TableRowWithData = B2TableRow & {
+  /** Map of reference data keyed by field name. */
+  refData?: Record<string, Record<string, string>>;
+  /** Map of dictionary words keyed by field name. */
+  refWord?: Record<string, DictionaryWord>;
+};
+
+export interface B2TableConfig {
+  columns?: B2TableColumn[];
+  pinnedColumns?: {
+    left?: string[];
+    right?: string[];
+  };
+  pinnedRows?: {
+    top?: string[];
+    bottom?: string[];
+  };
+}
+
+export interface B2TableReference {
+  id: string;
+  name: string;
+  latestVersion: string;
+  columns: B2TableReferenceColumn[];
+}
+
+export interface B2TableReferenceColumn {
+  id: string;
+  name: string;
+  type: B2TableColType;
+  refWordId?: string;
+  refDocId?: string;
+  refColumn?: string;
+}
 
 export type TaskType = "simple" | "fillIdt" | "receiveIdt" | "giveOutIdt" | "factoryTask";
 
@@ -2058,6 +2180,169 @@ export class B2DataApi<SecurityDataType extends unknown> {
       this.http.request<B2StorageOperationWithData, ErrorResponse>({
         path: `/documents/b2storage/operations/${operationId}`,
         method: "GET",
+        secure: true,
+        ...params,
+      }),
+  };
+  b2Table = {
+    /**
+     * No description
+     *
+     * @tags B2Table
+     * @name GetTableBinary
+     * @summary Export b2table to CSV
+     * @request GET:/documents/b2table/{tableId}
+     * @secure
+     */
+    getTableBinary: (tableId: string, params: RequestParams = {}) =>
+      this.http.request<File, ErrorResponse>({
+        path: `/documents/b2table/${tableId}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Table
+     * @name EditTableInfo
+     * @summary Edit b2table info
+     * @request PATCH:/documents/b2table/{tableId}
+     * @secure
+     */
+    editTableInfo: (
+      tableId: string,
+      data: {
+        config: B2TableConfig;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<B2Table, ErrorResponse>({
+        path: `/documents/b2table/${tableId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Table
+     * @name GetTableInfo
+     * @summary Get table info
+     * @request GET:/documents/b2table/{tableId}/info
+     * @secure
+     */
+    getTableInfo: (tableId: string, params: RequestParams = {}) =>
+      this.http.request<B2Table, ErrorResponse>({
+        path: `/documents/b2table/${tableId}/info`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Table
+     * @name SearchTableRows
+     * @summary Search b2table rows
+     * @request POST:/documents/b2table/{tableId}/rows
+     * @secure
+     */
+    searchTableRows: (
+      tableId: string,
+      data: SearchModel & {
+        ids?: string[];
+        searchTerm?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          items: B2TableRowWithData[];
+          total: number;
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2table/${tableId}/rows`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Table
+     * @name SearchTableReferences
+     * @summary Search b2table references
+     * @request POST:/documents/b2table/search-references
+     * @secure
+     */
+    searchTableReferences: (
+      data: SearchModel & {
+        /** @format uuid */
+        spaceId: string;
+        /** @format uuid */
+        systemId?: string;
+        searchTerm?: string;
+        ids?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          items: B2TableReference[];
+          total: number;
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2table/search-references`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Table
+     * @name SearchTableReferencesOptions
+     * @summary Search b2table references options
+     * @request POST:/documents/b2table/search-references-options
+     * @secure
+     */
+    searchTableReferencesOptions: (
+      data: SearchModel & {
+        columns: string[];
+        /** @format uuid */
+        fromDocumentId?: string;
+        /** @format uuid */
+        versionId?: string;
+        /** @format uuid */
+        documentId?: string;
+        searchTerm?: string;
+        searchColumn?: string;
+        rows?: string[];
+        uniqueValues?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          items: B2TableRowWithData[];
+          total: number;
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2table/search-references-options`,
+        method: "POST",
+        body: data,
         secure: true,
         ...params,
       }),
