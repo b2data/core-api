@@ -1,0 +1,203 @@
+openapi: 3.0.0
+info:
+  title: REST API for B2Wallet
+  version: 1.0.0
+servers:
+  - url: https://localhost:8087
+  - url: https://wallet.b2p.space/api
+tags:
+  - name: Activities
+paths:
+  /activities/search:
+    post:
+      tags:
+        - Activities
+      security:
+        - TMAAuth: []
+      summary: Search activities
+      operationId: searchActivities
+      requestBody:
+        $ref: "#/components/requestBodies/SearchActivitiesBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchActivitiesData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+components:
+  schemas:
+    ActivityType:
+      type: string
+      description: Activity Type
+      enum:
+        - Login
+    ActivityLog:
+      type: object
+      required:
+        - id
+        - type
+        - userId
+        - data
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/ActivityType"
+        userId:
+          type: number
+        data:
+          type: object
+          description: Activity Data depends on type
+        createdAt:
+          type: string
+          format: date-time
+        userData:
+          $ref: "#/components/schemas/Viewer"
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - message
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+    SortModel:
+      type: object
+      required:
+        - field
+      properties:
+        field:
+          type: string
+          description: The field for sorting
+        sort:
+          type: string
+          nullable: true
+          enum:
+            - asc
+            - desc
+          description: The sorting order
+    SearchModel:
+      type: object
+      properties:
+        limit:
+          type: number
+          description: Number of return items
+        offset:
+          type: number
+          description: Number of skip items
+        sort:
+          type: array
+          items:
+            $ref: "#/components/schemas/SortModel"
+    Viewer:
+      type: object
+      required:
+        - id
+        - firstName
+      properties:
+        id:
+          type: number
+          description: Telegram ID
+        tonWallet:
+          type: string
+          description: TON Wallet address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        firstName:
+          type: string
+          description: First Name
+        lastName:
+          type: string
+          description: Last Name
+        photoUrl:
+          type: string
+          description: URL for the profile photo
+        languageCode:
+          type: string
+          description: Preferred language code
+        allowsWriteToPm:
+          type: boolean
+          description: True, if this user allowed the bot to message them
+    User:
+      allOf:
+        - $ref: "#/components/schemas/Viewer"
+        - type: object
+          required:
+            - createdAt
+            - updatedAt
+          properties:
+            isBot:
+              type: boolean
+              description: True, if this user is a bot. Returned in the `receiver` field only
+            isPremium:
+              type: boolean
+              description: True, if this user is a Telegram Premium user
+            username:
+              type: string
+              description: Username of the user or bot
+            createdAt:
+              type: string
+              format: date-time
+              description: Date when the user was created
+            updatedAt:
+              type: string
+              format: date-time
+              description: Date when the user was last updated
+  requestBodies:
+    SearchActivitiesBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  types:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ActivityType"
+    EmptyBody:
+      content:
+        application/json:
+          schema:
+            type: object
+  responses:
+    SearchActivitiesData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLog"
+    InvalidData:
+      description: Invalid request data
+    Unauthorized:
+      description: Unauthorized
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: api:403
+            message: You don't have access to this method
+  securitySchemes:
+    TMAAuth:
+      type: apiKey
+      in: header
+      name: tma
+      description: Authorization using TMA initData
