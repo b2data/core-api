@@ -7,6 +7,7 @@ servers:
   - url: https://wallet.b2p.space/api
 tags:
   - name: Activities
+  - name: Rates
 paths:
   /activities/search:
     post:
@@ -25,6 +26,35 @@ paths:
           $ref: "#/components/responses/InvalidData"
         "401":
           $ref: "#/components/responses/Unauthorized"
+  /rates/fiat:
+    get:
+      tags:
+        - Rates
+      security:
+        - TMAAuth: []
+      summary: Get fiat rates
+      operationId: getFiatRates
+      parameters:
+        - name: network
+          in: query
+          description: Network
+          required: true
+          schema:
+            type: string
+            enum:
+              - mainnet
+              - testnet
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: number
+        "401":
+          description: Unauthorized"
 components:
   schemas:
     ActivityType:

@@ -336,4 +336,30 @@ export class B2WalletApi<SecurityDataType extends unknown> {
         ...params,
       }),
   };
+  rates = {
+    /**
+     * No description
+     *
+     * @tags Rates
+     * @name GetFiatRates
+     * @summary Get fiat rates
+     * @request GET:/rates/fiat
+     * @secure
+     */
+    getFiatRates: (
+      query: {
+        /** Network */
+        network: "mainnet" | "testnet";
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Record<string, number>, void>({
+        path: `/rates/fiat`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+  };
 }
