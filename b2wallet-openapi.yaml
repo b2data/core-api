@@ -55,6 +55,72 @@ paths:
                   type: number
         "401":
           description: Unauthorized"
+  /tonconnect/bridge/events:
+    get:
+      tags:
+        - TonConnect
+      summary: Subscribe on TonConnect bridge events
+      operationId: subscribeBridgeEvents
+      parameters:
+        - name: client_id
+          in: query
+          description: Client ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            text/event-stream:
+              type: string
+  /tonconnect/bridge/message:
+    post:
+      tags:
+        - TonConnect
+      summary: Send message to TonConnect bridge
+      operationId: sendBridgeMessage
+      parameters:
+        - name: client_id
+          in: query
+          description: Client ID (hex_str)
+          required: true
+          schema:
+            type: string
+        - name: to
+          in: query
+          description: To Client ID (hex_str)
+          required: true
+          schema:
+            type: string
+        - name: ttl
+          in: query
+          description: Time to live (seconds). Bridges should support at least 300 seconds
+            TTL.
+          required: true
+          schema:
+            type: number
+        - name: topic
+          in: query
+          description: The topic [optional] query parameter can be used by the bridge to
+            deliver the push notification to the wallet. If the parameter is
+            given, it must correspond to the RPC method called inside the
+            encrypted message.
+          schema:
+            type: string
+      requestBody:
+        content:
+          "text/plain:":
+            type: string
+            example: base64_encoded_message
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: base64_encoded_message
 components:
   schemas:
     ActivityType:
@@ -124,6 +190,581 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SortModel"
+    AppMessage:
+      oneOf:
+        - $ref: "#/components/schemas/ConnectRequest"
+        - $ref: "#/components/schemas/AppRequest"
+    AppRequest:
+      oneOf:
+        - $ref: "#/components/schemas/SendTransactionRequest"
+        - $ref: "#/components/schemas/SignDataRequest"
+        - $ref: "#/components/schemas/DisconnectRequest"
+    WalletMessage:
+      oneOf:
+        - $ref: "#/components/schemas/WalletResponse"
+        - $ref: "#/components/schemas/WalletEvent"
+    WalletResponse:
+      oneOf:
+        - $ref: "#/components/schemas/SendTransactionResponse"
+        - $ref: "#/components/schemas/SignDataResponse"
+        - $ref: "#/components/schemas/DisconnectResponse"
+    WalletEvent:
+      oneOf:
+        - $ref: "#/components/schemas/ConnectEvent"
+        - $ref: "#/components/schemas/DisconnectEvent"
+    ConnectRequest:
+      type: object
+      required:
+        - manifestUrl
+        - items
+      properties:
+        manifestUrl:
+          type: string
+          description: Link to the app's tonconnect-manifest.json
+        items:
+          type: array
+          description: Data items to share with the app
+          items:
+            $ref: "#/components/schemas/ConnectItem"
+    ConnectItem:
+      oneOf:
+        - $ref: "#/components/schemas/TonAddressItem"
+        - $ref: "#/components/schemas/TonProofItem"
+    TonAddressItem:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          enum:
+            - ton_addr
+    TonProofItem:
+      type: object
+      required:
+        - name
+        - payload
+      properties:
+        name:
+          type: string
+          enum:
+            - ton_proof
+        payload:
+          type: string
+    ConnectEvent:
+      oneOf:
+        - $ref: "#/components/schemas/ConnectEventSuccess"
+        - $ref: "#/components/schemas/ConnectEventError"
+    ConnectEventSuccess:
+      type: object
+      required:
+        - event
+        - id
+        - payload
+      properties:
+        event:
+          type: string
+          enum:
+            - connect
+        id:
+          type: number
+          description: Increasing event counter
+        payload:
+          type: object
+          required:
+            - items
+            - device
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/ConnectItemReply"
+            device:
+              $ref: "#/components/schemas/DeviceInfo"
+    ConnectItemReply:
+      oneOf:
+        - $ref: "#/components/schemas/TonAddressItemReply"
+        - $ref: "#/components/schemas/TonProofItemReply"
+    ConnectItemReplyError:
+      type: object
+      description: If the wallet doesn't support the requested ConnectItem (e.g.
+        "ton_proof"), it must send reply with the following ConnectItemReply
+        corresponding to the requested item. with following structure
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: <requested-connect-item-name>
+        error:
+          type: object
+          required:
+            - code
+          properties:
+            code:
+              type: number
+              enum:
+                - 0
+                - 400
+            message:
+              type: string
+    TonAddressItemReply:
+      type: object
+      required:
+        - name
+        - address
+        - network
+        - publicKey
+        - walletStateInit
+      properties:
+        name:
+          type: string
+          enum:
+            - ton_addr
+        address:
+          type: string
+          description: TON address raw (`0:<hex>`)
+        network:
+          type: string
+          enum:
+            - "-239"
+            - "-3"
+          description: Network global_id
+        publicKey:
+          type: string
+          description: HEX string without 0x
+        walletStateInit:
+          type: string
+          description: Base64 (not url safe) encoded stateinit cell for the wallet contract
+    TonProofItemReply:
+      oneOf:
+        - $ref: "#/components/schemas/TonProofItemReplySuccess"
+        - $ref: "#/components/schemas/ConnectItemReplyError"
+    TonProofItemReplySuccess:
+      type: object
+      required:
+        - name
+        - proof
+      properties:
+        name:
+          type: string
+          enum:
+            - ton_proof
+        proof:
+          type: object
+          required:
+            - timestamp
+            - domain
+            - signature
+            - payload
+          properties:
+            timestamp:
+              type: string
+              description: 64-bit unix epoch time of the signing operation (seconds)
+            domain:
+              type: object
+              required:
+                - lengthBytes
+                - value
+              properties:
+                lengthBytes:
+                  type: number
+                  description: AppDomain Length
+                value:
+                  type: string
+                  description: app domain name (as url part, without encoding)
+            signature:
+              type: string
+              description: base64-encoded signature
+            payload:
+              type: string
+              description: payload from the request
+    TonProofItemReplyError:
+      type: object
+      required:
+        - name
+        - error
+      properties:
+        name:
+          type: string
+          enum:
+            - ton_addr
+        error:
+          type: object
+          required:
+            - code
+          properties:
+            code:
+              $ref: "#/components/schemas/ConnectItemErrorCode"
+            message:
+              type: string
+    ConnectItemErrorCode:
+      type: number
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 100
+        - 300
+    DeviceInfo:
+      type: object
+      required:
+        - platform
+        - appName
+        - appVersion
+        - maxProtocolVersion
+        - features
+      properties:
+        platform:
+          type: string
+          description: Example iphone, ipad, android, windows, mac, linux
+        appName:
+          type: string
+          example: Tonkeeper
+        appVersion:
+          type: string
+          example: 2.3.367
+        maxProtocolVersion:
+          type: number
+        features:
+          type: array
+          description: list of supported features and methods in RPC
+          items:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+                enum:
+                  - SendTransaction
+                  - SignData
+              maxMessages:
+                type: number
+                description: Maximum number of messages in one `SendTransaction` that the wallet
+                  supports
+    ConnectEventError:
+      type: object
+      required:
+        - event
+        - id
+        - error
+      properties:
+        event:
+          type: string
+          enum:
+            - connect_error
+        id:
+          type: number
+          description: Increasing event counter
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: number
+            message:
+              type: string
+    WalletResponseErrorCode:
+      type: number
+      enum:
+        - 0
+        - 1
+        - 100
+        - 300
+        - 400
+    SendTransactionRequest:
+      type: object
+      required:
+        - method
+        - id
+        - params
+      properties:
+        method:
+          type: string
+          enum:
+            - sendTransaction
+        id:
+          type: string
+          description: Increasing identifier that allows to match requests and responses
+        params:
+          type: array
+          items:
+            type: string
+            description: JSON object SendTransactionParam
+    SendTransactionParam:
+      type: object
+      required:
+        - valid_until
+        - network
+        - messages
+        - from
+      properties:
+        valid_until:
+          type: number
+          example: 1658253458
+          description: unix timestamp. after th moment transaction will be invalid.
+        network:
+          type: string
+          example: "-239"
+          description: The network where DApp intends to send the transaction. If not set,
+            the transaction is sent to the network currently set in the wallet,
+            but this is not safe and DApp should always strive to set the
+            network. If the network parameter is set, but the wallet has a
+            different network set, the wallet should show an alert and DO NOT
+            ALLOW TO SEND this transaction.
+          enum:
+            - "-239"
+            - "-3"
+        from:
+          type: string
+          example: 0:348bcf827469c5fc38541c77fdd91d4e347eac200f6f2d9fd62dc08885f0415f
+          description: The sender address from which DApp intends to send the transaction.
+            If not set, wallet allows user to select the sender's address at the
+            moment of transaction approval. If from parameter is set, the wallet
+            should DO NOT ALLOW user to select the sender's address; If sending
+            from the specified address is impossible, the wallet should show an
+            alert and DO NOT ALLOW TO SEND this transaction.
+        messages:
+          type: array
+          items:
+            type: object
+            required:
+              - address
+              - amount
+            properties:
+              address:
+                type: string
+                example: EQBBJBB3HagsujBqVfqeDUPJ0kXjgTPLWPFFffuNXNiJL0aA
+                description: message destination in user-friendly format
+              amount:
+                type: string
+                example: 20000000
+                description: amount in nanocoins
+              payload:
+                type: string
+                description: raw once-cell BoC encoded in Base64.
+              stateInit:
+                type: string
+                description: raw once-cell BoC encoded in Base64.
+    SendTransactionResponse:
+      oneOf:
+        - $ref: "#/components/schemas/SendTransactionResponseSuccess"
+        - $ref: "#/components/schemas/SendTransactionResponseError"
+    SendTransactionResponseSuccess:
+      type: object
+      required:
+        - result
+        - id
+      properties:
+        result:
+          type: string
+          example: <boc>
+        id:
+          type: string
+          description: Increasing identifier that allows to match requests and responses
+    SendTransactionResponseError:
+      type: object
+      required:
+        - error
+        - id
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              $ref: "#/components/schemas/WalletResponseErrorCode"
+            message:
+              type: string
+        id:
+          type: string
+          description: Increasing identifier that allows to match requests and responses
+    SignDataRequest:
+      type: object
+      required:
+        - method
+        - id
+        - params
+      properties:
+        method:
+          type: string
+          enum:
+            - signData
+        id:
+          type: string
+          description: Increasing identifier that allows to match requests and responses
+        params:
+          type: array
+          items:
+            type: string
+            description: JSON object SignDataParam
+    SignDataParam:
+      type: object
+      required:
+        - schema_crc
+        - cells
+      properties:
+        schema_crc:
+          type: number
+          enum:
+            - 1967913243
+            - 1421182261
+          description: indicates the layout of payload cell that in turn defines domain
+            separation.
+        cells:
+          type: array
+          items:
+            type: string
+            description: Base64 encoded Cell. contains arbitrary data per its TL-B
+              definition.
+        publicKey:
+          type: string
+          description: HEX string without 0x. The public key of key pair from which DApp
+            intends to sign the data. If not set, the wallet is not limited in
+            what keypair to sign. If publicKey parameter is set, the wallet
+            SHOULD to sign by keypair corresponding this public key; If sign by
+            this specified keypair is impossible, the wallet should show an
+            alert and DO NOT ALLOW TO SIGN this data.
+    SignDataResponse:
+      oneOf:
+        - $ref: "#/components/schemas/SignDataResponseSuccess"
+        - $ref: "#/components/schemas/SignDataResponseError"
+    SignDataResponseSuccess:
+      type: object
+      required:
+        - result
+        - id
+      properties:
+        result:
+          type: object
+          required:
+            - signatures
+          properties:
+            signatures:
+              type: array
+              items:
+                type: object
+                required:
+                  - signature
+                  - timestamp
+                properties:
+                  signature:
+                    type: string
+                    description: base64 encoded signature
+                  timestamp:
+                    type: string
+                    description: UNIX timestamp in seconds (UTC) at the moment on creating the
+                      signature.
+        id:
+          type: string
+          description: Increasing identifier that allows to match requests and responses
+    SignDataResponseError:
+      type: object
+      required:
+        - error
+        - id
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              $ref: "#/components/schemas/WalletResponseErrorCode"
+            message:
+              type: string
+    DisconnectRequest:
+      type: object
+      required:
+        - method
+        - id
+      properties:
+        method:
+          type: string
+          enum:
+            - disconnect
+        id:
+          type: string
+          description: Increasing identifier that allows to match requests and responses
+    DisconnectResponse:
+      oneOf:
+        - $ref: "#/components/schemas/DisconnectResponseSuccess"
+        - $ref: "#/components/schemas/DisconnectResponseError"
+    DisconnectResponseSuccess:
+      type: object
+      required:
+        - result
+        - id
+      properties:
+        result:
+          type: object
+        id:
+          type: string
+          description: Increasing identifier that allows to match requests and responses
+    DisconnectResponseError:
+      type: object
+      required:
+        - error
+        - id
+      properties:
+        id:
+          type: string
+          description: Increasing identifier that allows to match requests and responses
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              $ref: "#/components/schemas/WalletResponseErrorCode"
+            message:
+              type: string
+    DisconnectEvent:
+      type: object
+      required:
+        - event
+        - id
+        - payload
+      properties:
+        event:
+          type: string
+          enum:
+            - disconnect
+        id:
+          type: number
+          description: Increasing event counter
+        payload:
+          type: object
+    ManifestData:
+      type: object
+      required:
+        - name
+        - iconUrl
+        - url
+      properties:
+        name:
+          type: string
+          description: Name of the app
+        url:
+          type: string
+          description: URL of the app
+        iconUrl:
+          type: string
+          description: URL of the icon
+        termsOfUseUrl:
+          type: string
+          description: URL of the terms of use
+        privacyPolicyUrl:
+          type: string
+          description: URL of the privacy policy
     Viewer:
       type: object
       required:

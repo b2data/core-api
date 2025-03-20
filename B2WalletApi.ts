@@ -45,6 +45,267 @@ export interface SearchModel {
   sort?: SortModel[];
 }
 
+export type AppMessage = ConnectRequest | AppRequest;
+
+export type AppRequest = SendTransactionRequest | SignDataRequest | DisconnectRequest;
+
+export type WalletMessage = WalletResponse | WalletEvent;
+
+export type WalletResponse = SendTransactionResponse | SignDataResponse | DisconnectResponse;
+
+export type WalletEvent = ConnectEvent | DisconnectEvent;
+
+export interface ConnectRequest {
+  /** Link to the app's tonconnect-manifest.json */
+  manifestUrl: string;
+  /** Data items to share with the app */
+  items: ConnectItem[];
+}
+
+export type ConnectItem = TonAddressItem | TonProofItem;
+
+export interface TonAddressItem {
+  name: "ton_addr";
+}
+
+export interface TonProofItem {
+  name: "ton_proof";
+  payload: string;
+}
+
+export type ConnectEvent = ConnectEventSuccess | ConnectEventError;
+
+export interface ConnectEventSuccess {
+  event: "connect";
+  /** Increasing event counter */
+  id: number;
+  payload: {
+    items: ConnectItemReply[];
+    device: DeviceInfo;
+  };
+}
+
+export type ConnectItemReply = TonAddressItemReply | TonProofItemReply;
+
+/** If the wallet doesn't support the requested ConnectItem (e.g. "ton_proof"), it must send reply with the following ConnectItemReply corresponding to the requested item. with following structure */
+export interface ConnectItemReplyError {
+  /** @example "<requested-connect-item-name>" */
+  name: string;
+  error?: {
+    code: 0 | 400;
+    message?: string;
+  };
+}
+
+export interface TonAddressItemReply {
+  name: "ton_addr";
+  /** TON address raw (`0:<hex>`) */
+  address: string;
+  /** Network global_id */
+  network: "-239" | "-3";
+  /** HEX string without 0x */
+  publicKey: string;
+  /** Base64 (not url safe) encoded stateinit cell for the wallet contract */
+  walletStateInit: string;
+}
+
+export type TonProofItemReply = TonProofItemReplySuccess | ConnectItemReplyError;
+
+export interface TonProofItemReplySuccess {
+  name: "ton_proof";
+  proof: {
+    /** 64-bit unix epoch time of the signing operation (seconds) */
+    timestamp: string;
+    domain: {
+      /** AppDomain Length */
+      lengthBytes: number;
+      /** app domain name (as url part, without encoding) */
+      value: string;
+    };
+    /** base64-encoded signature */
+    signature: string;
+    /** payload from the request */
+    payload: string;
+  };
+}
+
+export interface TonProofItemReplyError {
+  name: "ton_addr";
+  error: {
+    code: ConnectItemErrorCode;
+    message?: string;
+  };
+}
+
+export type ConnectItemErrorCode = 0 | 1 | 2 | 3 | 100 | 300;
+
+export interface DeviceInfo {
+  /** Example iphone, ipad, android, windows, mac, linux */
+  platform: string;
+  /** @example "Tonkeeper" */
+  appName: string;
+  /** @example "2.3.367" */
+  appVersion: string;
+  maxProtocolVersion: number;
+  /** list of supported features and methods in RPC */
+  features: {
+    name: "SendTransaction" | "SignData";
+    /** Maximum number of messages in one `SendTransaction` that the wallet supports */
+    maxMessages?: number;
+  }[];
+}
+
+export interface ConnectEventError {
+  event: "connect_error";
+  /** Increasing event counter */
+  id: number;
+  error: {
+    code: number;
+    message: string;
+  };
+}
+
+export type WalletResponseErrorCode = 0 | 1 | 100 | 300 | 400;
+
+export interface SendTransactionRequest {
+  method: "sendTransaction";
+  /** Increasing identifier that allows to match requests and responses */
+  id: string;
+  params: string[];
+}
+
+export interface SendTransactionParam {
+  /**
+   * unix timestamp. after th moment transaction will be invalid.
+   * @example 1658253458
+   */
+  valid_until: number;
+  /**
+   * The network where DApp intends to send the transaction. If not set, the transaction is sent to the network currently set in the wallet, but this is not safe and DApp should always strive to set the network. If the network parameter is set, but the wallet has a different network set, the wallet should show an alert and DO NOT ALLOW TO SEND this transaction.
+   * @example "-239"
+   */
+  network: "-239" | "-3";
+  /**
+   * The sender address from which DApp intends to send the transaction. If not set, wallet allows user to select the sender's address at the moment of transaction approval. If from parameter is set, the wallet should DO NOT ALLOW user to select the sender's address; If sending from the specified address is impossible, the wallet should show an alert and DO NOT ALLOW TO SEND this transaction.
+   * @example "0:348bcf827469c5fc38541c77fdd91d4e347eac200f6f2d9fd62dc08885f0415f"
+   */
+  from: string;
+  messages: {
+    /**
+     * message destination in user-friendly format
+     * @example "EQBBJBB3HagsujBqVfqeDUPJ0kXjgTPLWPFFffuNXNiJL0aA"
+     */
+    address: string;
+    /**
+     * amount in nanocoins
+     * @example 20000000
+     */
+    amount: string;
+    /** raw once-cell BoC encoded in Base64. */
+    payload?: string;
+    /** raw once-cell BoC encoded in Base64. */
+    stateInit?: string;
+  }[];
+}
+
+export type SendTransactionResponse = SendTransactionResponseSuccess | SendTransactionResponseError;
+
+export interface SendTransactionResponseSuccess {
+  /** @example "<boc>" */
+  result: string;
+  /** Increasing identifier that allows to match requests and responses */
+  id: string;
+}
+
+export interface SendTransactionResponseError {
+  error: {
+    code: WalletResponseErrorCode;
+    message: string;
+  };
+  /** Increasing identifier that allows to match requests and responses */
+  id: string;
+}
+
+export interface SignDataRequest {
+  method: "signData";
+  /** Increasing identifier that allows to match requests and responses */
+  id: string;
+  params: string[];
+}
+
+export interface SignDataParam {
+  /** indicates the layout of payload cell that in turn defines domain separation. */
+  schema_crc: 1967913243 | 1421182261;
+  cells: string[];
+  /** HEX string without 0x. The public key of key pair from which DApp intends to sign the data. If not set, the wallet is not limited in what keypair to sign. If publicKey parameter is set, the wallet SHOULD to sign by keypair corresponding this public key; If sign by this specified keypair is impossible, the wallet should show an alert and DO NOT ALLOW TO SIGN this data. */
+  publicKey?: string;
+}
+
+export type SignDataResponse = SignDataResponseSuccess | SignDataResponseError;
+
+export interface SignDataResponseSuccess {
+  result: {
+    signatures: {
+      /** base64 encoded signature */
+      signature: string;
+      /** UNIX timestamp in seconds (UTC) at the moment on creating the signature. */
+      timestamp: string;
+    }[];
+  };
+  /** Increasing identifier that allows to match requests and responses */
+  id: string;
+}
+
+export interface SignDataResponseError {
+  error: {
+    code: WalletResponseErrorCode;
+    message: string;
+  };
+}
+
+export interface DisconnectRequest {
+  method: "disconnect";
+  /** Increasing identifier that allows to match requests and responses */
+  id: string;
+}
+
+export type DisconnectResponse = DisconnectResponseSuccess | DisconnectResponseError;
+
+export interface DisconnectResponseSuccess {
+  result: object;
+  /** Increasing identifier that allows to match requests and responses */
+  id: string;
+}
+
+export interface DisconnectResponseError {
+  /** Increasing identifier that allows to match requests and responses */
+  id: string;
+  error: {
+    code: WalletResponseErrorCode;
+    message: string;
+  };
+}
+
+export interface DisconnectEvent {
+  event: "disconnect";
+  /** Increasing event counter */
+  id: number;
+  payload: object;
+}
+
+export interface ManifestData {
+  /** Name of the app */
+  name: string;
+  /** URL of the app */
+  url: string;
+  /** URL of the icon */
+  iconUrl: string;
+  /** URL of the terms of use */
+  termsOfUseUrl?: string;
+  /** URL of the privacy policy */
+  privacyPolicyUrl?: string;
+}
+
 export interface Viewer {
   /** Telegram ID */
   id: number;
@@ -359,6 +620,60 @@ export class B2WalletApi<SecurityDataType extends unknown> {
         query: query,
         secure: true,
         format: "json",
+        ...params,
+      }),
+  };
+  tonConnect = {
+    /**
+     * No description
+     *
+     * @tags TonConnect
+     * @name SubscribeBridgeEvents
+     * @summary Subscribe on TonConnect bridge events
+     * @request GET:/tonconnect/bridge/events
+     */
+    subscribeBridgeEvents: (
+      query: {
+        /** Client ID */
+        client_id: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<void, any>({
+        path: `/tonconnect/bridge/events`,
+        method: "GET",
+        query: query,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TonConnect
+     * @name SendBridgeMessage
+     * @summary Send message to TonConnect bridge
+     * @request POST:/tonconnect/bridge/message
+     */
+    sendBridgeMessage: (
+      query: {
+        /** Client ID (hex_str) */
+        client_id: string;
+        /** To Client ID (hex_str) */
+        to: string;
+        /** Time to live (seconds). Bridges should support at least 300 seconds TTL. */
+        ttl: number;
+        /** The topic [optional] query parameter can be used by the bridge to deliver the push notification to the wallet. If the parameter is given, it must correspond to the RPC method called inside the encrypted message. */
+        topic?: string;
+      },
+      data: any,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<string, any>({
+        path: `/tonconnect/bridge/message`,
+        method: "POST",
+        query: query,
+        body: data,
+        type: ContentType.Text,
         ...params,
       }),
   };
