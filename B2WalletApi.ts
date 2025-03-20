@@ -115,7 +115,7 @@ export interface TonProofItemReplySuccess {
   name: "ton_proof";
   proof: {
     /** 64-bit unix epoch time of the signing operation (seconds) */
-    timestamp: string;
+    timestamp: number;
     domain: {
       /** AppDomain Length */
       lengthBytes: number;

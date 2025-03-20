@@ -359,7 +359,7 @@ components:
             - payload
           properties:
             timestamp:
-              type: string
+              type: number
               description: 64-bit unix epoch time of the signing operation (seconds)
             domain:
               type: object
