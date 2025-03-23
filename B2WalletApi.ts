@@ -639,7 +639,7 @@ export class B2WalletApi<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<void, any>({
+      this.http.request<string, any>({
         path: `/tonconnect/bridge/events`,
         method: "GET",
         query: query,
@@ -665,15 +665,24 @@ export class B2WalletApi<SecurityDataType extends unknown> {
         /** The topic [optional] query parameter can be used by the bridge to deliver the push notification to the wallet. If the parameter is given, it must correspond to the RPC method called inside the encrypted message. */
         topic?: string;
       },
-      data: any,
+      data: string,
       params: RequestParams = {},
     ) =>
-      this.http.request<string, any>({
+      this.http.request<
+        {
+          message?: string;
+          statusCode?: number;
+        },
+        {
+          error?: string;
+        }
+      >({
         path: `/tonconnect/bridge/message`,
         method: "POST",
         query: query,
         body: data,
         type: ContentType.Text,
+        format: "json",
         ...params,
       }),
   };

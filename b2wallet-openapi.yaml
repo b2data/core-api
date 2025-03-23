@@ -73,7 +73,8 @@ paths:
           description: Successful operation
           content:
             text/event-stream:
-              type: string
+              schema:
+                type: string
   /tonconnect/bridge/message:
     post:
       tags:
@@ -110,17 +111,31 @@ paths:
             type: string
       requestBody:
         content:
-          "text/plain:":
-            type: string
-            example: base64_encoded_message
+          text/plain:
+            schema:
+              type: string
+              example: base64_encoded_message
       responses:
         "200":
           description: Successful operation
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                example: base64_encoded_message
+                type: object
+                properties:
+                  message:
+                    type: string
+                  statusCode:
+                    type: number
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
 components:
   schemas:
     ActivityType:
