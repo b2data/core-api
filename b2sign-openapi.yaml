@@ -1,0 +1,1186 @@
+openapi: 3.0.0
+info:
+  title: REST API for B2Sign
+  version: 1.0.0
+servers:
+  - url: https://localhost:8088
+  - url: https://sign.b2p.space/api
+tags:
+  - name: Document
+paths:
+  /auth/start:
+    post:
+      tags:
+        - Auth
+      summary: Start authentication process
+      operationId: startAuth
+      requestBody:
+        $ref: "#/components/requestBodies/EmptyBody"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - proof
+                properties:
+                  proof:
+                    type: string
+  /auth/verify:
+    post:
+      tags:
+        - Auth
+      summary: Verify authentication wallet
+      operationId: verifyAuth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - proof
+                - account
+              properties:
+                spaceId:
+                  type: string
+                  description: Selected Space ID
+                proof:
+                  type: object
+                  required:
+                    - payload
+                    - signature
+                    - timestamp
+                    - domain
+                  properties:
+                    payload:
+                      type: string
+                      description: TON Connect payload
+                    signature:
+                      type: string
+                      description: TON Connect signature
+                    timestamp:
+                      type: number
+                      description: Timestamp of authentication
+                    domain:
+                      type: object
+                      required:
+                        - lengthBytes
+                        - value
+                      properties:
+                        lengthBytes:
+                          type: number
+                        value:
+                          type: string
+                account:
+                  type: object
+                  required:
+                    - address
+                    - network
+                    - publicKey
+                    - walletStateInit
+                  properties:
+                    address:
+                      type: string
+                      description: Wallet Address
+                      example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+                    network:
+                      type: string
+                      description: Blockchain chain
+                    publicKey:
+                      type: string
+                      description: Wallet Public Key
+                    walletStateInit:
+                      type: string
+                      description: Wallet Public Key
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - accessToken
+                  - refreshToken
+                  - profile
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                  profile:
+                    $ref: "#/components/schemas/User"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                errorCode: auth:404
+                message: The proof has not found
+  /auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Refresh Access Token by Refresh token
+      operationId: refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - accessToken
+                - refreshToken
+              properties:
+                spaceId:
+                  type: string
+                  description: Selected Space ID
+                accessToken:
+                  type: string
+                refreshToken:
+                  type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - accessToken
+                  - refreshToken
+                  - profile
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+                  profile:
+                    $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+  /auth/profile:
+    get:
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      summary: Get Profile
+      operationId: getProfile
+      responses:
+        "200":
+          $ref: "#/components/responses/UserData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+    patch:
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      summary: Update Profile
+      operationId: updateProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  description: First Name
+                lastName:
+                  type: string
+                  description: Last Name
+                middleName:
+                  type: string
+                  description: Middle Name
+                avatar:
+                  type: string
+                  description: Avatar
+      responses:
+        "200":
+          $ref: "#/components/responses/UserData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/UserNotFound"
+  /providers/my:
+    get:
+      tags:
+        - Providers
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+      summary: Get provider data
+      operationId: getProvider
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderData"
+        "404":
+          $ref: "#/components/responses/ProviderNotFound"
+    patch:
+      tags:
+        - Providers
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+      summary: Update provider data
+      operationId: updateProvider
+      requestBody:
+        $ref: "#/components/requestBodies/ProviderRequestBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "404":
+          $ref: "#/components/responses/ProviderNotFound"
+    delete:
+      tags:
+        - Providers
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+      summary: Delete provider
+      operationId: deleteProvider
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderData"
+        "404":
+          $ref: "#/components/responses/ProviderNotFound"
+  /providers/register:
+    post:
+      tags:
+        - Providers
+        - Available Public
+      summary: Register new provider
+      operationId: registerProvider
+      requestBody:
+        $ref: "#/components/requestBodies/RegisterProviderRequestBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderWithSecretData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  /providers/search:
+    post:
+      tags:
+        - Providers
+      security:
+        - BearerAuth: []
+      summary: Search providers
+      operationId: searchProviders
+      description: Required `Admin` access
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProvidersBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProvidersData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/providers/{id}/block":
+    post:
+      tags:
+        - Providers
+      security:
+        - BearerAuth: []
+      summary: Block provider
+      operationId: blockProvider
+      description: Required `Admin` access
+      parameters:
+        - $ref: "#/components/parameters/providerIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EmptyBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProviderNotFound"
+  "/providers/{id}/unblock":
+    post:
+      tags:
+        - Providers
+      security:
+        - BearerAuth: []
+      summary: Unblock provider
+      operationId: unblockProvider
+      description: Required `Admin` access
+      parameters:
+        - $ref: "#/components/parameters/providerIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EmptyBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProviderData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProviderNotFound"
+  /documents:
+    post:
+      summary: Create a new document
+      operationId: createDocument
+      tags:
+        - Document
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateDocumentBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/DocumentData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /documents/search:
+    post:
+      summary: Search documents
+      operationId: searchDocuments
+      tags:
+        - Document
+        - Available Public
+      requestBody:
+        $ref: "#/components/requestBodies/SearchDocumentsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchDocumentsData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+  "/documents/{key}/public":
+    get:
+      summary: Get a public document
+      operationId: getPublicDocument
+      tags:
+        - Document
+        - Available Public
+      parameters:
+        - $ref: "#/components/parameters/documentKeyParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentPublicData"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/{key}":
+    get:
+      summary: Get a document
+      operationId: getDocument
+      tags:
+        - Document
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      parameters:
+        - $ref: "#/components/parameters/documentKeyParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+    put:
+      summary: Update a document
+      operationId: updateDocument
+      tags:
+        - Document
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      parameters:
+        - $ref: "#/components/parameters/documentKeyParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditDocumentBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+    delete:
+      summary: Delete a document
+      operationId: deleteDocument
+      tags:
+        - Document
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      parameters:
+        - $ref: "#/components/parameters/documentKeyParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/{key}/access":
+    post:
+      summary: Grant access to a document
+      operationId: grantDocumentAccess
+      tags:
+        - Document
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      parameters:
+        - $ref: "#/components/parameters/documentKeyParam"
+      requestBody:
+        $ref: "#/components/requestBodies/GrantDocumentAccessBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentWithData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/{key}/access/{userId}":
+    delete:
+      summary: Revoke access to a document
+      operationId: revokeDocumentAccess
+      tags:
+        - Document
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      parameters:
+        - $ref: "#/components/parameters/documentKeyParam"
+        - name: userId
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/{key}/sign":
+    post:
+      summary: Sign a document
+      operationId: signDocument
+      tags:
+        - Document
+        - Available Providers
+      security:
+        - ProviderClientId: []
+          ProviderClientSecret: []
+          ProviderUserId: []
+      parameters:
+        - $ref: "#/components/parameters/documentKeyParam"
+      requestBody:
+        $ref: "#/components/requestBodies/SignDocumentBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentSignatureData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/{key}/sign-check":
+    post:
+      summary: Check a document signature
+      operationId: checkDocumentSignature
+      tags:
+        - Document
+        - Available Public
+      parameters:
+        - $ref: "#/components/parameters/documentKeyParam"
+      requestBody:
+        $ref: "#/components/requestBodies/CheckDocumentSignatureBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentSignatureCheckData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authorization using Auth routes
+    ProviderClientId:
+      type: apiKey
+      name: client-id
+      in: header
+      description: Authorization for providers requests
+    ProviderClientSecret:
+      type: apiKey
+      name: client-secret
+      in: header
+      description: Authorization for providers requests
+    ProviderUserId:
+      type: apiKey
+      name: user-id
+      in: header
+      description: Authorization for providers requests
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - message
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+    SortModel:
+      type: object
+      required:
+        - field
+      properties:
+        field:
+          type: string
+          description: The field for sorting
+        sort:
+          type: string
+          nullable: true
+          enum:
+            - asc
+            - desc
+          description: The sorting order
+    SearchModel:
+      type: object
+      properties:
+        limit:
+          type: number
+          description: Number of return items
+        offset:
+          type: number
+          description: Number of skip items
+        sort:
+          type: array
+          items:
+            $ref: "#/components/schemas/SortModel"
+    User:
+      type: object
+      required:
+        - id
+        - firstName
+      properties:
+        id:
+          type: string
+          description: Wallet Address
+          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+        firstName:
+          type: string
+          description: First Name
+        lastName:
+          type: string
+          description: Last Name
+        middleName:
+          type: string
+          description: Middle Name
+        avatar:
+          type: string
+          description: Avatar
+    Provider:
+      type: object
+      required:
+        - id
+        - name
+        - address
+        - callback
+        - blocked
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Provider ID
+        name:
+          type: string
+          description: Provider Name
+        address:
+          type: string
+          description: Provider URL Address
+        callback:
+          type: string
+          description: Provider Callback Address
+        blocked:
+          type: boolean
+          description: If `true` provider is blocked
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+    ProviderWithSecret:
+      type: object
+      required:
+        - id
+        - secret
+        - name
+        - address
+        - callback
+        - blocked
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Provider ID
+        secret:
+          type: string
+          description: Provider Secret for API requests
+        name:
+          type: string
+          description: Provider Name
+        address:
+          type: string
+          description: Provider URL Address
+        callback:
+          type: string
+          description: Provider Callback Address
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation Date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last Updating Date
+        deletedAt:
+          type: string
+          format: date-time
+          description: Deleted Date
+    DocumentAccess:
+      type: string
+      enum:
+        - read
+        - sign
+        - full
+    DocumentData:
+      type: object
+      required:
+        - key
+        - providerId
+        - createdBy
+        - mimeType
+        - size
+        - hash
+        - signOrder
+        - isSigned
+        - createdAt
+        - updatedAt
+      properties:
+        key:
+          type: string
+        providerId:
+          type: string
+        createdBy:
+          type: string
+        mimeType:
+          type: string
+        size:
+          type: number
+        hash:
+          type: string
+        signOrder:
+          type: number
+        isSigned:
+          type: boolean
+        bagId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+    DocumentSignatureData:
+      type: object
+      required:
+        - documentKey
+        - createdBy
+        - order
+        - signedBy
+      properties:
+        documentKey:
+          type: string
+        createdBy:
+          type: string
+        order:
+          type: number
+        signedBy:
+          type: string
+        signedAt:
+          type: string
+          format: date-time
+        signature:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    DocumentAccessData:
+      type: object
+      required:
+        - documentKey
+        - userId
+        - access
+      properties:
+        documentKey:
+          type: string
+        userId:
+          type: string
+        access:
+          $ref: "#/components/schemas/DocumentAccess"
+    DocumentWithData:
+      allOf:
+        - $ref: "#/components/schemas/DocumentData"
+        - type: object
+          properties:
+            signatures:
+              type: array
+              items:
+                $ref: "#/components/schemas/DocumentSignatureData"
+            access:
+              type: array
+              items:
+                $ref: "#/components/schemas/DocumentAccessData"
+    DocumentPublicData:
+      type: object
+      required:
+        - key
+        - size
+        - isSigned
+        - hash
+        - createdBy
+        - signatures
+      properties:
+        key:
+          type: string
+        size:
+          type: number
+        isSigned:
+          type: boolean
+        hash:
+          type: string
+        createdBy:
+          type: string
+        signatures:
+          type: array
+          items:
+            type: object
+            required:
+              - signedBy
+            properties:
+              signedBy:
+                type: string
+              signedAt:
+                type: string
+                format: date-time
+              signature:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+  requestBodies:
+    EmptyBody:
+      content:
+        application/json:
+          schema:
+            type: object
+    SearchProvidersBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              isBlocked:
+                type: boolean
+                description: Filter by blocked status
+              limit:
+                type: number
+                description: Number of return items
+              offset:
+                type: number
+                description: Number of skip items
+              sort:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SortModel"
+    RegisterProviderRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - address
+              - callback
+              - wallet
+            properties:
+              name:
+                type: string
+                description: Provider Name
+              address:
+                type: string
+                description: Provider URL Address
+              callback:
+                type: string
+                description: Provider Callback Address
+              wallet:
+                type: string
+                description: TON Address who making request
+    ProviderRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - address
+              - callback
+            properties:
+              name:
+                type: string
+                description: Provider Name
+              address:
+                type: string
+                description: Provider URL Address
+              callback:
+                type: string
+                description: Provider Callback Address
+    SearchDocumentsBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  searchTerm:
+                    type: string
+                  providers:
+                    type: array
+                    items:
+                      type: string
+                  creator:
+                    type: array
+                    items:
+                      type: string
+                  signer:
+                    type: array
+                    items:
+                      type: string
+                  isSigned:
+                    type: boolean
+    CreateDocumentBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - key
+              - mimeType
+              - size
+              - hash
+            properties:
+              key:
+                type: string
+              mimeType:
+                type: string
+              size:
+                type: number
+              hash:
+                type: string
+              bagId:
+                type: string
+              access:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - userId
+                    - access
+                  properties:
+                    userId:
+                      type: string
+                    access:
+                      $ref: "#/components/schemas/DocumentAccess"
+              signatures:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - signedBy
+                    - order
+                  properties:
+                    signedBy:
+                      type: string
+                    order:
+                      type: number
+    EditDocumentBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              bagId:
+                type: string
+    GrantDocumentAccessBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - userId
+              - access
+            properties:
+              userId:
+                type: string
+              access:
+                $ref: "#/components/schemas/DocumentAccess"
+    SignDocumentBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - signature
+              - timestamp
+            properties:
+              signature:
+                type: string
+              timestamp:
+                type: string
+    CheckDocumentSignatureBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - signedBy
+              - signature
+              - timestamp
+            properties:
+              signedBy:
+                type: string
+              signature:
+                type: string
+              timestamp:
+                type: string
+  responses:
+    InvalidData:
+      description: Invalid request data
+    Unauthorized:
+      description: Unauthorized
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: api:403
+            message: You don't have access to this method
+    UserData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/User"
+    UserNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: user:404
+            message: User does not exist
+    ProviderData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Provider"
+    ProviderWithSecretData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProviderWithSecret"
+    SearchProvidersData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Provider"
+    ProviderNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: provider:404
+            message: Provider not found
+    DocumentNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: document:404
+            message: Document not found
+    DocumentData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DocumentData"
+    DocumentWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DocumentWithData"
+    DocumentPublicData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DocumentPublicData"
+    SearchDocumentsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DocumentPublicData"
+    DocumentSignatureData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DocumentSignatureData"
+    DocumentSignatureCheckData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - isValid
+            properties:
+              isValid:
+                type: boolean
+              signedAt:
+                type: string
+                format: date-time
+  parameters:
+    providerIdParam:
+      in: path
+      name: id
+      description: Provider ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    documentKeyParam:
+      name: key
+      in: path
+      description: Document key
+      required: true
+      schema:
+        type: string

@@ -1,5 +1,6 @@
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -103,28 +104,29 @@ export interface ProviderWithSecret {
 }
 
 /** Activity Type */
-export type ActivityType =
-  | "tagCreated"
-  | "tagUpdated"
-  | "tagDeleted"
-  | "folderCreated"
-  | "folderUpdated"
-  | "folderMoved"
-  | "folderDeleted"
-  | "folderFilterCreated"
-  | "folderFilterUpdated"
-  | "folderFilterMoved"
-  | "folderFilterDeleted"
-  | "wordCreated"
-  | "wordDeleted"
-  | "wordTagsUpdated"
-  | "wordVariantCreated"
-  | "wordVariantUpdated"
-  | "wordVariantDeleted"
-  | "wordVariantVoteCreated"
-  | "wordVariantVoteDeleted"
-  | "wordReferenceCreated"
-  | "wordReferenceDeleted";
+export enum ActivityType {
+  TagCreated = "tagCreated",
+  TagUpdated = "tagUpdated",
+  TagDeleted = "tagDeleted",
+  FolderCreated = "folderCreated",
+  FolderUpdated = "folderUpdated",
+  FolderMoved = "folderMoved",
+  FolderDeleted = "folderDeleted",
+  FolderFilterCreated = "folderFilterCreated",
+  FolderFilterUpdated = "folderFilterUpdated",
+  FolderFilterMoved = "folderFilterMoved",
+  FolderFilterDeleted = "folderFilterDeleted",
+  WordCreated = "wordCreated",
+  WordDeleted = "wordDeleted",
+  WordTagsUpdated = "wordTagsUpdated",
+  WordVariantCreated = "wordVariantCreated",
+  WordVariantUpdated = "wordVariantUpdated",
+  WordVariantDeleted = "wordVariantDeleted",
+  WordVariantVoteCreated = "wordVariantVoteCreated",
+  WordVariantVoteDeleted = "wordVariantVoteDeleted",
+  WordReferenceCreated = "wordReferenceCreated",
+  WordReferenceDeleted = "wordReferenceDeleted",
+}
 
 export interface ActivityLog {
   /**
@@ -173,10 +175,19 @@ export interface AdminAccess {
 }
 
 /** Complaint Status */
-export type ComplaintStatus = "open" | "accepted" | "declined" | "closed";
+export enum ComplaintStatus {
+  Open = "open",
+  Accepted = "accepted",
+  Declined = "declined",
+  Closed = "closed",
+}
 
 /** Complaint Type */
-export type ComplaintType = "item" | "variant" | "reference";
+export enum ComplaintType {
+  Item = "item",
+  Variant = "variant",
+  Reference = "reference",
+}
 
 export interface Complaint {
   /**
@@ -296,7 +307,10 @@ export interface Folder {
 }
 
 /** Formula operator */
-export type FolderFormulaOperator = "equal" | "not_equal";
+export enum FolderFormulaOperator {
+  Equal = "equal",
+  NotEqual = "not_equal",
+}
 
 export interface FolderFilter {
   /**
@@ -655,7 +669,10 @@ export interface WordVariant {
 }
 
 /** Word Reference Type */
-export type WordReferenceType = "synonym" | "translate";
+export enum WordReferenceType {
+  Synonym = "synonym",
+  Translate = "translate",
+}
 
 export interface WordReference {
   /**

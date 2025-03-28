@@ -1,5 +1,6 @@
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -10,7 +11,9 @@
  */
 
 /** Activity Type */
-export type ActivityType = "Login";
+export enum ActivityType {
+  Login = "Login",
+}
 
 export interface ActivityLog {
   /** @format uuid */
@@ -137,7 +140,14 @@ export interface TonProofItemReplyError {
   };
 }
 
-export type ConnectItemErrorCode = 0 | 1 | 2 | 3 | 100 | 300;
+export enum ConnectItemErrorCode {
+  Value0 = 0,
+  Value1 = 1,
+  Value2 = 2,
+  Value3 = 3,
+  Value100 = 100,
+  Value300 = 300,
+}
 
 export interface DeviceInfo {
   /** Example iphone, ipad, android, windows, mac, linux */
@@ -165,7 +175,13 @@ export interface ConnectEventError {
   };
 }
 
-export type WalletResponseErrorCode = 0 | 1 | 100 | 300 | 400;
+export enum WalletResponseErrorCode {
+  Value0 = 0,
+  Value1 = 1,
+  Value100 = 100,
+  Value300 = 300,
+  Value400 = 400,
+}
 
 export interface SendTransactionRequest {
   method: "sendTransaction";

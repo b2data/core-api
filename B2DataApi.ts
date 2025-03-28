@@ -1,5 +1,6 @@
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -69,7 +70,10 @@ export interface ActivityLog {
   userData?: User;
 }
 
-export type B2CounterpartyType = "personality" | "organization";
+export enum B2CounterpartyType {
+  Personality = "personality",
+  Organization = "organization",
+}
 
 export interface B2CounterpartyWorkPlace {
   name: string;
@@ -112,7 +116,13 @@ export type B2DocData = DocumentDataCommon & {
   config?: B2DocConfig;
 };
 
-export type B2DocBlockType = "text" | "heading" | "task" | "actors" | "sign";
+export enum B2DocBlockType {
+  Text = "text",
+  Heading = "heading",
+  Task = "task",
+  Actors = "actors",
+  Sign = "sign",
+}
 
 export interface B2DocBlockBase {
   id: string;
@@ -258,15 +268,16 @@ export type B2DocStructureWithData = B2DocStructure & {
   variants: B2DocBlockVariantWithData[];
 };
 
-export type B2FormFieldType =
-  | "info"
-  | "text"
-  | "number"
-  | "date"
-  | "select"
-  | "dictionary"
-  | "checkbox"
-  | "attachments";
+export enum B2FormFieldType {
+  Info = "info",
+  Text = "text",
+  Number = "number",
+  Date = "date",
+  Select = "select",
+  Dictionary = "dictionary",
+  Checkbox = "checkbox",
+  Attachments = "attachments",
+}
 
 export interface B2FormFieldLayout {
   x: number;
@@ -377,7 +388,12 @@ export interface B2ProductConfigRow {
   columns?: Record<string, string>;
 }
 
-export type B2ProductBatchStatus = "inStorage" | "sold" | "dispose" | "deleted";
+export enum B2ProductBatchStatus {
+  InStorage = "inStorage",
+  Sold = "sold",
+  Dispose = "dispose",
+  Deleted = "deleted",
+}
 
 export interface B2ProductBatchInfo {
   id: string;
@@ -423,7 +439,11 @@ export type B2ProductBatchWithData = B2ProductBatch & {
 
 export type B2StorageWithData = DocumentDataCommon;
 
-export type B2StorageOperationType = "incoming" | "outgoing" | "movement";
+export enum B2StorageOperationType {
+  Incoming = "incoming",
+  Outgoing = "outgoing",
+  Movement = "movement",
+}
 
 export interface B2StorageBalance {
   id: string;
@@ -482,19 +502,24 @@ export type B2Table = DocumentDataCommon & {
   config?: B2TableConfig;
 };
 
-export type B2TableColType =
-  | "string"
-  | "number"
-  | "date"
-  | "dateTime"
-  | "boolean"
-  | "select"
-  | "selectRef"
-  | "dictionary"
-  | "photos"
-  | "logistic";
+export enum B2TableColType {
+  String = "string",
+  Number = "number",
+  Date = "date",
+  DateTime = "dateTime",
+  Boolean = "boolean",
+  Select = "select",
+  SelectRef = "selectRef",
+  Dictionary = "dictionary",
+  Photos = "photos",
+  Logistic = "logistic",
+}
 
-export type B2TableColAlignment = "left" | "right" | "center";
+export enum B2TableColAlignment {
+  Left = "left",
+  Right = "right",
+  Center = "center",
+}
 
 /** Represents a column definition in a B2Table. */
 export interface B2TableColumn {
@@ -601,15 +626,41 @@ export interface B2TableReferenceColumn {
   refColumn?: string;
 }
 
-export type TaskType = "simple" | "fillIdt" | "receiveIdt" | "giveOutIdt" | "factoryTask";
+export enum TaskType {
+  Simple = "simple",
+  FillIdt = "fillIdt",
+  ReceiveIdt = "receiveIdt",
+  GiveOutIdt = "giveOutIdt",
+  FactoryTask = "factoryTask",
+}
 
-export type TaskSource = "user" | "b2process" | "b2market" | "b2doc";
+export enum TaskSource {
+  User = "user",
+  B2Process = "b2process",
+  B2Market = "b2market",
+  B2Doc = "b2doc",
+}
 
-export type TaskStatus = "new" | "todo" | "progress" | "blocked" | "review" | "done" | "discard";
+export enum TaskStatus {
+  New = "new",
+  Todo = "todo",
+  Progress = "progress",
+  Blocked = "blocked",
+  Review = "review",
+  Done = "done",
+  Discard = "discard",
+}
 
-export type TaskPriority = "low" | "medium" | "high";
+export enum TaskPriority {
+  Low = "low",
+  Medium = "medium",
+  High = "high",
+}
 
-export type TaskArtefactType = "product" | "batch";
+export enum TaskArtefactType {
+  Product = "product",
+  Batch = "batch",
+}
 
 export interface TaskParticipant {
   userId?: string;
@@ -877,18 +928,22 @@ export interface DocumentBase {
   signedVersion?: DocumentVersionCacheData | null;
 }
 
-export type DocumentType =
-  | "file"
-  | "b2doc"
-  | "b2table"
-  | "b2process"
-  | "b2map"
-  | "b2product"
-  | "b2storage"
-  | "b2counterparty"
-  | "b2task";
+export enum DocumentType {
+  File = "file",
+  B2Doc = "b2doc",
+  B2Table = "b2table",
+  B2Process = "b2process",
+  B2Map = "b2map",
+  B2Product = "b2product",
+  B2Storage = "b2storage",
+  B2Counterparty = "b2counterparty",
+  B2Task = "b2task",
+}
 
-export type SystemType = "product" | "storage";
+export enum SystemType {
+  Product = "product",
+  Storage = "storage",
+}
 
 export interface SystemData {
   id: string;
@@ -1006,24 +1061,29 @@ export type GroupTreeItem = GroupBase & {
   hasAccess?: boolean | null;
 };
 
-export type NotificationType =
-  | "inviteToSpaceAsAdmin"
-  | "excludeFromSpaceAsAdmin"
-  | "inviteToGroup"
-  | "toggleAdminGroup"
-  | "excludeFromGroup"
-  | "addedToFolder"
-  | "modifyAccessInFolder"
-  | "excludeFromFolder"
-  | "addedToDocument"
-  | "modifyAccessInDocument"
-  | "excludeFromDocument"
-  | "addedToModule"
-  | "modifyAccessInModule"
-  | "excludeFromModule"
-  | "newTask";
+export enum NotificationType {
+  InviteToSpaceAsAdmin = "inviteToSpaceAsAdmin",
+  ExcludeFromSpaceAsAdmin = "excludeFromSpaceAsAdmin",
+  InviteToGroup = "inviteToGroup",
+  ToggleAdminGroup = "toggleAdminGroup",
+  ExcludeFromGroup = "excludeFromGroup",
+  AddedToFolder = "addedToFolder",
+  ModifyAccessInFolder = "modifyAccessInFolder",
+  ExcludeFromFolder = "excludeFromFolder",
+  AddedToDocument = "addedToDocument",
+  ModifyAccessInDocument = "modifyAccessInDocument",
+  ExcludeFromDocument = "excludeFromDocument",
+  AddedToModule = "addedToModule",
+  ModifyAccessInModule = "modifyAccessInModule",
+  ExcludeFromModule = "excludeFromModule",
+  NewTask = "newTask",
+}
 
-export type NotificationCallbackAction = "accept" | "deny" | "error";
+export enum NotificationCallbackAction {
+  Accept = "accept",
+  Deny = "deny",
+  Error = "error",
+}
 
 export interface BaseNotification {
   id: string;
@@ -1182,9 +1242,21 @@ export type NotificationWithData = Notification & {
   userData: User;
 };
 
-export type PermissionAccess = "read" | "write" | "sign";
+export enum PermissionAccess {
+  Read = "read",
+  Write = "write",
+  Sign = "sign",
+}
 
-export type PermissionType = "folder" | "document" | "sales" | "factory" | "resources" | "products" | "storages";
+export enum PermissionType {
+  Folder = "folder",
+  Document = "document",
+  Sales = "sales",
+  Factory = "factory",
+  Resources = "resources",
+  Products = "products",
+  Storages = "storages",
+}
 
 export interface Permission {
   id: string;
@@ -1227,9 +1299,22 @@ export type AssigneePermissions = PermissionSearchOption & {
   permissions: number;
 };
 
-export type ResourceStatus = "draft" | "inUse" | "archive";
+export enum ResourceStatus {
+  Draft = "draft",
+  InUse = "inUse",
+  Archive = "archive",
+}
 
-export type ResourceType = "idt" | "material" | "mechanism" | "worker" | "animal" | "plant" | "fossil" | "workCenter";
+export enum ResourceType {
+  Idt = "idt",
+  Material = "material",
+  Mechanism = "mechanism",
+  Worker = "worker",
+  Animal = "animal",
+  Plant = "plant",
+  Fossil = "fossil",
+  WorkCenter = "workCenter",
+}
 
 export interface ResourceInfo {
   id: string;
@@ -1255,7 +1340,14 @@ export type Resource = ResourceInfo & {
   deletedAt?: string | null;
 };
 
-export type SaleOrderStatus = "created" | "processing" | "completed" | "paid" | "failed" | "cancelled";
+export enum SaleOrderStatus {
+  Created = "created",
+  Processing = "processing",
+  Completed = "completed",
+  Paid = "paid",
+  Failed = "failed",
+  Cancelled = "cancelled",
+}
 
 export interface SaleOrder {
   id: string;
@@ -1272,17 +1364,18 @@ export interface SaleOrder {
   updatedAt: string;
 }
 
-export type SaleOrderPositionStatus =
-  | "created"
-  | "confirmed"
-  | "production"
-  | "delivery"
-  | "cancelling"
-  | "cancelled"
-  | "completed"
-  | "dispute"
-  | "returned"
-  | "failed";
+export enum SaleOrderPositionStatus {
+  Created = "created",
+  Confirmed = "confirmed",
+  Production = "production",
+  Delivery = "delivery",
+  Cancelling = "cancelling",
+  Cancelled = "cancelled",
+  Completed = "completed",
+  Dispute = "dispute",
+  Returned = "returned",
+  Failed = "failed",
+}
 
 export interface SaleOrderPosition {
   id: string;

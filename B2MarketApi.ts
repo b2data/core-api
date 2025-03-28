@@ -1,5 +1,6 @@
 /* eslint-disable */
 /* tslint:disable */
+// @ts-nocheck
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -367,7 +368,10 @@ export type Folder = FolderBase & {
 };
 
 /** Formula operator */
-export type FolderFormulaOperator = "equal" | "not_equal";
+export enum FolderFormulaOperator {
+  Equal = "equal",
+  NotEqual = "not_equal",
+}
 
 export interface FolderFilter {
   /**
@@ -424,23 +428,31 @@ export type FolderFullData = Folder & {
 };
 
 /** Order status */
-export type OrderStatus = "created" | "processing" | "paid" | "failed" | "cancelled" | "completed";
+export enum OrderStatus {
+  Created = "created",
+  Processing = "processing",
+  Paid = "paid",
+  Failed = "failed",
+  Cancelled = "cancelled",
+  Completed = "completed",
+}
 
 /** Order Position status */
-export type OrderPositionStatus =
-  | "created"
-  | "paid"
-  | "confirmed"
-  | "declined"
-  | "production"
-  | "deliveryReady"
-  | "delivery"
-  | "cancelling"
-  | "cancelled"
-  | "completed"
-  | "dispute"
-  | "returned"
-  | "failed";
+export enum OrderPositionStatus {
+  Created = "created",
+  Paid = "paid",
+  Confirmed = "confirmed",
+  Declined = "declined",
+  Production = "production",
+  DeliveryReady = "deliveryReady",
+  Delivery = "delivery",
+  Cancelling = "cancelling",
+  Cancelled = "cancelled",
+  Completed = "completed",
+  Dispute = "dispute",
+  Returned = "returned",
+  Failed = "failed",
+}
 
 export interface OrderBase {
   /**
@@ -1295,20 +1307,35 @@ export interface Tag {
   updatedAt: string;
 }
 
-export type TaskType =
-  | "productItemReview"
-  | "simpleTask"
-  | "fillIdt"
-  | "pickUpIdt"
-  | "receiveIdt"
-  | "giveOutIdt"
-  | "deliverIdt";
+export enum TaskType {
+  ProductItemReview = "productItemReview",
+  SimpleTask = "simpleTask",
+  FillIdt = "fillIdt",
+  PickUpIdt = "pickUpIdt",
+  ReceiveIdt = "receiveIdt",
+  GiveOutIdt = "giveOutIdt",
+  DeliverIdt = "deliverIdt",
+}
 
-export type TaskStatus = "new" | "todo" | "progress" | "blocked" | "review" | "done" | "discard";
+export enum TaskStatus {
+  New = "new",
+  Todo = "todo",
+  Progress = "progress",
+  Blocked = "blocked",
+  Review = "review",
+  Done = "done",
+  Discard = "discard",
+}
 
-export type TaskPriority = "low" | "medium" | "high";
+export enum TaskPriority {
+  Low = "low",
+  Medium = "medium",
+  High = "high",
+}
 
-export type TaskArtefactType = "product";
+export enum TaskArtefactType {
+  Product = "product",
+}
 
 export interface TaskIdtWithIdp {
   id: string;

@@ -1,18 +1,19 @@
 {
   "name": "@b2data/core-api",
   "description": "Core API interfaces",
-  "version": "1.0.87",
+  "version": "1.0.88",
   "scripts": {
     "build": "tsc",
-    "gen": "npm run gen:auth && npm run gen:providers && npm run gen:apps && npm run gen:b2dictionary && npm run gen:b2market && npm run gen:b2data && npm run gen:b2payment && npm run gen:b2wallet",
-    "gen:auth": "swagger-typescript-api -p auth-openapi.yaml ${npm_package_config_gen} --api-class-name AuthApi -n AuthApi.ts",
-    "gen:providers": "swagger-typescript-api -p providers-openapi.yaml ${npm_package_config_gen} --api-class-name ProvidersApi -n ProvidersApi.ts",
-    "gen:apps": "swagger-typescript-api -p apps-openapi.yaml ${npm_package_config_gen} --api-class-name AppsApi -n AppsApi.ts",
-    "gen:b2dictionary": "swagger-typescript-api -p b2dictionary-openapi.yaml ${npm_package_config_gen} --api-class-name B2DictionaryApi -n B2DictionaryApi.ts",
-    "gen:b2market": "swagger-typescript-api -p b2market-openapi.yaml ${npm_package_config_gen} --api-class-name B2MarketApi -n B2MarketApi.ts",
-    "gen:b2data": "swagger-typescript-api -p b2data-openapi.yaml ${npm_package_config_gen} --api-class-name B2DataApi -n B2DataApi.ts",
-    "gen:b2payment": "swagger-typescript-api -p b2payment-openapi.yaml ${npm_package_config_gen} --api-class-name B2PaymentApi -n B2PaymentApi.ts",
-    "gen:b2wallet": "swagger-typescript-api -p b2wallet-openapi.yaml ${npm_package_config_gen} --api-class-name B2WalletApi -n B2WalletApi.ts",
+    "gen": "npm run gen:auth && npm run gen:providers && npm run gen:apps && npm run gen:b2dictionary && npm run gen:b2market && npm run gen:b2data && npm run gen:b2payment && npm run gen:b2wallet && npm run gen:b2sign",
+    "gen:auth": "swagger-typescript-api generate -p auth-openapi.yaml ${npm_package_config_gen} --api-class-name AuthApi -n AuthApi.ts",
+    "gen:providers": "swagger-typescript-api generate -p providers-openapi.yaml ${npm_package_config_gen} --api-class-name ProvidersApi -n ProvidersApi.ts",
+    "gen:apps": "swagger-typescript-api generate -p apps-openapi.yaml ${npm_package_config_gen} --api-class-name AppsApi -n AppsApi.ts",
+    "gen:b2dictionary": "swagger-typescript-api generate -p b2dictionary-openapi.yaml ${npm_package_config_gen} --api-class-name B2DictionaryApi -n B2DictionaryApi.ts",
+    "gen:b2market": "swagger-typescript-api generate -p b2market-openapi.yaml ${npm_package_config_gen} --api-class-name B2MarketApi -n B2MarketApi.ts",
+    "gen:b2data": "swagger-typescript-api generate -p b2data-openapi.yaml ${npm_package_config_gen} --api-class-name B2DataApi -n B2DataApi.ts",
+    "gen:b2payment": "swagger-typescript-api generate -p b2payment-openapi.yaml ${npm_package_config_gen} --api-class-name B2PaymentApi -n B2PaymentApi.ts",
+    "gen:b2wallet": "swagger-typescript-api generate -p b2wallet-openapi.yaml ${npm_package_config_gen} --api-class-name B2WalletApi -n B2WalletApi.ts",
+    "gen:b2sign": "swagger-typescript-api generate -p b2sign-openapi.yaml ${npm_package_config_gen} --api-class-name B2SignApi -n B2SignApi.ts",
     "gen:b2delivery": "openapi-generator-cli generate -i b2market-openapi.yaml -g dart-dio -o ./dart/b2delivery --additional-properties=pubName=b2delivery && cd dart/b2delivery && flutter pub run build_runner build && cd ../../"
   },
   "config": {
@@ -30,8 +31,10 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
+  "dependencies": {
+    "swagger-typescript-api": "^13.0.28"
+  },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.13.7",
-    "swagger-typescript-api": "^13.0.3"
+    "@openapitools/openapi-generator-cli": "^2.18.4"
   }
 }

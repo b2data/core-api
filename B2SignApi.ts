@@ -30,6 +30,22 @@ export interface SearchModel {
   sort?: SortModel[];
 }
 
+export interface User {
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  id: string;
+  /** First Name */
+  firstName: string;
+  /** Last Name */
+  lastName?: string;
+  /** Middle Name */
+  middleName?: string;
+  /** Avatar */
+  avatar?: string;
+}
+
 export interface Provider {
   /**
    * Provider ID
@@ -87,6 +103,71 @@ export interface ProviderWithSecret {
   deletedAt?: string;
 }
 
+export enum DocumentAccess {
+  Read = "read",
+  Sign = "sign",
+  Full = "full",
+}
+
+export interface DocumentData {
+  key: string;
+  providerId: string;
+  createdBy: string;
+  mimeType: string;
+  size: number;
+  hash: string;
+  signOrder: number;
+  isSigned: boolean;
+  bagId?: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  /** @format date-time */
+  deletedAt?: string;
+}
+
+export interface DocumentSignatureData {
+  documentKey: string;
+  createdBy: string;
+  order: number;
+  signedBy: string;
+  /** @format date-time */
+  signedAt?: string;
+  signature?: string;
+  /** @format date-time */
+  timestamp?: string;
+  /** @format date-time */
+  createdAt?: string;
+}
+
+export interface DocumentAccessData {
+  documentKey: string;
+  userId: string;
+  access: DocumentAccess;
+}
+
+export type DocumentWithData = DocumentData & {
+  signatures?: DocumentSignatureData[];
+  access?: DocumentAccessData[];
+};
+
+export interface DocumentPublicData {
+  key: string;
+  size: number;
+  isSigned: boolean;
+  hash: string;
+  createdBy: string;
+  signatures: {
+    signedBy: string;
+    /** @format date-time */
+    signedAt?: string;
+    signature?: string;
+    /** @format date-time */
+    timestamp?: string;
+  }[];
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -133,7 +214,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "http://localhost:8081";
+  public baseUrl: string = "https://localhost:8088";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -298,17 +379,177 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title REST API for Providers
+ * @title REST API for B2Sign
  * @version 1.0.0
- * @baseUrl http://localhost:8081
+ * @baseUrl https://localhost:8088
  */
-export class ProvidersApi<SecurityDataType extends unknown> {
+export class B2SignApi<SecurityDataType extends unknown> {
   http: HttpClient<SecurityDataType>;
 
   constructor(http: HttpClient<SecurityDataType>) {
     this.http = http;
   }
 
+  auth = {
+    /**
+     * No description
+     *
+     * @tags Auth
+     * @name StartAuth
+     * @summary Start authentication process
+     * @request POST:/auth/start
+     */
+    startAuth: (data: object, params: RequestParams = {}) =>
+      this.http.request<
+        {
+          proof: string;
+        },
+        any
+      >({
+        path: `/auth/start`,
+        method: "POST",
+        body: data,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Auth
+     * @name VerifyAuth
+     * @summary Verify authentication wallet
+     * @request POST:/auth/verify
+     */
+    verifyAuth: (
+      data: {
+        /** Selected Space ID */
+        spaceId?: string;
+        proof: {
+          /** TON Connect payload */
+          payload: string;
+          /** TON Connect signature */
+          signature: string;
+          /** Timestamp of authentication */
+          timestamp: number;
+          domain: {
+            lengthBytes: number;
+            value: string;
+          };
+        };
+        account: {
+          /**
+           * Wallet Address
+           * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+           */
+          address: string;
+          /** Blockchain chain */
+          network: string;
+          /** Wallet Public Key */
+          publicKey: string;
+          /** Wallet Public Key */
+          walletStateInit: string;
+        };
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          accessToken: string;
+          refreshToken: string;
+          profile: User;
+        },
+        ErrorResponse
+      >({
+        path: `/auth/verify`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Auth
+     * @name RefreshToken
+     * @summary Refresh Access Token by Refresh token
+     * @request POST:/auth/refresh
+     */
+    refreshToken: (
+      data: {
+        /** Selected Space ID */
+        spaceId?: string;
+        accessToken: string;
+        refreshToken: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          accessToken: string;
+          refreshToken: string;
+          profile: User;
+        },
+        ErrorResponse
+      >({
+        path: `/auth/refresh`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Auth
+     * @name GetProfile
+     * @summary Get Profile
+     * @request GET:/auth/profile
+     * @secure
+     */
+    getProfile: (params: RequestParams = {}) =>
+      this.http.request<User, ErrorResponse>({
+        path: `/auth/profile`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Auth
+     * @name UpdateProfile
+     * @summary Update Profile
+     * @request PATCH:/auth/profile
+     * @secure
+     */
+    updateProfile: (
+      data: {
+        /** First Name */
+        firstName?: string;
+        /** Last Name */
+        lastName?: string;
+        /** Middle Name */
+        middleName?: string;
+        /** Avatar */
+        avatar?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<User, ErrorResponse>({
+        path: `/auth/profile`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+  };
   providers = {
     /**
      * No description
@@ -468,6 +709,244 @@ export class ProvidersApi<SecurityDataType extends unknown> {
         method: "POST",
         body: data,
         secure: true,
+        ...params,
+      }),
+  };
+  document = {
+    /**
+     * No description
+     *
+     * @tags Document, Available Providers
+     * @name CreateDocument
+     * @summary Create a new document
+     * @request POST:/documents
+     * @secure
+     */
+    createDocument: (
+      data: {
+        key: string;
+        mimeType: string;
+        size: number;
+        hash: string;
+        bagId?: string;
+        access?: {
+          userId: string;
+          access: DocumentAccess;
+        }[];
+        signatures?: {
+          signedBy: string;
+          order: number;
+        }[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DocumentData, any>({
+        path: `/documents`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Document, Available Public
+     * @name SearchDocuments
+     * @summary Search documents
+     * @request POST:/documents/search
+     */
+    searchDocuments: (
+      data: SearchModel & {
+        searchTerm?: string;
+        providers?: string[];
+        creator?: string[];
+        signer?: string[];
+        isSigned?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total?: number;
+          items?: DocumentPublicData[];
+        },
+        any
+      >({
+        path: `/documents/search`,
+        method: "POST",
+        body: data,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Document, Available Public
+     * @name GetPublicDocument
+     * @summary Get a public document
+     * @request GET:/documents/{key}/public
+     */
+    getPublicDocument: (key: string, params: RequestParams = {}) =>
+      this.http.request<DocumentPublicData, ErrorResponse>({
+        path: `/documents/${key}/public`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Document, Available Providers
+     * @name GetDocument
+     * @summary Get a document
+     * @request GET:/documents/{key}
+     * @secure
+     */
+    getDocument: (key: string, params: RequestParams = {}) =>
+      this.http.request<DocumentWithData, ErrorResponse>({
+        path: `/documents/${key}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Document, Available Providers
+     * @name UpdateDocument
+     * @summary Update a document
+     * @request PUT:/documents/{key}
+     * @secure
+     */
+    updateDocument: (
+      key: string,
+      data: {
+        bagId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DocumentData, ErrorResponse>({
+        path: `/documents/${key}`,
+        method: "PUT",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Document, Available Providers
+     * @name DeleteDocument
+     * @summary Delete a document
+     * @request DELETE:/documents/{key}
+     * @secure
+     */
+    deleteDocument: (key: string, params: RequestParams = {}) =>
+      this.http.request<DocumentData, ErrorResponse>({
+        path: `/documents/${key}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Document, Available Providers
+     * @name GrantDocumentAccess
+     * @summary Grant access to a document
+     * @request POST:/documents/{key}/access
+     * @secure
+     */
+    grantDocumentAccess: (
+      key: string,
+      data: {
+        userId: string;
+        access: DocumentAccess;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DocumentWithData, ErrorResponse>({
+        path: `/documents/${key}/access`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Document, Available Providers
+     * @name RevokeDocumentAccess
+     * @summary Revoke access to a document
+     * @request DELETE:/documents/{key}/access/{userId}
+     * @secure
+     */
+    revokeDocumentAccess: (key: string, userId: string, params: RequestParams = {}) =>
+      this.http.request<DocumentWithData, ErrorResponse>({
+        path: `/documents/${key}/access/${userId}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Document, Available Providers
+     * @name SignDocument
+     * @summary Sign a document
+     * @request POST:/documents/{key}/sign
+     * @secure
+     */
+    signDocument: (
+      key: string,
+      data: {
+        signature: string;
+        timestamp: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DocumentSignatureData, ErrorResponse>({
+        path: `/documents/${key}/sign`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Document, Available Public
+     * @name CheckDocumentSignature
+     * @summary Check a document signature
+     * @request POST:/documents/{key}/sign-check
+     */
+    checkDocumentSignature: (
+      key: string,
+      data: {
+        signedBy: string;
+        signature: string;
+        timestamp: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          isValid: boolean;
+          /** @format date-time */
+          signedAt?: string;
+        },
+        ErrorResponse
+      >({
+        path: `/documents/${key}/sign-check`,
+        method: "POST",
+        body: data,
         ...params,
       }),
   };
