@@ -86,6 +86,139 @@ export interface ErrorResponse {
   message: string;
 }
 
+export interface GetPaymentParams {
+  /**
+   * Wallet address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  wallet: string;
+  /**
+   * ID of payment
+   * @format uuid
+   */
+  id: string;
+}
+
+export interface CancelPaymentParams {
+  /**
+   * Wallet address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  wallet: string;
+  /**
+   * ID of payment
+   * @format uuid
+   */
+  id: string;
+}
+
+export interface CreatePaymentPayload {
+  /**
+   * Wallet address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  wallet: string;
+  /**
+   * Payment Amount
+   * @format float
+   */
+  amount: number;
+  /** Payment Type */
+  type: "deposit" | "withdraw" | "exchange";
+}
+
+export interface SearchPaymentsPayload {
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  wallet: string;
+  /**
+   * Payment Type
+   * @example []
+   */
+  types?: ("deposit" | "withdraw" | "exchange")[];
+  /**
+   * Payment Status
+   * @example []
+   */
+  status?: ("created" | "process" | "failed" | "canceled")[];
+}
+
+export interface PaymentCallbackPayload {
+  /**
+   * Wallet address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  wallet: string;
+  /**
+   * Payment Amount
+   * @format float
+   */
+  amount?: number;
+}
+
+export interface GetPaymentByAdminParams {
+  /**
+   * Wallet address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  wallet: string;
+  /**
+   * ID of payment
+   * @format uuid
+   */
+  id: string;
+}
+
+export interface UpdatePaymentByAdminPayload {
+  /**
+   * Admin Wallet address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  adminWallet: string;
+  /** Payment Type */
+  status?: "created" | "process" | "failed" | "canceled";
+}
+
+export interface SearchPaymentsByAdminPayload {
+  /**
+   * Admin Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  adminWallet: string;
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  wallet?: string;
+  /**
+   * Payment Type
+   * @example []
+   */
+  types?: ("deposit" | "withdraw" | "exchange")[];
+  /**
+   * Payment Status
+   * @example []
+   */
+  status?: ("created" | "process" | "failed" | "canceled")[];
+}
+
+export interface SearchActivitiesByAdminPayload {
+  /**
+   * Admin Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  adminWallet: string;
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  wallet?: string;
+  /** @example [] */
+  types?: ("paymentCreated" | "paymentUpdated")[];
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -317,17 +450,7 @@ export class B2PaymentApi<SecurityDataType extends unknown> {
      * @summary Get payment information
      * @request GET:/payments/{id}
      */
-    getPayment: (
-      id: string,
-      query: {
-        /**
-         * Wallet address
-         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-         */
-        wallet: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    getPayment: ({ id, ...query }: GetPaymentParams, params: RequestParams = {}) =>
       this.http.request<Payment, void | ErrorResponse>({
         path: `/payments/${id}`,
         method: "GET",
@@ -344,17 +467,7 @@ export class B2PaymentApi<SecurityDataType extends unknown> {
      * @summary Cancel uncompleted payment
      * @request DELETE:/payments/{id}
      */
-    cancelPayment: (
-      id: string,
-      query: {
-        /**
-         * Wallet address
-         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-         */
-        wallet: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    cancelPayment: ({ id, ...query }: CancelPaymentParams, params: RequestParams = {}) =>
       this.http.request<Payment, ErrorResponse>({
         path: `/payments/${id}`,
         method: "DELETE",
@@ -371,23 +484,7 @@ export class B2PaymentApi<SecurityDataType extends unknown> {
      * @summary Create new payment
      * @request POST:/payments
      */
-    createPayment: (
-      data: {
-        /**
-         * Wallet address
-         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-         */
-        wallet: string;
-        /**
-         * Payment Amount
-         * @format float
-         */
-        amount: number;
-        /** Payment Type */
-        type: "deposit" | "withdraw" | "exchange";
-      },
-      params: RequestParams = {},
-    ) =>
+    createPayment: (data: CreatePaymentPayload, params: RequestParams = {}) =>
       this.http.request<Payment, void>({
         path: `/payments`,
         method: "POST",
@@ -405,26 +502,7 @@ export class B2PaymentApi<SecurityDataType extends unknown> {
      * @summary Search payments
      * @request POST:/payments/search
      */
-    searchPayments: (
-      data: {
-        /**
-         * Wallet Address
-         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-         */
-        wallet: string;
-        /**
-         * Payment Type
-         * @example []
-         */
-        types?: ("deposit" | "withdraw" | "exchange")[];
-        /**
-         * Payment Status
-         * @example []
-         */
-        status?: ("created" | "process" | "failed" | "canceled")[];
-      },
-      params: RequestParams = {},
-    ) =>
+    searchPayments: (data: SearchPaymentsPayload, params: RequestParams = {}) =>
       this.http.request<PaymentSearchResponse, void>({
         path: `/payments/search`,
         method: "POST",
@@ -444,21 +522,7 @@ export class B2PaymentApi<SecurityDataType extends unknown> {
      * @request POST:/payments/callback
      * @secure
      */
-    paymentCallback: (
-      data: {
-        /**
-         * Wallet address
-         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-         */
-        wallet: string;
-        /**
-         * Payment Amount
-         * @format float
-         */
-        amount?: number;
-      },
-      params: RequestParams = {},
-    ) =>
+    paymentCallback: (data: PaymentCallbackPayload, params: RequestParams = {}) =>
       this.http.request<any, void>({
         path: `/payments/callback`,
         method: "POST",
@@ -478,17 +542,7 @@ export class B2PaymentApi<SecurityDataType extends unknown> {
      * @request GET:/payments/admin/{id}
      * @secure
      */
-    getPaymentByAdmin: (
-      id: string,
-      query: {
-        /**
-         * Wallet address
-         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-         */
-        wallet: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    getPaymentByAdmin: ({ id, ...query }: GetPaymentByAdminParams, params: RequestParams = {}) =>
       this.http.request<Payment, void | ErrorResponse>({
         path: `/payments/admin/${id}`,
         method: "GET",
@@ -507,19 +561,7 @@ export class B2PaymentApi<SecurityDataType extends unknown> {
      * @request PATCH:/payments/admin/{id}
      * @secure
      */
-    updatePaymentByAdmin: (
-      id: string,
-      data: {
-        /**
-         * Admin Wallet address
-         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-         */
-        adminWallet: string;
-        /** Payment Type */
-        status?: "created" | "process" | "failed" | "canceled";
-      },
-      params: RequestParams = {},
-    ) =>
+    updatePaymentByAdmin: (id: string, data: UpdatePaymentByAdminPayload, params: RequestParams = {}) =>
       this.http.request<Payment, void | ErrorResponse>({
         path: `/payments/admin/${id}`,
         method: "PATCH",
@@ -539,31 +581,7 @@ export class B2PaymentApi<SecurityDataType extends unknown> {
      * @request POST:/payments/admin/search
      * @secure
      */
-    searchPaymentsByAdmin: (
-      data: {
-        /**
-         * Admin Wallet Address
-         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-         */
-        adminWallet: string;
-        /**
-         * Wallet Address
-         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-         */
-        wallet?: string;
-        /**
-         * Payment Type
-         * @example []
-         */
-        types?: ("deposit" | "withdraw" | "exchange")[];
-        /**
-         * Payment Status
-         * @example []
-         */
-        status?: ("created" | "process" | "failed" | "canceled")[];
-      },
-      params: RequestParams = {},
-    ) =>
+    searchPaymentsByAdmin: (data: SearchPaymentsByAdminPayload, params: RequestParams = {}) =>
       this.http.request<PaymentSearchResponse, void | ErrorResponse>({
         path: `/payments/admin/search`,
         method: "POST",
@@ -583,23 +601,7 @@ export class B2PaymentApi<SecurityDataType extends unknown> {
      * @request POST:/activities/search
      * @secure
      */
-    searchActivitiesByAdmin: (
-      data: {
-        /**
-         * Admin Wallet Address
-         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-         */
-        adminWallet: string;
-        /**
-         * Wallet Address
-         * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-         */
-        wallet?: string;
-        /** @example [] */
-        types?: ("paymentCreated" | "paymentUpdated")[];
-      },
-      params: RequestParams = {},
-    ) =>
+    searchActivitiesByAdmin: (data: SearchActivitiesByAdminPayload, params: RequestParams = {}) =>
       this.http.request<
         {
           total: number;

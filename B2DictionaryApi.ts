@@ -729,6 +729,62 @@ export interface WordReferencePreview {
   createdByData?: User;
 }
 
+export interface VerifyAuthPayload {
+  /** Selected Space ID */
+  spaceId?: string;
+  proof: {
+    /** TON Connect payload */
+    payload: string;
+    /** TON Connect signature */
+    signature: string;
+    /** Timestamp of authentication */
+    timestamp: number;
+    domain: {
+      lengthBytes: number;
+      value: string;
+    };
+  };
+  account: {
+    /**
+     * Wallet Address
+     * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+     */
+    address: string;
+    /** Blockchain chain */
+    network: string;
+    /** Wallet Public Key */
+    publicKey: string;
+    /** Wallet Public Key */
+    walletStateInit: string;
+  };
+}
+
+export interface RefreshTokenPayload {
+  /** Selected Space ID */
+  spaceId?: string;
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface UpdateProfilePayload {
+  /** First Name */
+  firstName?: string;
+  /** Last Name */
+  lastName?: string;
+  /** Middle Name */
+  middleName?: string;
+  /** Avatar */
+  avatar?: string;
+}
+
+export interface SearchFoldersParams {
+  /**
+   * Based on mode different folders may be returned
+   * @default "public"
+   */
+  mode?: "public" | "personal" | "review";
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -982,38 +1038,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
      * @summary Verify authentication wallet
      * @request POST:/auth/verify
      */
-    verifyAuth: (
-      data: {
-        /** Selected Space ID */
-        spaceId?: string;
-        proof: {
-          /** TON Connect payload */
-          payload: string;
-          /** TON Connect signature */
-          signature: string;
-          /** Timestamp of authentication */
-          timestamp: number;
-          domain: {
-            lengthBytes: number;
-            value: string;
-          };
-        };
-        account: {
-          /**
-           * Wallet Address
-           * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-           */
-          address: string;
-          /** Blockchain chain */
-          network: string;
-          /** Wallet Public Key */
-          publicKey: string;
-          /** Wallet Public Key */
-          walletStateInit: string;
-        };
-      },
-      params: RequestParams = {},
-    ) =>
+    verifyAuth: (data: VerifyAuthPayload, params: RequestParams = {}) =>
       this.http.request<
         {
           accessToken: string;
@@ -1038,15 +1063,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
      * @summary Refresh Access Token by Refresh token
      * @request POST:/auth/refresh
      */
-    refreshToken: (
-      data: {
-        /** Selected Space ID */
-        spaceId?: string;
-        accessToken: string;
-        refreshToken: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    refreshToken: (data: RefreshTokenPayload, params: RequestParams = {}) =>
       this.http.request<
         {
           accessToken: string;
@@ -1089,19 +1106,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
      * @request PATCH:/auth/profile
      * @secure
      */
-    updateProfile: (
-      data: {
-        /** First Name */
-        firstName?: string;
-        /** Last Name */
-        lastName?: string;
-        /** Middle Name */
-        middleName?: string;
-        /** Avatar */
-        avatar?: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    updateProfile: (data: UpdateProfilePayload, params: RequestParams = {}) =>
       this.http.request<User, ErrorResponse>({
         path: `/auth/profile`,
         method: "PATCH",
@@ -1707,16 +1712,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
      * @summary Search folders
      * @request GET:/folders/search
      */
-    searchFolders: (
-      query?: {
-        /**
-         * Based on mode different folders may be returned
-         * @default "public"
-         */
-        mode?: "public" | "personal" | "review";
-      },
-      params: RequestParams = {},
-    ) =>
+    searchFolders: (query: SearchFoldersParams, params: RequestParams = {}) =>
       this.http.request<FolderTreeItem[], any>({
         path: `/folders/search`,
         method: "GET",

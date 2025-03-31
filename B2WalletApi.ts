@@ -361,6 +361,30 @@ export type User = Viewer & {
   updatedAt: string;
 };
 
+export interface GetFiatRatesParams {
+  /** Network */
+  network: "mainnet" | "testnet";
+}
+
+export interface SubscribeBridgeEventsParams {
+  /** Client ID */
+  client_id: string;
+}
+
+/** @example "base64_encoded_message" */
+export type SendBridgeMessagePayload = string;
+
+export interface SendBridgeMessageParams {
+  /** Client ID (hex_str) */
+  client_id: string;
+  /** To Client ID (hex_str) */
+  to: string;
+  /** Time to live (seconds). Bridges should support at least 300 seconds TTL. */
+  ttl: number;
+  /** The topic [optional] query parameter can be used by the bridge to deliver the push notification to the wallet. If the parameter is given, it must correspond to the RPC method called inside the encrypted message. */
+  topic?: string;
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -623,13 +647,7 @@ export class B2WalletApi<SecurityDataType extends unknown> {
      * @request GET:/rates/fiat
      * @secure
      */
-    getFiatRates: (
-      query: {
-        /** Network */
-        network: "mainnet" | "testnet";
-      },
-      params: RequestParams = {},
-    ) =>
+    getFiatRates: (query: GetFiatRatesParams, params: RequestParams = {}) =>
       this.http.request<Record<string, number>, void>({
         path: `/rates/fiat`,
         method: "GET",
@@ -648,13 +666,7 @@ export class B2WalletApi<SecurityDataType extends unknown> {
      * @summary Subscribe on TonConnect bridge events
      * @request GET:/tonconnect/bridge/events
      */
-    subscribeBridgeEvents: (
-      query: {
-        /** Client ID */
-        client_id: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    subscribeBridgeEvents: (query: SubscribeBridgeEventsParams, params: RequestParams = {}) =>
       this.http.request<string, any>({
         path: `/tonconnect/bridge/events`,
         method: "GET",
@@ -670,20 +682,7 @@ export class B2WalletApi<SecurityDataType extends unknown> {
      * @summary Send message to TonConnect bridge
      * @request POST:/tonconnect/bridge/message
      */
-    sendBridgeMessage: (
-      query: {
-        /** Client ID (hex_str) */
-        client_id: string;
-        /** To Client ID (hex_str) */
-        to: string;
-        /** Time to live (seconds). Bridges should support at least 300 seconds TTL. */
-        ttl: number;
-        /** The topic [optional] query parameter can be used by the bridge to deliver the push notification to the wallet. If the parameter is given, it must correspond to the RPC method called inside the encrypted message. */
-        topic?: string;
-      },
-      data: string,
-      params: RequestParams = {},
-    ) =>
+    sendBridgeMessage: (query: SendBridgeMessageParams, data: SendBridgeMessagePayload, params: RequestParams = {}) =>
       this.http.request<
         {
           message?: string;

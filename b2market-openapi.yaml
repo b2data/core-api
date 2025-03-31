@@ -4384,7 +4384,6 @@ components:
       required:
         - id
         - key
-        - type
         - status
         - priority
         - createdBy
@@ -4392,7 +4391,6 @@ components:
         - name
         - description
         - files
-        - data
         - createdAt
         - updatedAt
       properties:
@@ -4400,8 +4398,6 @@ components:
           type: string
         key:
           type: string
-        type:
-          $ref: "#/components/schemas/TaskType"
         status:
           $ref: "#/components/schemas/TaskStatus"
         priority:
@@ -4423,8 +4419,6 @@ components:
         dueDate:
           type: string
           format: date-time
-        data:
-          type: object
         artefactId:
           type: string
         artefactType:
@@ -4439,14 +4433,22 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseTask"
         - type: object
+          required:
+            - type
+            - data
           properties:
             type:
               enum:
                 - simpleTask
+            data:
+              type: object
     TaskProductItemReview:
       allOf:
         - $ref: "#/components/schemas/BaseTask"
         - type: object
+          required:
+            - type
+            - data
           properties:
             type:
               enum:
@@ -4465,6 +4467,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseTask"
         - type: object
+          required:
+            - type
+            - data
           properties:
             type:
               enum:
@@ -4517,6 +4522,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseTask"
         - type: object
+          required:
+            - type
+            - data
           properties:
             type:
               enum:
@@ -4557,6 +4565,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseTask"
         - type: object
+          required:
+            - type
+            - data
           properties:
             type:
               enum:
@@ -4583,6 +4594,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseTask"
         - type: object
+          required:
+            - type
+            - data
           properties:
             type:
               enum:
@@ -4609,6 +4623,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseTask"
         - type: object
+          required:
+            - type
+            - data
           properties:
             type:
               enum:

@@ -1354,7 +1354,6 @@ export interface TaskIdtWithIdp {
 export interface BaseTask {
   id: string;
   key: string;
-  type: TaskType;
   status: TaskStatus;
   priority: TaskPriority;
   assignee?: string;
@@ -1365,7 +1364,6 @@ export interface BaseTask {
   files: string[];
   /** @format date-time */
   dueDate?: string;
-  data: object;
   artefactId?: string;
   artefactType?: TaskArtefactType;
   /** @format date-time */
@@ -1375,20 +1373,21 @@ export interface BaseTask {
 }
 
 export type TaskSimple = BaseTask & {
-  type?: "simpleTask";
+  type: "simpleTask";
+  data: object;
 };
 
 export type TaskProductItemReview = BaseTask & {
-  type?: "productItemReview";
-  data?: {
+  type: "productItemReview";
+  data: {
     comment?: string;
     status?: "blocked" | "published";
   };
 };
 
 export type TaskFillIdt = BaseTask & {
-  type?: "fillIdt";
-  data?: {
+  type: "fillIdt";
+  data: {
     /** Product ID in B2Market */
     productId: string;
     /** Product Items ID in B2Market */
@@ -1410,8 +1409,8 @@ export type TaskFillIdt = BaseTask & {
 };
 
 export type TaskPickUpIdt = BaseTask & {
-  type?: "pickUpIdt";
-  data?: {
+  type: "pickUpIdt";
+  data: {
     dispatchPlace: PlaceBase;
     pickUpSubtasks: {
       provider?: {
@@ -1426,8 +1425,8 @@ export type TaskPickUpIdt = BaseTask & {
 };
 
 export type TaskReceiveIdt = BaseTask & {
-  type?: "receiveIdt";
-  data?: {
+  type: "receiveIdt";
+  data: {
     place: PlaceBase;
     fromUserId: string;
     fromUserName: string;
@@ -1436,8 +1435,8 @@ export type TaskReceiveIdt = BaseTask & {
 };
 
 export type TaskGiveOutIdt = BaseTask & {
-  type?: "giveOutIdt";
-  data?: {
+  type: "giveOutIdt";
+  data: {
     place: PlaceBase;
     toUserId: string;
     toUserName: string;
@@ -1446,8 +1445,8 @@ export type TaskGiveOutIdt = BaseTask & {
 };
 
 export type TaskDeliverIdt = BaseTask & {
-  type?: "deliverIdt";
-  data?: {
+  type: "deliverIdt";
+  data: {
     pickUpPlace: PlaceBase;
     dispatchPlace: PlaceBase;
     idtList: TaskIdtWithIdp[];
@@ -1478,6 +1477,88 @@ export type TaskWithData = Task & {
   createdByData?: User;
   assigneeData?: User;
 };
+
+export interface VerifyAuthPayload {
+  /** Selected Space ID */
+  spaceId?: string;
+  proof: {
+    /** TON Connect payload */
+    payload: string;
+    /** TON Connect signature */
+    signature: string;
+    /** Timestamp of authentication */
+    timestamp: number;
+    domain: {
+      lengthBytes: number;
+      value: string;
+    };
+  };
+  account: {
+    /**
+     * Wallet Address
+     * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+     */
+    address: string;
+    /** Blockchain chain */
+    network: string;
+    /** Wallet Public Key */
+    publicKey: string;
+    /** Wallet Public Key */
+    walletStateInit: string;
+  };
+}
+
+export interface RefreshTokenPayload {
+  /** Selected Space ID */
+  spaceId?: string;
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface UpdateProfilePayload {
+  /** First Name */
+  firstName?: string;
+  /** Last Name */
+  lastName?: string;
+  /** Middle Name */
+  middleName?: string;
+  /** Avatar */
+  avatar?: string;
+}
+
+export interface SearchFoldersParams {
+  /** Return as tree nodes */
+  asTree?: boolean;
+  /** Search by name */
+  searchTerm?: string;
+  /**
+   * Search by parent ID
+   * @format uuid
+   */
+  parentId?: string | null;
+  /**
+   * Search by product ID
+   * @format uuid
+   */
+  productId?: string | null;
+  /**
+   * Search by product external ID
+   * @format uuid
+   */
+  externalProductId?: string | null;
+  /** Search by ids */
+  ids?: string[];
+}
+
+export interface SearchPlacesParams {
+  /** Places type */
+  type?: "pick-up" | "dispatch";
+  /** Search by name */
+  searchTerm?: string;
+  limit?: number;
+  offset?: number;
+  sort?: SortModel[];
+}
 
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
@@ -1812,38 +1893,7 @@ export class B2MarketApi<SecurityDataType extends unknown> {
      * @summary Verify authentication wallet
      * @request POST:/auth/verify
      */
-    verifyAuth: (
-      data: {
-        /** Selected Space ID */
-        spaceId?: string;
-        proof: {
-          /** TON Connect payload */
-          payload: string;
-          /** TON Connect signature */
-          signature: string;
-          /** Timestamp of authentication */
-          timestamp: number;
-          domain: {
-            lengthBytes: number;
-            value: string;
-          };
-        };
-        account: {
-          /**
-           * Wallet Address
-           * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-           */
-          address: string;
-          /** Blockchain chain */
-          network: string;
-          /** Wallet Public Key */
-          publicKey: string;
-          /** Wallet Public Key */
-          walletStateInit: string;
-        };
-      },
-      params: RequestParams = {},
-    ) =>
+    verifyAuth: (data: VerifyAuthPayload, params: RequestParams = {}) =>
       this.http.request<
         {
           accessToken: string;
@@ -1868,15 +1918,7 @@ export class B2MarketApi<SecurityDataType extends unknown> {
      * @summary Refresh Access Token by Refresh token
      * @request POST:/auth/refresh
      */
-    refreshToken: (
-      data: {
-        /** Selected Space ID */
-        spaceId?: string;
-        accessToken: string;
-        refreshToken: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    refreshToken: (data: RefreshTokenPayload, params: RequestParams = {}) =>
       this.http.request<
         {
           accessToken: string;
@@ -1919,19 +1961,7 @@ export class B2MarketApi<SecurityDataType extends unknown> {
      * @request PATCH:/auth/profile
      * @secure
      */
-    updateProfile: (
-      data: {
-        /** First Name */
-        firstName?: string;
-        /** Last Name */
-        lastName?: string;
-        /** Middle Name */
-        middleName?: string;
-        /** Avatar */
-        avatar?: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    updateProfile: (data: UpdateProfilePayload, params: RequestParams = {}) =>
       this.http.request<User, ErrorResponse>({
         path: `/auth/profile`,
         method: "PATCH",
@@ -2843,32 +2873,7 @@ export class B2MarketApi<SecurityDataType extends unknown> {
      * @summary Search folders
      * @request GET:/folders/search
      */
-    searchFolders: (
-      query?: {
-        /** Return as tree nodes */
-        asTree?: boolean;
-        /** Search by name */
-        searchTerm?: string;
-        /**
-         * Search by parent ID
-         * @format uuid
-         */
-        parentId?: string | null;
-        /**
-         * Search by product ID
-         * @format uuid
-         */
-        productId?: string | null;
-        /**
-         * Search by product external ID
-         * @format uuid
-         */
-        externalProductId?: string | null;
-        /** Search by ids */
-        ids?: string[];
-      },
-      params: RequestParams = {},
-    ) =>
+    searchFolders: (query: SearchFoldersParams, params: RequestParams = {}) =>
       this.http.request<FolderTreeItem[], any>({
         path: `/folders/search`,
         method: "GET",
@@ -3557,18 +3562,7 @@ export class B2MarketApi<SecurityDataType extends unknown> {
      * @summary Search places
      * @request GET:/places/search
      */
-    searchPlaces: (
-      query?: {
-        /** Places type */
-        type?: "pick-up" | "dispatch";
-        /** Search by name */
-        searchTerm?: string;
-        limit?: number;
-        offset?: number;
-        sort?: SortModel[];
-      },
-      params: RequestParams = {},
-    ) =>
+    searchPlaces: (query: SearchPlacesParams, params: RequestParams = {}) =>
       this.http.request<
         {
           total: number;

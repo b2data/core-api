@@ -1484,6 +1484,100 @@ export interface EditTagContentBody {
   isConfig?: boolean;
 }
 
+export interface VerifyAuthPayload {
+  /** Selected Space ID */
+  spaceId?: string;
+  proof: {
+    /** TON Connect payload */
+    payload: string;
+    /** TON Connect signature */
+    signature: string;
+    /** Timestamp of authentication */
+    timestamp: number;
+    domain: {
+      lengthBytes: number;
+      value: string;
+    };
+  };
+  account: {
+    /**
+     * Wallet Address
+     * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+     */
+    address: string;
+    /** Blockchain chain */
+    network: string;
+    /** Wallet Public Key */
+    publicKey: string;
+    /** Wallet Public Key */
+    walletStateInit: string;
+  };
+}
+
+export interface RefreshTokenPayload {
+  /** Selected Space ID */
+  spaceId?: string;
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface UpdateProfilePayload {
+  /** First Name */
+  firstName?: string;
+  /** Last Name */
+  lastName?: string;
+  /** Middle Name */
+  middleName?: string;
+  /** Avatar */
+  avatar?: string;
+}
+
+export interface GetDocBinaryParams {
+  /** Document format (pdf or md) */
+  format?: "pdf" | "md";
+  /**
+   * Document ID
+   * @format uuid
+   */
+  docId: string;
+}
+
+export interface DeleteDocumentParams {
+  /** Version to delete */
+  version?: number;
+  /**
+   * Document ID
+   * @format uuid
+   */
+  docId: string;
+}
+
+export interface GetPermissionsStatisticsParams {
+  /** Artefact ID */
+  artefactId: string;
+  /** Permission type */
+  type: PermissionType;
+}
+
+export interface CheckPermissionsAccessParams {
+  /** Artefact ID */
+  artefactId: string;
+  /** Permission type */
+  type: PermissionType;
+  /** System ID */
+  systemId: string;
+}
+
+export interface DeleteSpaceUserParams {
+  /** User ID */
+  userId: string;
+  /**
+   * Group ID
+   * @format uuid
+   */
+  groupId?: string;
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -1737,38 +1831,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @summary Verify authentication wallet
      * @request POST:/auth/verify
      */
-    verifyAuth: (
-      data: {
-        /** Selected Space ID */
-        spaceId?: string;
-        proof: {
-          /** TON Connect payload */
-          payload: string;
-          /** TON Connect signature */
-          signature: string;
-          /** Timestamp of authentication */
-          timestamp: number;
-          domain: {
-            lengthBytes: number;
-            value: string;
-          };
-        };
-        account: {
-          /**
-           * Wallet Address
-           * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-           */
-          address: string;
-          /** Blockchain chain */
-          network: string;
-          /** Wallet Public Key */
-          publicKey: string;
-          /** Wallet Public Key */
-          walletStateInit: string;
-        };
-      },
-      params: RequestParams = {},
-    ) =>
+    verifyAuth: (data: VerifyAuthPayload, params: RequestParams = {}) =>
       this.http.request<
         {
           accessToken: string;
@@ -1793,15 +1856,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @summary Refresh Access Token by Refresh token
      * @request POST:/auth/refresh
      */
-    refreshToken: (
-      data: {
-        /** Selected Space ID */
-        spaceId?: string;
-        accessToken: string;
-        refreshToken: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    refreshToken: (data: RefreshTokenPayload, params: RequestParams = {}) =>
       this.http.request<
         {
           accessToken: string;
@@ -1844,19 +1899,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @request PATCH:/auth/profile
      * @secure
      */
-    updateProfile: (
-      data: {
-        /** First Name */
-        firstName?: string;
-        /** Last Name */
-        lastName?: string;
-        /** Middle Name */
-        middleName?: string;
-        /** Avatar */
-        avatar?: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    updateProfile: (data: UpdateProfilePayload, params: RequestParams = {}) =>
       this.http.request<User, ErrorResponse>({
         path: `/auth/profile`,
         method: "PATCH",
@@ -1915,14 +1958,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @request GET:/documents/b2doc/{docId}
      * @secure
      */
-    getDocBinary: (
-      docId: string,
-      query?: {
-        /** Document format (pdf or md) */
-        format?: "pdf" | "md";
-      },
-      params: RequestParams = {},
-    ) =>
+    getDocBinary: ({ docId, ...query }: GetDocBinaryParams, params: RequestParams = {}) =>
       this.http.request<File, ErrorResponse>({
         path: `/documents/b2doc/${docId}`,
         method: "GET",
@@ -2793,14 +2829,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @request DELETE:/documents/{docId}
      * @secure
      */
-    deleteDocument: (
-      docId: string,
-      query?: {
-        /** Version to delete */
-        version?: number;
-      },
-      params: RequestParams = {},
-    ) =>
+    deleteDocument: ({ docId, ...query }: DeleteDocumentParams, params: RequestParams = {}) =>
       this.http.request<string[], ErrorResponse>({
         path: `/documents/${docId}`,
         method: "DELETE",
@@ -3482,15 +3511,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @request GET:/permissions/statistics
      * @secure
      */
-    getPermissionsStatistics: (
-      query: {
-        /** Artefact ID */
-        artefactId: string;
-        /** Permission type */
-        type: PermissionType;
-      },
-      params: RequestParams = {},
-    ) =>
+    getPermissionsStatistics: (query: GetPermissionsStatisticsParams, params: RequestParams = {}) =>
       this.http.request<
         {
           users: number;
@@ -3518,17 +3539,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @request GET:/permissions/check-access
      * @secure
      */
-    checkPermissionsAccess: (
-      query: {
-        /** Artefact ID */
-        artefactId: string;
-        /** Permission type */
-        type: PermissionType;
-        /** System ID */
-        systemId: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    checkPermissionsAccess: (query: CheckPermissionsAccessParams, params: RequestParams = {}) =>
       this.http.request<
         {
           hasReadAccess: boolean;
@@ -3846,18 +3857,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @request DELETE:/spaces/users
      * @secure
      */
-    deleteSpaceUser: (
-      query: {
-        /** User ID */
-        userId: string;
-        /**
-         * Group ID
-         * @format uuid
-         */
-        groupId?: string;
-      },
-      params: RequestParams = {},
-    ) =>
+    deleteSpaceUser: (query: DeleteSpaceUserParams, params: RequestParams = {}) =>
       this.http.request<SpaceUserWithData, ErrorResponse>({
         path: `/spaces/users`,
         method: "DELETE",
