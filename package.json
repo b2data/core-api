@@ -1,7 +1,7 @@
 {
   "name": "@b2data/core-api",
   "description": "Core API interfaces",
-  "version": "1.0.92",
+  "version": "1.0.93",
   "scripts": {
     "build": "tsc",
     "gen": "npm run gen:auth && npm run gen:providers && npm run gen:apps && npm run gen:b2dictionary && npm run gen:b2market && npm run gen:b2data && npm run gen:b2payment && npm run gen:b2wallet && npm run gen:b2sign",
@@ -17,7 +17,7 @@
     "gen:b2delivery": "openapi-generator-cli generate -i b2market-openapi.yaml -g dart-dio -o ./dart/b2delivery --additional-properties=pubName=b2delivery && cd dart/b2delivery && flutter pub run build_runner build && cd ../../"
   },
   "config": {
-    "gen": "--unwrap-response-data --module-name-first-tag --single-http-client --union-enums"
+    "gen": "--unwrap-response-data --module-name-first-tag --single-http-client --union-enums --extract-request-body --extract-request-params"
   },
   "license": "MIT",
   "keywords": [],
