@@ -296,14 +296,6 @@ components:
         avatar:
           type: string
           description: Avatar
-    AuthErrorCodes:
-      type: string
-      enum:
-        - api:403
-        - auth:404
-        - auth:401
-        - auth:403
-        - user:404
   requestBodies:
     EmptyBody:
       content:
