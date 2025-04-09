@@ -304,7 +304,6 @@ components:
         - auth:403
         - auth:404
         - user:404
-
   requestBodies:
     EmptyBody:
       content:
