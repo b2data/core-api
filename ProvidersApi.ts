@@ -87,6 +87,11 @@ export interface ProviderWithSecret {
   deletedAt?: string;
 }
 
+export enum ProviderErrorCodes {
+  Provider404 = "provider:404",
+  Provider400Exists = "provider:400-exists",
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 

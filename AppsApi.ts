@@ -60,6 +60,11 @@ export interface AppPublic {
   url: string;
 }
 
+export enum AppErrorCodes {
+  App404 = "app:404",
+  App400Register = "app:400-register",
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 

@@ -46,6 +46,14 @@ export interface User {
   avatar?: string;
 }
 
+export enum AuthErrorCodes {
+  Api403 = "api:403",
+  Auth401 = "auth:401",
+  Auth403 = "auth:403",
+  Auth404 = "auth:404",
+  User404 = "user:404",
+}
+
 export interface VerifyAuthPayload {
   /** Selected Space ID */
   spaceId?: string;

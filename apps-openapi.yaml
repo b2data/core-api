@@ -189,6 +189,11 @@ components:
         url:
           type: string
           description: App URL
+    AppErrorCodes:
+      type: string
+      enum:
+        - app:404
+        - app:400-register
   requestBodies:
     EmptyBody:
       content:

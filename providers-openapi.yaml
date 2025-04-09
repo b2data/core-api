@@ -273,6 +273,11 @@ components:
           type: string
           format: date-time
           description: Deleted Date
+    ProviderErrorCodes:
+      type: string
+      enum:
+        - provider:404
+        - provider:400-exists
   requestBodies:
     EmptyBody:
       content:
