@@ -1080,6 +1080,46 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DocumentNotFound"
+  "/documents/{docId}/signatures/{versionId}":
+    get:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Get document signatures
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+        - $ref: "#/components/parameters/versionId"
+      operationId: getDocumentSignatures
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentSignatureData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/{docId}/signatures/{versionId}/request":
+    post:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Request document signature
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+        - $ref: "#/components/parameters/versionId"
+      operationId: requestDocumentSignatures
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentSignatureData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
   "/documents/files/{fileId}":
     get:
       tags:
@@ -1857,6 +1897,14 @@ components:
         avatar:
           type: string
           description: Avatar
+    AuthErrorCodes:
+      type: string
+      enum:
+        - api:403
+        - auth:401
+        - auth:403
+        - auth:404
+        - user:404
     ActivityType:
       type: string
       description: Activity Type
@@ -3781,6 +3829,53 @@ components:
         updatedAt:
           type: string
           format: date-time
+    DocumentSignData:
+      type: object
+      required:
+        - userId
+        - userName
+        - spaceId
+        - order
+      properties:
+        userId:
+          type: string
+        userName:
+          type: string
+        spaceId:
+          type: string
+        spaceName:
+          type: string
+        order:
+          type: number
+    DocumentSignature:
+      allOf:
+        - $ref: "#/components/schemas/DocumentSignData"
+        - type: object
+          required:
+            - id
+            - documentId
+            - versionId
+            - createdAt
+            - updatedAt
+          properties:
+            id:
+              type: string
+            documentId:
+              type: string
+            versionId:
+              type: string
+            signature:
+              type: string
+            timestamp:
+              type: number
+            createdBy:
+              type: string§
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
     FileData:
       allOf:
         - $ref: "#/components/schemas/DocumentDataCommon"
@@ -6069,6 +6164,14 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/DocumentWithFolders"
+    DocumentSignatureData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/DocumentSignature"
     FileBinary:
       description: Successful operation
       content:
@@ -6496,6 +6599,14 @@ components:
         type: string
         format: uuid
       description: Document ID
+    versionId:
+      name: versionId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Version ID
     fileId:
       in: path
       name: fileId

@@ -46,6 +46,14 @@ export interface User {
   avatar?: string;
 }
 
+export enum AuthErrorCodes {
+  Api403 = "api:403",
+  Auth401 = "auth:401",
+  Auth403 = "auth:403",
+  Auth404 = "auth:404",
+  User404 = "user:404",
+}
+
 /** Activity Type */
 export type ActivityType = string;
 
@@ -1000,6 +1008,27 @@ export interface DocumentDataCommon {
   /** @format date-time */
   updatedAt: string;
 }
+
+export interface DocumentSignData {
+  userId: string;
+  userName: string;
+  spaceId: string;
+  spaceName?: string;
+  order: number;
+}
+
+export type DocumentSignature = DocumentSignData & {
+  id: string;
+  documentId: string;
+  versionId: string;
+  signature?: string;
+  timestamp?: number;
+  createdBy?: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+};
 
 export type FileData = DocumentDataCommon & {
   /** MIME Type */
@@ -2963,6 +2992,40 @@ export class B2DataApi<SecurityDataType extends unknown> {
         path: `/documents/${docId}/tags`,
         method: "PUT",
         body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name GetDocumentSignatures
+     * @summary Get document signatures
+     * @request GET:/documents/{docId}/signatures/{versionId}
+     * @secure
+     */
+    getDocumentSignatures: (docId: string, versionId: string, params: RequestParams = {}) =>
+      this.http.request<DocumentSignature[], ErrorResponse>({
+        path: `/documents/${docId}/signatures/${versionId}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name RequestDocumentSignatures
+     * @summary Request document signature
+     * @request POST:/documents/{docId}/signatures/{versionId}/request
+     * @secure
+     */
+    requestDocumentSignatures: (docId: string, versionId: string, params: RequestParams = {}) =>
+      this.http.request<DocumentSignature[], ErrorResponse>({
+        path: `/documents/${docId}/signatures/${versionId}/request`,
+        method: "POST",
         secure: true,
         ...params,
       }),
