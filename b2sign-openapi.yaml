@@ -457,6 +457,44 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DocumentNotFound"
+  "/document/{key}/binary":
+    get:
+      summary: Get a document binary
+      operationId: getDocumentBinary
+      tags:
+        - Document
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/documentKeyParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentBinary"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/document/{key}/info":
+    get:
+      summary: Get a document info
+      operationId: getDocumentInfo
+      tags:
+        - Document
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/documentKeyParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
   "/documents/{key}/access":
     post:
       summary: Grant access to a document
@@ -638,6 +676,14 @@ components:
         avatar:
           type: string
           description: Avatar
+    AuthErrorCodes:
+      type: string
+      enum:
+        - api:403
+        - auth:401
+        - auth:403
+        - auth:404
+        - user:404
     Provider:
       type: object
       required:
@@ -713,6 +759,21 @@ components:
           type: string
           format: date-time
           description: Deleted Date
+    ProviderErrorCodes:
+      type: string
+      enum:
+        - provider:404
+        - provider:400-exists
+    B2SignErrorCodes:
+      type: string
+      enum:
+        - document:400-hash-invalid
+        - document:403
+        - document:404
+        - document:access:400-exists
+        - document:signature:404
+        - document:signature:400-exists
+        - document:signature:400-invalid
     DocumentAccess:
       type: string
       enum:
@@ -804,6 +865,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/DocumentData"
         - type: object
+          required:
+            - signatures
+            - access
           properties:
             signatures:
               type: array
@@ -818,6 +882,7 @@ components:
       required:
         - key
         - size
+        - mimeType
         - isSigned
         - hash
         - createdBy
@@ -827,6 +892,8 @@ components:
           type: string
         size:
           type: number
+        mimeType:
+          type: string
         isSigned:
           type: boolean
         hash:
@@ -945,15 +1012,19 @@ components:
     CreateDocumentBody:
       required: true
       content:
-        application/json:
+        multipart/form-data:
           schema:
             type: object
             required:
+              - file
               - key
               - mimeType
               - size
               - hash
             properties:
+              file:
+                type: string
+                format: binary
               key:
                 type: string
               mimeType:
@@ -1123,6 +1194,13 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/DocumentData"
+    DocumentBinary:
+      description: Successful operation
+      content:
+        text/plain:
+          schema:
+            type: string
+            format: binary
     DocumentWithData:
       description: Successful operation
       content:

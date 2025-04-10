@@ -46,6 +46,14 @@ export interface User {
   avatar?: string;
 }
 
+export enum AuthErrorCodes {
+  Api403 = "api:403",
+  Auth401 = "auth:401",
+  Auth403 = "auth:403",
+  Auth404 = "auth:404",
+  User404 = "user:404",
+}
+
 export interface Provider {
   /**
    * Provider ID
@@ -103,6 +111,21 @@ export interface ProviderWithSecret {
   deletedAt?: string;
 }
 
+export enum ProviderErrorCodes {
+  Provider404 = "provider:404",
+  Provider400Exists = "provider:400-exists",
+}
+
+export enum B2SignErrorCodes {
+  Document400HashInvalid = "document:400-hash-invalid",
+  Document403 = "document:403",
+  Document404 = "document:404",
+  DocumentAccess400Exists = "document:access:400-exists",
+  DocumentSignature404 = "document:signature:404",
+  DocumentSignature400Exists = "document:signature:400-exists",
+  DocumentSignature400Invalid = "document:signature:400-invalid",
+}
+
 export enum DocumentAccess {
   Read = "read",
   Sign = "sign",
@@ -148,13 +171,14 @@ export interface DocumentAccessData {
 }
 
 export type DocumentWithData = DocumentData & {
-  signatures?: DocumentSignatureData[];
-  access?: DocumentAccessData[];
+  signatures: DocumentSignatureData[];
+  access: DocumentAccessData[];
 };
 
 export interface DocumentPublicData {
   key: string;
   size: number;
+  mimeType: string;
   isSigned: boolean;
   hash: string;
   createdBy: string;
@@ -721,6 +745,8 @@ export class B2SignApi<SecurityDataType extends unknown> {
      */
     createDocument: (
       data: {
+        /** @format binary */
+        file: File;
         key: string;
         mimeType: string;
         size: number;
@@ -742,6 +768,7 @@ export class B2SignApi<SecurityDataType extends unknown> {
         method: "POST",
         body: data,
         secure: true,
+        type: ContentType.FormData,
         ...params,
       }),
 
@@ -845,6 +872,40 @@ export class B2SignApi<SecurityDataType extends unknown> {
       this.http.request<DocumentData, ErrorResponse>({
         path: `/documents/${key}`,
         method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Document
+     * @name GetDocumentBinary
+     * @summary Get a document binary
+     * @request GET:/document/{key}/binary
+     * @secure
+     */
+    getDocumentBinary: (key: string, params: RequestParams = {}) =>
+      this.http.request<File, ErrorResponse>({
+        path: `/document/${key}/binary`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Document
+     * @name GetDocumentInfo
+     * @summary Get a document info
+     * @request GET:/document/{key}/info
+     * @secure
+     */
+    getDocumentInfo: (key: string, params: RequestParams = {}) =>
+      this.http.request<DocumentWithData, ErrorResponse>({
+        path: `/document/${key}/info`,
+        method: "GET",
         secure: true,
         ...params,
       }),
