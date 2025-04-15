@@ -40,6 +40,11 @@ export interface AppPublic {
   url: string;
 }
 
+export enum AppErrorCodes {
+  App404 = "app:404",
+  App400Register = "app:400-register",
+}
+
 export interface User {
   /**
    * Wallet Address
@@ -54,6 +59,14 @@ export interface User {
   middleName?: string;
   /** Avatar */
   avatar?: string;
+}
+
+export enum AuthErrorCodes {
+  Api403 = "api:403",
+  Auth401 = "auth:401",
+  Auth403 = "auth:403",
+  Auth404 = "auth:404",
+  User404 = "user:404",
 }
 
 export interface ErrorResponse {
@@ -131,6 +144,11 @@ export interface ProviderWithSecret {
    * @format date-time
    */
   deletedAt?: string;
+}
+
+export enum ProviderErrorCodes {
+  Provider404 = "provider:404",
+  Provider400Exists = "provider:400-exists",
 }
 
 /** Activity Type */
@@ -578,17 +596,13 @@ export type OrderPositionWithData = OrderPosition & {
 };
 
 export type ItemOrdersPositions = ProductItemBase & {
-  placeData: Place;
-  positions: (OrderPositionBase & {
-    /**
-     * Order ID
-     * @format uuid
-     */
-    orderId: string;
-    createdByData: User;
-    /** Payment transaction hash */
-    paymentHash?: string;
-  })[];
+  /** @format uuid */
+  providerId: string;
+  providerName: string;
+  stats: Record<string, number>;
+  placeData?: Place;
+  availableAmount?: ProductCardAmount;
+  preOrderAmount?: ProductCardAmount;
 };
 
 export interface PlaceBase {

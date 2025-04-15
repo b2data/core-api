@@ -2494,6 +2494,11 @@ components:
         url:
           type: string
           description: App URL
+    AppErrorCodes:
+      type: string
+      enum:
+        - app:404
+        - app:400-register
     User:
       type: object
       required:
@@ -2516,6 +2521,14 @@ components:
         avatar:
           type: string
           description: Avatar
+    AuthErrorCodes:
+      type: string
+      enum:
+        - api:403
+        - auth:401
+        - auth:403
+        - auth:404
+        - user:404
     ErrorResponse:
       type: object
       required:
@@ -2629,6 +2642,11 @@ components:
           type: string
           format: date-time
           description: Deleted Date
+    ProviderErrorCodes:
+      type: string
+      enum:
+        - provider:404
+        - provider:400-exists
     ActivityType:
       type: string
       description: Activity Type
@@ -3233,30 +3251,25 @@ components:
         - $ref: "#/components/schemas/ProductItemBase"
         - type: object
           required:
-            - placeData
-            - positions
+            - providerId
+            - providerName
+            - stats
           properties:
+            providerId:
+              type: string
+              format: uuid
+            providerName:
+              type: string
+            stats:
+              type: object
+              additionalProperties:
+                type: integer
             placeData:
               $ref: "#/components/schemas/Place"
-            positions:
-              type: array
-              items:
-                allOf:
-                  - $ref: "#/components/schemas/OrderPositionBase"
-                  - type: object
-                    required:
-                      - orderId
-                      - createdByData
-                    properties:
-                      orderId:
-                        type: string
-                        format: uuid
-                        description: Order ID
-                      createdByData:
-                        $ref: "#/components/schemas/User"
-                      paymentHash:
-                        type: string
-                        description: Payment transaction hash
+            availableAmount:
+              $ref: "#/components/schemas/ProductCardAmount"
+            preOrderAmount:
+              $ref: "#/components/schemas/ProductCardAmount"
     PlaceBase:
       type: object
       required:
