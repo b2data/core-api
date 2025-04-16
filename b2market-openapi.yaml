@@ -2703,6 +2703,11 @@ components:
           description: Creation Date
         userData:
           $ref: "#/components/schemas/User"
+    DeliveryErrorCodes:
+      type: string
+      enum:
+        - delivery:idt:404
+        - delivery:idp:404
     DeliveryIdtBase:
       type: object
       required:
@@ -2864,6 +2869,10 @@ components:
         video:
           type: string
           description: Word main video
+    FileErrorCodes:
+      type: string
+      enum:
+        - file:404
     FileData:
       type: object
       required:
@@ -2904,6 +2913,11 @@ components:
           type: string
           format: date-time
           description: Last Updating Date
+    FolderErrorCodes:
+      type: string
+      enum:
+        - folder:404
+        - folder:404-filter
     FolderBase:
       type: object
       required:
@@ -3069,6 +3083,15 @@ components:
         - returned
         - failed
       description: Order Position status
+    OrderErrorCodes:
+      type: string
+      enum:
+        - order:404
+        - order:400-invalid
+        - order:404-position
+        - order:400-position-unavailable
+        - order:400-position-invalid
+        - order:400-invalid-leaved-member
     OrderBase:
       type: object
       required:
@@ -3270,6 +3293,11 @@ components:
               $ref: "#/components/schemas/ProductCardAmount"
             preOrderAmount:
               $ref: "#/components/schemas/ProductCardAmount"
+    PlaceErrorCodes:
+      type: string
+      enum:
+        - place:404
+        - place:400-exist
     PlaceBase:
       type: object
       required:
@@ -3397,6 +3425,15 @@ components:
           example:
             - HH:MM
             - HH:MM
+    ProductErrorCodes:
+      type: string
+      enum:
+        - product:404
+        - product:404-item
+        - product:404-batch
+        - product:404-price
+        - product:404-idp
+        - product:404-amount
     UnitInfo:
       type: object
       required:
@@ -4333,6 +4370,10 @@ components:
           type: string
           format: date-time
           description: Last Updating Date
+    TaskErrorCodes:
+      type: string
+      enum:
+        - task:404
     TaskType:
       type: string
       enum:
@@ -7109,6 +7150,7 @@ components:
                 type: object
                 required:
                   - created
+                  - processing
                   - paid
                   - failed
                   - cancelled

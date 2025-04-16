@@ -201,6 +201,11 @@ export interface AdminAccess {
   userData?: User;
 }
 
+export enum DeliveryErrorCodes {
+  DeliveryIdt404 = "delivery:idt:404",
+  DeliveryIdp404 = "delivery:idp:404",
+}
+
 export interface DeliveryIdtBase {
   /**
    * Delivery idT ID
@@ -305,6 +310,10 @@ export interface DictionaryWord {
   video?: string;
 }
 
+export enum FileErrorCodes {
+  File404 = "file:404",
+}
+
 export interface FileData {
   /**
    * File ID
@@ -337,6 +346,11 @@ export interface FileData {
    * @format date-time
    */
   updatedAt: string;
+}
+
+export enum FolderErrorCodes {
+  Folder404 = "folder:404",
+  Folder404Filter = "folder:404-filter",
 }
 
 export interface FolderBase {
@@ -472,6 +486,15 @@ export enum OrderPositionStatus {
   Failed = "failed",
 }
 
+export enum OrderErrorCodes {
+  Order404 = "order:404",
+  Order400Invalid = "order:400-invalid",
+  Order404Position = "order:404-position",
+  Order400PositionUnavailable = "order:400-position-unavailable",
+  Order400PositionInvalid = "order:400-position-invalid",
+  Order400InvalidLeavedMember = "order:400-invalid-leaved-member",
+}
+
 export interface OrderBase {
   /**
    * Order ID
@@ -605,6 +628,11 @@ export type ItemOrdersPositions = ProductItemBase & {
   preOrderAmount?: ProductCardAmount;
 };
 
+export enum PlaceErrorCodes {
+  Place404 = "place:404",
+  Place400Exist = "place:400-exist",
+}
+
 export interface PlaceBase {
   /**
    * Place ID
@@ -667,6 +695,15 @@ export interface PlaceWorkHours {
   sat: string[];
   /** @example ["HH:MM","HH:MM"] */
   sun: string[];
+}
+
+export enum ProductErrorCodes {
+  Product404 = "product:404",
+  Product404Item = "product:404-item",
+  Product404Batch = "product:404-batch",
+  Product404Price = "product:404-price",
+  Product404Idp = "product:404-idp",
+  Product404Amount = "product:404-amount",
 }
 
 export interface UnitInfo {
@@ -1319,6 +1356,10 @@ export interface Tag {
    * @format date-time
    */
   updatedAt: string;
+}
+
+export enum TaskErrorCodes {
+  Task404 = "task:404",
 }
 
 export enum TaskType {
