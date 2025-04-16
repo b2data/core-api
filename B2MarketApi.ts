@@ -3270,6 +3270,7 @@ export class B2MarketApi<SecurityDataType extends unknown> {
         {
           orders: {
             created: number;
+            processing: number;
             paid: number;
             failed: number;
             cancelled: number;

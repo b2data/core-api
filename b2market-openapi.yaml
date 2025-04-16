@@ -7158,6 +7158,8 @@ components:
                 properties:
                   created:
                     type: number
+                  processing:
+                    type: number
                   paid:
                     type: number
                   failed:
