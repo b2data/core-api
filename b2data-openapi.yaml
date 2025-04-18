@@ -3797,7 +3797,7 @@ components:
             versions:
               type: array
               items:
-                type: object
+                $ref: "#/components/schemas/DocumentDataCommon"
                 description: Need to formalize
             fromPublic:
               type: boolean
@@ -3861,17 +3861,17 @@ components:
         - $ref: "#/components/schemas/DocumentSignData"
         - type: object
           required:
-            - id
             - documentId
             - versionId
+            - hash
             - createdAt
             - updatedAt
           properties:
-            id:
-              type: string
             documentId:
               type: string
             versionId:
+              type: string
+            hash:
               type: string
             signature:
               type: string

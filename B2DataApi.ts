@@ -986,7 +986,7 @@ export type DocumentWithData = Document & {
   spaceData?: SpaceBase;
   createdByData?: User;
   tagsData?: TagWithData[];
-  versions?: object[];
+  versions?: DocumentDataCommon[];
   fromPublic?: boolean;
   fromDeleted?: boolean;
 };
@@ -1016,9 +1016,9 @@ export interface DocumentSignData {
 }
 
 export type DocumentSignature = DocumentSignData & {
-  id: string;
   documentId: string;
   versionId: string;
+  hash: string;
   signature?: string;
   timestamp?: number;
   createdBy?: string;
