@@ -3100,17 +3100,13 @@ components:
       type: object
       required:
         - id
-        - type
         - source
         - status
         - priority
         - priorityLevel
         - key
         - name
-        - data
       properties:
-        type:
-          $ref: "#/components/schemas/TaskType"
         source:
           $ref: "#/components/schemas/TaskSource"
         status:
@@ -3137,8 +3133,6 @@ components:
           items:
             type: string
           nullable: true
-        data:
-          type: object
         storyPoints:
           type: number
           nullable: true
@@ -3177,6 +3171,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseB2TaskData"
         - type: object
+          required:
+            - type
+            - data
           properties:
             type:
               enum:
@@ -3187,6 +3184,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseB2TaskData"
         - type: object
+          required:
+            - type
+            - data
           properties:
             type:
               enum:
@@ -3242,6 +3242,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseB2TaskData"
         - type: object
+          required:
+            - type
+            - data
           properties:
             type:
               enum:
@@ -3271,6 +3274,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseB2TaskData"
         - type: object
+          required:
+            - type
+            - data
           properties:
             type:
               enum:
@@ -3300,6 +3306,9 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseB2TaskData"
         - type: object
+          required:
+            - type
+            - data
           properties:
             type:
               enum:
@@ -3869,7 +3878,7 @@ components:
             timestamp:
               type: number
             createdBy:
-              type: string§
+              type: string
             createdAt:
               type: string
               format: date-time

@@ -684,7 +684,6 @@ export type TaskParticipantWithData = TaskParticipant & {
 };
 
 export interface BaseB2TaskData {
-  type: TaskType;
   source: TaskSource;
   status: TaskStatus;
   priority: TaskPriority;
@@ -695,7 +694,6 @@ export interface BaseB2TaskData {
   name: string;
   description?: string | null;
   attachments?: string[] | null;
-  data: object;
   storyPoints?: number | null;
   timeSpent?: number | null;
   /** @format date-time */
@@ -711,13 +709,13 @@ export interface BaseB2TaskData {
 }
 
 export type B2TaskDataSimple = BaseB2TaskData & {
-  type?: "simple";
-  data?: object;
+  type: "simple";
+  data: object;
 };
 
 export type B2TaskDataFillIdt = BaseB2TaskData & {
-  type?: "fillIdt";
-  data?: {
+  type: "fillIdt";
+  data: {
     externalId: string;
     /** Product ID in B2Market */
     productId: string;
@@ -740,8 +738,8 @@ export type B2TaskDataFillIdt = BaseB2TaskData & {
 };
 
 export type B2TaskDataReceiveIdt = BaseB2TaskData & {
-  type?: "receiveIdt";
-  data?: {
+  type: "receiveIdt";
+  data: {
     externalId: string;
     place: PlaceBase;
     fromUserId: string;
@@ -751,8 +749,8 @@ export type B2TaskDataReceiveIdt = BaseB2TaskData & {
 };
 
 export type B2TaskDataGiveOutIdt = BaseB2TaskData & {
-  type?: "giveOutIdt";
-  data?: {
+  type: "giveOutIdt";
+  data: {
     externalId: string;
     place: PlaceBase;
     toUserId: string;
@@ -762,8 +760,8 @@ export type B2TaskDataGiveOutIdt = BaseB2TaskData & {
 };
 
 export type B2TaskDataFactoryTask = BaseB2TaskData & {
-  type?: "factoryTask";
-  data?: {
+  type: "factoryTask";
+  data: {
     type: "plan" | "preOrder";
     documentId: string;
     versionId: string;
