@@ -122,6 +122,8 @@ export interface B2DocConfig {
 
 export type B2DocData = DocumentDataCommon & {
   config?: B2DocConfig;
+  signData?: DocumentSignData[];
+  variables?: string[];
 };
 
 export enum B2DocBlockType {
@@ -275,6 +277,10 @@ export type B2DocStructureWithData = B2DocStructure & {
   isTemplate?: boolean;
   variants: B2DocBlockVariantWithData[];
 };
+
+export interface B2DocSearchQuery {
+  withVariables?: boolean;
+}
 
 export enum B2FormFieldType {
   Info = "info",
@@ -693,7 +699,6 @@ export interface BaseB2TaskData {
   key: string;
   name: string;
   description?: string | null;
-  attachments?: string[] | null;
   storyPoints?: number | null;
   timeSpent?: number | null;
   /** @format date-time */
@@ -897,7 +902,7 @@ export interface CreateB2TaskBody {
   artefactId?: string | null;
   artefactType?: TaskArtefactType | null;
   description?: string | null;
-  attachments?: string[] | null;
+  references?: B2TaskNewReference[];
   data: object;
   storyPoints?: number | null;
   /** @format date-time */
@@ -908,6 +913,16 @@ export interface CreateB2TaskBody {
   assigneeGroupId?: string | null;
   controlId?: string | null;
   participants?: TaskParticipant[] | null;
+}
+
+export interface B2TaskNewReference {
+  /** @format uuid */
+  targetId: string;
+  targetType: DocumentType;
+  /** @format uuid */
+  targetVersion?: string;
+  targetCurrent?: boolean;
+  targetSigned?: boolean;
 }
 
 export interface DictionaryWord {
@@ -1027,6 +1042,27 @@ export type DocumentSignature = DocumentSignData & {
   /** @format date-time */
   updatedAt: string;
 };
+
+export interface DocumentReference {
+  /** @format uuid */
+  sourceId: string;
+  sourceType: DocumentType;
+  /** @format uuid */
+  sourceVersion: string;
+  /** @format uuid */
+  targetId: string;
+  targetType: DocumentType;
+  /** @format uuid */
+  targetVersion?: string | null;
+  targetCurrent?: boolean;
+  targetSigned?: boolean;
+  metadata?: Record<string, string>;
+  createdBy?: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
 
 export type FileData = DocumentDataCommon & {
   /** MIME Type */
@@ -2581,7 +2617,6 @@ export class B2DataApi<SecurityDataType extends unknown> {
         priorityLevel?: number;
         name?: string;
         description?: string | null;
-        attachments?: string[];
         data?: object;
         storyPoints?: number | null;
         /** @format date-time */
@@ -2592,6 +2627,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
         assigneeGroupId?: string | null;
         controlId?: string | null;
         participants?: TaskParticipant[] | null;
+        references?: B2TaskNewReference[];
       },
       params: RequestParams = {},
     ) =>
@@ -2932,6 +2968,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
         withShared?: boolean;
         b2taskQuery?: B2TaskSearchQuery;
         b2counterpartyQuery?: B2CounterpartySearchQuery;
+        b2docQuery?: B2DocSearchQuery;
         limit?: number;
         offset?: number;
         sort?: SortModel[];
@@ -3024,6 +3061,149 @@ export class B2DataApi<SecurityDataType extends unknown> {
       this.http.request<DocumentSignature[], ErrorResponse>({
         path: `/documents/${docId}/signatures/${versionId}/request`,
         method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name CreateDocumentReference
+     * @summary Create document reference
+     * @request POST:/documents/{docId}/references
+     * @secure
+     */
+    createDocumentReference: (
+      docId: string,
+      data: {
+        /** @format uuid */
+        sourceVersion: string;
+        /** @format uuid */
+        targetId: string;
+        targetType: DocumentType;
+        /** @format uuid */
+        targetVersion?: string | null;
+        targetCurrent?: boolean;
+        targetSigned?: boolean;
+        metadata?: Record<string, string>;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DocumentReference, ErrorResponse>({
+        path: `/documents/${docId}/references`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name EditDocumentReferences
+     * @summary Edit document references
+     * @request PUT:/documents/{docId}/references
+     * @secure
+     */
+    editDocumentReferences: (
+      docId: string,
+      data: {
+        /** @format uuid */
+        sourceVersion: string;
+        /** @format uuid */
+        targetId: string;
+        targetType: DocumentType;
+        /** @format uuid */
+        targetVersion?: string | null;
+        targetCurrent?: boolean;
+        targetSigned?: boolean;
+        metadata?: Record<string, string>;
+      }[],
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DocumentReference[], ErrorResponse>({
+        path: `/documents/${docId}/references`,
+        method: "PUT",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name SearchDocumentReferences
+     * @summary Search document references
+     * @request POST:/documents/{docId}/references/search
+     * @secure
+     */
+    searchDocumentReferences: (
+      docId: string,
+      data: {
+        types?: DocumentType[];
+        /** @format uuid */
+        versionId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DocumentReference[], any>({
+        path: `/documents/${docId}/references/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name EditDocumentReference
+     * @summary Edit document reference
+     * @request PATCH:/documents/{docId}/references/{refId}
+     * @secure
+     */
+    editDocumentReference: (
+      docId: string,
+      refId: string,
+      data: {
+        /** @format uuid */
+        sourceVersion: string;
+        /** @format uuid */
+        targetId: string;
+        targetType: DocumentType;
+        /** @format uuid */
+        targetVersion?: string | null;
+        targetCurrent?: boolean;
+        targetSigned?: boolean;
+        metadata?: Record<string, string>;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<DocumentReference, ErrorResponse>({
+        path: `/documents/${docId}/references/${refId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Documents
+     * @name DeleteDocumentReference
+     * @summary Delete document reference
+     * @request DELETE:/documents/{docId}/references/{refId}
+     * @secure
+     */
+    deleteDocumentReference: (docId: string, refId: string, params: RequestParams = {}) =>
+      this.http.request<DocumentReference, ErrorResponse>({
+        path: `/documents/${docId}/references/${refId}`,
+        method: "DELETE",
         secure: true,
         ...params,
       }),

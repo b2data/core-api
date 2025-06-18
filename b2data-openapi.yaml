@@ -1120,6 +1120,125 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DocumentNotFound"
+  "/documents/{docId}/references":
+    post:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Create document reference
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+      operationId: createDocumentReference
+      requestBody:
+        $ref: "#/components/requestBodies/ModifyDocumentReferenceBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentReferenceData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+    put:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Edit document references
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+      operationId: editDocumentReferences
+      requestBody:
+        $ref: "#/components/requestBodies/EditDocumentReferencesBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentReferencesData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/{docId}/references/search":
+    post:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Search document references
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+      operationId: searchDocumentReferences
+      requestBody:
+        $ref: "#/components/requestBodies/SearchDocumentReferencesBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentReferencesData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  "/documents/{docId}/references/{refId}":
+    patch:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Edit document reference
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+        - name: refId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Reference Document ID
+      operationId: editDocumentReference
+      requestBody:
+        $ref: "#/components/requestBodies/ModifyDocumentReferenceBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentReferenceData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+    delete:
+      tags:
+        - Documents
+      security:
+        - BearerAuth: []
+      summary: Delete document reference
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+        - name: refId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Reference Document ID
+      operationId: deleteDocumentReference
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentReferenceData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
   "/documents/files/{fileId}":
     get:
       tags:
@@ -2024,6 +2143,14 @@ components:
           properties:
             config:
               $ref: "#/components/schemas/B2DocConfig"
+            signData:
+              type: array
+              items:
+                $ref: "#/components/schemas/DocumentSignData"
+            variables:
+              type: array
+              items:
+                type: string
     B2DocBlockType:
       type: string
       enum:
@@ -2357,6 +2484,11 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/B2DocBlockVariantWithData"
+    B2DocSearchQuery:
+      type: object
+      properties:
+        withVariables:
+          type: boolean
     B2FormFieldType:
       type: string
       enum:
@@ -3128,11 +3260,6 @@ components:
         description:
           type: string
           nullable: true
-        attachments:
-          type: array
-          items:
-            type: string
-          nullable: true
         storyPoints:
           type: number
           nullable: true
@@ -3602,11 +3729,10 @@ components:
         description:
           type: string
           nullable: true
-        attachments:
+        references:
           type: array
           items:
-            type: string
-          nullable: true
+            $ref: "#/components/schemas/B2TaskNewReference"
         data:
           type: object
         storyPoints:
@@ -3634,6 +3760,24 @@ components:
           items:
             $ref: "#/components/schemas/TaskParticipant"
           nullable: true
+    B2TaskNewReference:
+      type: object
+      required:
+        - targetId
+        - targetType
+      properties:
+        targetId:
+          type: string
+          format: uuid
+        targetType:
+          $ref: "#/components/schemas/DocumentType"
+        targetVersion:
+          type: string
+          format: uuid
+        targetCurrent:
+          type: boolean
+        targetSigned:
+          type: boolean
     DictionaryWord:
       type: object
       properties:
@@ -3841,10 +3985,10 @@ components:
     DocumentSignData:
       type: object
       required:
+        - order
         - userId
         - userName
         - spaceId
-        - order
       properties:
         userId:
           type: string
@@ -3885,6 +4029,50 @@ components:
             updatedAt:
               type: string
               format: date-time
+    DocumentReference:
+      type: object
+      required:
+        - sourceId
+        - sourceType
+        - sourceVersion
+        - targetId
+        - targetType
+        - createdAt
+        - updatedAt
+      properties:
+        sourceId:
+          type: string
+          format: uuid
+        sourceType:
+          $ref: "#/components/schemas/DocumentType"
+        sourceVersion:
+          type: string
+          format: uuid
+        targetId:
+          type: string
+          format: uuid
+        targetType:
+          $ref: "#/components/schemas/DocumentType"
+        targetVersion:
+          type: string
+          format: uuid
+          nullable: true
+        targetCurrent:
+          type: boolean
+        targetSigned:
+          type: boolean
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     FileData:
       allOf:
         - $ref: "#/components/schemas/DocumentDataCommon"
@@ -5174,10 +5362,6 @@ components:
               description:
                 type: string
                 nullable: true
-              attachments:
-                type: array
-                items:
-                  type: string
               data:
                 type: object
               storyPoints:
@@ -5205,6 +5389,10 @@ components:
                 items:
                   $ref: "#/components/schemas/TaskParticipant"
                 nullable: true
+              references:
+                type: array
+                items:
+                  $ref: "#/components/schemas/B2TaskNewReference"
     SearchB2TaskWorkLogsBody:
       content:
         application/json:
@@ -5311,6 +5499,8 @@ components:
                 $ref: "#/components/schemas/B2TaskSearchQuery"
               b2counterpartyQuery:
                 $ref: "#/components/schemas/B2CounterpartySearchQuery"
+              b2docQuery:
+                $ref: "#/components/schemas/B2DocSearchQuery"
               limit:
                 type: number
               offset:
@@ -5389,6 +5579,81 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/EditTagContentBody"
+    SearchDocumentReferencesBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              types:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DocumentType"
+              versionId:
+                type: string
+                format: uuid
+    ModifyDocumentReferenceBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - sourceVersion
+              - targetId
+              - targetType
+            properties:
+              sourceVersion:
+                type: string
+                format: uuid
+              targetId:
+                type: string
+                format: uuid
+              targetType:
+                $ref: "#/components/schemas/DocumentType"
+              targetVersion:
+                type: string
+                format: uuid
+                nullable: true
+              targetCurrent:
+                type: boolean
+              targetSigned:
+                type: boolean
+              metadata:
+                type: object
+                additionalProperties:
+                  type: string
+    EditDocumentReferencesBody:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - sourceVersion
+                - targetId
+                - targetType
+              properties:
+                sourceVersion:
+                  type: string
+                  format: uuid
+                targetId:
+                  type: string
+                  format: uuid
+                targetType:
+                  $ref: "#/components/schemas/DocumentType"
+                targetVersion:
+                  type: string
+                  format: uuid
+                  nullable: true
+                targetCurrent:
+                  type: boolean
+                targetSigned:
+                  type: boolean
+                metadata:
+                  type: object
+                  additionalProperties:
+                    type: string
     CreateGroupBody:
       required: true
       content:
@@ -6181,6 +6446,20 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/DocumentSignature"
+    DocumentReferencesData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/DocumentReference"
+    DocumentReferenceData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DocumentReference"
     FileBinary:
       description: Successful operation
       content:
