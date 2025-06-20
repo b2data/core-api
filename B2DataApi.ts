@@ -279,7 +279,11 @@ export type B2DocStructureWithData = B2DocStructure & {
 };
 
 export interface B2DocSearchQuery {
+  ids?: string[];
+  docs?: string[];
+  versions?: number[];
   withVariables?: boolean;
+  specific?: DocumentVersionSpecific;
 }
 
 export enum B2FormFieldType {
@@ -1062,6 +1066,15 @@ export interface DocumentReference {
   createdAt: string;
   /** @format date-time */
   updatedAt: string;
+}
+
+export interface DocumentVersionSpecific {
+  /** @format uuid */
+  docId: string;
+  /** @format uuid */
+  versionId?: string;
+  current?: boolean;
+  signed?: boolean;
 }
 
 export type FileData = DocumentDataCommon & {
@@ -2165,6 +2178,39 @@ export class B2DataApi<SecurityDataType extends unknown> {
       >({
         path: `/documents/b2form/${formId}/data`,
         method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Form
+     * @name SearchFormFields
+     * @summary Search form fields
+     * @request POST:/documents/b2form/fields/search
+     * @secure
+     */
+    searchFormFields: (
+      data: SearchModel & {
+        /** @format uuid */
+        spaceId: string;
+        versions?: string[];
+        specific?: DocumentVersionSpecific;
+        fields?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: B2FormStructureWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2form/fields/search`,
+        method: "POST",
+        body: data,
         secure: true,
         ...params,
       }),

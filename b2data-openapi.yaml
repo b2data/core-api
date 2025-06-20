@@ -406,6 +406,23 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DocumentNotFound"
+  /documents/b2form/fields/search:
+    post:
+      tags:
+        - B2Form
+      security:
+        - BearerAuth: []
+      summary: Search form fields
+      operationId: searchFormFields
+      requestBody:
+        $ref: "#/components/requestBodies/SearchFormFieldsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2FormFieldsData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
   "/documents/b2product/{productId}/info":
     get:
       tags:
@@ -2487,8 +2504,24 @@ components:
     B2DocSearchQuery:
       type: object
       properties:
+        ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        docs:
+          type: array
+          items:
+            type: string
+            format: uuid
+        versions:
+          type: array
+          items:
+            type: number
         withVariables:
           type: boolean
+        specific:
+          $ref: "#/components/schemas/DocumentVersionSpecific"
     B2FormFieldType:
       type: string
       enum:
@@ -4073,6 +4106,21 @@ components:
         updatedAt:
           type: string
           format: date-time
+    DocumentVersionSpecific:
+      type: object
+      required:
+        - docId
+      properties:
+        docId:
+          type: string
+          format: uuid
+        versionId:
+          type: string
+          format: uuid
+        current:
+          type: boolean
+        signed:
+          type: boolean
     FileData:
       allOf:
         - $ref: "#/components/schemas/DocumentDataCommon"
@@ -5094,6 +5142,31 @@ components:
             properties:
               config:
                 $ref: "#/components/schemas/B2DocConfig"
+    SearchFormFieldsBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                required:
+                  - spaceId
+                properties:
+                  spaceId:
+                    type: string
+                    format: uuid
+                  versions:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                  specific:
+                    $ref: "#/components/schemas/DocumentVersionSpecific"
+                  fields:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
     SearchB2StorageBalances:
       content:
         application/json:
