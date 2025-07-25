@@ -383,6 +383,416 @@ export interface PlaceBase {
   long: number;
 }
 
+export interface ProcessParticipant {
+  number: number;
+  role: string;
+  userId?: string;
+  groupId?: string;
+  spaceId?: string;
+  userData?: object;
+  groupData?: object;
+  spaceData?: object;
+}
+
+export interface ProcessNodeReference {
+  documentId: string;
+  type: string;
+  versionId?: string;
+  current?: boolean;
+  signed?: boolean;
+}
+
+export enum ProcessNodeType {
+  BpmnStartEvent = "bpmn:StartEvent",
+  BpmnEndEvent = "bpmn:EndEvent",
+  BpmnIntermediateCatchEvent = "bpmn:IntermediateCatchEvent",
+  BpmnUserTask = "bpmn:UserTask",
+  BpmnServiceTask = "bpmn:ServiceTask",
+  BpmnScriptTask = "bpmn:ScriptTask",
+  BpmnSubProcess = "bpmn:SubProcess",
+  BpmnComplexGateway = "bpmn:ComplexGateway",
+  BpmnParallelGateway = "bpmn:ParallelGateway",
+  BpmnExclusiveGateway = "bpmn:ExclusiveGateway",
+  BpmnDataObjectReference = "bpmn:DataObjectReference",
+}
+
+export enum ProcessNodeDefinitionType {
+  BpmnTimerEventDefinition = "bpmn:TimerEventDefinition",
+  BpmnMessageEventDefinition = "bpmn:MessageEventDefinition",
+}
+
+export enum ProcessNodeConnectionType {
+  BpmnSequenceFlow = "bpmn:SequenceFlow",
+}
+
+export enum ProcessNodeAssociationType {
+  BpmnDataInputAssociation = "bpmn:DataInputAssociation",
+  BpmnDataOutputAssociation = "bpmn:DataOutputAssociation",
+}
+
+export interface ProcessNodeConnection {
+  id: string;
+  name?: string;
+  nodeId: string;
+  /** Status of connected node completion */
+  status?: "done" | "blocked" | "discard";
+  /** Whether the checklist of the connected node is completed */
+  checkListCompleted?: boolean;
+  conditions?: Record<
+    string,
+    {
+      type: "text" | "number" | "date" | "boolean";
+      operator: FormulaOperator;
+      value: string;
+    }
+  >;
+  waypoints?: {
+    x: number;
+    y: number;
+  }[];
+}
+
+export interface ProcessNodeBounds {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/** Base properties for ProcessNode */
+export interface ProcessNodeBase {
+  id: string;
+  spaceId: string;
+  versionId: string;
+  order: number;
+  isTemplate?: boolean;
+  isValid?: boolean;
+  parentId?: string | null;
+  name: string;
+  incoming: ProcessNodeConnection[];
+  outgoing: ProcessNodeConnection[];
+  inputs: ProcessNodeConnection[];
+  outputs: ProcessNodeConnection[];
+  bounds: ProcessNodeBounds;
+  createdBy?: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+}
+
+export type ProcessNodeStartEvent = ProcessNodeBase & {
+  type: "bpmn:StartEvent";
+  data: {
+    message?: {
+      /** Name of the message event */
+      name?: string;
+      params: Record<string, string>;
+    };
+    timer?: {
+      /** Cron expression for the timer event */
+      cron: string;
+    };
+  };
+};
+
+export type ProcessNodeEndEvent = ProcessNodeBase & {
+  type: "bpmn:EndEvent";
+  data: {
+    variant?: "normal" | "error" | "terminate";
+  };
+};
+
+export type ProcessNodeIntermediateCatchEvent = ProcessNodeBase & {
+  type: "bpmn:IntermediateCatchEvent";
+  data: {
+    message?: {
+      /** Name of the message event */
+      name?: string;
+      params: Record<string, string>;
+    };
+    timer?: {
+      /** Delay in seconds for the timer event */
+      delay: number;
+    };
+  };
+};
+
+export type ProcessNodeUserTask = ProcessNodeBase & {
+  type: "bpmn:UserTask";
+  data: {
+    classifications: {
+      id?: string;
+      name: string;
+      code: string;
+    }[];
+    unitInfo: UnitInfo;
+    /** Participant number from the process config */
+    participant?: number;
+    /** Volume of work to calculate resources */
+    volume?: number;
+    volumeType?: "manual" | "model" | "map" | "table";
+    volumeSelection?: Record<string, object>;
+    type: TaskType;
+    priority: TaskPriority;
+    storyPoints: number;
+    resources: {
+      id: string;
+      name: string;
+      type: ResourceType;
+      unit: UnitInfo;
+      consumption: number;
+      /** Waste percentage for the resource */
+      wastePercent?: number;
+      /** Loss percentage for the resource */
+      lossPercent?: number;
+    }[];
+    operations: {
+      id?: string;
+      name: string;
+      type: TaskOperationType;
+      /** Progress of the operation in percentage. Total percent for all operations must be 100. */
+      progress: number;
+      metadata?: Record<string, object>;
+    }[];
+    checklist: string[];
+  };
+};
+
+export type ProcessNodeServiceTask = ProcessNodeBase & {
+  type: "bpmn:ServiceTask";
+  data: {
+    variant: "fillIdt" | "giveOutIdt" | "receiveIdt";
+  };
+};
+
+export type ProcessNodeScriptTask = ProcessNodeBase & {
+  type: "bpmn:ScriptTask";
+  data: ProcessNodeReference;
+};
+
+export type ProcessNodeSubProcess = ProcessNodeBase & {
+  type: "bpmn:SubProcess";
+  data: ProcessNodeReference;
+};
+
+export type ProcessNodeGateway = ProcessNodeBase & {
+  type: "bpmn:ComplexGateway," | "bpmn:ParallelGateway," | "bpmn:ExclusiveGateway,";
+  data: {
+    variant?: "status" | "conditions";
+    availableConditions?: ProcessNodeReference[];
+    selectedConditions?: Record<string, string[]>;
+  };
+};
+
+export type ProcessNodeDataObjectReference = ProcessNodeBase & {
+  type: "bpmn:DataObjectReference";
+  data: {
+    variant?: "b2table" | "agent";
+    references?: ProcessNodeReference[];
+    addTags?: EditTagContent[];
+    writeMap?: Record<string, string>;
+    agentId?: string;
+    metadata?: Record<string, object>;
+  };
+};
+
+export type ProcessNode =
+  | ProcessNodeStartEvent
+  | ProcessNodeEndEvent
+  | ProcessNodeIntermediateCatchEvent
+  | ProcessNodeUserTask
+  | ProcessNodeServiceTask
+  | ProcessNodeScriptTask
+  | ProcessNodeSubProcess
+  | ProcessNodeGateway
+  | ProcessNodeDataObjectReference;
+
+export interface ProcessAgentBase {
+  id: string;
+  spaceId: string;
+  name: string;
+  createdBy?: string;
+}
+
+export type ProcessAgent = ProcessAgentBase & {
+  rawSpec: string;
+  domain: string;
+  auth: {
+    authorizationType?: "custom" | "bearer" | "apikey";
+    customAuthHeaders?: Record<string, string>;
+    customType?: string;
+    token?: string;
+    apiKey?: string;
+  };
+  /** @format date-time */
+  updatedAt: string;
+  /** @format date-time */
+  createdAt: string;
+};
+
+export interface ProcessData {
+  managedBy?: string;
+  participants: ProcessParticipant[];
+  isValid?: boolean;
+  isRunning?: boolean;
+  isActivated?: boolean;
+  /** @format date-time */
+  activatedAt?: string;
+  activatedBy?: string;
+  startInfo?: {
+    message?: {
+      /** Name of the message event */
+      name?: string;
+      params: Record<string, string>;
+    };
+    timer?: {
+      /** Cron expression for the timer event */
+      cron: string;
+    };
+  };
+}
+
+export type DocumentProcess = DocumentDataCommon & ProcessData;
+
+export type DocumentProcessWithData = DocumentProcess & {
+  name: string;
+};
+
+export interface ProcessExecution {
+  /** @format uuid */
+  id: string;
+  /** @format uuid */
+  spaceId: string;
+  /** @format uuid */
+  versionId: string;
+  /** @format uuid */
+  documentId: string;
+  /**
+   * ID of the root process execution, if this is a sub-execution
+   * @format uuid
+   */
+  rootId: string;
+  /**
+   * ID of the parent process execution, if this is a sub-execution
+   * @format uuid
+   */
+  parentId?: string | null;
+  createdBy?: string;
+  managedBy: string;
+  key: string;
+  name: string;
+  isValid: boolean;
+  isRunning: boolean;
+  isCompleted: boolean;
+  currentOrder: number;
+  maxOrder: number;
+  /**
+   * Planned start date based on durations
+   * @format date-time
+   */
+  plannedStartedAt?: string;
+  /**
+   * Estimated start date based on nodes start dates and durations
+   * @format date-time
+   */
+  estimatedStartedAt?: string;
+  /**
+   * Planned due date based on durations
+   * @format date-time
+   */
+  plannedDueDateAt?: string;
+  /**
+   * Estimated due date based on nodes due dates and durations
+   * @format date-time
+   */
+  estimatedDueDateAt?: string;
+  /**
+   * Real start date of the process execution
+   * @format date-time
+   */
+  startedAt?: string;
+  /**
+   * Real completion date of the process execution
+   * @format date-time
+   */
+  completedAt?: string;
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  /** @format date-time */
+  deletedAt?: string;
+}
+
+export type ProcessExecutionWithData = ProcessExecution & {
+  createdByData?: User;
+  managedByData?: User;
+  currentNodes: ProcessExecutionNode[];
+};
+
+export interface ProcessExecutionNode {
+  /** @format uuid */
+  id: string;
+  /** @format uuid */
+  spaceId: string;
+  /** @format uuid */
+  versionId: string;
+  /** @format uuid */
+  executionId: string;
+  nodeId: string;
+  createdBy?: string;
+  userId?: string;
+  /** @format uuid */
+  groupId?: string;
+  status: TaskStatus;
+  /** @format date-time */
+  startedAt?: string;
+  /** @format date-time */
+  completedAt?: string;
+  /** @format uuid */
+  taskId?: string;
+  /**
+   * Planned start date based on previous nodes durations
+   * @format date-time
+   */
+  plannedStartedAt?: string;
+  /**
+   * Estimated start date based on previous nodes start dates and durations
+   * @format date-time
+   */
+  estimatedStartedAt?: string;
+  /**
+   * Planned due date based on previous nodes durations + current duration
+   * @format date-time
+   */
+  plannedDueDateAt?: string;
+  /**
+   * Estimated due date based on previous nodes due dates and durations + current duration
+   * @format date-time
+   */
+  estimatedDueDateAt?: string;
+  order: number;
+  type: ProcessNodeType;
+  isValid: boolean;
+  /** @format uuid */
+  parentId?: string | null;
+  name?: string;
+  /** Process node data */
+  data: object;
+  bounds: ProcessNodeBounds;
+  incoming: ProcessNodeConnection[];
+  outgoing: ProcessNodeConnection[];
+  inputs: ProcessNodeConnection[];
+  outputs: ProcessNodeConnection[];
+  /** @format date-time */
+  createdAt: string;
+  /** @format date-time */
+  updatedAt: string;
+  /** @format date-time */
+  deletedAt?: string;
+}
+
 export interface B2ProductUnitInfo {
   unit?: string;
   systemUnit?: string;
@@ -680,6 +1090,16 @@ export enum TaskArtefactType {
   Batch = "batch",
 }
 
+export enum TaskOperationType {
+  OpenLink = "openLink",
+  OpenDocument = "openDocument",
+  UploadDocument = "uploadDocument",
+  CreateDocument = "createDocument",
+  DownloadDocument = "downloadDocument",
+  FillForm = "fillForm",
+  SignDocument = "signDocument",
+}
+
 export interface TaskParticipant {
   userId?: string;
   groupId?: string;
@@ -927,6 +1347,24 @@ export interface B2TaskNewReference {
   targetVersion?: string;
   targetCurrent?: boolean;
   targetSigned?: boolean;
+}
+
+export enum FormulaOperator {
+  Equals = "equals",
+  NotEquals = "not_equals",
+  Less = "less",
+  LessEqual = "less_equal",
+  More = "more",
+  MoreEqual = "more_equal",
+  Exists = "exists",
+}
+
+export interface UnitInfo {
+  unit: string;
+  /** @format float */
+  coeff: number;
+  systemUnit: string;
+  nonSystemUnit?: string | null;
 }
 
 export interface DictionaryWord {
@@ -1553,7 +1991,7 @@ export type TagWithData = TagData & {
   valueData?: DictionaryWord;
 };
 
-export interface EditTagContentBody {
+export interface EditTagContent {
   field: string;
   value: string;
   category?: string;
@@ -1616,6 +2054,15 @@ export interface GetDocBinaryParams {
    * @format uuid
    */
   docId: string;
+}
+
+export interface GetProcessBinaryDataParams {
+  format?: "bpmn" | "csv" | "json";
+  /**
+   * Version ID
+   * @format uuid
+   */
+  versionId: string;
 }
 
 export interface DeleteDocumentParams {
@@ -2211,6 +2658,554 @@ export class B2DataApi<SecurityDataType extends unknown> {
         path: `/documents/b2form/fields/search`,
         method: "POST",
         body: data,
+        secure: true,
+        ...params,
+      }),
+  };
+  b2Process = {
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name SearchProcesses
+     * @summary Search processes
+     * @request POST:/documents/b2process/search
+     * @secure
+     */
+    searchProcesses: (
+      data: SearchModel & {
+        ids?: string[];
+        docs?: string[];
+        searchTerm?: string;
+        isValid?: boolean;
+        isActivated?: boolean;
+        executionVariant?: "manual" | "timer" | "message";
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: DocumentProcessWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2process/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name GetProcessData
+     * @summary Get process data
+     * @request GET:/documents/b2process/{versionId}
+     * @secure
+     */
+    getProcessData: (versionId: string, params: RequestParams = {}) =>
+      this.http.request<DocumentProcessWithData, ErrorResponse>({
+        path: `/documents/b2process/${versionId}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name UpdateProcessInfo
+     * @summary Update process info
+     * @request PATCH:/documents/b2process/{versionId}
+     * @secure
+     */
+    updateProcessInfo: (
+      versionId: string,
+      data: {
+        participants?: ProcessParticipant[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProcessData, ErrorResponse>({
+        path: `/documents/b2process/${versionId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name GetProcessBinaryData
+     * @summary Get process binary data
+     * @request GET:/documents/b2process/{versionId}/binary
+     * @secure
+     */
+    getProcessBinaryData: ({ versionId, ...query }: GetProcessBinaryDataParams, params: RequestParams = {}) =>
+      this.http.request<File, ErrorResponse>({
+        path: `/documents/b2process/${versionId}/binary`,
+        method: "GET",
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name GetProcessActivationInfo
+     * @summary Get process activation info
+     * @request GET:/documents/b2process/{versionId}/activate
+     * @secure
+     */
+    getProcessActivationInfo: (versionId: string, params: RequestParams = {}) =>
+      this.http.request<
+        {
+          participantsValid: boolean;
+          managedByValid: boolean;
+          startInfoValid: boolean;
+          referencesErrors: ProcessNodeReference[];
+          nodesErrors?: ProcessNode[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2process/${versionId}/activate`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name ActivateProcess
+     * @summary Activate process
+     * @request POST:/documents/b2process/{versionId}/activate
+     * @secure
+     */
+    activateProcess: (versionId: string, params: RequestParams = {}) =>
+      this.http.request<DocumentProcessWithData, ErrorResponse>({
+        path: `/documents/b2process/${versionId}/activate`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name DeactivateProcess
+     * @summary Deactivate process
+     * @request DELETE:/documents/b2process/{versionId}/activate
+     * @secure
+     */
+    deactivateProcess: (versionId: string, params: RequestParams = {}) =>
+      this.http.request<DocumentProcessWithData, ErrorResponse>({
+        path: `/documents/b2process/${versionId}/activate`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name SearchProcessNodes
+     * @summary Search process nodes
+     * @request POST:/documents/b2process/{versionId}/nodes/search
+     * @secure
+     */
+    searchProcessNodes: (
+      versionId: string,
+      data: SearchModel & {
+        isTemplate?: boolean;
+        searchTerm?: string;
+        parentId?: string | null;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: ProcessNode[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2process/${versionId}/nodes/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name GetProcessNode
+     * @summary Get process node
+     * @request GET:/documents/b2process/{versionId}/nodes/{id}
+     * @secure
+     */
+    getProcessNode: (versionId: string, id: string, params: RequestParams = {}) =>
+      this.http.request<ProcessNode, ErrorResponse>({
+        path: `/documents/b2process/${versionId}/nodes/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name GetProcessTemplateNode
+     * @summary Get process template node
+     * @request GET:/documents/b2process/nodes/{id}
+     * @secure
+     */
+    getProcessTemplateNode: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProcessNode, ErrorResponse>({
+        path: `/documents/b2process/nodes/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name SearchProcessAgents
+     * @summary Search process agents
+     * @request POST:/documents/b2process/{versionId}/agents/search
+     * @secure
+     */
+    searchProcessAgents: (
+      versionId: string,
+      data: SearchModel & {
+        searchTerm?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: ProcessAgentBase[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2process/${versionId}/agents/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name GetProcessAgent
+     * @summary Get process agent
+     * @request GET:/documents/b2process/{versionId}/agents/{id}
+     * @secure
+     */
+    getProcessAgent: (versionId: string, id: string, params: RequestParams = {}) =>
+      this.http.request<ProcessAgent, ErrorResponse>({
+        path: `/documents/b2process/${versionId}/agents/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name CreateProcessAgent
+     * @summary Create process agent
+     * @request POST:/documents/b2process/agents
+     * @secure
+     */
+    createProcessAgent: (
+      data: {
+        name?: string;
+        rawSpec?: string;
+        domain?: string;
+        auth?: {
+          authorizationType?: "custom" | "bearer" | "apikey";
+          customAuthHeaders?: Record<string, string>;
+          customType?: string;
+          token?: string;
+          apiKey?: string;
+        };
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProcessAgent, ErrorResponse>({
+        path: `/documents/b2process/agents`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name EditProcessAgent
+     * @summary Edit process agent
+     * @request PATCH:/documents/b2process/agents/{id}
+     * @secure
+     */
+    editProcessAgent: (
+      id: string,
+      data: {
+        name?: string;
+        rawSpec?: string;
+        domain?: string;
+        auth?: {
+          authorizationType?: "custom" | "bearer" | "apikey";
+          customAuthHeaders?: Record<string, string>;
+          customType?: string;
+          token?: string;
+          apiKey?: string;
+        };
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ProcessAgent, ErrorResponse>({
+        path: `/documents/b2process/agents/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name DeleteProcessAgent
+     * @summary Delete process agent
+     * @request DELETE:/documents/b2process/agents/{id}
+     * @secure
+     */
+    deleteProcessAgent: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProcessAgent, ErrorResponse>({
+        path: `/documents/b2process/agents/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name SearchProcessExecutions
+     * @summary Search process executions
+     * @request POST:/documents/b2process/executions/search
+     * @secure
+     */
+    searchProcessExecutions: (
+      data: SearchModel & {
+        ids?: string[];
+        versions?: string[];
+        docs?: string[];
+        parentId?: string | null;
+        searchTerm?: string;
+        isValid?: boolean;
+        isCompleted?: boolean;
+        isRunning?: boolean;
+        isDeleted?: boolean;
+        /** @format date-time */
+        startedFrom?: string;
+        /** @format date-time */
+        startedTo?: string;
+        /** @format date-time */
+        dueDateFrom?: string;
+        /** @format date-time */
+        dueDateTo?: string;
+        managedBy?: string[];
+        createdBy?: string[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: ProcessExecutionWithData[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2process/executions/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name CreateProcessExecution
+     * @summary Create process execution
+     * @request POST:/documents/b2process/executions
+     * @secure
+     */
+    createProcessExecution: (
+      data: {
+        versionId?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<void, ErrorResponse>({
+        path: `/documents/b2process/executions`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name GetProcessExecution
+     * @summary Get process execution
+     * @request GET:/documents/b2process/executions/{id}
+     * @secure
+     */
+    getProcessExecution: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProcessExecutionWithData, ErrorResponse>({
+        path: `/documents/b2process/executions/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name DeleteProcessExecution
+     * @summary Delete process execution
+     * @request DELETE:/documents/b2process/executions/{id}
+     * @secure
+     */
+    deleteProcessExecution: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProcessExecutionWithData, ErrorResponse>({
+        path: `/documents/b2process/executions/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name StopProcessExecution
+     * @summary Stop process execution
+     * @request POST:/documents/b2process/executions/{id}/stop
+     * @secure
+     */
+    stopProcessExecution: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProcessExecutionWithData, ErrorResponse>({
+        path: `/documents/b2process/executions/${id}/stop`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name StartProcessExecution
+     * @summary Start process execution
+     * @request POST:/documents/b2process/executions/{id}/start
+     * @secure
+     */
+    startProcessExecution: (id: string, params: RequestParams = {}) =>
+      this.http.request<ProcessExecutionWithData, ErrorResponse>({
+        path: `/documents/b2process/executions/${id}/start`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name SearchProcessExecutionNodes
+     * @summary Search process execution nodes
+     * @request POST:/documents/b2process/executions/{id}/nodes/search
+     * @secure
+     */
+    searchProcessExecutionNodes: (
+      id: string,
+      data: SearchModel & {
+        ids?: string[];
+        parentId?: string | null;
+        searchTerm?: string;
+        status?: TaskStatus;
+        isValid?: boolean;
+        isCompleted?: boolean;
+        isRunning?: boolean;
+        /** @format date-time */
+        startedFrom?: string;
+        /** @format date-time */
+        startedTo?: string;
+        /** @format date-time */
+        dueDateFrom?: string;
+        /** @format date-time */
+        dueDateTo?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: ProcessExecutionNode[];
+        },
+        ErrorResponse
+      >({
+        path: `/documents/b2process/executions/${id}/nodes/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Process
+     * @name GetProcessExecutionNode
+     * @summary Get process execution node
+     * @request GET:/documents/b2process/executions/{id}/nodes/{nodeId}
+     * @secure
+     */
+    getProcessExecutionNode: (id: string, nodeId: string, params: RequestParams = {}) =>
+      this.http.request<ProcessExecutionNode, ErrorResponse>({
+        path: `/documents/b2process/executions/${id}/nodes/${nodeId}`,
+        method: "GET",
         secure: true,
         ...params,
       }),
@@ -2967,7 +3962,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
         isPublic?: boolean | null;
         systemId?: string | null;
         systemType?: SystemType | null;
-        tags?: EditTagContentBody[];
+        tags?: EditTagContent[];
         productVersionData?: B2ProductData;
         taskVersionData?: CreateB2TaskBody;
         counterpartyVersionData?: B2CounterpartyData;
@@ -3065,7 +4060,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
       docId: string,
       data: {
         action: "set" | "append";
-        tags: EditTagContentBody[];
+        tags: EditTagContent[];
       },
       params: RequestParams = {},
     ) =>
@@ -3294,48 +4289,14 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Groups
-     * @name GetMyGroups
-     * @summary Get my groups
-     * @request GET:/groups/my
+     * @name GetGroups
+     * @summary Get groups
+     * @request GET:/groups
      * @secure
      */
-    getMyGroups: (params: RequestParams = {}) =>
+    getGroups: (params: RequestParams = {}) =>
       this.http.request<GroupTreeItem[], any>({
-        path: `/groups/my`,
-        method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Groups
-     * @name GetMyAdminGroups
-     * @summary Get my admin groups
-     * @request GET:/groups/my/admin
-     * @secure
-     */
-    getMyAdminGroups: (params: RequestParams = {}) =>
-      this.http.request<string[], any>({
-        path: `/groups/my/admin`,
-        method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Groups
-     * @name GetMySupervisorGroups
-     * @summary Get my supervisor groups
-     * @request GET:/groups/my/supervisor
-     * @secure
-     */
-    getMySupervisorGroups: (params: RequestParams = {}) =>
-      this.http.request<string[], any>({
-        path: `/groups/my/supervisor`,
+        path: `/groups`,
         method: "GET",
         secure: true,
         ...params,
@@ -3362,6 +4323,40 @@ export class B2DataApi<SecurityDataType extends unknown> {
         path: `/groups`,
         method: "POST",
         body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Groups
+     * @name GetAdminGroups
+     * @summary Get admin groups
+     * @request GET:/groups/admin
+     * @secure
+     */
+    getAdminGroups: (params: RequestParams = {}) =>
+      this.http.request<string[], any>({
+        path: `/groups/admin`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Groups
+     * @name GetSupervisorGroups
+     * @summary Get supervisor groups
+     * @request GET:/groups/supervisor
+     * @secure
+     */
+    getSupervisorGroups: (params: RequestParams = {}) =>
+      this.http.request<string[], any>({
+        path: `/groups/supervisor`,
+        method: "GET",
         secure: true,
         ...params,
       }),

@@ -14,6 +14,7 @@ tags:
   - name: B2Form
   - name: B2Product
   - name: B2Storage
+  - name: B2Process
   - name: Documents
   - name: Files
   - name: Groups
@@ -423,6 +424,458 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /documents/b2process/search:
+    post:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Search processes
+      operationId: searchProcesses
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProcessBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProcessData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2process/{versionId}":
+    get:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Get process data
+      operationId: getProcessData
+      parameters:
+        - $ref: "#/components/parameters/versionId"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentProcessWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+    patch:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Update process info
+      operationId: updateProcessInfo
+      parameters:
+        - $ref: "#/components/parameters/versionId"
+      requestBody:
+        $ref: "#/components/requestBodies/EditProcessBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2process/{versionId}/binary":
+    get:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Get process binary data
+      operationId: getProcessBinaryData
+      parameters:
+        - $ref: "#/components/parameters/versionId"
+        - in: query
+          name: format
+          required: false
+          schema:
+            type: string
+            enum:
+              - bpmn
+              - csv
+              - json
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessBinary"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2process/{versionId}/activate":
+    get:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Get process activation info
+      operationId: getProcessActivationInfo
+      parameters:
+        - $ref: "#/components/parameters/versionId"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentProcessActivationData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+    post:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Activate process
+      operationId: activateProcess
+      parameters:
+        - $ref: "#/components/parameters/versionId"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentProcessWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+    delete:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Deactivate process
+      operationId: deactivateProcess
+      parameters:
+        - $ref: "#/components/parameters/versionId"
+      responses:
+        "200":
+          $ref: "#/components/responses/DocumentProcessWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2process/{versionId}/nodes/search":
+    post:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Search process nodes
+      operationId: searchProcessNodes
+      parameters:
+        - $ref: "#/components/parameters/versionId"
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProcessNodesBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProcessNodesData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2process/{versionId}/nodes/{id}":
+    get:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Get process node
+      operationId: getProcessNode
+      parameters:
+        - $ref: "#/components/parameters/versionId"
+        - $ref: "#/components/parameters/processNodeIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessNodeData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProcessNodeNotFound"
+  "/documents/b2process/nodes/{id}":
+    get:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Get process template node
+      operationId: getProcessTemplateNode
+      parameters:
+        - $ref: "#/components/parameters/processNodeIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessNodeData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProcessNodeNotFound"
+  "/documents/b2process/{versionId}/agents/search":
+    post:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Search process agents
+      operationId: searchProcessAgents
+      parameters:
+        - $ref: "#/components/parameters/versionId"
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProcessAgentsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProcessAgentsData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2process/{versionId}/agents/{id}":
+    get:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Get process agent
+      operationId: getProcessAgent
+      parameters:
+        - $ref: "#/components/parameters/versionId"
+        - $ref: "#/components/parameters/processAgentIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessAgentData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProcessAgentNotFound"
+  /documents/b2process/agents:
+    post:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Create process agent
+      operationId: createProcessAgent
+      requestBody:
+        $ref: "#/components/requestBodies/ModifyProcessAgentBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessAgentData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/documents/b2process/agents/{id}":
+    patch:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Edit process agent
+      operationId: editProcessAgent
+      parameters:
+        - $ref: "#/components/parameters/processAgentIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/ModifyProcessAgentBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessAgentData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProcessAgentNotFound"
+    delete:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Delete process agent
+      operationId: deleteProcessAgent
+      parameters:
+        - $ref: "#/components/parameters/processAgentIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessAgentData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProcessAgentNotFound"
+  /documents/b2process/executions/search:
+    post:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Search process executions
+      operationId: searchProcessExecutions
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProcessExecutionBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProcessExecutionsData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /documents/b2process/executions:
+    post:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Create process execution
+      operationId: createProcessExecution
+      requestBody:
+        $ref: "#/components/requestBodies/CreateProcessExecutionBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessExecution"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/documents/b2process/executions/{id}":
+    get:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Get process execution
+      operationId: getProcessExecution
+      parameters:
+        - $ref: "#/components/parameters/processExecutionIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessExecutionWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProcessExecutionNotFound"
+    delete:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Delete process execution
+      operationId: deleteProcessExecution
+      parameters:
+        - $ref: "#/components/parameters/processExecutionIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessExecutionWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProcessExecutionNotFound"
+  "/documents/b2process/executions/{id}/stop":
+    post:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Stop process execution
+      operationId: stopProcessExecution
+      parameters:
+        - $ref: "#/components/parameters/processExecutionIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessExecutionWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProcessExecutionNotFound"
+  "/documents/b2process/executions/{id}/start":
+    post:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Start process execution
+      operationId: startProcessExecution
+      parameters:
+        - $ref: "#/components/parameters/processExecutionIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessExecutionWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProcessExecutionNotFound"
+  "/documents/b2process/executions/{id}/nodes/search":
+    post:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Search process execution nodes
+      operationId: searchProcessExecutionNodes
+      parameters:
+        - $ref: "#/components/parameters/processExecutionIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/SearchProcessExecutionNodesBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchProcessExecutionNodesData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProcessExecutionNotFound"
+  "/documents/b2process/executions/{id}/nodes/{nodeId}":
+    get:
+      tags:
+        - B2Process
+      security:
+        - BearerAuth: []
+      summary: Get process execution node
+      operationId: getProcessExecutionNode
+      parameters:
+        - $ref: "#/components/parameters/processExecutionIdParam"
+        - $ref: "#/components/parameters/processExecutionNodeIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProcessExecutionNodeData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ProcessExecutionNodeNotFound"
   "/documents/b2product/{productId}/info":
     get:
       tags:
@@ -1294,46 +1747,19 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DocumentVersionNotFound"
-  /groups/my:
+  /groups:
     get:
-      summary: Get my groups
+      summary: Get groups
       tags:
         - Groups
       security:
         - BearerAuth: []
-      operationId: getMyGroups
+      operationId: getGroups
       responses:
         "200":
           $ref: "#/components/responses/GroupTreeItemData"
         "401":
           $ref: "#/components/responses/Unauthorized"
-  /groups/my/admin:
-    get:
-      summary: Get my admin groups
-      tags:
-        - Groups
-      security:
-        - BearerAuth: []
-      operationId: getMyAdminGroups
-      responses:
-        "200":
-          $ref: "#/components/responses/GroupsIdsData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-  /groups/my/supervisor:
-    get:
-      summary: Get my supervisor groups
-      tags:
-        - Groups
-      security:
-        - BearerAuth: []
-      operationId: getMySupervisorGroups
-      responses:
-        "200":
-          $ref: "#/components/responses/GroupsIdsData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-  /groups:
     post:
       summary: Create a new group
       tags:
@@ -1348,6 +1774,32 @@ paths:
           $ref: "#/components/responses/GroupData"
         "400":
           $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /groups/admin:
+    get:
+      summary: Get admin groups
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      operationId: getAdminGroups
+      responses:
+        "200":
+          $ref: "#/components/responses/GroupsIdsData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /groups/supervisor:
+    get:
+      summary: Get supervisor groups
+      tags:
+        - Groups
+      security:
+        - BearerAuth: []
+      operationId: getSupervisorGroups
+      responses:
+        "200":
+          $ref: "#/components/responses/GroupsIdsData"
         "401":
           $ref: "#/components/responses/Unauthorized"
   "/groups/{groupId}":
@@ -2711,6 +3163,877 @@ components:
         long:
           type: number
           description: Place longitude coordinate
+    ProcessParticipant:
+      type: object
+      required:
+        - number
+        - role
+      properties:
+        number:
+          type: integer
+        role:
+          type: string
+        userId:
+          type: string
+        groupId:
+          type: string
+        spaceId:
+          type: string
+        userData:
+          type: object
+        groupData:
+          type: object
+        spaceData:
+          type: object
+    ProcessNodeReference:
+      type: object
+      required:
+        - documentId
+        - type
+      properties:
+        documentId:
+          type: string
+        type:
+          type: string
+        versionId:
+          type: string
+        current:
+          type: boolean
+        signed:
+          type: boolean
+    ProcessNodeType:
+      type: string
+      enum:
+        - bpmn:StartEvent
+        - bpmn:EndEvent
+        - bpmn:IntermediateCatchEvent
+        - bpmn:UserTask
+        - bpmn:ServiceTask
+        - bpmn:ScriptTask
+        - bpmn:SubProcess
+        - bpmn:ComplexGateway
+        - bpmn:ParallelGateway
+        - bpmn:ExclusiveGateway
+        - bpmn:DataObjectReference
+    ProcessNodeDefinitionType:
+      type: string
+      enum:
+        - bpmn:TimerEventDefinition
+        - bpmn:MessageEventDefinition
+    ProcessNodeConnectionType:
+      type: string
+      enum:
+        - bpmn:SequenceFlow
+    ProcessNodeAssociationType:
+      type: string
+      enum:
+        - bpmn:DataInputAssociation
+        - bpmn:DataOutputAssociation
+    ProcessNodeConnection:
+      type: object
+      required:
+        - id
+        - nodeId
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        nodeId:
+          type: string
+        status:
+          type: string
+          description: Status of connected node completion
+          enum:
+            - done
+            - blocked
+            - discard
+        checkListCompleted:
+          type: boolean
+          description: Whether the checklist of the connected node is completed
+        conditions:
+          type: object
+          additionalProperties:
+            type: object
+            required:
+              - type
+              - operator
+              - value
+            properties:
+              type:
+                type: string
+                enum:
+                  - text
+                  - number
+                  - date
+                  - boolean
+              operator:
+                $ref: "#/components/schemas/FormulaOperator"
+              value:
+                type: string
+        waypoints:
+          type: array
+          items:
+            type: object
+            required:
+              - x
+              - y
+            properties:
+              x:
+                type: number
+              y:
+                type: number
+    ProcessNodeBounds:
+      type: object
+      required:
+        - x
+        - y
+        - w
+        - h
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        w:
+          type: number
+        h:
+          type: number
+    ProcessNodeBase:
+      type: object
+      description: Base properties for ProcessNode
+      required:
+        - id
+        - spaceId
+        - versionId
+        - order
+        - name
+        - incoming
+        - outgoing
+        - inputs
+        - outputs
+        - bounds
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        spaceId:
+          type: string
+        versionId:
+          type: string
+        order:
+          type: integer
+        isTemplate:
+          type: boolean
+        isValid:
+          type: boolean
+        parentId:
+          type: string
+          nullable: true
+        name:
+          type: string
+        incoming:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProcessNodeConnection"
+        outgoing:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProcessNodeConnection"
+        inputs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProcessNodeConnection"
+        outputs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProcessNodeConnection"
+        bounds:
+          $ref: "#/components/schemas/ProcessNodeBounds"
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ProcessNodeStartEvent:
+      allOf:
+        - $ref: "#/components/schemas/ProcessNodeBase"
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              enum:
+                - bpmn:StartEvent
+            data:
+              type: object
+              properties:
+                message:
+                  type: object
+                  required:
+                    - event
+                    - params
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the message event
+                    params:
+                      type: object
+                      additionalProperties:
+                        type: string
+                timer:
+                  type: object
+                  required:
+                    - cron
+                  properties:
+                    cron:
+                      type: string
+                      description: Cron expression for the timer event
+    ProcessNodeEndEvent:
+      allOf:
+        - $ref: "#/components/schemas/ProcessNodeBase"
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              enum:
+                - bpmn:EndEvent
+            data:
+              type: object
+              properties:
+                variant:
+                  type: string
+                  enum:
+                    - normal
+                    - error
+                    - terminate
+    ProcessNodeIntermediateCatchEvent:
+      allOf:
+        - $ref: "#/components/schemas/ProcessNodeBase"
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              enum:
+                - bpmn:IntermediateCatchEvent
+            data:
+              type: object
+              properties:
+                message:
+                  type: object
+                  required:
+                    - event
+                    - params
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the message event
+                    params:
+                      type: object
+                      additionalProperties:
+                        type: string
+                timer:
+                  type: object
+                  required:
+                    - delay
+                  properties:
+                    delay:
+                      type: number
+                      description: Delay in seconds for the timer event
+    ProcessNodeUserTask:
+      allOf:
+        - $ref: "#/components/schemas/ProcessNodeBase"
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              enum:
+                - bpmn:UserTask
+            data:
+              type: object
+              required:
+                - classifications
+                - unitInfo
+                - type
+                - priority
+                - storyPoints
+                - resources
+                - operations
+                - checklist
+              properties:
+                classifications:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - name
+                      - code
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      code:
+                        type: string
+                unitInfo:
+                  $ref: "#/components/schemas/UnitInfo"
+                participant:
+                  type: number
+                  description: Participant number from the process config
+                volume:
+                  type: number
+                  description: Volume of work to calculate resources
+                volumeType:
+                  type: string
+                  enum:
+                    - manual
+                    - model
+                    - map
+                    - table
+                volumeSelection:
+                  type: object
+                  additionalProperties:
+                    type: object
+                type:
+                  $ref: "#/components/schemas/TaskType"
+                priority:
+                  $ref: "#/components/schemas/TaskPriority"
+                storyPoints:
+                  type: number
+                resources:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - id
+                      - type
+                      - name
+                      - unit
+                      - consumption
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      type:
+                        $ref: "#/components/schemas/ResourceType"
+                      unit:
+                        $ref: "#/components/schemas/UnitInfo"
+                      consumption:
+                        type: number
+                      wastePercent:
+                        type: number
+                        description: Waste percentage for the resource
+                      lossPercent:
+                        type: number
+                        description: Loss percentage for the resource
+                operations:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - name
+                      - progress
+                      - type
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      type:
+                        $ref: "#/components/schemas/TaskOperationType"
+                      progress:
+                        type: number
+                        description: Progress of the operation in percentage. Total percent for all
+                          operations must be 100.
+                      metadata:
+                        type: object
+                        additionalProperties:
+                          type: object
+                checklist:
+                  type: array
+                  items:
+                    type: string
+    ProcessNodeServiceTask:
+      allOf:
+        - $ref: "#/components/schemas/ProcessNodeBase"
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              enum:
+                - bpmn:ServiceTask
+            data:
+              type: object
+              required:
+                - variant
+              properties:
+                variant:
+                  type: string
+                  enum:
+                    - fillIdt
+                    - giveOutIdt
+                    - receiveIdt
+    ProcessNodeScriptTask:
+      allOf:
+        - $ref: "#/components/schemas/ProcessNodeBase"
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              enum:
+                - bpmn:ScriptTask
+            data:
+              $ref: "#/components/schemas/ProcessNodeReference"
+    ProcessNodeSubProcess:
+      allOf:
+        - $ref: "#/components/schemas/ProcessNodeBase"
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              enum:
+                - bpmn:SubProcess
+            data:
+              $ref: "#/components/schemas/ProcessNodeReference"
+    ProcessNodeGateway:
+      allOf:
+        - $ref: "#/components/schemas/ProcessNodeBase"
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              enum:
+                - bpmn:ComplexGateway,
+                - bpmn:ParallelGateway,
+                - bpmn:ExclusiveGateway,
+            data:
+              type: object
+              properties:
+                variant:
+                  type: string
+                  enum:
+                    - status
+                    - conditions
+                availableConditions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/ProcessNodeReference"
+                selectedConditions:
+                  type: object
+                  additionalProperties:
+                    type: array
+                    items:
+                      type: string
+    ProcessNodeDataObjectReference:
+      allOf:
+        - $ref: "#/components/schemas/ProcessNodeBase"
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              enum:
+                - bpmn:DataObjectReference
+            data:
+              type: object
+              properties:
+                variant:
+                  type: string
+                  enum:
+                    - b2table
+                    - agent
+                references:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/ProcessNodeReference"
+                addTags:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/EditTagContent"
+                writeMap:
+                  type: object
+                  additionalProperties:
+                    type: string
+                agentId:
+                  type: string
+                metadata:
+                  type: object
+                  additionalProperties:
+                    type: object
+    ProcessNode:
+      oneOf:
+        - $ref: "#/components/schemas/ProcessNodeStartEvent"
+        - $ref: "#/components/schemas/ProcessNodeEndEvent"
+        - $ref: "#/components/schemas/ProcessNodeIntermediateCatchEvent"
+        - $ref: "#/components/schemas/ProcessNodeUserTask"
+        - $ref: "#/components/schemas/ProcessNodeServiceTask"
+        - $ref: "#/components/schemas/ProcessNodeScriptTask"
+        - $ref: "#/components/schemas/ProcessNodeSubProcess"
+        - $ref: "#/components/schemas/ProcessNodeGateway"
+        - $ref: "#/components/schemas/ProcessNodeDataObjectReference"
+    ProcessAgentBase:
+      type: object
+      required:
+        - id
+        - spaceId
+        - name
+      properties:
+        id:
+          type: string
+        spaceId:
+          type: string
+        name:
+          type: string
+        createdBy:
+          type: string
+    ProcessAgent:
+      allOf:
+        - $ref: "#/components/schemas/ProcessAgentBase"
+        - type: object
+          required:
+            - rawSpec
+            - domain
+            - auth
+            - updatedAt
+            - createdAt
+          properties:
+            rawSpec:
+              type: string
+            domain:
+              type: string
+            auth:
+              type: object
+              properties:
+                authorizationType:
+                  type: string
+                  enum:
+                    - custom
+                    - bearer
+                    - apikey
+                customAuthHeaders:
+                  type: object
+                  additionalProperties:
+                    type: string
+                customType:
+                  type: string
+                token:
+                  type: string
+                apiKey:
+                  type: string
+            updatedAt:
+              type: string
+              format: date-time
+            createdAt:
+              type: string
+              format: date-time
+    ProcessData:
+      type: object
+      required:
+        - participants
+      properties:
+        managedBy:
+          type: string
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProcessParticipant"
+        isValid:
+          type: boolean
+        isRunning:
+          type: boolean
+        isActivated:
+          type: boolean
+        activatedAt:
+          type: string
+          format: date-time
+        activatedBy:
+          type: string
+        startInfo:
+          type: object
+          properties:
+            message:
+              type: object
+              required:
+                - event
+                - params
+              properties:
+                name:
+                  type: string
+                  description: Name of the message event
+                params:
+                  type: object
+                  additionalProperties:
+                    type: string
+            timer:
+              type: object
+              required:
+                - cron
+              properties:
+                cron:
+                  type: string
+                  description: Cron expression for the timer event
+    DocumentProcess:
+      allOf:
+        - $ref: "#/components/schemas/DocumentDataCommon"
+        - $ref: "#/components/schemas/ProcessData"
+    DocumentProcessWithData:
+      allOf:
+        - $ref: "#/components/schemas/DocumentProcess"
+        - type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+    ProcessExecution:
+      type: object
+      required:
+        - id
+        - spaceId
+        - versionId
+        - documentId
+        - rootId
+        - key
+        - name
+        - managedBy
+        - isValid
+        - isRunning
+        - isCompleted
+        - currentOrder
+        - maxOrder
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        spaceId:
+          type: string
+          format: uuid
+        versionId:
+          type: string
+          format: uuid
+        documentId:
+          type: string
+          format: uuid
+        rootId:
+          type: string
+          format: uuid
+          description: ID of the root process execution, if this is a sub-execution
+        parentId:
+          type: string
+          format: uuid
+          description: ID of the parent process execution, if this is a sub-execution
+          nullable: true
+        createdBy:
+          type: string
+        managedBy:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        isValid:
+          type: boolean
+        isRunning:
+          type: boolean
+        isCompleted:
+          type: boolean
+        currentOrder:
+          type: integer
+        maxOrder:
+          type: integer
+        plannedStartedAt:
+          type: string
+          format: date-time
+          description: Planned start date based on durations
+        estimatedStartedAt:
+          type: string
+          format: date-time
+          description: Estimated start date based on nodes start dates and durations
+        plannedDueDateAt:
+          type: string
+          format: date-time
+          description: Planned due date based on durations
+        estimatedDueDateAt:
+          type: string
+          format: date-time
+          description: Estimated due date based on nodes due dates and durations
+        startedAt:
+          type: string
+          format: date-time
+          description: Real start date of the process execution
+        completedAt:
+          type: string
+          format: date-time
+          description: Real completion date of the process execution
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+    ProcessExecutionWithData:
+      allOf:
+        - $ref: "#/components/schemas/ProcessExecution"
+        - type: object
+          required:
+            - currentNodes
+          properties:
+            createdByData:
+              $ref: "#/components/schemas/User"
+            managedByData:
+              $ref: "#/components/schemas/User"
+            currentNodes:
+              type: array
+              items:
+                $ref: "#/components/schemas/ProcessExecutionNode"
+    ProcessExecutionNode:
+      type: object
+      required:
+        - id
+        - spaceId
+        - versionId
+        - executionId
+        - nodeId
+        - status
+        - order
+        - type
+        - isValid
+        - data
+        - incoming
+        - outgoing
+        - inputs
+        - outputs
+        - bounds
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        spaceId:
+          type: string
+          format: uuid
+        versionId:
+          type: string
+          format: uuid
+        executionId:
+          type: string
+          format: uuid
+        nodeId:
+          type: string
+        createdBy:
+          type: string
+        userId:
+          type: string
+        groupId:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+        startedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        taskId:
+          type: string
+          format: uuid
+        plannedStartedAt:
+          type: string
+          format: date-time
+          description: Planned start date based on previous nodes durations
+        estimatedStartedAt:
+          type: string
+          format: date-time
+          description: Estimated start date based on previous nodes start dates and
+            durations
+        plannedDueDateAt:
+          type: string
+          format: date-time
+          description: Planned due date based on previous nodes durations + current duration
+        estimatedDueDateAt:
+          type: string
+          format: date-time
+          description: Estimated due date based on previous nodes due dates and durations
+            + current duration
+        order:
+          type: integer
+        type:
+          $ref: "#/components/schemas/ProcessNodeType"
+        isValid:
+          type: boolean
+        parentId:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+        data:
+          type: object
+          description: Process node data
+        bounds:
+          $ref: "#/components/schemas/ProcessNodeBounds"
+        incoming:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProcessNodeConnection"
+        outgoing:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProcessNodeConnection"
+        inputs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProcessNodeConnection"
+        outputs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProcessNodeConnection"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
     B2ProductUnitInfo:
       type: object
       properties:
@@ -3239,6 +4562,16 @@ components:
       enum:
         - product
         - batch
+    TaskOperationType:
+      type: string
+      enum:
+        - openLink
+        - openDocument
+        - uploadDocument
+        - createDocument
+        - downloadDocument
+        - fillForm
+        - signDocument
     TaskParticipant:
       type: object
       properties:
@@ -3811,6 +5144,33 @@ components:
           type: boolean
         targetSigned:
           type: boolean
+    FormulaOperator:
+      type: string
+      enum:
+        - equals
+        - not_equals
+        - less
+        - less_equal
+        - more
+        - more_equal
+        - exists
+    UnitInfo:
+      type: object
+      required:
+        - unit
+        - coeff
+        - systemUnit
+      properties:
+        unit:
+          type: string
+        coeff:
+          type: number
+          format: float
+        systemUnit:
+          type: string
+        nonSystemUnit:
+          type: string
+          nullable: true
     DictionaryWord:
       type: object
       properties:
@@ -5080,7 +6440,7 @@ components:
               $ref: "#/components/schemas/DictionaryWord"
             valueData:
               $ref: "#/components/schemas/DictionaryWord"
-    EditTagContentBody:
+    EditTagContent:
       type: object
       required:
         - field
@@ -5167,6 +6527,200 @@ components:
                     items:
                       type: string
                       format: uuid
+    SearchProcessBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                  docs:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                  searchTerm:
+                    type: string
+                  isValid:
+                    type: boolean
+                  isActivated:
+                    type: boolean
+                  executionVariant:
+                    type: string
+                    enum:
+                      - manual
+                      - timer
+                      - message
+    EditProcessBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              participants:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProcessParticipant"
+    SearchProcessNodesBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  isTemplate:
+                    type: boolean
+                  searchTerm:
+                    type: string
+                  parentId:
+                    type: string
+                    nullable: true
+    SearchProcessAgentsBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  searchTerm:
+                    type: string
+    ModifyProcessAgentBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              rawSpec:
+                type: string
+              domain:
+                type: string
+              auth:
+                type: object
+                properties:
+                  authorizationType:
+                    type: string
+                    enum:
+                      - custom
+                      - bearer
+                      - apikey
+                  customAuthHeaders:
+                    type: object
+                    additionalProperties:
+                      type: string
+                  customType:
+                    type: string
+                  token:
+                    type: string
+                  apiKey:
+                    type: string
+    SearchProcessExecutionBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                  versions:
+                    type: array
+                    items:
+                      type: string
+                  docs:
+                    type: array
+                    items:
+                      type: string
+                  parentId:
+                    type: string
+                    nullable: true
+                  searchTerm:
+                    type: string
+                  isValid:
+                    type: boolean
+                  isCompleted:
+                    type: boolean
+                  isRunning:
+                    type: boolean
+                  isDeleted:
+                    type: boolean
+                  startedFrom:
+                    type: string
+                    format: date-time
+                  startedTo:
+                    type: string
+                    format: date-time
+                  dueDateFrom:
+                    type: string
+                    format: date-time
+                  dueDateTo:
+                    type: string
+                    format: date-time
+                  managedBy:
+                    type: array
+                    items:
+                      type: string
+                  createdBy:
+                    type: array
+                    items:
+                      type: string
+    CreateProcessExecutionBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              versionId:
+                type: string
+    SearchProcessExecutionNodesBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                  parentId:
+                    type: string
+                    nullable: true
+                  searchTerm:
+                    type: string
+                  status:
+                    $ref: "#/components/schemas/TaskStatus"
+                  isValid:
+                    type: boolean
+                  isCompleted:
+                    type: boolean
+                  isRunning:
+                    type: boolean
+                  startedFrom:
+                    type: string
+                    format: date-time
+                  startedTo:
+                    type: string
+                    format: date-time
+                  dueDateFrom:
+                    type: string
+                    format: date-time
+                  dueDateTo:
+                    type: string
+                    format: date-time
     SearchB2StorageBalances:
       content:
         application/json:
@@ -5614,7 +7168,7 @@ components:
               tags:
                 type: array
                 items:
-                  $ref: "#/components/schemas/EditTagContentBody"
+                  $ref: "#/components/schemas/EditTagContent"
               productVersionData:
                 $ref: "#/components/schemas/B2ProductData"
               taskVersionData:
@@ -5651,7 +7205,7 @@ components:
               tags:
                 type: array
                 items:
-                  $ref: "#/components/schemas/EditTagContentBody"
+                  $ref: "#/components/schemas/EditTagContent"
     SearchDocumentReferencesBody:
       content:
         application/json:
@@ -6219,6 +7773,205 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/B2FormStructureWithData"
+    ProcessData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DocumentProcess"
+    DocumentProcessWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DocumentProcessWithData"
+    ProcessBinary:
+      description: Successful operation
+      content:
+        text/csv:
+          schema:
+            type: string
+            format: binary
+        application/octet-stream:
+          schema:
+            type: string
+            format: binary
+        application/json/octet-stream:
+          schema:
+            type: string
+            format: binary
+    ProcessNodeData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProcessNode"
+    ProcessAgentData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProcessAgent"
+    SearchProcessData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DocumentProcessWithData"
+    SearchProcessNodesData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProcessNode"
+    SearchProcessAgentsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProcessAgentBase"
+    ProcessNodeNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: document:b2process:404-node
+            message: Process node not found
+    ProcessAgentNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: document:b2process:404-agent
+            message: Process agent not found
+    ProcessExecutionNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: document:b2process:404-execution
+            message: Process execution not found
+    ProcessExecutionNodeNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: document:b2process:404-execution-node
+            message: Process execution node not found
+    DocumentProcessActivationData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - participantsValid
+              - managedByValid
+              - startInfoValid
+              - referencesErrors
+            properties:
+              participantsValid:
+                type: boolean
+              managedByValid:
+                type: boolean
+              startInfoValid:
+                type: boolean
+              referencesErrors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProcessNodeReference"
+              nodesErrors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProcessNode"
+    SearchProcessExecutionsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProcessExecutionWithData"
+    SearchProcessExecutionNodesData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProcessExecutionNode"
+    ProcessExecutionData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProcessExecution"
+    ProcessExecutionWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProcessExecutionWithData"
+    ProcessExecutionNodeData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProcessExecutionNode"
     B2ProductWithData:
       description: Successful operation
       content:
@@ -6868,6 +8621,37 @@ components:
       in: path
       name: formId
       description: Form ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    processAgentIdParam:
+      in: path
+      name: id
+      description: Process Agent ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    processNodeIdParam:
+      in: path
+      name: id
+      description: Process Node ID
+      required: true
+      schema:
+        type: string
+    processExecutionIdParam:
+      in: path
+      name: id
+      description: Process Execution ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    processExecutionNodeIdParam:
+      in: path
+      name: nodeId
+      description: Process Execution Node ID
       required: true
       schema:
         type: string
