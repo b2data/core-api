@@ -385,6 +385,17 @@ export interface SendBridgeMessageParams {
   topic?: string;
 }
 
+export interface SubscribeAlertsPayload {
+  /** Connection client ID */
+  clientId: string;
+  /** URL of the app */
+  appUrl: string;
+  /** Name of the app */
+  appName: string;
+  /** URL of the app icon */
+  appIconUrl?: string;
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -697,6 +708,26 @@ export class B2WalletApi<SecurityDataType extends unknown> {
         query: query,
         body: data,
         type: ContentType.Text,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags TonConnect
+     * @name SubscribeAlerts
+     * @summary Subscribe to alerts via Telegram
+     * @request POST:/tonconnect/alerts/subscribe
+     * @secure
+     */
+    subscribeAlerts: (data: SubscribeAlertsPayload, params: RequestParams = {}) =>
+      this.http.request<string, void>({
+        path: `/tonconnect/alerts/subscribe`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),

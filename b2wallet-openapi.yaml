@@ -136,6 +136,47 @@ paths:
                 properties:
                   error:
                     type: string
+  /tonconnect/alerts/subscribe:
+    post:
+      tags:
+        - TonConnect
+      security:
+        - TMAAuth: []
+      summary: Subscribe to alerts via Telegram
+      operationId: subscribeAlerts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - clientId
+                - appUrl
+                - appName
+              properties:
+                clientId:
+                  type: string
+                  description: Connection client ID
+                appUrl:
+                  type: string
+                  description: URL of the app
+                appName:
+                  type: string
+                  description: Name of the app
+                appIconUrl:
+                  type: string
+                  description: URL of the app icon
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Invalid request
+        "401":
+          description: Unauthorized"
 components:
   schemas:
     ActivityType:
