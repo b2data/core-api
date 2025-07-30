@@ -4561,7 +4561,7 @@ components:
       type: string
       enum:
         - product
-        - batch
+        - productBatch
     TaskOperationType:
       type: string
       enum:

@@ -1087,7 +1087,7 @@ export enum TaskPriority {
 
 export enum TaskArtefactType {
   Product = "product",
-  Batch = "batch",
+  ProductBatch = "productBatch",
 }
 
 export enum TaskOperationType {
