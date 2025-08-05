@@ -590,10 +590,10 @@ export type ProcessNodeDataObjectReference = ProcessNodeBase & {
   data: {
     variant?: "b2table" | "agent";
     references?: ProcessNodeReference[];
-    addTags?: EditTagContent[];
-    writeMap?: Record<string, string>;
-    agentId?: string;
-    metadata?: Record<string, object>;
+    agents?: {
+      id: string;
+      metadata?: Record<string, string>;
+    }[];
   };
 };
 
@@ -607,29 +607,6 @@ export type ProcessNode =
   | ProcessNodeSubProcess
   | ProcessNodeGateway
   | ProcessNodeDataObjectReference;
-
-export interface ProcessAgentBase {
-  id: string;
-  spaceId: string;
-  name: string;
-  createdBy?: string;
-}
-
-export type ProcessAgent = ProcessAgentBase & {
-  rawSpec: string;
-  domain: string;
-  auth: {
-    authorizationType?: "custom" | "bearer" | "apikey";
-    customAuthHeaders?: Record<string, string>;
-    customType?: string;
-    token?: string;
-    apiKey?: string;
-  };
-  /** @format date-time */
-  updatedAt: string;
-  /** @format date-time */
-  createdAt: string;
-};
 
 export interface ProcessData {
   managedBy?: string;
@@ -1972,6 +1949,61 @@ export type SpaceUserSearch = User & {
   }[];
 };
 
+export interface SpaceAgentBase {
+  id: string;
+  spaceId: string;
+  name: string;
+  domain: string;
+  authorizationType: "none" | "apikey" | "oauth";
+  createdBy?: string;
+}
+
+export type SpaceAgent = SpaceAgentBase & {
+  rawSpec: string;
+  authorizationUrl?: string;
+  authType?: "basic" | "bearer" | "custom";
+  authCustomHeaderName?: string;
+  authExtraHeaders?: Record<string, string>;
+  authTokenUrl?: string;
+  authScopes?: string;
+  actions?: SpaceAgentAction[];
+  /** @format date-time */
+  updatedAt: string;
+  /** @format date-time */
+  createdAt: string;
+};
+
+export interface SpaceAgentAction {
+  /** @format uuid */
+  id: string;
+  /** The name of the action */
+  name: string;
+  /** A brief description of the action */
+  description?: string;
+  /** The path of the action */
+  path: string;
+  /** The HTTP method of the action */
+  method: string;
+}
+
+export type SpaceAgentWithSecret = SpaceAgent & {
+  authApiKey?: string;
+  authClientId?: string;
+  authClientSecret?: string;
+};
+
+export interface SpaceWebhookEvent {
+  /** @format uuid */
+  id: string;
+  /** @format uuid */
+  spaceId: string;
+  /** The unique identifier for the webhook event */
+  name: string;
+  createdBy?: string;
+  /** @format date-time */
+  createdAt: string;
+}
+
 export interface TagData {
   id?: string;
   spaceId?: string;
@@ -2878,135 +2910,6 @@ export class B2DataApi<SecurityDataType extends unknown> {
       this.http.request<ProcessNode, ErrorResponse>({
         path: `/documents/b2process/nodes/${id}`,
         method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags B2Process
-     * @name SearchProcessAgents
-     * @summary Search process agents
-     * @request POST:/documents/b2process/{versionId}/agents/search
-     * @secure
-     */
-    searchProcessAgents: (
-      versionId: string,
-      data: SearchModel & {
-        searchTerm?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<
-        {
-          total: number;
-          items: ProcessAgentBase[];
-        },
-        ErrorResponse
-      >({
-        path: `/documents/b2process/${versionId}/agents/search`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags B2Process
-     * @name GetProcessAgent
-     * @summary Get process agent
-     * @request GET:/documents/b2process/{versionId}/agents/{id}
-     * @secure
-     */
-    getProcessAgent: (versionId: string, id: string, params: RequestParams = {}) =>
-      this.http.request<ProcessAgent, ErrorResponse>({
-        path: `/documents/b2process/${versionId}/agents/${id}`,
-        method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags B2Process
-     * @name CreateProcessAgent
-     * @summary Create process agent
-     * @request POST:/documents/b2process/agents
-     * @secure
-     */
-    createProcessAgent: (
-      data: {
-        name?: string;
-        rawSpec?: string;
-        domain?: string;
-        auth?: {
-          authorizationType?: "custom" | "bearer" | "apikey";
-          customAuthHeaders?: Record<string, string>;
-          customType?: string;
-          token?: string;
-          apiKey?: string;
-        };
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<ProcessAgent, ErrorResponse>({
-        path: `/documents/b2process/agents`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags B2Process
-     * @name EditProcessAgent
-     * @summary Edit process agent
-     * @request PATCH:/documents/b2process/agents/{id}
-     * @secure
-     */
-    editProcessAgent: (
-      id: string,
-      data: {
-        name?: string;
-        rawSpec?: string;
-        domain?: string;
-        auth?: {
-          authorizationType?: "custom" | "bearer" | "apikey";
-          customAuthHeaders?: Record<string, string>;
-          customType?: string;
-          token?: string;
-          apiKey?: string;
-        };
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<ProcessAgent, ErrorResponse>({
-        path: `/documents/b2process/agents/${id}`,
-        method: "PATCH",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags B2Process
-     * @name DeleteProcessAgent
-     * @summary Delete process agent
-     * @request DELETE:/documents/b2process/agents/{id}
-     * @secure
-     */
-    deleteProcessAgent: (id: string, params: RequestParams = {}) =>
-      this.http.request<ProcessAgent, ErrorResponse>({
-        path: `/documents/b2process/agents/${id}`,
-        method: "DELETE",
         secure: true,
         ...params,
       }),
@@ -5144,6 +5047,225 @@ export class B2DataApi<SecurityDataType extends unknown> {
         path: `/spaces/users`,
         method: "DELETE",
         query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name SearchSpaceAgents
+     * @summary Search space agents
+     * @request POST:/spaces/agents/search
+     * @secure
+     */
+    searchSpaceAgents: (
+      data: SearchModel & {
+        ids?: string[];
+        searchTerm?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: SpaceAgentBase[];
+        },
+        ErrorResponse
+      >({
+        path: `/spaces/agents/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name CreateSpaceAgent
+     * @summary Create space agent
+     * @request POST:/spaces/agents
+     * @secure
+     */
+    createSpaceAgent: (
+      data: {
+        name: string;
+        domain: string;
+        rawSpec: string;
+        authorizationType: "none" | "apikey" | "oauth";
+        authorizationUrl?: string;
+        authType?: "basic" | "bearer" | "custom";
+        authCustomHeaderName?: string;
+        authExtraHeaders?: Record<string, string>;
+        authTokenUrl?: string;
+        authScopes?: string;
+        actions?: SpaceAgentAction[];
+        authApiKey?: string;
+        authClientId?: string;
+        authClientSecret?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<SpaceAgent, ErrorResponse>({
+        path: `/spaces/agents`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name GetSpaceAgent
+     * @summary Get a space agent
+     * @request GET:/spaces/agents/{id}
+     * @secure
+     */
+    getSpaceAgent: (id: string, params: RequestParams = {}) =>
+      this.http.request<SpaceAgent, ErrorResponse>({
+        path: `/spaces/agents/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name EditSpaceAgent
+     * @summary Edit space agent
+     * @request PATCH:/spaces/agents/{id}
+     * @secure
+     */
+    editSpaceAgent: (
+      id: string,
+      data: {
+        name: string;
+        domain: string;
+        rawSpec: string;
+        authorizationType: "none" | "apikey" | "oauth";
+        authorizationUrl?: string;
+        authType?: "basic" | "bearer" | "custom";
+        authCustomHeaderName?: string;
+        authExtraHeaders?: Record<string, string>;
+        authTokenUrl?: string;
+        authScopes?: string;
+        actions?: SpaceAgentAction[];
+        authApiKey?: string;
+        authClientId?: string;
+        authClientSecret?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<SpaceAgent, ErrorResponse>({
+        path: `/spaces/agents/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name DeleteSpaceAgent
+     * @summary Delete space agent
+     * @request DELETE:/spaces/agents/{id}
+     * @secure
+     */
+    deleteSpaceAgent: (id: string, params: RequestParams = {}) =>
+      this.http.request<SpaceAgent, ErrorResponse>({
+        path: `/spaces/agents/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name SearchSpaceWebhookEvents
+     * @summary Search space webhook events
+     * @request POST:/spaces/webhook/events/search
+     * @secure
+     */
+    searchSpaceWebhookEvents: (
+      data: SearchModel & {
+        ids?: string[];
+        searchTerm?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total: number;
+          items: SpaceWebhookEvent[];
+        },
+        ErrorResponse
+      >({
+        path: `/spaces/webhook/events/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name CreateSpaceWebhookEvent
+     * @summary Create space webhook event
+     * @request POST:/spaces/webhook/events
+     * @secure
+     */
+    createSpaceWebhookEvent: (data: any, params: RequestParams = {}) =>
+      this.http.request<SpaceWebhookEvent, ErrorResponse>({
+        path: `/spaces/webhook/events`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name GetSpaceWebhookEvent
+     * @summary Get a space webhook event
+     * @request GET:/spaces/webhook/events/{id}
+     * @secure
+     */
+    getSpaceWebhookEvent: (id: string, params: RequestParams = {}) =>
+      this.http.request<SpaceWebhookEvent, ErrorResponse>({
+        path: `/spaces/webhook/events/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Spaces
+     * @name DeleteSpaceWebhookEvent
+     * @summary Delete space webhook event
+     * @request DELETE:/spaces/webhook/events/{id}
+     * @secure
+     */
+    deleteSpaceWebhookEvent: (id: string, params: RequestParams = {}) =>
+      this.http.request<SpaceWebhookEvent, ErrorResponse>({
+        path: `/spaces/webhook/events/${id}`,
+        method: "DELETE",
         secure: true,
         ...params,
       }),

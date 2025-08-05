@@ -625,103 +625,6 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/ProcessNodeNotFound"
-  "/documents/b2process/{versionId}/agents/search":
-    post:
-      tags:
-        - B2Process
-      security:
-        - BearerAuth: []
-      summary: Search process agents
-      operationId: searchProcessAgents
-      parameters:
-        - $ref: "#/components/parameters/versionId"
-      requestBody:
-        $ref: "#/components/requestBodies/SearchProcessAgentsBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchProcessAgentsData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/DocumentNotFound"
-  "/documents/b2process/{versionId}/agents/{id}":
-    get:
-      tags:
-        - B2Process
-      security:
-        - BearerAuth: []
-      summary: Get process agent
-      operationId: getProcessAgent
-      parameters:
-        - $ref: "#/components/parameters/versionId"
-        - $ref: "#/components/parameters/processAgentIdParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/ProcessAgentData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/ProcessAgentNotFound"
-  /documents/b2process/agents:
-    post:
-      tags:
-        - B2Process
-      security:
-        - BearerAuth: []
-      summary: Create process agent
-      operationId: createProcessAgent
-      requestBody:
-        $ref: "#/components/requestBodies/ModifyProcessAgentBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/ProcessAgentData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-  "/documents/b2process/agents/{id}":
-    patch:
-      tags:
-        - B2Process
-      security:
-        - BearerAuth: []
-      summary: Edit process agent
-      operationId: editProcessAgent
-      parameters:
-        - $ref: "#/components/parameters/processAgentIdParam"
-      requestBody:
-        $ref: "#/components/requestBodies/ModifyProcessAgentBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/ProcessAgentData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/ProcessAgentNotFound"
-    delete:
-      tags:
-        - B2Process
-      security:
-        - BearerAuth: []
-      summary: Delete process agent
-      operationId: deleteProcessAgent
-      parameters:
-        - $ref: "#/components/parameters/processAgentIdParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/ProcessAgentData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/ProcessAgentNotFound"
   /documents/b2process/executions/search:
     post:
       tags:
@@ -2402,6 +2305,172 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/SpaceUserNotFound"
+  /spaces/agents/search:
+    post:
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      summary: Search space agents
+      operationId: searchSpaceAgents
+      requestBody:
+        $ref: "#/components/requestBodies/SearchSpaceAgentsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchSpaceAgentsData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  /spaces/agents:
+    post:
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      summary: Create space agent
+      operationId: createSpaceAgent
+      requestBody:
+        $ref: "#/components/requestBodies/ModifySpaceAgentBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceAgentData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/spaces/agents/{id}":
+    get:
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      summary: Get a space agent
+      operationId: getSpaceAgent
+      parameters:
+        - $ref: "#/components/parameters/spaceAgentIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceAgentData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SpaceAgentNotFound"
+    patch:
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      summary: Edit space agent
+      operationId: editSpaceAgent
+      parameters:
+        - $ref: "#/components/parameters/spaceAgentIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/ModifySpaceAgentBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceAgentData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SpaceAgentNotFound"
+    delete:
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      summary: Delete space agent
+      operationId: deleteSpaceAgent
+      parameters:
+        - $ref: "#/components/parameters/spaceAgentIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceAgentData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SpaceAgentNotFound"
+  /spaces/webhook/events/search:
+    post:
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      summary: Search space webhook events
+      operationId: searchSpaceWebhookEvents
+      requestBody:
+        $ref: "#/components/requestBodies/SearchSpaceWebhookEventsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchSpaceWebhookEventsData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  /spaces/webhook/events:
+    post:
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      summary: Create space webhook event
+      operationId: createSpaceWebhookEvent
+      requestBody:
+        $ref: "#/components/requestBodies/CreateSpaceWebhookEventBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceWebhookEventData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  "/spaces/webhook/events/{id}":
+    get:
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      summary: Get a space webhook event
+      operationId: getSpaceWebhookEvent
+      parameters:
+        - $ref: "#/components/parameters/spaceWebhookEventIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceWebhookEventData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SpaceWebhookEventNotFound"
+    delete:
+      tags:
+        - Spaces
+      security:
+        - BearerAuth: []
+      summary: Delete space webhook event
+      operationId: deleteSpaceWebhookEvent
+      parameters:
+        - $ref: "#/components/parameters/spaceWebhookEventIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/SpaceWebhookEventData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/SpaceWebhookEventNotFound"
 components:
   securitySchemes:
     BearerAuth:
@@ -3676,20 +3745,19 @@ components:
                   type: array
                   items:
                     $ref: "#/components/schemas/ProcessNodeReference"
-                addTags:
+                agents:
                   type: array
                   items:
-                    $ref: "#/components/schemas/EditTagContent"
-                writeMap:
-                  type: object
-                  additionalProperties:
-                    type: string
-                agentId:
-                  type: string
-                metadata:
-                  type: object
-                  additionalProperties:
                     type: object
+                    required:
+                      - id
+                    properties:
+                      id:
+                        type: string
+                      metadata:
+                        type: object
+                        additionalProperties:
+                          type: string
     ProcessNode:
       oneOf:
         - $ref: "#/components/schemas/ProcessNodeStartEvent"
@@ -3701,61 +3769,6 @@ components:
         - $ref: "#/components/schemas/ProcessNodeSubProcess"
         - $ref: "#/components/schemas/ProcessNodeGateway"
         - $ref: "#/components/schemas/ProcessNodeDataObjectReference"
-    ProcessAgentBase:
-      type: object
-      required:
-        - id
-        - spaceId
-        - name
-      properties:
-        id:
-          type: string
-        spaceId:
-          type: string
-        name:
-          type: string
-        createdBy:
-          type: string
-    ProcessAgent:
-      allOf:
-        - $ref: "#/components/schemas/ProcessAgentBase"
-        - type: object
-          required:
-            - rawSpec
-            - domain
-            - auth
-            - updatedAt
-            - createdAt
-          properties:
-            rawSpec:
-              type: string
-            domain:
-              type: string
-            auth:
-              type: object
-              properties:
-                authorizationType:
-                  type: string
-                  enum:
-                    - custom
-                    - bearer
-                    - apikey
-                customAuthHeaders:
-                  type: object
-                  additionalProperties:
-                    type: string
-                customType:
-                  type: string
-                token:
-                  type: string
-                apiKey:
-                  type: string
-            updatedAt:
-              type: string
-              format: date-time
-            createdAt:
-              type: string
-              format: date-time
     ProcessData:
       type: object
       required:
@@ -6406,6 +6419,126 @@ components:
                     type: boolean
                   createdBy:
                     type: string
+    SpaceAgentBase:
+      type: object
+      required:
+        - id
+        - spaceId
+        - name
+        - domain
+        - authorizationType
+      properties:
+        id:
+          type: string
+        spaceId:
+          type: string
+        name:
+          type: string
+        domain:
+          type: string
+        authorizationType:
+          type: string
+          enum:
+            - none
+            - apikey
+            - oauth
+        createdBy:
+          type: string
+    SpaceAgent:
+      allOf:
+        - $ref: "#/components/schemas/SpaceAgentBase"
+        - type: object
+          required:
+            - rawSpec
+            - updatedAt
+            - createdAt
+          properties:
+            rawSpec:
+              type: string
+            authorizationUrl:
+              type: string
+            authType:
+              type: string
+              enum:
+                - basic
+                - bearer
+                - custom
+            authCustomHeaderName:
+              type: string
+            authExtraHeaders:
+              type: object
+              additionalProperties:
+                type: string
+            authTokenUrl:
+              type: string
+            authScopes:
+              type: string
+            actions:
+              type: array
+              items:
+                $ref: "#/components/schemas/SpaceAgentAction"
+            updatedAt:
+              type: string
+              format: date-time
+            createdAt:
+              type: string
+              format: date-time
+    SpaceAgentAction:
+      type: object
+      required:
+        - id
+        - name
+        - path
+        - method
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: The name of the action
+        description:
+          type: string
+          description: A brief description of the action
+        path:
+          type: string
+          description: The path of the action
+        method:
+          type: string
+          description: The HTTP method of the action
+    SpaceAgentWithSecret:
+      allOf:
+        - $ref: "#/components/schemas/SpaceAgent"
+        - type: object
+          properties:
+            authApiKey:
+              type: string
+            authClientId:
+              type: string
+            authClientSecret:
+              type: string
+    SpaceWebhookEvent:
+      type: object
+      required:
+        - id
+        - spaceId
+        - name
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        spaceId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: The unique identifier for the webhook event
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
     TagData:
       type: object
       properties:
@@ -6582,47 +6715,6 @@ components:
                   parentId:
                     type: string
                     nullable: true
-    SearchProcessAgentsBody:
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: "#/components/schemas/SearchModel"
-              - type: object
-                properties:
-                  searchTerm:
-                    type: string
-    ModifyProcessAgentBody:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              name:
-                type: string
-              rawSpec:
-                type: string
-              domain:
-                type: string
-              auth:
-                type: object
-                properties:
-                  authorizationType:
-                    type: string
-                    enum:
-                      - custom
-                      - bearer
-                      - apikey
-                  customAuthHeaders:
-                    type: object
-                    additionalProperties:
-                      type: string
-                  customType:
-                    type: string
-                  token:
-                    type: string
-                  apiKey:
-                    type: string
     SearchProcessExecutionBody:
       content:
         application/json:
@@ -7658,6 +7750,95 @@ components:
               groupId:
                 type: string
                 nullable: true
+    SearchSpaceAgentsBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                  searchTerm:
+                    type: string
+    ModifySpaceAgentBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - domain
+              - rawSpec
+              - authorizationType
+            properties:
+              name:
+                type: string
+              domain:
+                type: string
+              rawSpec:
+                type: string
+              authorizationType:
+                type: string
+                enum:
+                  - none
+                  - apikey
+                  - oauth
+              authorizationUrl:
+                type: string
+              authType:
+                type: string
+                enum:
+                  - basic
+                  - bearer
+                  - custom
+              authCustomHeaderName:
+                type: string
+              authExtraHeaders:
+                type: object
+                additionalProperties:
+                  type: string
+              authTokenUrl:
+                type: string
+              authScopes:
+                type: string
+              actions:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpaceAgentAction"
+              authApiKey:
+                type: string
+              authClientId:
+                type: string
+              authClientSecret:
+                type: string
+    SearchSpaceWebhookEventsBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                  searchTerm:
+                    type: string
+    CreateSpaceWebhookEventBody:
+      content:
+        application/json:
+          schema:
+            - type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
   responses:
     InvalidData:
       description: Invalid request data
@@ -7806,12 +7987,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ProcessNode"
-    ProcessAgentData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ProcessAgent"
     SearchProcessData:
       description: Successful operation
       content:
@@ -7844,22 +8019,6 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/ProcessNode"
-    SearchProcessAgentsData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - total
-              - items
-            properties:
-              total:
-                type: integer
-              items:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ProcessAgentBase"
     ProcessNodeNotFound:
       description: Not found
       content:
@@ -7869,15 +8028,6 @@ components:
           example:
             errorCode: document:b2process:404-node
             message: Process node not found
-    ProcessAgentNotFound:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            errorCode: document:b2process:404-agent
-            message: Process agent not found
     ProcessExecutionNotFound:
       description: Not found
       content:
@@ -8602,6 +8752,68 @@ components:
           example:
             errorCode: space:404-user
             message: Space user not found
+    SpaceAgentData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SpaceAgent"
+    SpaceAgentNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: space:404-agent
+            message: Space agent not found
+    SearchSpaceAgentsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpaceAgentBase"
+    SearchSpaceWebhookEventsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: integer
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpaceWebhookEvent"
+    SpaceWebhookEventData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SpaceWebhookEvent"
+    SpaceWebhookEventNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: space:404-webhook-event
+            message: Space webhook event not found
     TagWithData:
       description: Successful operation
       content:
@@ -8621,14 +8833,6 @@ components:
       in: path
       name: formId
       description: Form ID
-      required: true
-      schema:
-        type: string
-        format: uuid
-    processAgentIdParam:
-      in: path
-      name: id
-      description: Process Agent ID
       required: true
       schema:
         type: string
@@ -8833,3 +9037,19 @@ components:
       required: true
       schema:
         type: string
+    spaceAgentIdParam:
+      in: path
+      name: id
+      description: Space Agent ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    spaceWebhookEventIdParam:
+      in: path
+      name: id
+      description: Space Webhook Event ID
+      required: true
+      schema:
+        type: string
+        format: uuid
