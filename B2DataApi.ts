@@ -3866,6 +3866,12 @@ export class B2DataApi<SecurityDataType extends unknown> {
         systemId?: string | null;
         systemType?: SystemType | null;
         tags?: EditTagContent[];
+        duplicateFrom?: {
+          /** @format uuid */
+          documentId: string;
+          /** @format uuid */
+          versionId: string;
+        };
         productVersionData?: B2ProductData;
         taskVersionData?: CreateB2TaskBody;
         counterpartyVersionData?: B2CounterpartyData;

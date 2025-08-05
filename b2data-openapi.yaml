@@ -7261,6 +7261,18 @@ components:
                 type: array
                 items:
                   $ref: "#/components/schemas/EditTagContent"
+              duplicateFrom:
+                type: object
+                required:
+                  - documentId
+                  - versionId
+                properties:
+                  documentId:
+                    type: string
+                    format: uuid
+                  versionId:
+                    type: string
+                    format: uuid
               productVersionData:
                 $ref: "#/components/schemas/B2ProductData"
               taskVersionData:
