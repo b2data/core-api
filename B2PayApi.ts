@@ -434,7 +434,7 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version 1.0.0
  * @baseUrl http://localhost:8081
  */
-export class B2PaymentApi<SecurityDataType extends unknown> {
+export class B2PayApi<SecurityDataType extends unknown> {
   http: HttpClient<SecurityDataType>;
 
   constructor(http: HttpClient<SecurityDataType>) {

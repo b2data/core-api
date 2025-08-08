@@ -30,39 +30,81 @@ export interface SearchModel {
   sort?: SortModel[];
 }
 
-export interface App {
-  /** App key */
-  key: string;
-  /** Unique name */
-  name: string;
-  /** App URL */
-  url: string;
+/** Agent authorization type */
+export enum ApiAgentAuthorizationType {
+  None = "none",
+  Apikey = "apikey",
+  Oauth2 = "oauth2",
+  Custom = "custom",
+}
+
+/** API key type */
+export enum ApiAgentApiKeyType {
+  Basic = "basic",
+  Bearer = "bearer",
+  Custom = "custom",
+}
+
+export interface ApiAgentBase {
   /**
-   * Client ID for API requests
+   * Agent ID
    * @format uuid
    */
   id: string;
-  /** Client Secret for API requests */
-  secret: string;
+  /** Subject (sub) claim */
+  sub?: string;
+  /** Agent name */
+  name: string;
+  /** API URL to make requests to */
+  domain: string;
+  /** Agent authorization type */
+  authorizationType: ApiAgentAuthorizationType;
+  /** Creator ID */
+  createdBy?: string;
+}
+
+export type ApiAgent = ApiAgentBase & {
+  /** Raw OpenAPI spec */
+  rawSpec: string;
   /**
-   * Activation Date
+   * Creation date
    * @format date-time
    */
   createdAt: string;
-}
+  /**
+   * Update date
+   * @format date-time
+   */
+  updatedAt?: string;
+  /** API key type */
+  apiKeyType?: ApiAgentApiKeyType;
+  /** API key header name */
+  apiKeyHeader?: string;
+  /** OAuth authorization URL */
+  authUrl?: string;
+  /** OAuth scopes */
+  authScopes?: string[];
+  /** Custom headers for requests */
+  customHeaders?: Record<string, string>;
+};
 
-export interface AppPublic {
-  /** App key */
-  key: string;
-  /** Unique name */
-  name: string;
-  /** App URL */
-  url: string;
-}
+export type ApiAgentWithSecret = ApiAgent & {
+  /** API key */
+  apiKey?: string;
+  /** API key secret (for basic) */
+  apiKeySecret?: string;
+  /** OAuth Client ID */
+  authClientId?: string;
+  /** OAuth Client Secret */
+  authClientSecret?: string;
+};
 
-export enum AppErrorCodes {
-  App404 = "app:404",
-  App400Register = "app:400-register",
+export enum ApiAgentErrorCodes {
+  ApiAgents400InvalidSpec = "api-agents:400-invalid-spec",
+  ApiAgents400InvalidDomain = "api-agents:400-invalid-domain",
+  ApiAgents403 = "api-agents:403",
+  ApiAgents404 = "api-agents:404",
+  ApiAgents404Operation = "api-agents:404-operation",
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -111,7 +153,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "http://localhost:8081";
+  public baseUrl: string = "https://b2p.space/api";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -276,74 +318,46 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title REST API for Apps
+ * @title REST API for API Agents
  * @version 1.0.0
- * @baseUrl http://localhost:8081
+ * @baseUrl https://b2p.space/api
  */
-export class AppsApi<SecurityDataType extends unknown> {
+export class AgentsApi<SecurityDataType extends unknown> {
   http: HttpClient<SecurityDataType>;
 
   constructor(http: HttpClient<SecurityDataType>) {
     this.http = http;
   }
 
-  apps = {
+  apiAgents = {
     /**
-     * @description Available for everyone for
+     * No description
      *
-     * @tags Apps
-     * @name GetApps
-     * @summary Get activated apps
-     * @request GET:/apps
+     * @tags API Agents
+     * @name SearchAgents
+     * @summary Search agents
+     * @request POST:/agents/search
      * @secure
      */
-    getApps: (params: RequestParams = {}) =>
-      this.http.request<AppPublic[], ErrorResponse>({
-        path: `/apps`,
-        method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Available for supper admins
-     *
-     * @tags Apps
-     * @name GetAppsFull
-     * @summary Get activated apps full data
-     * @request GET:/apps/full
-     * @secure
-     */
-    getAppsFull: (params: RequestParams = {}) =>
-      this.http.request<App[], ErrorResponse>({
-        path: `/apps/full`,
-        method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * @description Available for supper admins
-     *
-     * @tags Apps
-     * @name ActivateApp
-     * @summary Activate app
-     * @request POST:/apps/activate
-     * @secure
-     */
-    activateApp: (
-      data: {
-        /** App key */
-        key: string;
-        /** Service Unique Name */
-        name: string;
-        /** Service URL Address */
-        address: string;
+    searchAgents: (
+      data: SearchModel & {
+        /** List IDs to filter by */
+        ids?: string[];
+        /** Search term to filter agents by name */
+        searchTerm?: string;
+        /** Filter by authorization types */
+        authorizationTypes?: ApiAgentAuthorizationType[];
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<App, ErrorResponse>({
-        path: `/apps/activate`,
+      this.http.request<
+        {
+          total: number;
+          items: ApiAgentBase[];
+        },
+        ErrorResponse
+      >({
+        path: `/agents/search`,
         method: "POST",
         body: data,
         secure: true,
@@ -351,18 +365,120 @@ export class AppsApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for supper admins
+     * No description
      *
-     * @tags Apps
-     * @name DeactivateApp
-     * @summary Deactivate app
-     * @request POST:/apps/deactivate/{name}
+     * @tags API Agents
+     * @name CreateAgent
+     * @summary Create a new agent
+     * @request POST:/agents
      * @secure
      */
-    deactivateApp: (name: string, params: RequestParams = {}) =>
-      this.http.request<App, ErrorResponse>({
-        path: `/apps/deactivate/${name}`,
+    createAgent: (
+      data: {
+        /** Agent name */
+        name: string;
+        /** Raw OpenAPI spec */
+        rawSpec: string;
+        /** API URL from spec */
+        domain: string;
+        /** Agent authorization type */
+        authorizationType: ApiAgentAuthorizationType;
+        /** API key type */
+        apiKeyType?: ApiAgentApiKeyType;
+        /** API key (for basic or bearer) */
+        apiKey?: string;
+        /** API key secret (for basic) */
+        apiKeySecret?: string;
+        /** API key header name (for basic or bearer) */
+        apiKeyHeader?: string;
+        /** OAuth authorization URL */
+        authUrl?: string;
+        /** OAuth Client ID */
+        authClientId?: string;
+        /** OAuth Client Secret */
+        authClientSecret?: string;
+        /** OAuth scopes */
+        authScopes?: string[];
+        customHeaders?: Record<string, string>;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ApiAgentWithSecret, ErrorResponse>({
+        path: `/agents`,
         method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags API Agents
+     * @name GetAgent
+     * @summary Get agent by ID
+     * @request GET:/agents/{id}
+     * @secure
+     */
+    getAgent: (id: string, params: RequestParams = {}) =>
+      this.http.request<ApiAgent, ErrorResponse>({
+        path: `/agents/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags API Agents
+     * @name EditAgent
+     * @summary Edit agent
+     * @request PATCH:/agents/{id}
+     * @secure
+     */
+    editAgent: (
+      id: string,
+      data: {
+        name?: string;
+        rawSpec?: string;
+        domain?: string;
+        /** Agent authorization type */
+        authorizationType?: ApiAgentAuthorizationType;
+        /** API key type */
+        apiKeyType?: ApiAgentApiKeyType;
+        apiKey?: string;
+        apiKeySecret?: string;
+        apiKeyHeader?: string;
+        authUrl?: string;
+        authClientId?: string;
+        authClientSecret?: string;
+        authScopes?: string[];
+        customHeaders?: Record<string, string>;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ApiAgent, ErrorResponse>({
+        path: `/agents/${id}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags API Agents
+     * @name DeleteAgent
+     * @summary Delete agent
+     * @request DELETE:/agents/{id}
+     * @secure
+     */
+    deleteAgent: (id: string, params: RequestParams = {}) =>
+      this.http.request<ApiAgent, ErrorResponse>({
+        path: `/agents/${id}`,
+        method: "DELETE",
         secure: true,
         ...params,
       }),
