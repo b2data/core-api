@@ -46,6 +46,35 @@ export interface User {
   avatar?: string;
 }
 
+export interface TMAUser {
+  /** Telegram User ID */
+  id: number;
+  /** First Name */
+  firstName: string;
+  /** Last Name */
+  lastName?: string;
+  /** Username */
+  username?: string;
+  /** If `true` user is a bot */
+  isBot?: boolean;
+  /** If `true` user is a premium user */
+  isPremium?: boolean;
+  /** Language Code */
+  languageCode?: string;
+  /** URL to User Photo */
+  photoUrl?: string;
+  /** If `true` user has added the bot to attachment menu */
+  addedToAttachmentMenu?: boolean;
+  /** If `true` user allows writing to PM */
+  allowsWriteToPm?: boolean;
+}
+
+export type UserFull = User & {
+  /** List of Public Keys */
+  publicKes?: string[];
+  tma?: TMAUser;
+};
+
 export enum AuthErrorCodes {
   Api403 = "api:403",
   Auth401 = "auth:401",
@@ -148,7 +177,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "http://localhost:8081";
+  public baseUrl: string = "https://b2p.space/api";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -315,7 +344,7 @@ export class HttpClient<SecurityDataType = unknown> {
 /**
  * @title REST API for Auth
  * @version 1.0.0
- * @baseUrl http://localhost:8081
+ * @baseUrl https://b2p.space/api
  */
 export class AuthApi<SecurityDataType extends unknown> {
   http: HttpClient<SecurityDataType>;
@@ -328,7 +357,7 @@ export class AuthApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Auth
+     * @tags Auth, Available Public
      * @name StartAuth
      * @summary Start authentication process
      * @request POST:/auth/start
@@ -350,7 +379,7 @@ export class AuthApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Auth
+     * @tags Auth, Available Public
      * @name VerifyAuth
      * @summary Verify authentication wallet
      * @request POST:/auth/verify
@@ -379,6 +408,7 @@ export class AuthApi<SecurityDataType extends unknown> {
      * @name RefreshToken
      * @summary Refresh Access Token by Refresh token
      * @request POST:/auth/refresh
+     * @secure
      */
     refreshToken: (data: RefreshTokenPayload, params: RequestParams = {}) =>
       this.http.request<
@@ -392,6 +422,7 @@ export class AuthApi<SecurityDataType extends unknown> {
         path: `/auth/refresh`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -407,7 +438,7 @@ export class AuthApi<SecurityDataType extends unknown> {
      * @secure
      */
     getProfile: (params: RequestParams = {}) =>
-      this.http.request<User, ErrorResponse>({
+      this.http.request<UserFull, ErrorResponse>({
         path: `/auth/profile`,
         method: "GET",
         secure: true,
@@ -424,7 +455,7 @@ export class AuthApi<SecurityDataType extends unknown> {
      * @secure
      */
     updateProfile: (data: UpdateProfilePayload, params: RequestParams = {}) =>
-      this.http.request<User, ErrorResponse>({
+      this.http.request<UserFull, ErrorResponse>({
         path: `/auth/profile`,
         method: "PATCH",
         body: data,

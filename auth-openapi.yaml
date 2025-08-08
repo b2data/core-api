@@ -3,16 +3,27 @@ info:
   title: REST API for Auth
   version: 1.0.0
 servers:
-  - url: http://localhost:8081
-  - url: http://54.37.199.51
+  - url: https://b2p.space/api
+  - url: https://market.b2p.space/api
+  - url: https://sign.b2p.space/api
+  - url: https://pay.b2p.space/api
+  - url: https://dictionary.b2p.space/api
+  - url: https://beta.data.b2p.space/api
+  - url: https://beta.market.b2p.space/api
+  - url: https://beta.sign.b2p.space/api
+  - url: https://beta.pay.b2p.space/api
+  - url: https://beta.dictionary.b2p.space/api
 tags:
   - name: Auth
-    description: Authentication
+    description: Authenticate by TON Connect
+  - name: Available Public
+    description: Public API requests
 paths:
   /auth/start:
     post:
       tags:
         - Auth
+        - Available Public
       summary: Start authentication process
       operationId: startAuth
       requestBody:
@@ -33,6 +44,7 @@ paths:
     post:
       tags:
         - Auth
+        - Available Public
       summary: Verify authentication wallet
       operationId: verifyAuth
       requestBody:
@@ -126,6 +138,8 @@ paths:
     post:
       tags:
         - Auth
+      security:
+        - BearerAuth: []
       summary: Refresh Access Token by Refresh token
       operationId: refreshToken
       requestBody:
@@ -176,7 +190,7 @@ paths:
       operationId: getProfile
       responses:
         "200":
-          $ref: "#/components/responses/UserData"
+          $ref: "#/components/responses/UserFullData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -208,7 +222,7 @@ paths:
                   description: Avatar
       responses:
         "200":
-          $ref: "#/components/responses/UserData"
+          $ref: "#/components/responses/UserFullData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -219,22 +233,12 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Authorization using Auth routes
-    ProviderClientId:
-      type: apiKey
-      name: client-id
-      in: header
-      description: Authorization for providers requests
-    ProviderClientSecret:
-      type: apiKey
-      name: client-secret
-      in: header
-      description: Authorization for providers requests
-    ProviderUserId:
-      type: apiKey
-      name: user-id
-      in: header
-      description: Authorization for providers requests
+      description: User authorization
+    ApiClientAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: API Client Authorization
   schemas:
     ErrorResponse:
       type: object
@@ -296,6 +300,57 @@ components:
         avatar:
           type: string
           description: Avatar
+    TMAUser:
+      type: object
+      required:
+        - id
+        - firstName
+      properties:
+        id:
+          type: number
+          description: Telegram User ID
+        firstName:
+          type: string
+          description: First Name
+        lastName:
+          type: string
+          description: Last Name
+        username:
+          type: string
+          description: Username
+        isBot:
+          type: boolean
+          description: If `true` user is a bot
+        isPremium:
+          type: boolean
+          description: If `true` user is a premium user
+        languageCode:
+          type: string
+          description: Language Code
+        photoUrl:
+          type: string
+          description: URL to User Photo
+        addedToAttachmentMenu:
+          type: boolean
+          description: If `true` user has added the bot to attachment menu
+        allowsWriteToPm:
+          type: boolean
+          description: If `true` user allows writing to PM
+    UserFull:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          required:
+            - createdAt
+            - updatedAt
+          properties:
+            publicKes:
+              type: array
+              items:
+                type: string
+              description: List of Public Keys
+            tma:
+              $ref: "#/components/schemas/TMAUser"
     AuthErrorCodes:
       type: string
       enum:
@@ -313,6 +368,10 @@ components:
   responses:
     InvalidData:
       description: Invalid request data
+    TooManyRequests:
+      description: Too many requests
+    NotImplemented:
+      description: Not implemented
     Unauthorized:
       description: Unauthorized
     Forbidden:
@@ -330,6 +389,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/User"
+    UserFullData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserFull"
     UserNotFound:
       description: Not found
       content:

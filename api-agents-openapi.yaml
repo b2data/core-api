@@ -1,0 +1,459 @@
+openapi: 3.0.0
+info:
+  title: REST API for API Agents
+  version: 1.0.0
+servers:
+  - url: https://b2p.space/api
+  - url: https://market.b2p.space/api
+  - url: https://sign.b2p.space/api
+  - url: https://pay.b2p.space/api
+  - url: https://dictionary.b2p.space/api
+  - url: https://beta.data.b2p.space/api
+  - url: https://beta.market.b2p.space/api
+  - url: https://beta.sign.b2p.space/api
+  - url: https://beta.pay.b2p.space/api
+  - url: https://beta.dictionary.b2p.space/api
+tags:
+  - name: API Agents
+    description: Manage API Agents
+paths:
+  /agents/search:
+    post:
+      tags:
+        - API Agents
+      security:
+        - BearerAuth: []
+      summary: Search agents
+      operationId: searchAgents
+      requestBody:
+        $ref: "#/components/requestBodies/ApiAgentSearchBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiAgentSearchData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /agents:
+    post:
+      tags:
+        - API Agents
+      security:
+        - BearerAuth: []
+      summary: Create a new agent
+      operationId: createAgent
+      requestBody:
+        $ref: "#/components/requestBodies/ApiAgentCreateBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiAgentWithSecretData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/agents/{id}":
+    get:
+      tags:
+        - API Agents
+      security:
+        - BearerAuth: []
+      summary: Get agent by ID
+      operationId: getAgent
+      parameters:
+        - $ref: "#/components/parameters/apiAgentIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiAgentData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiAgentNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+    patch:
+      tags:
+        - API Agents
+      security:
+        - BearerAuth: []
+      summary: Edit agent
+      operationId: editAgent
+      parameters:
+        - $ref: "#/components/parameters/apiAgentIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/ApiAgentEditBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiAgentData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiAgentNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+    delete:
+      tags:
+        - API Agents
+      security:
+        - BearerAuth: []
+      summary: Delete agent
+      operationId: deleteAgent
+      parameters:
+        - $ref: "#/components/parameters/apiAgentIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiAgentData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiAgentNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User authorization
+    ApiClientAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: API Client Authorization
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - message
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+    SortModel:
+      type: object
+      required:
+        - field
+      properties:
+        field:
+          type: string
+          description: The field for sorting
+        sort:
+          type: string
+          nullable: true
+          enum:
+            - asc
+            - desc
+          description: The sorting order
+    SearchModel:
+      type: object
+      properties:
+        limit:
+          type: number
+          description: Number of return items
+        offset:
+          type: number
+          description: Number of skip items
+        sort:
+          type: array
+          items:
+            $ref: "#/components/schemas/SortModel"
+    ApiAgentAuthorizationType:
+      type: string
+      enum:
+        - none
+        - apikey
+        - oauth2
+        - custom
+      description: Agent authorization type
+    ApiAgentApiKeyType:
+      type: string
+      enum:
+        - basic
+        - bearer
+        - custom
+      description: API key type
+    ApiAgentBase:
+      type: object
+      required:
+        - id
+        - name
+        - domain
+        - authorizationType
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Agent ID
+        sub:
+          type: string
+          description: Subject (sub) claim
+        name:
+          type: string
+          description: Agent name
+        domain:
+          type: string
+          description: API URL to make requests to
+        authorizationType:
+          $ref: "#/components/schemas/ApiAgentAuthorizationType"
+        createdBy:
+          type: string
+          description: Creator ID
+    ApiAgent:
+      allOf:
+        - $ref: "#/components/schemas/ApiAgentBase"
+        - type: object
+          required:
+            - rawSpec
+            - createdAt
+          properties:
+            rawSpec:
+              type: string
+              description: Raw OpenAPI spec
+            createdAt:
+              type: string
+              format: date-time
+              description: Creation date
+            updatedAt:
+              type: string
+              format: date-time
+              description: Update date
+            apiKeyType:
+              $ref: "#/components/schemas/ApiAgentApiKeyType"
+            apiKeyHeader:
+              type: string
+              description: API key header name
+            authUrl:
+              type: string
+              description: OAuth authorization URL
+            authScopes:
+              type: array
+              items:
+                type: string
+              description: OAuth scopes
+            customHeaders:
+              type: object
+              additionalProperties:
+                type: string
+              description: Custom headers for requests
+    ApiAgentWithSecret:
+      allOf:
+        - $ref: "#/components/schemas/ApiAgent"
+        - type: object
+          properties:
+            apiKey:
+              type: string
+              description: API key
+            apiKeySecret:
+              type: string
+              description: API key secret (for basic)
+            authClientId:
+              type: string
+              description: OAuth Client ID
+            authClientSecret:
+              type: string
+              description: OAuth Client Secret
+    ApiAgentErrorCodes:
+      type: string
+      enum:
+        - api-agents:400-invalid-spec
+        - api-agents:400-invalid-domain
+        - api-agents:403
+        - api-agents:404
+        - api-agents:404-operation
+  requestBodies:
+    EmptyBody:
+      content:
+        application/json:
+          schema:
+            type: object
+    ApiAgentSearchBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    description: List IDs to filter by
+                  searchTerm:
+                    type: string
+                    description: Search term to filter agents by name
+                  authorizationTypes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ApiAgentAuthorizationType"
+                    description: Filter by authorization types
+    ApiAgentCreateBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - rawSpec
+              - domain
+              - authorizationType
+            properties:
+              name:
+                type: string
+                description: Agent name
+              rawSpec:
+                type: string
+                description: Raw OpenAPI spec
+              domain:
+                type: string
+                description: API URL from spec
+              authorizationType:
+                $ref: "#/components/schemas/ApiAgentAuthorizationType"
+              apiKeyType:
+                $ref: "#/components/schemas/ApiAgentApiKeyType"
+              apiKey:
+                type: string
+                description: API key (for basic or bearer)
+              apiKeySecret:
+                type: string
+                description: API key secret (for basic)
+              apiKeyHeader:
+                type: string
+                description: API key header name (for basic or bearer)
+              authUrl:
+                type: string
+                description: OAuth authorization URL
+              authClientId:
+                type: string
+                description: OAuth Client ID
+              authClientSecret:
+                type: string
+                description: OAuth Client Secret
+              authScopes:
+                type: array
+                items:
+                  type: string
+                description: OAuth scopes
+              customHeaders:
+                type: object
+                additionalProperties:
+                  type: string
+    ApiAgentEditBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              rawSpec:
+                type: string
+              domain:
+                type: string
+              authorizationType:
+                $ref: "#/components/schemas/ApiAgentAuthorizationType"
+              apiKeyType:
+                $ref: "#/components/schemas/ApiAgentApiKeyType"
+              apiKey:
+                type: string
+              apiKeySecret:
+                type: string
+              apiKeyHeader:
+                type: string
+              authUrl:
+                type: string
+              authClientId:
+                type: string
+              authClientSecret:
+                type: string
+              authScopes:
+                type: array
+                items:
+                  type: string
+              customHeaders:
+                type: object
+                additionalProperties:
+                  type: string
+  responses:
+    InvalidData:
+      description: Invalid request data
+    TooManyRequests:
+      description: Too many requests
+    NotImplemented:
+      description: Not implemented
+    Unauthorized:
+      description: Unauthorized
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: api:403
+            message: You don't have access to this method
+    ApiAgentData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiAgent"
+    ApiAgentWithSecretData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiAgentWithSecret"
+    ApiAgentSearchData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiAgentBase"
+    ApiAgentNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: api-agent:404
+            message: Agent not found
+  parameters:
+    apiAgentIdParam:
+      in: path
+      name: id
+      description: Agent ID
+      required: true
+      schema:
+        type: string
+        format: uuid

@@ -1,0 +1,779 @@
+openapi: 3.0.0
+info:
+  title: REST API for API Clients
+  version: 1.0.0
+servers:
+  - url: https://b2p.space/api
+  - url: https://market.b2p.space/api
+  - url: https://sign.b2p.space/api
+  - url: https://pay.b2p.space/api
+  - url: https://dictionary.b2p.space/api
+  - url: https://beta.data.b2p.space/api
+  - url: https://beta.market.b2p.space/api
+  - url: https://beta.sign.b2p.space/api
+  - url: https://beta.pay.b2p.space/api
+  - url: https://beta.dictionary.b2p.space/api
+tags:
+  - name: API Clients
+    description: Manage API Clients
+  - name: Available Public
+    description: Public API requests
+  - name: OAuth Client
+    description: OAuth Client API requests
+paths:
+  /oauth/token:
+    post:
+      tags:
+        - OAuth Client
+        - Available Public
+      summary: Exchange credentials, device_code, refresh_token for new tokens
+      operationId: exchangeToken
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientExchangeTokenBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientExchangeTokenData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/device/code:
+    post:
+      tags:
+        - OAuth Client
+        - Available Public
+      summary: Get device code for device authorization
+      operationId: getDeviceCode
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientGetDeviceCodeBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientGetDeviceCodeData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/device/verification:
+    post:
+      tags:
+        - OAuth Client
+        - Available Public
+      summary: Verify device code and get access token
+      operationId: verifyDeviceCode
+      responses:
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+  /oauth/device/authorize:
+    get:
+      tags:
+        - OAuth Client
+        - Available Public
+      summary: Authorize device code
+      operationId: authorizeDeviceCode
+      responses:
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+  /oauth/introspect:
+    get:
+      tags:
+        - OAuth Client
+        - Available Public
+      summary: Check token validity and info
+      operationId: introspectToken
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientIntrospectData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/info:
+    get:
+      tags:
+        - OAuth Client
+      security:
+        - ApiClientAuth: []
+      summary: Get OAuth client info
+      operationId: getClientInfo
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientWithSecretData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/revoke:
+    post:
+      tags:
+        - OAuth Client
+      security:
+        - ApiClientAuth: []
+      summary: Revoke access or refresh token
+      operationId: revokeToken
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientRevokeTokenBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientRevokeTokenData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/logout:
+    post:
+      tags:
+        - OAuth Client
+      security:
+        - ApiClientAuth: []
+      summary: Logout and revoke tokens
+      operationId: logoutToken
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientRevokeTokenBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientRevokeTokenData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /clients/search:
+    post:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Search API Clients
+      operationId: searchApiClients
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientsSearchBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientsListData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /clients/register:
+    post:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Register a new API Client
+      operationId: registerApiClient
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientRegisterBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/ApiClientWithSecretData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/clients/{id}":
+    get:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Get API client details
+      operationId: getApiClient
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientWithSecretData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+    patch:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Update API client
+      operationId: updateApiClient
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientModifyBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientWithSecretData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+    delete:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Delete API client
+      operationId: deleteApiClient
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/clients/{id}/revoke":
+    post:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Revoke API Client tokens
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
+      operationId: revokeApiClientToken
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientRevokeTokenBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientRevokeTokenData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/clients/{id}/block":
+    post:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Block API Client
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
+      operationId: blockApiClient
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/clients/{id}/unblock":
+    post:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Unblock API Client
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
+      operationId: unblockApiClient
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User authorization
+    ApiClientAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: API Client Authorization
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - message
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+    SortModel:
+      type: object
+      required:
+        - field
+      properties:
+        field:
+          type: string
+          description: The field for sorting
+        sort:
+          type: string
+          nullable: true
+          enum:
+            - asc
+            - desc
+          description: The sorting order
+    SearchModel:
+      type: object
+      properties:
+        limit:
+          type: number
+          description: Number of return items
+        offset:
+          type: number
+          description: Number of skip items
+        sort:
+          type: array
+          items:
+            $ref: "#/components/schemas/SortModel"
+    ApiClientGrantType:
+      type: string
+      enum:
+        - client_credentials
+        - refresh_token
+        - device_code
+      description: Supported grant types for API clients
+    ApiClientBase:
+      type: object
+      required:
+        - id
+        - name
+        - status
+        - createdBy
+        - grantTypes
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Client ID
+        name:
+          type: string
+          description: Client name
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+          description: Indicates the status of the client
+        grantTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApiClientGrantType"
+          description: Supported grant types
+        createdBy:
+          type: string
+          description: Creator Wallet address
+        sub:
+          type: string
+          description: Subject (sub) claim for the client
+        scopes:
+          type: array
+          items:
+            type: string
+          description: List of scopes granted to the client
+        webhookUrl:
+          type: string
+          description: Webhook URL to send notifications from the client
+    ApiClient:
+      allOf:
+        - $ref: "#/components/schemas/ApiClientBase"
+        - type: object
+          required:
+            - createdAt
+          properties:
+            createdAt:
+              type: string
+              format: date-time
+              description: Creation date
+            updatedAt:
+              type: string
+              format: date-time
+              description: Update date
+            lastUsedAt:
+              type: string
+              format: date-time
+              description: Last used date
+            blockedAt:
+              type: string
+              format: date-time
+              description: Blocked date
+    ApiClientWithSecret:
+      allOf:
+        - $ref: "#/components/schemas/ApiClient"
+        - type: object
+          required:
+            - secret
+          properties:
+            secret:
+              type: string
+              description: Client secret
+    ApiClientErrorCodes:
+      type: string
+      enum:
+        - api-client:400-blocked
+        - api-client:400-code-pending
+        - api-client:400-inactive
+        - api-client:400-invalid-jwt
+        - api-client:400-not-blocked
+        - api-client:400-unsupported-grant-type
+        - api-client:400-unsupported-scope
+        - api-client:401
+        - api-client:403
+        - api-client:404
+        - api-client:404-oauth-public-key
+  requestBodies:
+    EmptyBody:
+      content:
+        application/json:
+          schema:
+            type: object
+    ApiClientRegisterBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - grantTypes
+            properties:
+              name:
+                type: string
+                description: Client name
+              grantTypes:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiClientGrantType"
+                description: Supported grant types
+              sub:
+                type: string
+                description: Subject (sub) claim for the client
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: Allowed scopes
+              webhookUrl:
+                type: string
+                description: Webhook URL to send notifications from the client
+    ApiClientModifyBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Client name
+              grantTypes:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiClientGrantType"
+                description: Supported grant types
+              sub:
+                type: string
+                description: Subject (sub) claim for the client
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: Allowed scopes
+              webhookUrl:
+                type: string
+                description: Webhook URL to send notifications from the client
+    ApiClientsSearchBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  searchTerm:
+                    type: string
+                    description: Search term to filter clients by name
+                  isActive:
+                    type: boolean
+                    description: Filter by client active/inactive status
+                  isBlocked:
+                    type: boolean
+                    description: Filter by client blocked status
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    description: Filter by specific client IDs
+                  subs:
+                    type: array
+                    items:
+                      type: string
+                    description: Filter by client subject (sub) claims
+                  createdBy:
+                    type: array
+                    items:
+                      type: string
+                    description: Filter by creator Wallet addresses
+                  grandTypes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ApiClientGrantType"
+                    description: Filter by supported grant types
+    ApiClientExchangeTokenBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - grantType
+              - clientId
+            properties:
+              grantType:
+                $ref: "#/components/schemas/ApiClientGrantType"
+                description: Grant type for token exchange
+              clientId:
+                type: string
+                description: Client ID
+              clientSecret:
+                type: string
+                description: Client secret
+              refreshToken:
+                type: string
+                description: Refresh token
+              deviceCode:
+                type: string
+                description: Device code
+              scope:
+                type: string
+                description: Requested scope
+    ApiClientGetDeviceCodeBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - clientId
+              - scope
+            properties:
+              clientId:
+                type: string
+                description: Client ID
+              scope:
+                type: string
+                description: Requested scope
+    ApiClientRevokeTokenBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                description: Token to revoke (optional). If not provided, all tokens for the
+                  client will be revoked
+  responses:
+    InvalidData:
+      description: Invalid request data
+    TooManyRequests:
+      description: Too many requests
+    NotImplemented:
+      description: Not implemented
+    Unauthorized:
+      description: Unauthorized
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: api:403
+            message: You don't have access to this method
+    ApiClientData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiClient"
+    ApiClientWithSecretData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiClientWithSecret"
+    ApiClientsListData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+              - total
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiClientBase"
+              total:
+                type: integer
+    ApiClientExchangeTokenData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - accessToken
+              - tokenType
+              - expiresIn
+            properties:
+              accessToken:
+                type: string
+                description: Access token for the client
+              tokenType:
+                type: string
+                enum:
+                  - Bearer
+                description: Type of the token
+              expiresIn:
+                type: integer
+                description: Token expiration time in seconds
+              refreshToken:
+                type: string
+                description: Refresh token for the client
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: Granted scopes for the token
+    ApiClientGetDeviceCodeData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - deviceCode
+              - userCode
+              - verificationUrl
+              - expiresIn
+            properties:
+              deviceCode:
+                type: string
+                description: Device code for the client
+              userCode:
+                type: string
+                description: User code for the client
+              verificationUrl:
+                type: string
+                description: URL for user verification
+              expiresIn:
+                type: integer
+                description: Device code expiration time in seconds
+    ApiClientIntrospectData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - active
+              - clientId
+            properties:
+              active:
+                type: boolean
+                description: Indicates if the token is active
+              clientId:
+                type: string
+                description: Client ID associated with the token
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: Scopes granted to the token
+              iss:
+                type: string
+                description: Issuer of the token
+              aud:
+                type: string
+                description: Audience of the token
+              sub:
+                type: string
+                description: Subject (sub) claim of the token
+              iat:
+                type: integer
+                description: Token issued at time in seconds
+              exp:
+                type: integer
+                description: Token expiration time in seconds
+    ApiClientRevokeTokenData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: string
+            description: List of revoked tokens
+    ApiClientNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: client:404
+            message: Client not found
+  parameters:
+    apiClientIdParam:
+      in: path
+      name: id
+      description: Client ID
+      required: true
+      schema:
+        type: string
