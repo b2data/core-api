@@ -419,6 +419,14 @@ components:
         webhookUrl:
           type: string
           description: Webhook URL to send notifications from the client
+        lastUsedAt:
+          type: string
+          format: date-time
+          description: Last used date
+        blockedAt:
+          type: string
+          format: date-time
+          description: Blocked date
     ApiClient:
       allOf:
         - $ref: "#/components/schemas/ApiClientBase"
@@ -434,14 +442,6 @@ components:
               type: string
               format: date-time
               description: Update date
-            lastUsedAt:
-              type: string
-              format: date-time
-              description: Last used date
-            blockedAt:
-              type: string
-              format: date-time
-              description: Blocked date
     ApiClientWithSecret:
       allOf:
         - $ref: "#/components/schemas/ApiClient"

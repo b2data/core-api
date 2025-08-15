@@ -342,7 +342,6 @@ components:
         - type: object
           required:
             - createdAt
-            - updatedAt
           properties:
             publicKes:
               type: array
@@ -351,6 +350,14 @@ components:
               description: List of Public Keys
             tma:
               $ref: "#/components/schemas/TMAUser"
+            createdAt:
+              type: string
+              format: date-time
+              description: Date and time of creation
+            updatedAt:
+              type: string
+              format: date-time
+              description: Date and time of last update
     AuthErrorCodes:
       type: string
       enum:

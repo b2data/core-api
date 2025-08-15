@@ -57,6 +57,16 @@ export interface ApiClientBase {
   scopes?: string[];
   /** Webhook URL to send notifications from the client */
   webhookUrl?: string;
+  /**
+   * Last used date
+   * @format date-time
+   */
+  lastUsedAt?: string;
+  /**
+   * Blocked date
+   * @format date-time
+   */
+  blockedAt?: string;
 }
 
 export type ApiClient = ApiClientBase & {
@@ -70,16 +80,6 @@ export type ApiClient = ApiClientBase & {
    * @format date-time
    */
   updatedAt?: string;
-  /**
-   * Last used date
-   * @format date-time
-   */
-  lastUsedAt?: string;
-  /**
-   * Blocked date
-   * @format date-time
-   */
-  blockedAt?: string;
 };
 
 export type ApiClientWithSecret = ApiClient & {

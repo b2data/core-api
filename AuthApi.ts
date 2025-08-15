@@ -73,6 +73,16 @@ export type UserFull = User & {
   /** List of Public Keys */
   publicKes?: string[];
   tma?: TMAUser;
+  /**
+   * Date and time of creation
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Date and time of last update
+   * @format date-time
+   */
+  updatedAt?: string;
 };
 
 export enum AuthErrorCodes {
