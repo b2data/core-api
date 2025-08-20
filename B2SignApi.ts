@@ -46,6 +46,45 @@ export interface User {
   avatar?: string;
 }
 
+export interface TMAUser {
+  /** Telegram User ID */
+  id: number;
+  /** First Name */
+  firstName: string;
+  /** Last Name */
+  lastName?: string;
+  /** Username */
+  username?: string;
+  /** If `true` user is a bot */
+  isBot?: boolean;
+  /** If `true` user is a premium user */
+  isPremium?: boolean;
+  /** Language Code */
+  languageCode?: string;
+  /** URL to User Photo */
+  photoUrl?: string;
+  /** If `true` user has added the bot to attachment menu */
+  addedToAttachmentMenu?: boolean;
+  /** If `true` user allows writing to PM */
+  allowsWriteToPm?: boolean;
+}
+
+export type UserFull = User & {
+  /** List of Public Keys */
+  publicKes?: string[];
+  tma?: TMAUser;
+  /**
+   * Date and time of creation
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Date and time of last update
+   * @format date-time
+   */
+  updatedAt?: string;
+};
+
 export enum AuthErrorCodes {
   Api403 = "api:403",
   Auth401 = "auth:401",
@@ -54,66 +93,75 @@ export enum AuthErrorCodes {
   User404 = "user:404",
 }
 
-export interface Provider {
+/** Supported grant types for API clients */
+export enum ApiClientGrantType {
+  ClientCredentials = "client_credentials",
+  RefreshToken = "refresh_token",
+  DeviceCode = "device_code",
+}
+
+export interface ApiClientBase {
   /**
-   * Provider ID
+   * Client ID
    * @format uuid
    */
   id: string;
-  /** Provider Name */
+  /** Client name */
   name: string;
-  /** Provider URL Address */
-  address: string;
-  /** Provider Callback Address */
-  callback: string;
-  /** If `true` provider is blocked */
-  blocked: boolean;
+  /** Indicates the status of the client */
+  status: "active" | "inactive";
+  /** Supported grant types */
+  grantTypes: ApiClientGrantType[];
+  /** Creator Wallet address */
+  createdBy: string;
+  /** Subject (sub) claim for the client */
+  sub?: string;
+  /** List of scopes granted to the client */
+  scopes?: string[];
+  /** Webhook URL to send notifications from the client */
+  webhookUrl?: string;
   /**
-   * Creation Date
+   * Last used date
+   * @format date-time
+   */
+  lastUsedAt?: string;
+  /**
+   * Blocked date
+   * @format date-time
+   */
+  blockedAt?: string;
+}
+
+export type ApiClient = ApiClientBase & {
+  /**
+   * Creation date
    * @format date-time
    */
   createdAt: string;
   /**
-   * Last Updating Date
+   * Update date
    * @format date-time
    */
-  updatedAt: string;
-}
+  updatedAt?: string;
+};
 
-export interface ProviderWithSecret {
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  id: string;
-  /** Provider Secret for API requests */
+export type ApiClientWithSecret = ApiClient & {
+  /** Client secret */
   secret: string;
-  /** Provider Name */
-  name: string;
-  /** Provider URL Address */
-  address: string;
-  /** Provider Callback Address */
-  callback: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  /**
-   * Deleted Date
-   * @format date-time
-   */
-  deletedAt?: string;
-}
+};
 
-export enum ProviderErrorCodes {
-  Provider404 = "provider:404",
-  Provider400Exists = "provider:400-exists",
+export enum ApiClientErrorCodes {
+  ApiClient400Blocked = "api-client:400-blocked",
+  ApiClient400CodePending = "api-client:400-code-pending",
+  ApiClient400Inactive = "api-client:400-inactive",
+  ApiClient400InvalidJwt = "api-client:400-invalid-jwt",
+  ApiClient400NotBlocked = "api-client:400-not-blocked",
+  ApiClient400UnsupportedGrantType = "api-client:400-unsupported-grant-type",
+  ApiClient400UnsupportedScope = "api-client:400-unsupported-scope",
+  ApiClient401 = "api-client:401",
+  ApiClient403 = "api-client:403",
+  ApiClient404 = "api-client:404",
+  ApiClient404OauthPublicKey = "api-client:404-oauth-public-key",
 }
 
 export enum B2SignErrorCodes {
@@ -126,71 +174,78 @@ export enum B2SignErrorCodes {
   DocumentSignature400Invalid = "document:signature:400-invalid",
 }
 
+/** Document access level */
 export enum DocumentAccess {
-  Read = "read",
   Sign = "sign",
   Full = "full",
 }
 
 export interface DocumentData {
-  key: string;
-  providerId: string;
-  createdBy: string;
-  mimeType: string;
-  size: number;
+  /** Document ID (primary key) */
+  id: string;
+  /** Document hash (unique) */
   hash: string;
+  /** API client ID */
+  clientId?: string | null;
+  /** User TON Address who created the document */
+  createdBy?: string | null;
+  /** Current signature order */
   signOrder: number;
-  isSigned: boolean;
-  bagId?: string;
-  /** @format date-time */
+  /**
+   * Document creation date
+   * @format date-time
+   */
   createdAt: string;
-  /** @format date-time */
-  updatedAt: string;
-  /** @format date-time */
-  deletedAt?: string;
+  /**
+   * Document last update date
+   * @format date-time
+   */
+  updatedAt?: string | null;
+  /**
+   * Document signing date
+   * @format date-time
+   */
+  signedAt?: string | null;
+  /**
+   * Document deletion date
+   * @format date-time
+   */
+  deletedAt?: string | null;
 }
 
 export interface DocumentSignatureData {
-  documentKey: string;
-  createdBy: string;
+  /** Document ID reference */
+  documentId: string;
+  /** Signature order */
   order: number;
+  /** User TON Address who signed */
   signedBy: string;
-  /** @format date-time */
-  signedAt?: string;
-  signature?: string;
-  /** @format date-time */
-  timestamp?: string;
-  /** @format date-time */
-  createdAt?: string;
+  /**
+   * Signature date
+   * @format date-time
+   */
+  signedAt?: string | null;
+  /** Public key of signer's TON Wallet */
+  publicKey?: string | null;
+  /** Digital signature */
+  signature?: string | null;
+  /** Unix timestamp */
+  timestamp?: number | null;
 }
 
 export interface DocumentAccessData {
-  documentKey: string;
+  /** Document ID reference */
+  documentId: string;
+  /** User TON Address */
   userId: string;
+  /** Document access level */
   access: DocumentAccess;
 }
 
-export type DocumentWithData = DocumentData & {
+export type DocumentFullData = DocumentData & {
   signatures: DocumentSignatureData[];
   access: DocumentAccessData[];
 };
-
-export interface DocumentPublicData {
-  key: string;
-  size: number;
-  mimeType: string;
-  isSigned: boolean;
-  hash: string;
-  createdBy: string;
-  signatures: {
-    signedBy: string;
-    /** @format date-time */
-    signedAt?: string;
-    signature?: string;
-    /** @format date-time */
-    timestamp?: string;
-  }[];
-}
 
 export interface VerifyAuthPayload {
   /** Selected Space ID */
@@ -286,7 +341,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "https://localhost:8088";
+  public baseUrl: string = "https://sign.b2p.space/api";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -453,7 +508,7 @@ export class HttpClient<SecurityDataType = unknown> {
 /**
  * @title REST API for B2Sign
  * @version 1.0.0
- * @baseUrl https://localhost:8088
+ * @baseUrl https://sign.b2p.space/api
  */
 export class B2SignApi<SecurityDataType extends unknown> {
   http: HttpClient<SecurityDataType>;
@@ -466,7 +521,7 @@ export class B2SignApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Auth
+     * @tags Auth, Available Public
      * @name StartAuth
      * @summary Start authentication process
      * @request POST:/auth/start
@@ -488,7 +543,7 @@ export class B2SignApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Auth
+     * @tags Auth, Available Public
      * @name VerifyAuth
      * @summary Verify authentication wallet
      * @request POST:/auth/verify
@@ -517,6 +572,7 @@ export class B2SignApi<SecurityDataType extends unknown> {
      * @name RefreshToken
      * @summary Refresh Access Token by Refresh token
      * @request POST:/auth/refresh
+     * @secure
      */
     refreshToken: (data: RefreshTokenPayload, params: RequestParams = {}) =>
       this.http.request<
@@ -530,6 +586,7 @@ export class B2SignApi<SecurityDataType extends unknown> {
         path: `/auth/refresh`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -545,7 +602,7 @@ export class B2SignApi<SecurityDataType extends unknown> {
      * @secure
      */
     getProfile: (params: RequestParams = {}) =>
-      this.http.request<User, ErrorResponse>({
+      this.http.request<UserFull, ErrorResponse>({
         path: `/auth/profile`,
         method: "GET",
         secure: true,
@@ -562,7 +619,7 @@ export class B2SignApi<SecurityDataType extends unknown> {
      * @secure
      */
     updateProfile: (data: UpdateProfilePayload, params: RequestParams = {}) =>
-      this.http.request<User, ErrorResponse>({
+      this.http.request<UserFull, ErrorResponse>({
         path: `/auth/profile`,
         method: "PATCH",
         body: data,
@@ -571,19 +628,166 @@ export class B2SignApi<SecurityDataType extends unknown> {
         ...params,
       }),
   };
-  providers = {
+  oAuthClient = {
     /**
      * No description
      *
-     * @tags Providers, Available Providers
-     * @name GetProvider
-     * @summary Get provider data
-     * @request GET:/providers/my
+     * @tags OAuth Client, Available Public
+     * @name ExchangeToken
+     * @summary Exchange credentials, device_code, refresh_token for new tokens
+     * @request POST:/oauth/token
+     */
+    exchangeToken: (
+      data: {
+        /** Grant type for token exchange */
+        grantType: ApiClientGrantType;
+        /** Client ID */
+        clientId: string;
+        /** Client secret */
+        clientSecret?: string;
+        /** Refresh token */
+        refreshToken?: string;
+        /** Device code */
+        deviceCode?: string;
+        /** Requested scope */
+        scope?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          /** Access token for the client */
+          accessToken: string;
+          /** Type of the token */
+          tokenType: "Bearer";
+          /** Token expiration time in seconds */
+          expiresIn: number;
+          /** Refresh token for the client */
+          refreshToken?: string;
+          /** Granted scopes for the token */
+          scopes?: string[];
+        },
+        ErrorResponse
+      >({
+        path: `/oauth/token`,
+        method: "POST",
+        body: data,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags OAuth Client, Available Public
+     * @name GetDeviceCode
+     * @summary Get device code for device authorization
+     * @request POST:/oauth/device/code
+     */
+    getDeviceCode: (
+      data: {
+        /** Client ID */
+        clientId: string;
+        /** Requested scope */
+        scope: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          /** Device code for the client */
+          deviceCode: string;
+          /** User code for the client */
+          userCode: string;
+          /** URL for user verification */
+          verificationUrl: string;
+          /** Device code expiration time in seconds */
+          expiresIn: number;
+        },
+        ErrorResponse
+      >({
+        path: `/oauth/device/code`,
+        method: "POST",
+        body: data,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags OAuth Client, Available Public
+     * @name VerifyDeviceCode
+     * @summary Verify device code and get access token
+     * @request POST:/oauth/device/verification
+     */
+    verifyDeviceCode: (params: RequestParams = {}) =>
+      this.http.request<any, any>({
+        path: `/oauth/device/verification`,
+        method: "POST",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags OAuth Client, Available Public
+     * @name AuthorizeDeviceCode
+     * @summary Authorize device code
+     * @request GET:/oauth/device/authorize
+     */
+    authorizeDeviceCode: (params: RequestParams = {}) =>
+      this.http.request<any, any>({
+        path: `/oauth/device/authorize`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags OAuth Client, Available Public
+     * @name IntrospectToken
+     * @summary Check token validity and info
+     * @request GET:/oauth/introspect
+     */
+    introspectToken: (params: RequestParams = {}) =>
+      this.http.request<
+        {
+          /** Indicates if the token is active */
+          active: boolean;
+          /** Client ID associated with the token */
+          clientId: string;
+          /** Scopes granted to the token */
+          scopes?: string[];
+          /** Issuer of the token */
+          iss?: string;
+          /** Audience of the token */
+          aud?: string;
+          /** Subject (sub) claim of the token */
+          sub?: string;
+          /** Token issued at time in seconds */
+          iat?: number;
+          /** Token expiration time in seconds */
+          exp?: number;
+        },
+        ErrorResponse
+      >({
+        path: `/oauth/introspect`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags OAuth Client
+     * @name GetClientInfo
+     * @summary Get OAuth client info
+     * @request GET:/oauth/info
      * @secure
      */
-    getProvider: (params: RequestParams = {}) =>
-      this.http.request<Provider, ErrorResponse>({
-        path: `/providers/my`,
+    getClientInfo: (params: RequestParams = {}) =>
+      this.http.request<ApiClientWithSecret, ErrorResponse>({
+        path: `/oauth/info`,
         method: "GET",
         secure: true,
         ...params,
@@ -592,25 +796,170 @@ export class B2SignApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Providers, Available Providers
-     * @name UpdateProvider
-     * @summary Update provider data
-     * @request PATCH:/providers/my
+     * @tags OAuth Client
+     * @name RevokeToken
+     * @summary Revoke access or refresh token
+     * @request POST:/oauth/revoke
      * @secure
      */
-    updateProvider: (
+    revokeToken: (
       data: {
-        /** Provider Name */
-        name: string;
-        /** Provider URL Address */
-        address: string;
-        /** Provider Callback Address */
-        callback: string;
+        /** Token to revoke (optional). If not provided, all tokens for the client will be revoked */
+        token?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<Provider, ErrorResponse>({
-        path: `/providers/my`,
+      this.http.request<string[], any>({
+        path: `/oauth/revoke`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags OAuth Client
+     * @name LogoutToken
+     * @summary Logout and revoke tokens
+     * @request POST:/oauth/logout
+     * @secure
+     */
+    logoutToken: (
+      data: {
+        /** Token to revoke (optional). If not provided, all tokens for the client will be revoked */
+        token?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<string[], any>({
+        path: `/oauth/logout`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+  };
+  apiClients = {
+    /**
+     * No description
+     *
+     * @tags API Clients
+     * @name SearchApiClients
+     * @summary Search API Clients
+     * @request POST:/clients/search
+     * @secure
+     */
+    searchApiClients: (
+      data: SearchModel & {
+        /** Search term to filter clients by name */
+        searchTerm?: string;
+        /** Filter by client active/inactive status */
+        isActive?: boolean;
+        /** Filter by client blocked status */
+        isBlocked?: boolean;
+        /** Filter by specific client IDs */
+        ids?: string[];
+        /** Filter by client subject (sub) claims */
+        subs?: string[];
+        /** Filter by creator Wallet addresses */
+        createdBy?: string[];
+        /** Filter by supported grant types */
+        grandTypes?: ApiClientGrantType[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          items: ApiClientBase[];
+          total: number;
+        },
+        any
+      >({
+        path: `/clients/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags API Clients
+     * @name RegisterApiClient
+     * @summary Register a new API Client
+     * @request POST:/clients/register
+     * @secure
+     */
+    registerApiClient: (
+      data: {
+        /** Client name */
+        name: string;
+        /** Supported grant types */
+        grantTypes: ApiClientGrantType[];
+        /** Subject (sub) claim for the client */
+        sub?: string;
+        /** Allowed scopes */
+        scopes?: string[];
+        /** Webhook URL to send notifications from the client */
+        webhookUrl?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ApiClientWithSecret, any>({
+        path: `/clients/register`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags API Clients
+     * @name GetApiClient
+     * @summary Get API client details
+     * @request GET:/clients/{id}
+     * @secure
+     */
+    getApiClient: (id: string, params: RequestParams = {}) =>
+      this.http.request<ApiClientWithSecret, ErrorResponse>({
+        path: `/clients/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags API Clients
+     * @name UpdateApiClient
+     * @summary Update API client
+     * @request PATCH:/clients/{id}
+     * @secure
+     */
+    updateApiClient: (
+      id: string,
+      data: {
+        /** Client name */
+        name?: string;
+        /** Supported grant types */
+        grantTypes?: ApiClientGrantType[];
+        /** Subject (sub) claim for the client */
+        sub?: string;
+        /** Allowed scopes */
+        scopes?: string[];
+        /** Webhook URL to send notifications from the client */
+        webhookUrl?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ApiClientWithSecret, ErrorResponse>({
+        path: `/clients/${id}`,
         method: "PATCH",
         body: data,
         secure: true,
@@ -620,15 +969,15 @@ export class B2SignApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Providers, Available Providers
-     * @name DeleteProvider
-     * @summary Delete provider
-     * @request DELETE:/providers/my
+     * @tags API Clients
+     * @name DeleteApiClient
+     * @summary Delete API client
+     * @request DELETE:/clients/{id}
      * @secure
      */
-    deleteProvider: (params: RequestParams = {}) =>
-      this.http.request<Provider, ErrorResponse>({
-        path: `/providers/my`,
+    deleteApiClient: (id: string, params: RequestParams = {}) =>
+      this.http.request<ApiClient, ErrorResponse>({
+        path: `/clients/${id}`,
         method: "DELETE",
         secure: true,
         ...params,
@@ -637,60 +986,22 @@ export class B2SignApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Providers, Available Public
-     * @name RegisterProvider
-     * @summary Register new provider
-     * @request POST:/providers/register
-     */
-    registerProvider: (
-      data: {
-        /** Provider Name */
-        name: string;
-        /** Provider URL Address */
-        address: string;
-        /** Provider Callback Address */
-        callback: string;
-        /** TON Address who making request */
-        wallet: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<ProviderWithSecret, any>({
-        path: `/providers/register`,
-        method: "POST",
-        body: data,
-        ...params,
-      }),
-
-    /**
-     * @description Required `Admin` access
-     *
-     * @tags Providers
-     * @name SearchProviders
-     * @summary Search providers
-     * @request POST:/providers/search
+     * @tags API Clients
+     * @name RevokeApiClientToken
+     * @summary Revoke API Client tokens
+     * @request POST:/clients/{id}/revoke
      * @secure
      */
-    searchProviders: (
+    revokeApiClientToken: (
+      id: string,
       data: {
-        /** Filter by blocked status */
-        isBlocked?: boolean;
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
+        /** Token to revoke (optional). If not provided, all tokens for the client will be revoked */
+        token?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
-        {
-          total: number;
-          items: Provider[];
-        },
-        ErrorResponse
-      >({
-        path: `/providers/search`,
+      this.http.request<string[], ErrorResponse>({
+        path: `/clients/${id}/revoke`,
         method: "POST",
         body: data,
         secure: true,
@@ -698,37 +1009,35 @@ export class B2SignApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Required `Admin` access
+     * No description
      *
-     * @tags Providers
-     * @name BlockProvider
-     * @summary Block provider
-     * @request POST:/providers/{id}/block
+     * @tags API Clients
+     * @name BlockApiClient
+     * @summary Block API Client
+     * @request POST:/clients/{id}/block
      * @secure
      */
-    blockProvider: (id: string, data: object, params: RequestParams = {}) =>
-      this.http.request<Provider, ErrorResponse>({
-        path: `/providers/${id}/block`,
+    blockApiClient: (id: string, params: RequestParams = {}) =>
+      this.http.request<ApiClient, ErrorResponse>({
+        path: `/clients/${id}/block`,
         method: "POST",
-        body: data,
         secure: true,
         ...params,
       }),
 
     /**
-     * @description Required `Admin` access
+     * No description
      *
-     * @tags Providers
-     * @name UnblockProvider
-     * @summary Unblock provider
-     * @request POST:/providers/{id}/unblock
+     * @tags API Clients
+     * @name UnblockApiClient
+     * @summary Unblock API Client
+     * @request POST:/clients/{id}/unblock
      * @secure
      */
-    unblockProvider: (id: string, data: object, params: RequestParams = {}) =>
-      this.http.request<Provider, ErrorResponse>({
-        path: `/providers/${id}/unblock`,
+    unblockApiClient: (id: string, params: RequestParams = {}) =>
+      this.http.request<ApiClient, ErrorResponse>({
+        path: `/clients/${id}/unblock`,
         method: "POST",
-        body: data,
         secure: true,
         ...params,
       }),
@@ -737,99 +1046,81 @@ export class B2SignApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Document, Available Providers
+     * @tags Document
      * @name CreateDocument
-     * @summary Create a new document
+     * @summary Register new document signatures request
      * @request POST:/documents
      * @secure
      */
     createDocument: (
       data: {
-        /** @format binary */
-        file: File;
-        key: string;
-        mimeType: string;
-        size: number;
+        /** Document hash */
         hash: string;
-        bagId?: string;
-        access?: {
-          userId: string;
-          access: DocumentAccess;
-        }[];
-        signatures?: {
+        signatures: {
+          /** User TON Address who signed */
           signedBy: string;
+          /** Signature order */
           order: number;
         }[];
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<DocumentData, any>({
+      this.http.request<DocumentFullData, ErrorResponse>({
         path: `/documents`,
         method: "POST",
         body: data,
         secure: true,
-        type: ContentType.FormData,
         ...params,
       }),
 
     /**
      * No description
      *
-     * @tags Document, Available Public
+     * @tags Document
      * @name SearchDocuments
      * @summary Search documents
      * @request POST:/documents/search
+     * @secure
      */
     searchDocuments: (
       data: SearchModel & {
+        /** Search by partial document hash */
         searchTerm?: string;
-        providers?: string[];
-        creator?: string[];
-        signer?: string[];
+        /** Search by sub */
+        sub?: string;
+        creators?: string[];
+        signers?: string[];
+        isDeleted?: boolean;
         isSigned?: boolean;
       },
       params: RequestParams = {},
     ) =>
       this.http.request<
         {
-          total?: number;
-          items?: DocumentPublicData[];
+          total: number;
+          items: DocumentFullData[];
         },
-        any
+        ErrorResponse
       >({
         path: `/documents/search`,
         method: "POST",
         body: data,
+        secure: true,
         ...params,
       }),
 
     /**
      * No description
      *
-     * @tags Document, Available Public
-     * @name GetPublicDocument
-     * @summary Get a public document
-     * @request GET:/documents/{key}/public
-     */
-    getPublicDocument: (key: string, params: RequestParams = {}) =>
-      this.http.request<DocumentPublicData, ErrorResponse>({
-        path: `/documents/${key}/public`,
-        method: "GET",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Document, Available Providers
+     * @tags Document
      * @name GetDocument
-     * @summary Get a document
-     * @request GET:/documents/{key}
+     * @summary Get document data
+     * @request GET:/documents/{id}
      * @secure
      */
-    getDocument: (key: string, params: RequestParams = {}) =>
-      this.http.request<DocumentWithData, ErrorResponse>({
-        path: `/documents/${key}`,
+    getDocument: (id: string, params: RequestParams = {}) =>
+      this.http.request<DocumentFullData, ErrorResponse>({
+        path: `/documents/${id}`,
         method: "GET",
         secure: true,
         ...params,
@@ -838,39 +1129,15 @@ export class B2SignApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Document, Available Providers
-     * @name UpdateDocument
-     * @summary Update a document
-     * @request PUT:/documents/{key}
-     * @secure
-     */
-    updateDocument: (
-      key: string,
-      data: {
-        bagId?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<DocumentData, ErrorResponse>({
-        path: `/documents/${key}`,
-        method: "PUT",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Document, Available Providers
+     * @tags Document
      * @name DeleteDocument
-     * @summary Delete a document
-     * @request DELETE:/documents/{key}
+     * @summary Delete document
+     * @request DELETE:/documents/{id}
      * @secure
      */
-    deleteDocument: (key: string, params: RequestParams = {}) =>
-      this.http.request<DocumentData, ErrorResponse>({
-        path: `/documents/${key}`,
+    deleteDocument: (id: string, params: RequestParams = {}) =>
+      this.http.request<DocumentFullData, ErrorResponse>({
+        path: `/documents/${id}`,
         method: "DELETE",
         secure: true,
         ...params,
@@ -880,97 +1147,27 @@ export class B2SignApi<SecurityDataType extends unknown> {
      * No description
      *
      * @tags Document
-     * @name GetDocumentBinary
-     * @summary Get a document binary
-     * @request GET:/document/{key}/binary
-     * @secure
-     */
-    getDocumentBinary: (key: string, params: RequestParams = {}) =>
-      this.http.request<File, ErrorResponse>({
-        path: `/document/${key}/binary`,
-        method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Document
-     * @name GetDocumentInfo
-     * @summary Get a document info
-     * @request GET:/document/{key}/info
-     * @secure
-     */
-    getDocumentInfo: (key: string, params: RequestParams = {}) =>
-      this.http.request<DocumentWithData, ErrorResponse>({
-        path: `/document/${key}/info`,
-        method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Document, Available Providers
-     * @name GrantDocumentAccess
-     * @summary Grant access to a document
-     * @request POST:/documents/{key}/access
-     * @secure
-     */
-    grantDocumentAccess: (
-      key: string,
-      data: {
-        userId: string;
-        access: DocumentAccess;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<DocumentWithData, ErrorResponse>({
-        path: `/documents/${key}/access`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Document, Available Providers
-     * @name RevokeDocumentAccess
-     * @summary Revoke access to a document
-     * @request DELETE:/documents/{key}/access/{userId}
-     * @secure
-     */
-    revokeDocumentAccess: (key: string, userId: string, params: RequestParams = {}) =>
-      this.http.request<DocumentWithData, ErrorResponse>({
-        path: `/documents/${key}/access/${userId}`,
-        method: "DELETE",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Document, Available Providers
      * @name SignDocument
      * @summary Sign a document
-     * @request POST:/documents/{key}/sign
+     * @request POST:/documents/{id}/sign
      * @secure
      */
     signDocument: (
-      key: string,
+      id: string,
       data: {
+        /** Document hash */
+        hash: string;
+        /** Public key of signer's TON Wallet */
+        publicKey: string;
+        /** Digital signature */
         signature: string;
-        timestamp: string;
+        /** Unix timestamp */
+        timestamp: number;
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<DocumentSignatureData, ErrorResponse>({
-        path: `/documents/${key}/sign`,
+      this.http.request<DocumentFullData, ErrorResponse>({
+        path: `/documents/${id}/sign`,
         method: "POST",
         body: data,
         secure: true,
@@ -983,26 +1180,34 @@ export class B2SignApi<SecurityDataType extends unknown> {
      * @tags Document, Available Public
      * @name CheckDocumentSignature
      * @summary Check a document signature
-     * @request POST:/documents/{key}/sign-check
+     * @request POST:/documents/sign-check
      */
     checkDocumentSignature: (
-      key: string,
       data: {
-        signedBy: string;
+        /** Document hash */
+        hash: string;
+        /** Public key of signer's TON Wallet */
+        publicKey: string;
+        /** Digital signature */
         signature: string;
-        timestamp: string;
+        /** Unix timestamp */
+        timestamp: number;
       },
       params: RequestParams = {},
     ) =>
       this.http.request<
         {
+          /** Signature check result */
           isValid: boolean;
-          /** @format date-time */
+          /**
+           * Signed document date
+           * @format date-time
+           */
           signedAt?: string;
         },
         ErrorResponse
       >({
-        path: `/documents/${key}/sign-check`,
+        path: `/documents/sign-check`,
         method: "POST",
         body: data,
         ...params,

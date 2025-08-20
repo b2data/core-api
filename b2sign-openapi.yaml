@@ -3,15 +3,17 @@ info:
   title: REST API for B2Sign
   version: 1.0.0
 servers:
-  - url: https://localhost:8088
   - url: https://sign.b2p.space/api
+  - url: https://beta.sign.b2p.space/api
 tags:
   - name: Document
+    description: Document management
 paths:
   /auth/start:
     post:
       tags:
         - Auth
+        - Available Public
       summary: Start authentication process
       operationId: startAuth
       requestBody:
@@ -32,6 +34,7 @@ paths:
     post:
       tags:
         - Auth
+        - Available Public
       summary: Verify authentication wallet
       operationId: verifyAuth
       requestBody:
@@ -125,6 +128,8 @@ paths:
     post:
       tags:
         - Auth
+      security:
+        - BearerAuth: []
       summary: Refresh Access Token by Refresh token
       operationId: refreshToken
       requestBody:
@@ -175,7 +180,7 @@ paths:
       operationId: getProfile
       responses:
         "200":
-          $ref: "#/components/responses/UserData"
+          $ref: "#/components/responses/UserFullData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -207,108 +212,233 @@ paths:
                   description: Avatar
       responses:
         "200":
-          $ref: "#/components/responses/UserData"
+          $ref: "#/components/responses/UserFullData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/UserNotFound"
-  /providers/my:
+  /oauth/token:
+    post:
+      tags:
+        - OAuth Client
+        - Available Public
+      summary: Exchange credentials, device_code, refresh_token for new tokens
+      operationId: exchangeToken
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientExchangeTokenBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientExchangeTokenData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/device/code:
+    post:
+      tags:
+        - OAuth Client
+        - Available Public
+      summary: Get device code for device authorization
+      operationId: getDeviceCode
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientGetDeviceCodeBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientGetDeviceCodeData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/device/verification:
+    post:
+      tags:
+        - OAuth Client
+        - Available Public
+      summary: Verify device code and get access token
+      operationId: verifyDeviceCode
+      responses:
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+  /oauth/device/authorize:
     get:
       tags:
-        - Providers
-        - Available Providers
-      security:
-        - ProviderClientId: []
-          ProviderClientSecret: []
-      summary: Get provider data
-      operationId: getProvider
+        - OAuth Client
+        - Available Public
+      summary: Authorize device code
+      operationId: authorizeDeviceCode
+      responses:
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+  /oauth/introspect:
+    get:
+      tags:
+        - OAuth Client
+        - Available Public
+      summary: Check token validity and info
+      operationId: introspectToken
       responses:
         "200":
-          $ref: "#/components/responses/ProviderData"
+          $ref: "#/components/responses/ApiClientIntrospectData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "404":
-          $ref: "#/components/responses/ProviderNotFound"
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/info:
+    get:
+      tags:
+        - OAuth Client
+      security:
+        - ApiClientAuth: []
+      summary: Get OAuth client info
+      operationId: getClientInfo
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientWithSecretData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/revoke:
+    post:
+      tags:
+        - OAuth Client
+      security:
+        - ApiClientAuth: []
+      summary: Revoke access or refresh token
+      operationId: revokeToken
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientRevokeTokenBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientRevokeTokenData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/logout:
+    post:
+      tags:
+        - OAuth Client
+      security:
+        - ApiClientAuth: []
+      summary: Logout and revoke tokens
+      operationId: logoutToken
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientRevokeTokenBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientRevokeTokenData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /clients/search:
+    post:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Search API Clients
+      operationId: searchApiClients
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientsSearchBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientsListData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /clients/register:
+    post:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Register a new API Client
+      operationId: registerApiClient
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientRegisterBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/ApiClientWithSecretData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/clients/{id}":
+    get:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Get API client details
+      operationId: getApiClient
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientWithSecretData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     patch:
       tags:
-        - Providers
-        - Available Providers
+        - API Clients
       security:
-        - ProviderClientId: []
-          ProviderClientSecret: []
-      summary: Update provider data
-      operationId: updateProvider
+        - BearerAuth: []
+      summary: Update API client
+      operationId: updateApiClient
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
       requestBody:
-        $ref: "#/components/requestBodies/ProviderRequestBody"
+        $ref: "#/components/requestBodies/ApiClientModifyBody"
       responses:
         "200":
-          $ref: "#/components/responses/ProviderData"
+          $ref: "#/components/responses/ApiClientWithSecretData"
         "400":
           $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         "404":
-          $ref: "#/components/responses/ProviderNotFound"
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     delete:
       tags:
-        - Providers
-        - Available Providers
-      security:
-        - ProviderClientId: []
-          ProviderClientSecret: []
-      summary: Delete provider
-      operationId: deleteProvider
-      responses:
-        "200":
-          $ref: "#/components/responses/ProviderData"
-        "404":
-          $ref: "#/components/responses/ProviderNotFound"
-  /providers/register:
-    post:
-      tags:
-        - Providers
-        - Available Public
-      summary: Register new provider
-      operationId: registerProvider
-      requestBody:
-        $ref: "#/components/requestBodies/RegisterProviderRequestBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/ProviderWithSecretData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-  /providers/search:
-    post:
-      tags:
-        - Providers
+        - API Clients
       security:
         - BearerAuth: []
-      summary: Search providers
-      operationId: searchProviders
-      description: Required `Admin` access
-      requestBody:
-        $ref: "#/components/requestBodies/SearchProvidersBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchProvidersData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-  "/providers/{id}/block":
-    post:
-      tags:
-        - Providers
-      security:
-        - BearerAuth: []
-      summary: Block provider
-      operationId: blockProvider
-      description: Required `Admin` access
+      summary: Delete API client
+      operationId: deleteApiClient
       parameters:
-        - $ref: "#/components/parameters/providerIdParam"
-      requestBody:
-        $ref: "#/components/requestBodies/EmptyBody"
+        - $ref: "#/components/parameters/apiClientIdParam"
       responses:
         "200":
-          $ref: "#/components/responses/ProviderData"
+          $ref: "#/components/responses/ApiClientData"
         "400":
           $ref: "#/components/responses/InvalidData"
         "401":
@@ -316,23 +446,24 @@ paths:
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
-          $ref: "#/components/responses/ProviderNotFound"
-  "/providers/{id}/unblock":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/clients/{id}/revoke":
     post:
       tags:
-        - Providers
+        - API Clients
       security:
         - BearerAuth: []
-      summary: Unblock provider
-      operationId: unblockProvider
-      description: Required `Admin` access
+      summary: Revoke API Client tokens
       parameters:
-        - $ref: "#/components/parameters/providerIdParam"
+        - $ref: "#/components/parameters/apiClientIdParam"
+      operationId: revokeApiClientToken
       requestBody:
-        $ref: "#/components/requestBodies/EmptyBody"
+        $ref: "#/components/requestBodies/ApiClientRevokeTokenBody"
       responses:
         "200":
-          $ref: "#/components/responses/ProviderData"
+          $ref: "#/components/responses/ApiClientRevokeTokenData"
         "400":
           $ref: "#/components/responses/InvalidData"
         "401":
@@ -340,34 +471,82 @@ paths:
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
-          $ref: "#/components/responses/ProviderNotFound"
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/clients/{id}/block":
+    post:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Block API Client
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
+      operationId: blockApiClient
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/clients/{id}/unblock":
+    post:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Unblock API Client
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
+      operationId: unblockApiClient
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /documents:
     post:
-      summary: Create a new document
+      summary: Register new document signatures request
       operationId: createDocument
       tags:
         - Document
-        - Available Providers
       security:
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - BearerAuth: []
+        - ApiClientAuth: []
       requestBody:
         $ref: "#/components/requestBodies/CreateDocumentBody"
       responses:
         "201":
-          $ref: "#/components/responses/DocumentData"
+          $ref: "#/components/responses/DocumentFullData"
         "400":
           $ref: "#/components/responses/InvalidData"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /documents/search:
     post:
       summary: Search documents
       operationId: searchDocuments
       tags:
         - Document
-        - Available Public
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
       requestBody:
         $ref: "#/components/requestBodies/SearchDocumentsBody"
       responses:
@@ -375,198 +554,71 @@ paths:
           $ref: "#/components/responses/SearchDocumentsData"
         "400":
           $ref: "#/components/responses/InvalidData"
-  "/documents/{key}/public":
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/documents/{id}":
     get:
-      summary: Get a public document
-      operationId: getPublicDocument
-      tags:
-        - Document
-        - Available Public
-      parameters:
-        - $ref: "#/components/parameters/documentKeyParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/DocumentPublicData"
-        "404":
-          $ref: "#/components/responses/DocumentNotFound"
-  "/documents/{key}":
-    get:
-      summary: Get a document
+      summary: Get document data
       operationId: getDocument
       tags:
         - Document
-        - Available Providers
       security:
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - BearerAuth: []
+        - ApiClientAuth: []
       parameters:
-        - $ref: "#/components/parameters/documentKeyParam"
+        - $ref: "#/components/parameters/documentIdParam"
       responses:
         "200":
-          $ref: "#/components/responses/DocumentWithData"
+          $ref: "#/components/responses/DocumentFullData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DocumentNotFound"
-    put:
-      summary: Update a document
-      operationId: updateDocument
-      tags:
-        - Document
-        - Available Providers
-      security:
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
-      parameters:
-        - $ref: "#/components/parameters/documentKeyParam"
-      requestBody:
-        $ref: "#/components/requestBodies/EditDocumentBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/DocumentData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/DocumentNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     delete:
-      summary: Delete a document
+      summary: Delete document
       operationId: deleteDocument
       tags:
         - Document
-        - Available Providers
-      security:
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
-      parameters:
-        - $ref: "#/components/parameters/documentKeyParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/DocumentData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/DocumentNotFound"
-  "/document/{key}/binary":
-    get:
-      summary: Get a document binary
-      operationId: getDocumentBinary
-      tags:
-        - Document
       security:
         - BearerAuth: []
+        - ApiClientAuth: []
       parameters:
-        - $ref: "#/components/parameters/documentKeyParam"
+        - $ref: "#/components/parameters/documentIdParam"
       responses:
         "200":
-          $ref: "#/components/responses/DocumentBinary"
+          $ref: "#/components/responses/DocumentFullData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DocumentNotFound"
-  "/document/{key}/info":
-    get:
-      summary: Get a document info
-      operationId: getDocumentInfo
-      tags:
-        - Document
-      security:
-        - BearerAuth: []
-      parameters:
-        - $ref: "#/components/parameters/documentKeyParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/DocumentWithData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/DocumentNotFound"
-  "/documents/{key}/access":
-    post:
-      summary: Grant access to a document
-      operationId: grantDocumentAccess
-      tags:
-        - Document
-        - Available Providers
-      security:
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
-      parameters:
-        - $ref: "#/components/parameters/documentKeyParam"
-      requestBody:
-        $ref: "#/components/requestBodies/GrantDocumentAccessBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/DocumentWithData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/DocumentNotFound"
-  "/documents/{key}/access/{userId}":
-    delete:
-      summary: Revoke access to a document
-      operationId: revokeDocumentAccess
-      tags:
-        - Document
-        - Available Providers
-      security:
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
-      parameters:
-        - $ref: "#/components/parameters/documentKeyParam"
-        - name: userId
-          in: path
-          description: User ID
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          $ref: "#/components/responses/DocumentWithData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/DocumentNotFound"
-  "/documents/{key}/sign":
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/documents/{id}/sign":
     post:
       summary: Sign a document
       operationId: signDocument
       tags:
         - Document
-        - Available Providers
       security:
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - BearerAuth: []
+        - ApiClientAuth: []
       parameters:
-        - $ref: "#/components/parameters/documentKeyParam"
+        - $ref: "#/components/parameters/documentIdParam"
       requestBody:
         $ref: "#/components/requestBodies/SignDocumentBody"
       responses:
         "200":
-          $ref: "#/components/responses/DocumentSignatureData"
+          $ref: "#/components/responses/DocumentFullData"
         "400":
           $ref: "#/components/responses/InvalidData"
         "401":
@@ -575,15 +627,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/DocumentNotFound"
-  "/documents/{key}/sign-check":
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /documents/sign-check:
     post:
       summary: Check a document signature
       operationId: checkDocumentSignature
       tags:
         - Document
         - Available Public
-      parameters:
-        - $ref: "#/components/parameters/documentKeyParam"
       requestBody:
         $ref: "#/components/requestBodies/CheckDocumentSignatureBody"
       responses:
@@ -593,28 +645,20 @@ paths:
           $ref: "#/components/responses/InvalidData"
         "404":
           $ref: "#/components/responses/DocumentNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
 components:
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Authorization using Auth routes
-    ProviderClientId:
-      type: apiKey
-      name: client-id
-      in: header
-      description: Authorization for providers requests
-    ProviderClientSecret:
-      type: apiKey
-      name: client-secret
-      in: header
-      description: Authorization for providers requests
-    ProviderUserId:
-      type: apiKey
-      name: user-id
-      in: header
-      description: Authorization for providers requests
+      description: User authorization
+    ApiClientAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: API Client Authorization
   schemas:
     ErrorResponse:
       type: object
@@ -676,6 +720,64 @@ components:
         avatar:
           type: string
           description: Avatar
+    TMAUser:
+      type: object
+      required:
+        - id
+        - firstName
+      properties:
+        id:
+          type: number
+          description: Telegram User ID
+        firstName:
+          type: string
+          description: First Name
+        lastName:
+          type: string
+          description: Last Name
+        username:
+          type: string
+          description: Username
+        isBot:
+          type: boolean
+          description: If `true` user is a bot
+        isPremium:
+          type: boolean
+          description: If `true` user is a premium user
+        languageCode:
+          type: string
+          description: Language Code
+        photoUrl:
+          type: string
+          description: URL to User Photo
+        addedToAttachmentMenu:
+          type: boolean
+          description: If `true` user has added the bot to attachment menu
+        allowsWriteToPm:
+          type: boolean
+          description: If `true` user allows writing to PM
+    UserFull:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          required:
+            - createdAt
+          properties:
+            publicKes:
+              type: array
+              items:
+                type: string
+              description: List of Public Keys
+            tma:
+              $ref: "#/components/schemas/TMAUser"
+            createdAt:
+              type: string
+              format: date-time
+              description: Date and time of creation
+            updatedAt:
+              type: string
+              format: date-time
+              description: Date and time of last update
     AuthErrorCodes:
       type: string
       enum:
@@ -684,86 +786,101 @@ components:
         - auth:403
         - auth:404
         - user:404
-    Provider:
-      type: object
-      required:
-        - id
-        - name
-        - address
-        - callback
-        - blocked
-        - createdAt
-        - updatedAt
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Provider ID
-        name:
-          type: string
-          description: Provider Name
-        address:
-          type: string
-          description: Provider URL Address
-        callback:
-          type: string
-          description: Provider Callback Address
-        blocked:
-          type: boolean
-          description: If `true` provider is blocked
-        createdAt:
-          type: string
-          format: date-time
-          description: Creation Date
-        updatedAt:
-          type: string
-          format: date-time
-          description: Last Updating Date
-    ProviderWithSecret:
-      type: object
-      required:
-        - id
-        - secret
-        - name
-        - address
-        - callback
-        - blocked
-        - createdAt
-        - updatedAt
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Provider ID
-        secret:
-          type: string
-          description: Provider Secret for API requests
-        name:
-          type: string
-          description: Provider Name
-        address:
-          type: string
-          description: Provider URL Address
-        callback:
-          type: string
-          description: Provider Callback Address
-        createdAt:
-          type: string
-          format: date-time
-          description: Creation Date
-        updatedAt:
-          type: string
-          format: date-time
-          description: Last Updating Date
-        deletedAt:
-          type: string
-          format: date-time
-          description: Deleted Date
-    ProviderErrorCodes:
+    ApiClientGrantType:
       type: string
       enum:
-        - provider:404
-        - provider:400-exists
+        - client_credentials
+        - refresh_token
+        - device_code
+      description: Supported grant types for API clients
+    ApiClientBase:
+      type: object
+      required:
+        - id
+        - name
+        - status
+        - createdBy
+        - grantTypes
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Client ID
+        name:
+          type: string
+          description: Client name
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+          description: Indicates the status of the client
+        grantTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApiClientGrantType"
+          description: Supported grant types
+        createdBy:
+          type: string
+          description: Creator Wallet address
+        sub:
+          type: string
+          description: Subject (sub) claim for the client
+        scopes:
+          type: array
+          items:
+            type: string
+          description: List of scopes granted to the client
+        webhookUrl:
+          type: string
+          description: Webhook URL to send notifications from the client
+        lastUsedAt:
+          type: string
+          format: date-time
+          description: Last used date
+        blockedAt:
+          type: string
+          format: date-time
+          description: Blocked date
+    ApiClient:
+      allOf:
+        - $ref: "#/components/schemas/ApiClientBase"
+        - type: object
+          required:
+            - createdAt
+          properties:
+            createdAt:
+              type: string
+              format: date-time
+              description: Creation date
+            updatedAt:
+              type: string
+              format: date-time
+              description: Update date
+    ApiClientWithSecret:
+      allOf:
+        - $ref: "#/components/schemas/ApiClient"
+        - type: object
+          required:
+            - secret
+          properties:
+            secret:
+              type: string
+              description: Client secret
+    ApiClientErrorCodes:
+      type: string
+      enum:
+        - api-client:400-blocked
+        - api-client:400-code-pending
+        - api-client:400-inactive
+        - api-client:400-invalid-jwt
+        - api-client:400-not-blocked
+        - api-client:400-unsupported-grant-type
+        - api-client:400-unsupported-scope
+        - api-client:401
+        - api-client:403
+        - api-client:404
+        - api-client:404-oauth-public-key
     B2SignErrorCodes:
       type: string
       enum:
@@ -777,91 +894,102 @@ components:
     DocumentAccess:
       type: string
       enum:
-        - read
         - sign
         - full
+      description: Document access level
     DocumentData:
       type: object
       required:
-        - key
-        - providerId
-        - createdBy
-        - mimeType
-        - size
+        - id
         - hash
         - signOrder
-        - isSigned
         - createdAt
-        - updatedAt
       properties:
-        key:
+        id:
           type: string
-        providerId:
-          type: string
-        createdBy:
-          type: string
-        mimeType:
-          type: string
-        size:
-          type: number
+          description: Document ID (primary key)
         hash:
           type: string
+          description: Document hash (unique)
+        clientId:
+          type: string
+          nullable: true
+          description: API client ID
+        createdBy:
+          type: string
+          nullable: true
+          description: User TON Address who created the document
         signOrder:
           type: number
-        isSigned:
-          type: boolean
-        bagId:
-          type: string
+          description: Current signature order
         createdAt:
           type: string
           format: date-time
+          description: Document creation date
         updatedAt:
           type: string
           format: date-time
-        deletedAt:
-          type: string
-          format: date-time
-    DocumentSignatureData:
-      type: object
-      required:
-        - documentKey
-        - createdBy
-        - order
-        - signedBy
-      properties:
-        documentKey:
-          type: string
-        createdBy:
-          type: string
-        order:
-          type: number
-        signedBy:
-          type: string
+          nullable: true
+          description: Document last update date
         signedAt:
           type: string
           format: date-time
+          nullable: true
+          description: Document signing date
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Document deletion date
+    DocumentSignatureData:
+      type: object
+      required:
+        - documentId
+        - order
+        - signedBy
+      properties:
+        documentId:
+          type: string
+          description: Document ID reference
+        order:
+          type: number
+          description: Signature order
+        signedBy:
+          type: string
+          description: User TON Address who signed
+        signedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Signature date
+        publicKey:
+          type: string
+          nullable: true
+          description: Public key of signer's TON Wallet
         signature:
           type: string
+          nullable: true
+          description: Digital signature
         timestamp:
-          type: string
-          format: date-time
-        createdAt:
-          type: string
-          format: date-time
+          type: number
+          nullable: true
+          description: Unix timestamp
     DocumentAccessData:
       type: object
       required:
-        - documentKey
+        - documentId
         - userId
         - access
       properties:
-        documentKey:
+        documentId:
           type: string
+          description: Document ID reference
         userId:
           type: string
+          description: User TON Address
         access:
           $ref: "#/components/schemas/DocumentAccess"
-    DocumentWithData:
+    DocumentFullData:
       allOf:
         - $ref: "#/components/schemas/DocumentData"
         - type: object
@@ -877,113 +1005,155 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/DocumentAccessData"
-    DocumentPublicData:
-      type: object
-      required:
-        - key
-        - size
-        - mimeType
-        - isSigned
-        - hash
-        - createdBy
-        - signatures
-      properties:
-        key:
-          type: string
-        size:
-          type: number
-        mimeType:
-          type: string
-        isSigned:
-          type: boolean
-        hash:
-          type: string
-        createdBy:
-          type: string
-        signatures:
-          type: array
-          items:
-            type: object
-            required:
-              - signedBy
-            properties:
-              signedBy:
-                type: string
-              signedAt:
-                type: string
-                format: date-time
-              signature:
-                type: string
-              timestamp:
-                type: string
-                format: date-time
   requestBodies:
     EmptyBody:
       content:
         application/json:
           schema:
             type: object
-    SearchProvidersBody:
+    ApiClientRegisterBody:
       content:
         application/json:
           schema:
             type: object
+            required:
+              - name
+              - grantTypes
             properties:
-              isBlocked:
-                type: boolean
-                description: Filter by blocked status
-              limit:
-                type: number
-                description: Number of return items
-              offset:
-                type: number
-                description: Number of skip items
-              sort:
+              name:
+                type: string
+                description: Client name
+              grantTypes:
                 type: array
                 items:
-                  $ref: "#/components/schemas/SortModel"
-    RegisterProviderRequestBody:
+                  $ref: "#/components/schemas/ApiClientGrantType"
+                description: Supported grant types
+              sub:
+                type: string
+                description: Subject (sub) claim for the client
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: Allowed scopes
+              webhookUrl:
+                type: string
+                description: Webhook URL to send notifications from the client
+    ApiClientModifyBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Client name
+              grantTypes:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiClientGrantType"
+                description: Supported grant types
+              sub:
+                type: string
+                description: Subject (sub) claim for the client
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: Allowed scopes
+              webhookUrl:
+                type: string
+                description: Webhook URL to send notifications from the client
+    ApiClientsSearchBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  searchTerm:
+                    type: string
+                    description: Search term to filter clients by name
+                  isActive:
+                    type: boolean
+                    description: Filter by client active/inactive status
+                  isBlocked:
+                    type: boolean
+                    description: Filter by client blocked status
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    description: Filter by specific client IDs
+                  subs:
+                    type: array
+                    items:
+                      type: string
+                    description: Filter by client subject (sub) claims
+                  createdBy:
+                    type: array
+                    items:
+                      type: string
+                    description: Filter by creator Wallet addresses
+                  grandTypes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ApiClientGrantType"
+                    description: Filter by supported grant types
+    ApiClientExchangeTokenBody:
       content:
         application/json:
           schema:
             type: object
             required:
-              - name
-              - address
-              - callback
-              - wallet
+              - grantType
+              - clientId
             properties:
-              name:
+              grantType:
+                $ref: "#/components/schemas/ApiClientGrantType"
+                description: Grant type for token exchange
+              clientId:
                 type: string
-                description: Provider Name
-              address:
+                description: Client ID
+              clientSecret:
                 type: string
-                description: Provider URL Address
-              callback:
+                description: Client secret
+              refreshToken:
                 type: string
-                description: Provider Callback Address
-              wallet:
+                description: Refresh token
+              deviceCode:
                 type: string
-                description: TON Address who making request
-    ProviderRequestBody:
+                description: Device code
+              scope:
+                type: string
+                description: Requested scope
+    ApiClientGetDeviceCodeBody:
       content:
         application/json:
           schema:
             type: object
             required:
-              - name
-              - address
-              - callback
+              - clientId
+              - scope
             properties:
-              name:
+              clientId:
                 type: string
-                description: Provider Name
-              address:
+                description: Client ID
+              scope:
                 type: string
-                description: Provider URL Address
-              callback:
+                description: Requested scope
+    ApiClientRevokeTokenBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
                 type: string
-                description: Provider Callback Address
+                description: Token to revoke (optional). If not provided, all tokens for the
+                  client will be revoked
     SearchDocumentsBody:
       required: true
       content:
@@ -995,58 +1165,35 @@ components:
                 properties:
                   searchTerm:
                     type: string
-                  providers:
+                    description: Search by partial document hash
+                  sub:
+                    type: string
+                    description: Search by sub
+                  creators:
                     type: array
                     items:
                       type: string
-                  creator:
+                  signers:
                     type: array
                     items:
                       type: string
-                  signer:
-                    type: array
-                    items:
-                      type: string
+                  isDeleted:
+                    type: boolean
                   isSigned:
                     type: boolean
     CreateDocumentBody:
       required: true
       content:
-        multipart/form-data:
+        application/json:
           schema:
             type: object
             required:
-              - file
-              - key
-              - mimeType
-              - size
               - hash
+              - signatures
             properties:
-              file:
-                type: string
-                format: binary
-              key:
-                type: string
-              mimeType:
-                type: string
-              size:
-                type: number
               hash:
                 type: string
-              bagId:
-                type: string
-              access:
-                type: array
-                items:
-                  type: object
-                  required:
-                    - userId
-                    - access
-                  properties:
-                    userId:
-                      type: string
-                    access:
-                      $ref: "#/components/schemas/DocumentAccess"
+                description: Document hash
               signatures:
                 type: array
                 items:
@@ -1057,31 +1204,10 @@ components:
                   properties:
                     signedBy:
                       type: string
+                      description: User TON Address who signed
                     order:
                       type: number
-    EditDocumentBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              bagId:
-                type: string
-    GrantDocumentAccessBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - userId
-              - access
-            properties:
-              userId:
-                type: string
-              access:
-                $ref: "#/components/schemas/DocumentAccess"
+                      description: Signature order
     SignDocumentBody:
       required: true
       content:
@@ -1089,13 +1215,23 @@ components:
           schema:
             type: object
             required:
+              - hash
+              - publicKey
               - signature
               - timestamp
             properties:
+              hash:
+                type: string
+                description: Document hash
+              publicKey:
+                type: string
+                description: Public key of signer's TON Wallet
               signature:
                 type: string
+                description: Digital signature
               timestamp:
-                type: string
+                type: number
+                description: Unix timestamp
     CheckDocumentSignatureBody:
       required: true
       content:
@@ -1103,19 +1239,30 @@ components:
           schema:
             type: object
             required:
-              - signedBy
+              - hash
+              - publicKey
               - signature
               - timestamp
             properties:
-              signedBy:
+              hash:
                 type: string
+                description: Document hash
+              publicKey:
+                type: string
+                description: Public key of signer's TON Wallet
               signature:
                 type: string
+                description: Digital signature
               timestamp:
-                type: string
+                type: number
+                description: Unix timestamp
   responses:
     InvalidData:
       description: Invalid request data
+    TooManyRequests:
+      description: Too many requests
+    NotImplemented:
+      description: Not implemented
     Unauthorized:
       description: Unauthorized
     Forbidden:
@@ -1133,6 +1280,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/User"
+    UserFullData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserFull"
     UserNotFound:
       description: Not found
       content:
@@ -1142,19 +1295,158 @@ components:
           example:
             errorCode: user:404
             message: User does not exist
-    ProviderData:
+    ApiClientData:
       description: Successful operation
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Provider"
-    ProviderWithSecretData:
+            $ref: "#/components/schemas/ApiClient"
+    ApiClientWithSecretData:
       description: Successful operation
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ProviderWithSecret"
-    SearchProvidersData:
+            $ref: "#/components/schemas/ApiClientWithSecret"
+    ApiClientsListData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+              - total
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiClientBase"
+              total:
+                type: integer
+    ApiClientExchangeTokenData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - accessToken
+              - tokenType
+              - expiresIn
+            properties:
+              accessToken:
+                type: string
+                description: Access token for the client
+              tokenType:
+                type: string
+                enum:
+                  - Bearer
+                description: Type of the token
+              expiresIn:
+                type: integer
+                description: Token expiration time in seconds
+              refreshToken:
+                type: string
+                description: Refresh token for the client
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: Granted scopes for the token
+    ApiClientGetDeviceCodeData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - deviceCode
+              - userCode
+              - verificationUrl
+              - expiresIn
+            properties:
+              deviceCode:
+                type: string
+                description: Device code for the client
+              userCode:
+                type: string
+                description: User code for the client
+              verificationUrl:
+                type: string
+                description: URL for user verification
+              expiresIn:
+                type: integer
+                description: Device code expiration time in seconds
+    ApiClientIntrospectData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - active
+              - clientId
+            properties:
+              active:
+                type: boolean
+                description: Indicates if the token is active
+              clientId:
+                type: string
+                description: Client ID associated with the token
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: Scopes granted to the token
+              iss:
+                type: string
+                description: Issuer of the token
+              aud:
+                type: string
+                description: Audience of the token
+              sub:
+                type: string
+                description: Subject (sub) claim of the token
+              iat:
+                type: integer
+                description: Token issued at time in seconds
+              exp:
+                type: integer
+                description: Token expiration time in seconds
+    ApiClientRevokeTokenData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: string
+            description: List of revoked tokens
+    ApiClientNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: client:404
+            message: Client not found
+    DocumentNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: document:404
+            message: Document not found
+    DocumentFullData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DocumentFullData"
+    SearchDocumentsData:
       description: Successful operation
       content:
         application/json:
@@ -1165,73 +1457,11 @@ components:
               - items
             properties:
               total:
-                type: number
-              items:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Provider"
-    ProviderNotFound:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            errorCode: provider:404
-            message: Provider not found
-    DocumentNotFound:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            errorCode: document:404
-            message: Document not found
-    DocumentData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/DocumentData"
-    DocumentBinary:
-      description: Successful operation
-      content:
-        text/plain:
-          schema:
-            type: string
-            format: binary
-    DocumentWithData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/DocumentWithData"
-    DocumentPublicData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/DocumentPublicData"
-    SearchDocumentsData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              total:
                 type: integer
               items:
                 type: array
                 items:
-                  $ref: "#/components/schemas/DocumentPublicData"
-    DocumentSignatureData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/DocumentSignatureData"
+                  $ref: "#/components/schemas/DocumentFullData"
     DocumentSignatureCheckData:
       description: Successful operation
       content:
@@ -1243,22 +1473,23 @@ components:
             properties:
               isValid:
                 type: boolean
+                description: Signature check result
               signedAt:
                 type: string
                 format: date-time
+                description: Signed document date
   parameters:
-    providerIdParam:
+    apiClientIdParam:
       in: path
       name: id
-      description: Provider ID
+      description: Client ID
       required: true
       schema:
         type: string
-        format: uuid
-    documentKeyParam:
-      name: key
+    documentIdParam:
+      name: id
       in: path
-      description: Document key
+      description: Document ID
       required: true
       schema:
         type: string
