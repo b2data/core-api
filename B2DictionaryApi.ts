@@ -46,61 +46,122 @@ export interface User {
   avatar?: string;
 }
 
-export interface Provider {
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  id: string;
-  /** Provider Name */
-  name: string;
-  /** Provider URL Address */
-  address: string;
-  /** Provider Callback Address */
-  callback: string;
-  /** If `true` provider is blocked */
-  blocked: boolean;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
+export interface TMAUser {
+  /** Telegram User ID */
+  id: number;
+  /** First Name */
+  firstName: string;
+  /** Last Name */
+  lastName?: string;
+  /** Username */
+  username?: string;
+  /** If `true` user is a bot */
+  isBot?: boolean;
+  /** If `true` user is a premium user */
+  isPremium?: boolean;
+  /** Language Code */
+  languageCode?: string;
+  /** URL to User Photo */
+  photoUrl?: string;
+  /** If `true` user has added the bot to attachment menu */
+  addedToAttachmentMenu?: boolean;
+  /** If `true` user allows writing to PM */
+  allowsWriteToPm?: boolean;
 }
 
-export interface ProviderWithSecret {
+export type UserFull = User & {
+  /** List of Public Keys */
+  publicKes?: string[];
+  tma?: TMAUser;
   /**
-   * Provider ID
-   * @format uuid
-   */
-  id: string;
-  /** Provider Secret for API requests */
-  secret: string;
-  /** Provider Name */
-  name: string;
-  /** Provider URL Address */
-  address: string;
-  /** Provider Callback Address */
-  callback: string;
-  /**
-   * Creation Date
+   * Date and time of creation
    * @format date-time
    */
   createdAt: string;
   /**
-   * Last Updating Date
+   * Date and time of last update
    * @format date-time
    */
-  updatedAt: string;
+  updatedAt?: string;
+};
+
+export enum AuthErrorCodes {
+  Api403 = "api:403",
+  Auth401 = "auth:401",
+  Auth403 = "auth:403",
+  Auth404 = "auth:404",
+  User404 = "user:404",
+}
+
+/** Supported grant types for API clients */
+export enum ApiClientGrantType {
+  ClientCredentials = "client_credentials",
+  RefreshToken = "refresh_token",
+  DeviceCode = "device_code",
+}
+
+export interface ApiClientBase {
   /**
-   * Deleted Date
+   * Client ID
+   * @format uuid
+   */
+  id: string;
+  /** Client name */
+  name: string;
+  /** Indicates the status of the client */
+  status: "active" | "inactive";
+  /** Supported grant types */
+  grantTypes: ApiClientGrantType[];
+  /** Creator Wallet address */
+  createdBy: string;
+  /** Subject (sub) claim for the client */
+  sub?: string;
+  /** List of scopes granted to the client */
+  scopes?: string[];
+  /** Webhook URL to send notifications from the client */
+  webhookUrl?: string;
+  /**
+   * Last used date
    * @format date-time
    */
-  deletedAt?: string;
+  lastUsedAt?: string;
+  /**
+   * Blocked date
+   * @format date-time
+   */
+  blockedAt?: string;
+}
+
+export type ApiClient = ApiClientBase & {
+  /**
+   * Creation date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Update date
+   * @format date-time
+   */
+  updatedAt?: string;
+};
+
+export type ApiClientWithSecret = ApiClient & {
+  /** Client secret */
+  secret: string;
+};
+
+export enum ApiClientErrorCodes {
+  ApiClient400Blocked = "api-client:400-blocked",
+  ApiClient400CodePending = "api-client:400-code-pending",
+  ApiClient400Inactive = "api-client:400-inactive",
+  ApiClient400InvalidJwt = "api-client:400-invalid-jwt",
+  ApiClient400NotBlocked = "api-client:400-not-blocked",
+  ApiClient400UnsupportedGrantType = "api-client:400-unsupported-grant-type",
+  ApiClient400UnsupportedScope = "api-client:400-unsupported-scope",
+  ApiClient401 = "api-client:401",
+  ApiClient403 = "api-client:403",
+  ApiClient404 = "api-client:404",
+  ApiClient404OauthPublicKey = "api-client:404-oauth-public-key",
 }
 
 /** Activity Type */
@@ -126,6 +187,12 @@ export enum ActivityType {
   WordVariantVoteDeleted = "wordVariantVoteDeleted",
   WordReferenceCreated = "wordReferenceCreated",
   WordReferenceDeleted = "wordReferenceDeleted",
+  NormCreated = "normCreated",
+  NormUpdated = "normUpdated",
+  NormDeleted = "normDeleted",
+  NormResourceCreated = "normResourceCreated",
+  NormResourceUpdated = "normResourceUpdated",
+  NormResourceDeleted = "normResourceDeleted",
 }
 
 export interface ActivityLog {
@@ -147,10 +214,10 @@ export interface ActivityLog {
    */
   artefactId: string;
   /**
-   * Provider ID
+   * API Client ID
    * @format uuid
    */
-  providerId?: string;
+  clientId?: string;
   /** Activity Data depends on type */
   data: object;
   /**
@@ -251,10 +318,10 @@ export interface FileData {
    */
   createdBy: string;
   /**
-   * Provider ID
+   * API Client ID
    * @format uuid
    */
-  providerId?: string;
+  clientId?: string;
   /**
    * Creation Date
    * @format date-time
@@ -265,6 +332,13 @@ export interface FileData {
    * @format date-time
    */
   updatedAt: string;
+}
+
+/** Folder type */
+export enum FolderType {
+  Norm = "norm",
+  Resource = "resource",
+  Word = "word",
 }
 
 export interface Folder {
@@ -278,6 +352,8 @@ export interface Folder {
    * @format uuid
    */
   parentId?: string | null;
+  /** Folder type */
+  type?: FolderType;
   /** Folder name */
   name: string;
   /** Folder order */
@@ -290,10 +366,10 @@ export interface Folder {
    */
   createdBy: string;
   /**
-   * Provider ID
+   * API Client ID
    * @format uuid
    */
-  providerId?: string;
+  clientId?: string;
   /**
    * Creation Date
    * @format date-time
@@ -339,10 +415,10 @@ export interface FolderFilter {
    */
   createdBy: string;
   /**
-   * Provider ID
+   * API Client ID
    * @format uuid
    */
-  providerId?: string;
+  clientId?: string;
   /**
    * Creation Date
    * @format date-time
@@ -368,72 +444,41 @@ export interface FolderTreeItem {
   parentId?: string | null;
   /** Folder name */
   name: string;
-  /** Folder order */
-  order?: number;
   /** If `true` - shows everyone, if `null` - on review to make public, if `false` - shows only for creator */
   isPublic?: boolean;
-  /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy: string;
-  /**
-   * Provider ID
-   * @format uuid
-   */
-  providerId?: string;
-  /**
-   * Creation Date
-   * @format date-time
-   */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  children?: FolderTreeItem[];
+  /** If `true` - has access to folder, if `false` - no access */
+  hasAccess?: boolean;
+  children?: string[];
 }
 
-export interface FolderFullData {
+export type FolderFullData = Folder & {
+  createdByData?: User;
+  filters: FolderFilter[];
+};
+
+export interface FolderReference {
   /**
    * Folder ID
    * @format uuid
    */
-  id: string;
+  folderId: string;
+  /** If `true` - direct reference (manual deletion), if `false` - reference is smart-folder (auto-deletion by tags) */
+  isDirect: boolean;
   /**
-   * Folder parent ID
+   * Word ID
    * @format uuid
    */
-  parentId?: string | null;
-  /** Folder name */
-  name: string;
-  /** Folder order */
-  order?: number;
-  /** If `true` - shows everyone, if `null` - on review to make public, if `false` - shows only for creator */
-  isPublic?: boolean;
+  wordId?: string;
   /**
-   * Wallet Address
-   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
-   */
-  createdBy: string;
-  /**
-   * Provider ID
+   * Norm ID
    * @format uuid
    */
-  providerId?: string;
+  normId?: string;
   /**
-   * Creation Date
-   * @format date-time
+   * Resource ID
+   * @format uuid
    */
-  createdAt: string;
-  /**
-   * Last Updating Date
-   * @format date-time
-   */
-  updatedAt: string;
-  createdByData?: User;
-  filters: FolderFilter[];
+  resourceId?: string;
 }
 
 export interface NonSystemUnit {
@@ -449,6 +494,148 @@ export interface NonSystemUnit {
   /** Coeff for transforming non-system unit into system unit */
   coeff: number;
 }
+
+export interface NormBase {
+  /**
+   * Norm ID
+   * @format uuid
+   */
+  id: string;
+  /** Norm name */
+  name: string;
+  /** Norm code */
+  code: string;
+  /** List of work items */
+  workList?: string[];
+  /** Unit of measurement */
+  unit?: string;
+  /** System unit of measurement */
+  systemUnit?: string;
+  /** Coefficient */
+  coeff?: number;
+}
+
+export type Norm = NormBase & {
+  /**
+   * API Client ID
+   * @format uuid
+   */
+  clientId?: string;
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  createdBy?: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt?: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt?: string;
+  /**
+   * Deletion Date
+   * @format date-time
+   */
+  deletedAt?: string;
+};
+
+export interface NormResource {
+  /**
+   * Norm ID
+   * @format uuid
+   */
+  normId: string;
+  /**
+   * Resource ID
+   * @format uuid
+   */
+  resourceId: string;
+  /** Consumption amount */
+  consumption: number;
+  /** Waste percentage */
+  wastePercent?: number;
+  /** Loss percentage */
+  lossPercent?: number;
+}
+
+export type NormResourceWithData = NormResource & ResourceBase;
+
+export type NormWithData = Norm & {
+  /** List of norm resources */
+  resources?: NormResourceWithData[];
+  createdByData?: User;
+};
+
+/** Resource Type */
+export enum ResourceType {
+  Material = "material",
+  Mechanism = "mechanism",
+  Worker = "worker",
+  Animal = "animal",
+  Plant = "plant",
+  Fossil = "fossil",
+  WorkCenter = "workCenter",
+}
+
+export interface ResourceBase {
+  /**
+   * Resource ID
+   * @format uuid
+   */
+  id: string;
+  /** Resource type */
+  type: ResourceType;
+  /** Resource code */
+  code?: string;
+  /** Resource name */
+  name: string;
+  /** Resource description */
+  description?: string;
+  /** Resource photos */
+  photos?: string[];
+  /** Resource unit */
+  unit?: string;
+  /** Resource system unit */
+  systemUnit?: string;
+  /** Resource coefficient */
+  coeff?: number;
+}
+
+export type Resource = ResourceBase & {
+  /**
+   * API Client ID
+   * @format uuid
+   */
+  clientId?: string;
+  /**
+   * Wallet Address
+   * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
+   */
+  createdBy?: string;
+  /**
+   * Creation Date
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Last Updating Date
+   * @format date-time
+   */
+  updatedAt?: string;
+  /**
+   * Deletion Date
+   * @format date-time
+   */
+  deletedAt?: string;
+};
+
+export type ResourceWithData = Resource & {
+  createdByData?: User;
+};
 
 export interface SystemUnit {
   /** Unique unit key */
@@ -476,10 +663,10 @@ export interface Tag {
    */
   createdBy: string;
   /**
-   * Provider ID
+   * API Client ID
    * @format uuid
    */
-  providerId?: string;
+  clientId?: string;
   /**
    * Creation Date
    * @format date-time
@@ -545,10 +732,10 @@ export interface Word {
   /** Word folders */
   folders?: string[];
   /**
-   * Provider ID
+   * API Client ID
    * @format uuid
    */
-  providerId?: string;
+  clientId?: string;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -598,10 +785,10 @@ export interface WordWithData {
   /** Word folders */
   folders?: string[];
   /**
-   * Provider ID
+   * API Client ID
    * @format uuid
    */
-  providerId?: string;
+  clientId?: string;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -646,10 +833,10 @@ export interface WordVariant {
   /** Users ids who liked the variant */
   votes?: string[];
   /**
-   * Provider ID
+   * API Client ID
    * @format uuid
    */
-  providerId?: string;
+  clientId?: string;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -688,10 +875,10 @@ export interface WordReference {
    */
   refId: string;
   /**
-   * Provider ID
+   * API Client ID
    * @format uuid
    */
-  providerId?: string;
+  clientId?: string;
   /**
    * Wallet Address
    * @example "0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b"
@@ -777,14 +964,6 @@ export interface UpdateProfilePayload {
   avatar?: string;
 }
 
-export interface SearchFoldersParams {
-  /**
-   * Based on mode different folders may be returned
-   * @default "public"
-   */
-  mode?: "public" | "personal" | "review";
-}
-
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -831,7 +1010,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "http://localhost:8084";
+  public baseUrl: string = "https://dictionary.b2p.space/api";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -998,7 +1177,7 @@ export class HttpClient<SecurityDataType = unknown> {
 /**
  * @title REST API for B2Dictionary
  * @version 1.0.0
- * @baseUrl http://localhost:8084
+ * @baseUrl https://dictionary.b2p.space/api
  */
 export class B2DictionaryApi<SecurityDataType extends unknown> {
   http: HttpClient<SecurityDataType>;
@@ -1011,7 +1190,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Auth
+     * @tags Auth, Available Public
      * @name StartAuth
      * @summary Start authentication process
      * @request POST:/auth/start
@@ -1033,7 +1212,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Auth
+     * @tags Auth, Available Public
      * @name VerifyAuth
      * @summary Verify authentication wallet
      * @request POST:/auth/verify
@@ -1062,6 +1241,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
      * @name RefreshToken
      * @summary Refresh Access Token by Refresh token
      * @request POST:/auth/refresh
+     * @secure
      */
     refreshToken: (data: RefreshTokenPayload, params: RequestParams = {}) =>
       this.http.request<
@@ -1075,6 +1255,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
         path: `/auth/refresh`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -1090,7 +1271,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
      * @secure
      */
     getProfile: (params: RequestParams = {}) =>
-      this.http.request<User, ErrorResponse>({
+      this.http.request<UserFull, ErrorResponse>({
         path: `/auth/profile`,
         method: "GET",
         secure: true,
@@ -1107,7 +1288,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
      * @secure
      */
     updateProfile: (data: UpdateProfilePayload, params: RequestParams = {}) =>
-      this.http.request<User, ErrorResponse>({
+      this.http.request<UserFull, ErrorResponse>({
         path: `/auth/profile`,
         method: "PATCH",
         body: data,
@@ -1116,19 +1297,166 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
         ...params,
       }),
   };
-  providers = {
+  oAuthClient = {
     /**
      * No description
      *
-     * @tags Providers, Available Providers
-     * @name GetProvider
-     * @summary Get provider data
-     * @request GET:/providers/my
+     * @tags OAuth Client, Available Public
+     * @name ExchangeToken
+     * @summary Exchange credentials, device_code, refresh_token for new tokens
+     * @request POST:/oauth/token
+     */
+    exchangeToken: (
+      data: {
+        /** Grant type for token exchange */
+        grantType: ApiClientGrantType;
+        /** Client ID */
+        clientId: string;
+        /** Client secret */
+        clientSecret?: string;
+        /** Refresh token */
+        refreshToken?: string;
+        /** Device code */
+        deviceCode?: string;
+        /** Requested scope */
+        scope?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          /** Access token for the client */
+          accessToken: string;
+          /** Type of the token */
+          tokenType: "Bearer";
+          /** Token expiration time in seconds */
+          expiresIn: number;
+          /** Refresh token for the client */
+          refreshToken?: string;
+          /** Granted scopes for the token */
+          scopes?: string[];
+        },
+        ErrorResponse
+      >({
+        path: `/oauth/token`,
+        method: "POST",
+        body: data,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags OAuth Client, Available Public
+     * @name GetDeviceCode
+     * @summary Get device code for device authorization
+     * @request POST:/oauth/device/code
+     */
+    getDeviceCode: (
+      data: {
+        /** Client ID */
+        clientId: string;
+        /** Requested scope */
+        scope: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          /** Device code for the client */
+          deviceCode: string;
+          /** User code for the client */
+          userCode: string;
+          /** URL for user verification */
+          verificationUrl: string;
+          /** Device code expiration time in seconds */
+          expiresIn: number;
+        },
+        ErrorResponse
+      >({
+        path: `/oauth/device/code`,
+        method: "POST",
+        body: data,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags OAuth Client, Available Public
+     * @name VerifyDeviceCode
+     * @summary Verify device code and get access token
+     * @request POST:/oauth/device/verification
+     */
+    verifyDeviceCode: (params: RequestParams = {}) =>
+      this.http.request<any, any>({
+        path: `/oauth/device/verification`,
+        method: "POST",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags OAuth Client, Available Public
+     * @name AuthorizeDeviceCode
+     * @summary Authorize device code
+     * @request GET:/oauth/device/authorize
+     */
+    authorizeDeviceCode: (params: RequestParams = {}) =>
+      this.http.request<any, any>({
+        path: `/oauth/device/authorize`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags OAuth Client, Available Public
+     * @name IntrospectToken
+     * @summary Check token validity and info
+     * @request GET:/oauth/introspect
+     */
+    introspectToken: (params: RequestParams = {}) =>
+      this.http.request<
+        {
+          /** Indicates if the token is active */
+          active: boolean;
+          /** Client ID associated with the token */
+          clientId: string;
+          /** Scopes granted to the token */
+          scopes?: string[];
+          /** Issuer of the token */
+          iss?: string;
+          /** Audience of the token */
+          aud?: string;
+          /** Subject (sub) claim of the token */
+          sub?: string;
+          /** Token issued at time in seconds */
+          iat?: number;
+          /** Token expiration time in seconds */
+          exp?: number;
+        },
+        ErrorResponse
+      >({
+        path: `/oauth/introspect`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags OAuth Client
+     * @name GetClientInfo
+     * @summary Get OAuth client info
+     * @request GET:/oauth/info
      * @secure
      */
-    getProvider: (params: RequestParams = {}) =>
-      this.http.request<Provider, ErrorResponse>({
-        path: `/providers/my`,
+    getClientInfo: (params: RequestParams = {}) =>
+      this.http.request<ApiClientWithSecret, ErrorResponse>({
+        path: `/oauth/info`,
         method: "GET",
         secure: true,
         ...params,
@@ -1137,25 +1465,170 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Providers, Available Providers
-     * @name UpdateProvider
-     * @summary Update provider data
-     * @request PATCH:/providers/my
+     * @tags OAuth Client
+     * @name RevokeToken
+     * @summary Revoke access or refresh token
+     * @request POST:/oauth/revoke
      * @secure
      */
-    updateProvider: (
+    revokeToken: (
       data: {
-        /** Provider Name */
-        name: string;
-        /** Provider URL Address */
-        address: string;
-        /** Provider Callback Address */
-        callback: string;
+        /** Token to revoke (optional). If not provided, all tokens for the client will be revoked */
+        token?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<Provider, ErrorResponse>({
-        path: `/providers/my`,
+      this.http.request<string[], ErrorResponse>({
+        path: `/oauth/revoke`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags OAuth Client
+     * @name LogoutToken
+     * @summary Logout and revoke tokens
+     * @request POST:/oauth/logout
+     * @secure
+     */
+    logoutToken: (
+      data: {
+        /** Token to revoke (optional). If not provided, all tokens for the client will be revoked */
+        token?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<string[], ErrorResponse>({
+        path: `/oauth/logout`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+  };
+  apiClients = {
+    /**
+     * No description
+     *
+     * @tags API Clients
+     * @name SearchApiClients
+     * @summary Search API Clients
+     * @request POST:/clients/search
+     * @secure
+     */
+    searchApiClients: (
+      data: SearchModel & {
+        /** Search term to filter clients by name */
+        searchTerm?: string;
+        /** Filter by client active/inactive status */
+        isActive?: boolean;
+        /** Filter by client blocked status */
+        isBlocked?: boolean;
+        /** Filter by specific client IDs */
+        ids?: string[];
+        /** Filter by client subject (sub) claims */
+        subs?: string[];
+        /** Filter by creator Wallet addresses */
+        createdBy?: string[];
+        /** Filter by supported grant types */
+        grandTypes?: ApiClientGrantType[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          items: ApiClientBase[];
+          total: number;
+        },
+        ErrorResponse
+      >({
+        path: `/clients/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags API Clients
+     * @name RegisterApiClient
+     * @summary Register a new API Client
+     * @request POST:/clients/register
+     * @secure
+     */
+    registerApiClient: (
+      data: {
+        /** Client name */
+        name: string;
+        /** Supported grant types */
+        grantTypes: ApiClientGrantType[];
+        /** Subject (sub) claim for the client */
+        sub?: string;
+        /** Allowed scopes */
+        scopes?: string[];
+        /** Webhook URL to send notifications from the client */
+        webhookUrl?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ApiClientWithSecret, ErrorResponse>({
+        path: `/clients/register`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags API Clients
+     * @name GetApiClient
+     * @summary Get API client details
+     * @request GET:/clients/{id}
+     * @secure
+     */
+    getApiClient: (id: string, params: RequestParams = {}) =>
+      this.http.request<ApiClientWithSecret, ErrorResponse>({
+        path: `/clients/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags API Clients
+     * @name UpdateApiClient
+     * @summary Update API client
+     * @request PATCH:/clients/{id}
+     * @secure
+     */
+    updateApiClient: (
+      id: string,
+      data: {
+        /** Client name */
+        name?: string;
+        /** Supported grant types */
+        grantTypes?: ApiClientGrantType[];
+        /** Subject (sub) claim for the client */
+        sub?: string;
+        /** Allowed scopes */
+        scopes?: string[];
+        /** Webhook URL to send notifications from the client */
+        webhookUrl?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<ApiClientWithSecret, ErrorResponse>({
+        path: `/clients/${id}`,
         method: "PATCH",
         body: data,
         secure: true,
@@ -1165,15 +1638,15 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Providers, Available Providers
-     * @name DeleteProvider
-     * @summary Delete provider
-     * @request DELETE:/providers/my
+     * @tags API Clients
+     * @name DeleteApiClient
+     * @summary Delete API client
+     * @request DELETE:/clients/{id}
      * @secure
      */
-    deleteProvider: (params: RequestParams = {}) =>
-      this.http.request<Provider, ErrorResponse>({
-        path: `/providers/my`,
+    deleteApiClient: (id: string, params: RequestParams = {}) =>
+      this.http.request<ApiClient, ErrorResponse>({
+        path: `/clients/${id}`,
         method: "DELETE",
         secure: true,
         ...params,
@@ -1182,60 +1655,22 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Providers, Available Public
-     * @name RegisterProvider
-     * @summary Register new provider
-     * @request POST:/providers/register
-     */
-    registerProvider: (
-      data: {
-        /** Provider Name */
-        name: string;
-        /** Provider URL Address */
-        address: string;
-        /** Provider Callback Address */
-        callback: string;
-        /** TON Address who making request */
-        wallet: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<ProviderWithSecret, any>({
-        path: `/providers/register`,
-        method: "POST",
-        body: data,
-        ...params,
-      }),
-
-    /**
-     * @description Required `Admin` access
-     *
-     * @tags Providers
-     * @name SearchProviders
-     * @summary Search providers
-     * @request POST:/providers/search
+     * @tags API Clients
+     * @name RevokeApiClientToken
+     * @summary Revoke API Client tokens
+     * @request POST:/clients/{id}/revoke
      * @secure
      */
-    searchProviders: (
+    revokeApiClientToken: (
+      id: string,
       data: {
-        /** Filter by blocked status */
-        isBlocked?: boolean;
-        /** Number of return items */
-        limit?: number;
-        /** Number of skip items */
-        offset?: number;
-        sort?: SortModel[];
+        /** Token to revoke (optional). If not provided, all tokens for the client will be revoked */
+        token?: string;
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<
-        {
-          total: number;
-          items: Provider[];
-        },
-        ErrorResponse
-      >({
-        path: `/providers/search`,
+      this.http.request<string[], ErrorResponse>({
+        path: `/clients/${id}/revoke`,
         method: "POST",
         body: data,
         secure: true,
@@ -1243,37 +1678,35 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Required `Admin` access
+     * No description
      *
-     * @tags Providers
-     * @name BlockProvider
-     * @summary Block provider
-     * @request POST:/providers/{id}/block
+     * @tags API Clients
+     * @name BlockApiClient
+     * @summary Block API Client
+     * @request POST:/clients/{id}/block
      * @secure
      */
-    blockProvider: (id: string, data: object, params: RequestParams = {}) =>
-      this.http.request<Provider, ErrorResponse>({
-        path: `/providers/${id}/block`,
+    blockApiClient: (id: string, params: RequestParams = {}) =>
+      this.http.request<ApiClient, ErrorResponse>({
+        path: `/clients/${id}/block`,
         method: "POST",
-        body: data,
         secure: true,
         ...params,
       }),
 
     /**
-     * @description Required `Admin` access
+     * No description
      *
-     * @tags Providers
-     * @name UnblockProvider
-     * @summary Unblock provider
-     * @request POST:/providers/{id}/unblock
+     * @tags API Clients
+     * @name UnblockApiClient
+     * @summary Unblock API Client
+     * @request POST:/clients/{id}/unblock
      * @secure
      */
-    unblockProvider: (id: string, data: object, params: RequestParams = {}) =>
-      this.http.request<Provider, ErrorResponse>({
-        path: `/providers/${id}/unblock`,
+    unblockApiClient: (id: string, params: RequestParams = {}) =>
+      this.http.request<ApiClient, ErrorResponse>({
+        path: `/clients/${id}/unblock`,
         method: "POST",
-        body: data,
         secure: true,
         ...params,
       }),
@@ -1282,7 +1715,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Activities, Available Providers
+     * @tags Activities
      * @name SearchActivities
      * @summary Search activities
      * @request POST:/activities/search
@@ -1296,10 +1729,10 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
          */
         artefactId?: string;
         /**
-         * Provider ID
+         * API Client ID
          * @format uuid
          */
-        providerId?: string;
+        clientId?: string;
         types?: ActivityType[];
         /** Number of return items */
         limit?: number;
@@ -1314,7 +1747,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
           total: number;
           items: ActivityLog[];
         },
-        any
+        ErrorResponse
       >({
         path: `/activities/search`,
         method: "POST",
@@ -1341,7 +1774,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
           /** If `true` user has wallet admin access */
           isWalletAdmin: boolean;
         },
-        any
+        ErrorResponse
       >({
         path: `/admin-access/check`,
         method: "GET",
@@ -1485,7 +1918,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
       },
       params: RequestParams = {},
     ) =>
-      this.http.request<Complaint, any>({
+      this.http.request<Complaint, ErrorResponse>({
         path: `/complaints`,
         method: "POST",
         body: data,
@@ -1494,7 +1927,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `creator` or `System Admin`
+     * No description
      *
      * @tags Complaints
      * @name UpdateComplaint
@@ -1521,7 +1954,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `creator` or `System Admin`
+     * No description
      *
      * @tags Complaints
      * @name DeleteComplaint
@@ -1541,7 +1974,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Files, Available Providers
+     * @tags Files
      * @name UploadFile
      * @summary Upload file
      * @request POST:/files
@@ -1571,22 +2004,24 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Files, Available Public
+     * @tags Files
      * @name GetFile
-     * @summary Get file
+     * @summary Get file binary
      * @request GET:/files/{id}
+     * @secure
      */
     getFile: (id: string, params: RequestParams = {}) =>
       this.http.request<File, ErrorResponse>({
         path: `/files/${id}`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
     /**
      * No description
      *
-     * @tags Files, Available Providers
+     * @tags Files
      * @name DeleteFile
      * @summary Delete File
      * @request DELETE:/files/{id}
@@ -1603,15 +2038,17 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Files, Available Public
+     * @tags Files
      * @name GetFileInfo
      * @summary Get file info
      * @request GET:/files/{id}/info
+     * @secure
      */
     getFileInfo: (id: string, params: RequestParams = {}) =>
       this.http.request<FileData, ErrorResponse>({
         path: `/files/${id}/info`,
         method: "GET",
+        secure: true,
         ...params,
       }),
   };
@@ -1619,7 +2056,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name CreateFolder
      * @summary Create folder
      * @request POST:/folders
@@ -1650,22 +2087,24 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Folders, Available Public
+     * @tags Folders
      * @name GetFolder
      * @summary Get full folder data
      * @request GET:/folders/{id}
+     * @secure
      */
     getFolder: (id: string, params: RequestParams = {}) =>
       this.http.request<FolderFullData, ErrorResponse>({
         path: `/folders/${id}`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
     /**
-     * @description Available for `creator` or `System Admin`
+     * No description
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name UpdateFolder
      * @summary Update folder
      * @request PATCH:/folders/{id}
@@ -1688,9 +2127,9 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `creator` or `System Admin`
+     * No description
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name DeleteFolder
      * @summary Delete folder
      * @request DELETE:/folders/{id}
@@ -1707,23 +2146,52 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Folders, Available Public
+     * @tags Folders
      * @name SearchFolders
      * @summary Search folders
-     * @request GET:/folders/search
+     * @request POST:/folders/search
+     * @secure
      */
-    searchFolders: (query: SearchFoldersParams, params: RequestParams = {}) =>
-      this.http.request<FolderTreeItem[], any>({
+    searchFolders: (
+      data: SearchModel & {
+        /** Folder IDs */
+        ids?: string[];
+        /** Folder name */
+        searchTerm?: string;
+        /**
+         * Folder parent ID
+         * @format uuid
+         */
+        parentId?: string | null;
+        /** Folder type */
+        type?: FolderType;
+        /** If `true` - return only public folders */
+        isPublic?: boolean;
+        /** If `true` - return only personal folders */
+        isPersonal?: boolean;
+        /** If `true` - return only folders on review */
+        isReview?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          total?: number;
+          items?: FolderTreeItem[];
+        },
+        ErrorResponse
+      >({
         path: `/folders/search`,
-        method: "GET",
-        query: query,
+        method: "POST",
+        body: data,
+        secure: true,
         ...params,
       }),
 
     /**
      * No description
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name MoveFolder
      * @summary Change folder order
      * @request PUT:/folders/move
@@ -1765,7 +2233,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name MakeFolderPublic
      * @summary Manage folder public status
      * @request POST:/folders/{id}/make-public
@@ -1790,7 +2258,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name CreateFolderFilter
      * @summary Create folder filter
      * @request POST:/folders/{id}/filters
@@ -1821,9 +2289,9 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `creator` or `System Admin`
+     * No description
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name UpdateFolderFilter
      * @summary Update folder filter
      * @request PATCH:/folders/{id}/filters/{filterId}
@@ -1853,9 +2321,9 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `creator` or `System Admin`
+     * No description
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name DeleteFolderFilter
      * @summary Delete folder filter
      * @request DELETE:/folders/{id}/filters/{filterId}
@@ -1872,10 +2340,11 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * @description Return all filters values and tags that were created
      *
-     * @tags Folders, Available Public
+     * @tags Folders
      * @name SearchFoldersFilters
      * @summary Search folders filters
      * @request POST:/folders/filters/search
+     * @secure
      */
     searchFoldersFilters: (
       data: {
@@ -1894,18 +2363,19 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
           total: number;
           items: string;
         },
-        any
+        ErrorResponse
       >({
         path: `/folders/filters/search`,
         method: "POST",
         body: data,
+        secure: true,
         ...params,
       }),
 
     /**
      * No description
      *
-     * @tags Folders, Available Providers
+     * @tags Folders
      * @name MoveFolderFilter
      * @summary Move folder filter
      * @request PUT:/folders/{id}/filters/move
@@ -1936,6 +2406,40 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
         path: `/folders/${id}/filters/move`,
         method: "PUT",
         body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Folders
+     * @name AddFolderReference
+     * @summary Add reference to folder
+     * @request POST:/folders/{id}/references/{refId}
+     * @secure
+     */
+    addFolderReference: (id: string, refId: string, params: RequestParams = {}) =>
+      this.http.request<FolderReference, ErrorResponse>({
+        path: `/folders/${id}/references/${refId}`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Folders
+     * @name RemoveFolderReference
+     * @summary Remove reference from folder
+     * @request DELETE:/folders/{id}/references/{refId}
+     * @secure
+     */
+    removeFolderReference: (id: string, refId: string, params: RequestParams = {}) =>
+      this.http.request<FolderReference, ErrorResponse>({
+        path: `/folders/${id}/references/${refId}`,
+        method: "DELETE",
         secure: true,
         ...params,
       }),
@@ -2041,14 +2545,411 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
         ...params,
       }),
   };
+  norms = {
+    /**
+     * No description
+     *
+     * @tags Norms
+     * @name CreateNorm
+     * @summary Create a new norm
+     * @request POST:/norms
+     * @secure
+     */
+    createNorm: (
+      data: {
+        /** Norm name */
+        name: string;
+        /** Norm code */
+        code: string;
+        /** List of work items */
+        workList?: string[];
+        /** Unit of measurement */
+        unit?: string;
+        /** System unit of measurement */
+        systemUnit?: string;
+        /** Coefficient */
+        coeff?: number;
+        resources?: {
+          /**
+           * Resource ID
+           * @format uuid
+           */
+          resourceId: string;
+          /** Consumption amount */
+          consumption: number;
+          /** Waste percentage */
+          wastePercent?: number;
+          /** Loss percentage */
+          lossPercent?: number;
+        }[];
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Norm, ErrorResponse>({
+        path: `/norms`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Norms
+     * @name SearchNorms
+     * @summary Search norms
+     * @request POST:/norms/search
+     * @secure
+     */
+    searchNorms: (
+      data: SearchModel & {
+        /** Search term for name or code */
+        searchTerm?: string;
+        /**
+         * Client ID filter
+         * @format uuid
+         */
+        clientId?: string;
+        /** Created by user ID filter */
+        createdBy?: string;
+        /** List of norm IDs */
+        ids?: string[];
+        /** List of folder IDs */
+        folders?: string[];
+        /** Filter by deletion status */
+        isDeleted?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          /** Total number of norms */
+          total: number;
+          /** List of norms */
+          items: NormBase[];
+        },
+        ErrorResponse
+      >({
+        path: `/norms/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Norms
+     * @name GetNorm
+     * @summary Get norm by ID
+     * @request GET:/norms/{normId}
+     * @secure
+     */
+    getNorm: (normId: string, params: RequestParams = {}) =>
+      this.http.request<NormWithData, ErrorResponse>({
+        path: `/norms/${normId}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Norms
+     * @name EditNorm
+     * @summary Update norm
+     * @request PATCH:/norms/{normId}
+     * @secure
+     */
+    editNorm: (
+      normId: string,
+      data: {
+        /** Norm name */
+        name?: string;
+        /** Norm code */
+        code?: string;
+        /** List of work items */
+        workList?: string[];
+        /** Unit of measurement */
+        unit?: string;
+        /** System unit of measurement */
+        systemUnit?: string;
+        /** Coefficient */
+        coeff?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Norm, ErrorResponse>({
+        path: `/norms/${normId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Norms
+     * @name NormsDelete
+     * @summary Delete norm (soft delete)
+     * @request DELETE:/norms/{normId}
+     * @secure
+     */
+    normsDelete: (normId: string, params: RequestParams = {}) =>
+      this.http.request<Norm, ErrorResponse>({
+        path: `/norms/${normId}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Norms
+     * @name ResourcesCreate
+     * @summary Add resource to norm
+     * @request POST:/norms/{normId}/resources/{resId}
+     * @secure
+     */
+    resourcesCreate: (
+      normId: string,
+      resId: string,
+      data: {
+        /** Consumption amount */
+        consumption: number;
+        /** Waste percentage */
+        wastePercent?: number;
+        /** Loss percentage */
+        lossPercent?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<NormResource, ErrorResponse>({
+        path: `/norms/${normId}/resources/${resId}`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Norms
+     * @name ResourcesPartialUpdate
+     * @summary Update norm resource
+     * @request PATCH:/norms/{normId}/resources/{resId}
+     * @secure
+     */
+    resourcesPartialUpdate: (
+      normId: string,
+      resId: string,
+      data: {
+        /** Consumption amount */
+        consumption?: number;
+        /** Waste percentage */
+        wastePercent?: number;
+        /** Loss percentage */
+        lossPercent?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<NormResource, ErrorResponse>({
+        path: `/norms/${normId}/resources/${resId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Norms
+     * @name ResourcesDelete
+     * @summary Remove resource from norm
+     * @request DELETE:/norms/{normId}/resources/{resId}
+     * @secure
+     */
+    resourcesDelete: (normId: string, resId: string, params: RequestParams = {}) =>
+      this.http.request<NormResource, ErrorResponse>({
+        path: `/norms/${normId}/resources/${resId}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+  };
+  resources = {
+    /**
+     * No description
+     *
+     * @tags Resources
+     * @name CreateResource
+     * @summary Create a new resource
+     * @request POST:/resources
+     * @secure
+     */
+    createResource: (
+      data: {
+        /** Resource Type */
+        type: ResourceType;
+        /** Resource code */
+        code?: string;
+        /** Resource name */
+        name: string;
+        /** Resource description */
+        description?: string;
+        /** Resource photos */
+        photos?: string[];
+        /** Resource unit */
+        unit?: string;
+        /** Resource system unit */
+        systemUnit?: string;
+        /** Resource coefficient */
+        coeff?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Resource, ErrorResponse>({
+        path: `/resources`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resources
+     * @name SearchResources
+     * @summary Search resources
+     * @request POST:/resources/search
+     * @secure
+     */
+    searchResources: (
+      data: SearchModel & {
+        /** Search term for name or description */
+        searchTerm?: string;
+        /** Filter by resource types */
+        types?: ResourceType[];
+        /**
+         * Client ID filter
+         * @format uuid
+         */
+        clientId?: string;
+        /** Created by user ID filter */
+        createdBy?: string;
+        /** List of resource IDs */
+        ids?: string[];
+        /** Filter by deletion status */
+        isDeleted?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          /** Total number of resources */
+          total: number;
+          /** List of resources */
+          items: ResourceBase[];
+        },
+        ErrorResponse
+      >({
+        path: `/resources/search`,
+        method: "POST",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resources
+     * @name GetResource
+     * @summary Get resource by ID
+     * @request GET:/resources/{resId}
+     * @secure
+     */
+    getResource: (resId: string, params: RequestParams = {}) =>
+      this.http.request<ResourceWithData, ErrorResponse>({
+        path: `/resources/${resId}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resources
+     * @name ResourcesPartialUpdate
+     * @summary Update resource
+     * @request PATCH:/resources/{resId}
+     * @secure
+     */
+    resourcesPartialUpdate: (
+      resId: string,
+      data: {
+        /** Resource Type */
+        type?: ResourceType;
+        /** Resource code */
+        code?: string;
+        /** Resource name */
+        name?: string;
+        /** Resource description */
+        description?: string;
+        /** Resource photos */
+        photos?: string[];
+        /** Resource unit */
+        unit?: string;
+        /** Resource system unit */
+        systemUnit?: string;
+        /** Resource coefficient */
+        coeff?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<Resource, ErrorResponse>({
+        path: `/resources/${resId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Resources
+     * @name ResourcesDelete
+     * @summary Delete resource (soft delete)
+     * @request DELETE:/resources/{resId}
+     * @secure
+     */
+    resourcesDelete: (resId: string, params: RequestParams = {}) =>
+      this.http.request<Resource, ErrorResponse>({
+        path: `/resources/${resId}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+  };
   tags = {
     /**
      * No description
      *
-     * @tags Tags, Available Public
+     * @tags Tags
      * @name SearchTags
      * @summary Search tags
      * @request POST:/tags/search
+     * @secure
      */
     searchTags: (
       data: {
@@ -2069,18 +2970,19 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
           total: number;
           items: Tag[];
         },
-        any
+        ErrorResponse
       >({
         path: `/tags/search`,
         method: "POST",
         body: data,
+        secure: true,
         ...params,
       }),
 
     /**
      * No description
      *
-     * @tags Tags, Available Providers
+     * @tags Tags
      * @name CreateTag
      * @summary Crete tag
      * @request POST:/tags
@@ -2104,9 +3006,9 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `creator` or `System Admin`
+     * No description
      *
-     * @tags Tags, Available Providers
+     * @tags Tags
      * @name UpdateTag
      * @summary Update tag
      * @request PATCH:/tags/{id}
@@ -2131,9 +3033,9 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `creator` or `System Admin`
+     * No description
      *
-     * @tags Tags, Available Providers
+     * @tags Tags
      * @name DeleteTag
      * @summary Delete tag
      * @request DELETE:/tags/{id}
@@ -2224,7 +3126,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Words, Available Providers
+     * @tags Words
      * @name CreateWord
      * @summary Create word
      * @request POST:/words
@@ -2264,25 +3166,28 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Words, Available Public
+     * @tags Words
      * @name GetWord
      * @summary Get word full data
      * @request GET:/words/{id}
+     * @secure
      */
     getWord: (id: string, params: RequestParams = {}) =>
       this.http.request<WordWithData, ErrorResponse>({
         path: `/words/${id}`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
     /**
      * No description
      *
-     * @tags Words, Available Public
+     * @tags Words
      * @name EditWord
      * @summary Edit word data
      * @request PATCH:/words/{id}
+     * @secure
      */
     editWord: (
       id: string,
@@ -2298,13 +3203,14 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
         path: `/words/${id}`,
         method: "PATCH",
         body: data,
+        secure: true,
         ...params,
       }),
 
     /**
-     * @description Available for `creator` or `System Admin`
+     * No description
      *
-     * @tags Words, Available Providers
+     * @tags Words
      * @name DeleteWord
      * @summary Delete word
      * @request DELETE:/words/{id}
@@ -2321,10 +3227,11 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Words, Available Public
+     * @tags Words
      * @name SearchWords
      * @summary Search words
      * @request POST:/words/search
+     * @secure
      */
     searchWords: (
       data: {
@@ -2353,21 +3260,23 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
           total: number;
           items: Word[];
         },
-        any
+        ErrorResponse
       >({
         path: `/words/search`,
         method: "POST",
         body: data,
+        secure: true,
         ...params,
       }),
 
     /**
      * No description
      *
-     * @tags Words, Available Public
+     * @tags Words
      * @name SearchWordsContext
      * @summary Search unique context in words
      * @request POST:/words/search-context
+     * @secure
      */
     searchWordsContext: (
       data: {
@@ -2386,18 +3295,19 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
           total: number;
           items: string[];
         },
-        any
+        ErrorResponse
       >({
         path: `/words/search-context`,
         method: "POST",
         body: data,
+        secure: true,
         ...params,
       }),
 
     /**
      * No description
      *
-     * @tags Words, Available Providers
+     * @tags Words
      * @name EditWordTags
      * @summary Edit word tags
      * @request PUT:/words/{id}/tags
@@ -2422,7 +3332,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * @description The word will get all folders filters value to have references to the folders
      *
-     * @tags Words, Available Providers
+     * @tags Words
      * @name AddWordToFolders
      * @summary Add word to folders
      * @request POST:/words/{id}/folders
@@ -2447,7 +3357,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * @description The word will get all folders filters value to have references to the folders
      *
-     * @tags Words, Available Providers
+     * @tags Words
      * @name CrateWordVariant
      * @summary Create variant for word characteristic
      * @request POST:/words/{id}/variants
@@ -2478,22 +3388,24 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Words, Available Public
+     * @tags Words
      * @name SearchWordVariants
      * @summary Search variants of word characteristic
      * @request GET:/words/{id}/variants/{field}
+     * @secure
      */
     searchWordVariants: (id: string, field: string, params: RequestParams = {}) =>
       this.http.request<WordVariant[], ErrorResponse>({
         path: `/words/${id}/variants/${field}`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
     /**
      * No description
      *
-     * @tags Words, Available Providers
+     * @tags Words
      * @name UpdateWordVariant
      * @summary Update word variant data
      * @request PATCH:/words/{id}/variants/{variantId}
@@ -2523,7 +3435,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Words, Available Providers
+     * @tags Words
      * @name DeleteWordVariant
      * @summary Delete word variant
      * @request DELETE:/words/{id}/variants/{variantId}
@@ -2540,7 +3452,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Words, Available Providers
+     * @tags Words
      * @name AddVoteToWordVariant
      * @summary Add vote to word variant
      * @request POST:/words/{id}/variants/{variantId}/votes
@@ -2558,7 +3470,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Words, Available Providers
+     * @tags Words
      * @name DeleteVoteFromWordVariant
      * @summary Delete vote from word variant
      * @request DELETE:/words/{id}/variants/{variantId}/votes
@@ -2575,7 +3487,7 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Words, Available Providers
+     * @tags Words
      * @name CreateWordReference
      * @summary Create word reference
      * @request POST:/words/{id}/references/{type}/{refId}
@@ -2597,9 +3509,9 @@ export class B2DictionaryApi<SecurityDataType extends unknown> {
       }),
 
     /**
-     * @description Available for `creator` or `System Admin`
+     * No description
      *
-     * @tags Words, Available Providers
+     * @tags Words
      * @name DeleteWordReference
      * @summary Delete word reference
      * @request DELETE:/words/{id}/references/{type}/{refId}

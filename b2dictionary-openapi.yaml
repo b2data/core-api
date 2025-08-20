@@ -3,8 +3,8 @@ info:
   title: REST API for B2Dictionary
   version: 1.0.0
 servers:
-  - url: http://localhost:8084
-  - url: http://54.37.199.51:8084/api
+  - url: https://dictionary.b2p.space/api
+  - url: https://bets.dictionary.b2p.space/api
 tags:
   - name: Auth
   - name: Activities
@@ -12,21 +12,19 @@ tags:
   - name: Complaints
   - name: Files
   - name: Folders
-  - name: Providers
+  - name: API Clients
   - name: Tags
   - name: Units
   - name: Users
   - name: Words
   - name: Available Public
     description: This methods does not require authorization
-  - name: Available Providers
-    description: "description: This methods requires Authorizations by `client-id` +
-      `client-secret` + `user-id`"
 paths:
   /auth/start:
     post:
       tags:
         - Auth
+        - Available Public
       summary: Start authentication process
       operationId: startAuth
       requestBody:
@@ -47,6 +45,7 @@ paths:
     post:
       tags:
         - Auth
+        - Available Public
       summary: Verify authentication wallet
       operationId: verifyAuth
       requestBody:
@@ -140,6 +139,8 @@ paths:
     post:
       tags:
         - Auth
+      security:
+        - BearerAuth: []
       summary: Refresh Access Token by Refresh token
       operationId: refreshToken
       requestBody:
@@ -190,7 +191,7 @@ paths:
       operationId: getProfile
       responses:
         "200":
-          $ref: "#/components/responses/UserData"
+          $ref: "#/components/responses/UserFullData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -222,108 +223,233 @@ paths:
                   description: Avatar
       responses:
         "200":
-          $ref: "#/components/responses/UserData"
+          $ref: "#/components/responses/UserFullData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/UserNotFound"
-  /providers/my:
+  /oauth/token:
+    post:
+      tags:
+        - OAuth Client
+        - Available Public
+      summary: Exchange credentials, device_code, refresh_token for new tokens
+      operationId: exchangeToken
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientExchangeTokenBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientExchangeTokenData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/device/code:
+    post:
+      tags:
+        - OAuth Client
+        - Available Public
+      summary: Get device code for device authorization
+      operationId: getDeviceCode
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientGetDeviceCodeBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientGetDeviceCodeData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/device/verification:
+    post:
+      tags:
+        - OAuth Client
+        - Available Public
+      summary: Verify device code and get access token
+      operationId: verifyDeviceCode
+      responses:
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+  /oauth/device/authorize:
     get:
       tags:
-        - Providers
-        - Available Providers
-      security:
-        - ProviderClientId: []
-          ProviderClientSecret: []
-      summary: Get provider data
-      operationId: getProvider
+        - OAuth Client
+        - Available Public
+      summary: Authorize device code
+      operationId: authorizeDeviceCode
+      responses:
+        "501":
+          $ref: "#/components/responses/NotImplemented"
+  /oauth/introspect:
+    get:
+      tags:
+        - OAuth Client
+        - Available Public
+      summary: Check token validity and info
+      operationId: introspectToken
       responses:
         "200":
-          $ref: "#/components/responses/ProviderData"
+          $ref: "#/components/responses/ApiClientIntrospectData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "404":
-          $ref: "#/components/responses/ProviderNotFound"
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/info:
+    get:
+      tags:
+        - OAuth Client
+      security:
+        - ApiClientAuth: []
+      summary: Get OAuth client info
+      operationId: getClientInfo
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientWithSecretData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/revoke:
+    post:
+      tags:
+        - OAuth Client
+      security:
+        - ApiClientAuth: []
+      summary: Revoke access or refresh token
+      operationId: revokeToken
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientRevokeTokenBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientRevokeTokenData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /oauth/logout:
+    post:
+      tags:
+        - OAuth Client
+      security:
+        - ApiClientAuth: []
+      summary: Logout and revoke tokens
+      operationId: logoutToken
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientRevokeTokenBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientRevokeTokenData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /clients/search:
+    post:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Search API Clients
+      operationId: searchApiClients
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientsSearchBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientsListData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /clients/register:
+    post:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Register a new API Client
+      operationId: registerApiClient
+      requestBody:
+        $ref: "#/components/requestBodies/ApiClientRegisterBody"
+      responses:
+        "201":
+          $ref: "#/components/responses/ApiClientWithSecretData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/clients/{id}":
+    get:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Get API client details
+      operationId: getApiClient
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientWithSecretData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     patch:
       tags:
-        - Providers
-        - Available Providers
+        - API Clients
       security:
-        - ProviderClientId: []
-          ProviderClientSecret: []
-      summary: Update provider data
-      operationId: updateProvider
+        - BearerAuth: []
+      summary: Update API client
+      operationId: updateApiClient
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
       requestBody:
-        $ref: "#/components/requestBodies/ProviderRequestBody"
+        $ref: "#/components/requestBodies/ApiClientModifyBody"
       responses:
         "200":
-          $ref: "#/components/responses/ProviderData"
+          $ref: "#/components/responses/ApiClientWithSecretData"
         "400":
           $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         "404":
-          $ref: "#/components/responses/ProviderNotFound"
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     delete:
       tags:
-        - Providers
-        - Available Providers
-      security:
-        - ProviderClientId: []
-          ProviderClientSecret: []
-      summary: Delete provider
-      operationId: deleteProvider
-      responses:
-        "200":
-          $ref: "#/components/responses/ProviderData"
-        "404":
-          $ref: "#/components/responses/ProviderNotFound"
-  /providers/register:
-    post:
-      tags:
-        - Providers
-        - Available Public
-      summary: Register new provider
-      operationId: registerProvider
-      requestBody:
-        $ref: "#/components/requestBodies/RegisterProviderRequestBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/ProviderWithSecretData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-  /providers/search:
-    post:
-      tags:
-        - Providers
+        - API Clients
       security:
         - BearerAuth: []
-      summary: Search providers
-      operationId: searchProviders
-      description: Required `Admin` access
-      requestBody:
-        $ref: "#/components/requestBodies/SearchProvidersBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchProvidersData"
-        "400":
-          $ref: "#/components/responses/InvalidData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-  "/providers/{id}/block":
-    post:
-      tags:
-        - Providers
-      security:
-        - BearerAuth: []
-      summary: Block provider
-      operationId: blockProvider
-      description: Required `Admin` access
+      summary: Delete API client
+      operationId: deleteApiClient
       parameters:
-        - $ref: "#/components/parameters/providerIdParam"
-      requestBody:
-        $ref: "#/components/requestBodies/EmptyBody"
+        - $ref: "#/components/parameters/apiClientIdParam"
       responses:
         "200":
-          $ref: "#/components/responses/ProviderData"
+          $ref: "#/components/responses/ApiClientData"
         "400":
           $ref: "#/components/responses/InvalidData"
         "401":
@@ -331,23 +457,24 @@ paths:
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
-          $ref: "#/components/responses/ProviderNotFound"
-  "/providers/{id}/unblock":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/clients/{id}/revoke":
     post:
       tags:
-        - Providers
+        - API Clients
       security:
         - BearerAuth: []
-      summary: Unblock provider
-      operationId: unblockProvider
-      description: Required `Admin` access
+      summary: Revoke API Client tokens
       parameters:
-        - $ref: "#/components/parameters/providerIdParam"
+        - $ref: "#/components/parameters/apiClientIdParam"
+      operationId: revokeApiClientToken
       requestBody:
-        $ref: "#/components/requestBodies/EmptyBody"
+        $ref: "#/components/requestBodies/ApiClientRevokeTokenBody"
       responses:
         "200":
-          $ref: "#/components/responses/ProviderData"
+          $ref: "#/components/responses/ApiClientRevokeTokenData"
         "400":
           $ref: "#/components/responses/InvalidData"
         "401":
@@ -355,17 +482,58 @@ paths:
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
-          $ref: "#/components/responses/ProviderNotFound"
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/clients/{id}/block":
+    post:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Block API Client
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
+      operationId: blockApiClient
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/clients/{id}/unblock":
+    post:
+      tags:
+        - API Clients
+      security:
+        - BearerAuth: []
+      summary: Unblock API Client
+      parameters:
+        - $ref: "#/components/parameters/apiClientIdParam"
+      operationId: unblockApiClient
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiClientData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiClientNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /activities/search:
     post:
       tags:
         - Activities
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Search activities
       operationId: searchActivities
       requestBody:
@@ -377,6 +545,8 @@ paths:
           $ref: "#/components/responses/InvalidData"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /admin-access/check:
     get:
       tags:
@@ -390,6 +560,8 @@ paths:
           $ref: "#/components/responses/CheckUserAccess"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /admin-access/search:
     post:
       tags:
@@ -413,6 +585,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /admin-access:
     post:
       tags:
@@ -433,6 +607,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/admin-access/{wallet}":
     delete:
       tags:
@@ -453,6 +629,8 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/AdminAccessNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /complaints/search:
     post:
       tags:
@@ -473,6 +651,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /complaints:
     post:
       tags:
@@ -490,6 +670,8 @@ paths:
           $ref: "#/components/responses/InvalidData"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/complaints/{id}":
     patch:
       tags:
@@ -497,7 +679,6 @@ paths:
       security:
         - BearerAuth: []
       summary: Edit complaints
-      description: Available for `creator` or `System Admin`
       operationId: updateComplaint
       parameters:
         - $ref: "#/components/parameters/complaintIdParam"
@@ -514,13 +695,14 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/ComplaintNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     delete:
       tags:
         - Complaints
       security:
         - BearerAuth: []
       summary: Delete complaints
-      description: Available for `creator` or `System Admin`
       operationId: deleteComplaint
       parameters:
         - $ref: "#/components/parameters/complaintIdParam"
@@ -533,16 +715,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/ComplaintNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /files:
     post:
       tags:
         - Files
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Upload file
       operationId: uploadFile
       requestBody:
@@ -556,29 +737,36 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FileNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/files/{id}":
     get:
       tags:
         - Files
-        - Available Public
-      summary: Get file
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      summary: Get file binary
       operationId: getFile
       parameters:
         - $ref: "#/components/parameters/fileIdParam"
       responses:
         "200":
           $ref: "#/components/responses/FileBinary"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FileNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     delete:
       tags:
         - Files
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Delete File
       operationId: deleteFile
       parameters:
@@ -592,11 +780,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FileNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/files/{id}/info":
     get:
       tags:
         - Files
-        - Available Public
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
       summary: Get file info
       operationId: getFileInfo
       parameters:
@@ -604,18 +796,21 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/FileData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FileNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /folders:
     post:
       tags:
         - Folders
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Create folder
       operationId: createFolder
       requestBody:
@@ -631,11 +826,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/ParentFolderNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/folders/{id}":
     get:
       tags:
         - Folders
-        - Available Public
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
       summary: Get full folder data
       operationId: getFolder
       parameters:
@@ -643,19 +842,19 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/FolderFullData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/FolderNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     patch:
       tags:
         - Folders
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Update folder
-      description: Available for `creator` or `System Admin`
       operationId: updateFolder
       parameters:
         - $ref: "#/components/parameters/folderIdParam"
@@ -672,17 +871,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FolderNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     delete:
       tags:
         - Folders
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Delete folder
-      description: Available for `creator` or `System Admin`
       operationId: deleteFolder
       parameters:
         - $ref: "#/components/parameters/folderIdParam"
@@ -697,30 +894,35 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FolderNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /folders/search:
-    get:
+    post:
       tags:
         - Folders
-        - Available Public
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
       summary: Search folders
       operationId: searchFolders
-      parameters:
-        - $ref: "#/components/parameters/folderSearchModeParam"
+      requestBody:
+        $ref: "#/components/requestBodies/SearchFoldersBody"
       responses:
         "200":
           $ref: "#/components/responses/FolderTreeData"
         "400":
           $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /folders/move:
     put:
       tags:
         - Folders
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Change folder order
       operationId: moveFolder
       requestBody:
@@ -736,16 +938,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FolderNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/folders/{id}/make-public":
     post:
       tags:
         - Folders
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Manage folder public status
       operationId: makeFolderPublic
       parameters:
@@ -763,16 +964,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FolderNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/folders/{id}/filters":
     post:
       tags:
         - Folders
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Create folder filter
       operationId: createFolderFilter
       parameters:
@@ -790,18 +990,16 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FolderNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/folders/{id}/filters/{filterId}":
     patch:
       tags:
         - Folders
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Update folder filter
-      description: Available for `creator` or `System Admin`
       operationId: updateFolderFilter
       parameters:
         - $ref: "#/components/parameters/folderIdParam"
@@ -819,17 +1017,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FolderFilterNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     delete:
       tags:
         - Folders
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Delete folder filter
-      description: Available for `creator` or `System Admin`
       operationId: deleteFolderFilter
       parameters:
         - $ref: "#/components/parameters/folderIdParam"
@@ -845,11 +1041,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FolderFilterNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /folders/filters/search:
     post:
       tags:
         - Folders
-        - Available Public
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
       summary: Search folders filters
       description: Return all filters values and tags that were created
       operationId: searchFoldersFilters
@@ -860,16 +1060,19 @@ paths:
           $ref: "#/components/responses/SearchFolderFilterData"
         "400":
           $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/folders/{id}/filters/move":
     put:
       tags:
         - Folders
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Move folder filter
       operationId: moveFolderFilter
       parameters:
@@ -887,6 +1090,53 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/FolderNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/folders/{id}/references/{refId}":
+    post:
+      tags:
+        - Folders
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      summary: Add reference to folder
+      operationId: addFolderReference
+      parameters:
+        - $ref: "#/components/parameters/folderIdParam"
+        - $ref: "#/components/parameters/folderRefIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/FolderReferenceData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FolderNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+    delete:
+      tags:
+        - Folders
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      summary: Remove reference from folder
+      operationId: removeFolderReference
+      parameters:
+        - $ref: "#/components/parameters/folderIdParam"
+        - $ref: "#/components/parameters/folderRefIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/FolderReferenceData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/FolderNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /units/non-system:
     get:
       tags:
@@ -914,6 +1164,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/units/non-system/{key}":
     delete:
       tags:
@@ -934,6 +1186,297 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/NonSystemUnitNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /norms:
+    post:
+      summary: Create a new norm
+      tags:
+        - Norms
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      operationId: createNorm
+      requestBody:
+        $ref: "#/components/requestBodies/CreateNormBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/NormData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /norms/search:
+    post:
+      summary: Search norms
+      tags:
+        - Norms
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      operationId: searchNorms
+      requestBody:
+        $ref: "#/components/requestBodies/SearchNormsBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchNormsData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/norms/{normId}":
+    get:
+      summary: Get norm by ID
+      tags:
+        - Norms
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      operationId: getNorm
+      parameters:
+        - $ref: "#/components/parameters/normId"
+      responses:
+        "200":
+          $ref: "#/components/responses/NormWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NormNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+    patch:
+      summary: Update norm
+      tags:
+        - Norms
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      operationId: editNorm
+      parameters:
+        - $ref: "#/components/parameters/normId"
+      requestBody:
+        $ref: "#/components/requestBodies/EditNormBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/NormData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NormNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+    delete:
+      summary: Delete norm (soft delete)
+      tags:
+        - Norms
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      parameters:
+        - $ref: "#/components/parameters/normId"
+      responses:
+        "200":
+          $ref: "#/components/responses/NormData"
+        "400":
+          $ref: "#/components/responses/NormAlreadyDeleted"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NormNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/norms/{normId}/resources/{resId}":
+    post:
+      summary: Add resource to norm
+      tags:
+        - Norms
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      parameters:
+        - $ref: "#/components/parameters/normId"
+        - $ref: "#/components/parameters/resourceId"
+      requestBody:
+        $ref: "#/components/requestBodies/CreateNormResourceBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/NormResourceData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NormNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+    patch:
+      summary: Update norm resource
+      tags:
+        - Norms
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      parameters:
+        - $ref: "#/components/parameters/normId"
+        - $ref: "#/components/parameters/resourceId"
+      requestBody:
+        $ref: "#/components/requestBodies/EditNormResourceBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/NormResourceData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NormResourceNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+    delete:
+      summary: Remove resource from norm
+      tags:
+        - Norms
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      parameters:
+        - $ref: "#/components/parameters/normId"
+        - $ref: "#/components/parameters/resourceId"
+      responses:
+        "200":
+          $ref: "#/components/responses/NormResourceData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NormResourceNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /resources:
+    post:
+      summary: Create a new resource
+      tags:
+        - Resources
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      operationId: createResource
+      requestBody:
+        $ref: "#/components/requestBodies/CreateResourceBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ResourceData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /resources/search:
+    post:
+      summary: Search resources
+      tags:
+        - Resources
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      operationId: searchResources
+      requestBody:
+        $ref: "#/components/requestBodies/SearchResourcesBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchResourcesData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  "/resources/{resId}":
+    get:
+      summary: Get resource by ID
+      tags:
+        - Resources
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      operationId: getResource
+      parameters:
+        - $ref: "#/components/parameters/resourceId"
+      responses:
+        "200":
+          $ref: "#/components/responses/ResourceWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ResourceNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+    patch:
+      summary: Update resource
+      tags:
+        - Resources
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      parameters:
+        - $ref: "#/components/parameters/resourceId"
+      requestBody:
+        $ref: "#/components/requestBodies/EditResourceBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/ResourceData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ResourceNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+    delete:
+      summary: Delete resource (soft delete)
+      tags:
+        - Resources
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
+      parameters:
+        - $ref: "#/components/parameters/resourceId"
+      responses:
+        "200":
+          $ref: "#/components/responses/ResourceData"
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ResourceNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /units/system:
     get:
       tags:
@@ -961,6 +1504,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/units/system/{key}":
     delete:
       tags:
@@ -981,11 +1526,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/SystemUnitNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /tags/search:
     post:
       tags:
         - Tags
-        - Available Public
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
       summary: Search tags
       operationId: searchTags
       requestBody:
@@ -995,16 +1544,17 @@ paths:
           $ref: "#/components/responses/SearchTagsData"
         "400":
           $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /tags:
     post:
       tags:
         - Tags
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Crete tag
       operationId: createTag
       requestBody:
@@ -1018,18 +1568,16 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/tags/{id}":
     patch:
       tags:
         - Tags
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Update tag
-      description: Available for `creator` or `System Admin`
       operationId: updateTag
       parameters:
         - $ref: "#/components/parameters/tagIdParam"
@@ -1046,17 +1594,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/TagNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     delete:
       tags:
         - Tags
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Delete tag
-      description: Available for `creator` or `System Admin`
       operationId: deleteTag
       parameters:
         - $ref: "#/components/parameters/tagIdParam"
@@ -1069,6 +1615,8 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/TagNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /users/search:
     post:
       tags:
@@ -1089,6 +1637,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/users/blocked/{id}":
     post:
       tags:
@@ -1111,6 +1661,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     delete:
       tags:
         - Users
@@ -1130,16 +1682,15 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /words:
     post:
       tags:
         - Words
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Create word
       operationId: createWord
       requestBody:
@@ -1153,11 +1704,15 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/words/{id}":
     get:
       tags:
         - Words
-        - Available Public
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
       summary: Get word full data
       operationId: getWord
       parameters:
@@ -1167,12 +1722,20 @@ paths:
           $ref: "#/components/responses/WordFullData"
         "400":
           $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/WordNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     patch:
       tags:
         - Words
-        - Available Public
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
       summary: Edit word data
       operationId: editWord
       parameters:
@@ -1190,17 +1753,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/WordNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     delete:
       tags:
         - Words
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Delete word
-      description: Available for `creator` or `System Admin`
       operationId: deleteWord
       parameters:
         - $ref: "#/components/parameters/wordIdParam"
@@ -1215,11 +1776,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/WordNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /words/search:
     post:
       tags:
         - Words
-        - Available Public
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
       summary: Search words
       operationId: searchWords
       requestBody:
@@ -1229,11 +1794,17 @@ paths:
           $ref: "#/components/responses/SearchWordsData"
         "400":
           $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /words/search-context:
     post:
       tags:
         - Words
-        - Available Public
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
       summary: Search unique context in words
       operationId: searchWordsContext
       requestBody:
@@ -1243,16 +1814,17 @@ paths:
           $ref: "#/components/responses/SearchWordsContextData"
         "400":
           $ref: "#/components/responses/InvalidData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/words/{id}/tags":
     put:
       tags:
         - Words
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Edit word tags
       operationId: editWordTags
       parameters:
@@ -1270,16 +1842,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/WordNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/words/{id}/folders":
     post:
       tags:
         - Words
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Add word to folders
       description: The word will get all folders filters value to have references to
         the folders
@@ -1299,16 +1870,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/WordNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/words/{id}/variants":
     post:
       tags:
         - Words
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Create variant for word characteristic
       description: The word will get all folders filters value to have references to
         the folders
@@ -1328,11 +1898,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/WordNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/words/{id}/variants/{field}":
     get:
       tags:
         - Words
-        - Available Public
+      security:
+        - BearerAuth: []
+        - ApiClientAuth: []
       summary: Search variants of word characteristic
       operationId: searchWordVariants
       parameters:
@@ -1345,16 +1919,15 @@ paths:
           $ref: "#/components/responses/InvalidData"
         "404":
           $ref: "#/components/responses/WordNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/words/{id}/variants/{variantId}":
     patch:
       tags:
         - Words
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Update word variant data
       operationId: updateWordVariant
       parameters:
@@ -1373,15 +1946,14 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/WordVariantNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     delete:
       tags:
         - Words
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Delete word variant
       operationId: deleteWordVariant
       parameters:
@@ -1398,16 +1970,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/WordVariantNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/words/{id}/variants/{variantId}/votes":
     post:
       tags:
         - Words
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Add vote to word variant
       operationId: addVoteToWordVariant
       parameters:
@@ -1426,15 +1997,14 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/WordVariantNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     delete:
       tags:
         - Words
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Delete vote from word variant
       operationId: deleteVoteFromWordVariant
       parameters:
@@ -1451,16 +2021,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/WordVariantVoteNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   "/words/{id}/references/{type}/{refId}":
     post:
       tags:
         - Words
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Create word reference
       operationId: createWordReference
       parameters:
@@ -1480,17 +2049,15 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/WordNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
     delete:
       tags:
         - Words
-        - Available Providers
       security:
         - BearerAuth: []
-        - ProviderClientId: []
-          ProviderClientSecret: []
-          ProviderUserId: []
+        - ApiClientAuth: []
       summary: Delete word reference
-      description: Available for `creator` or `System Admin`
       operationId: deleteWordReference
       parameters:
         - $ref: "#/components/parameters/wordIdParam"
@@ -1507,28 +2074,20 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/WordReferenceNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
 components:
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Authorization using Auth routes
-    ProviderClientId:
-      type: apiKey
-      name: client-id
-      in: header
-      description: Authorization for providers requests
-    ProviderClientSecret:
-      type: apiKey
-      name: client-secret
-      in: header
-      description: Authorization for providers requests
-    ProviderUserId:
-      type: apiKey
-      name: user-id
-      in: header
-      description: Authorization for providers requests
+      description: User authorization
+    ApiClientAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: API Client Authorization
   schemas:
     ErrorResponse:
       type: object
@@ -1590,81 +2149,167 @@ components:
         avatar:
           type: string
           description: Avatar
-    Provider:
+    TMAUser:
       type: object
       required:
         - id
-        - name
-        - address
-        - callback
-        - blocked
-        - createdAt
-        - updatedAt
+        - firstName
       properties:
         id:
+          type: number
+          description: Telegram User ID
+        firstName:
           type: string
-          format: uuid
-          description: Provider ID
-        name:
+          description: First Name
+        lastName:
           type: string
-          description: Provider Name
-        address:
+          description: Last Name
+        username:
           type: string
-          description: Provider URL Address
-        callback:
-          type: string
-          description: Provider Callback Address
-        blocked:
+          description: Username
+        isBot:
           type: boolean
-          description: If `true` provider is blocked
-        createdAt:
+          description: If `true` user is a bot
+        isPremium:
+          type: boolean
+          description: If `true` user is a premium user
+        languageCode:
           type: string
-          format: date-time
-          description: Creation Date
-        updatedAt:
+          description: Language Code
+        photoUrl:
           type: string
-          format: date-time
-          description: Last Updating Date
-    ProviderWithSecret:
+          description: URL to User Photo
+        addedToAttachmentMenu:
+          type: boolean
+          description: If `true` user has added the bot to attachment menu
+        allowsWriteToPm:
+          type: boolean
+          description: If `true` user allows writing to PM
+    UserFull:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          required:
+            - createdAt
+          properties:
+            publicKes:
+              type: array
+              items:
+                type: string
+              description: List of Public Keys
+            tma:
+              $ref: "#/components/schemas/TMAUser"
+            createdAt:
+              type: string
+              format: date-time
+              description: Date and time of creation
+            updatedAt:
+              type: string
+              format: date-time
+              description: Date and time of last update
+    AuthErrorCodes:
+      type: string
+      enum:
+        - api:403
+        - auth:401
+        - auth:403
+        - auth:404
+        - user:404
+    ApiClientGrantType:
+      type: string
+      enum:
+        - client_credentials
+        - refresh_token
+        - device_code
+      description: Supported grant types for API clients
+    ApiClientBase:
       type: object
       required:
         - id
-        - secret
         - name
-        - address
-        - callback
-        - blocked
-        - createdAt
-        - updatedAt
+        - status
+        - createdBy
+        - grantTypes
       properties:
         id:
           type: string
           format: uuid
-          description: Provider ID
-        secret:
-          type: string
-          description: Provider Secret for API requests
+          description: Client ID
         name:
           type: string
-          description: Provider Name
-        address:
+          description: Client name
+        status:
           type: string
-          description: Provider URL Address
-        callback:
+          enum:
+            - active
+            - inactive
+          description: Indicates the status of the client
+        grantTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApiClientGrantType"
+          description: Supported grant types
+        createdBy:
           type: string
-          description: Provider Callback Address
-        createdAt:
+          description: Creator Wallet address
+        sub:
+          type: string
+          description: Subject (sub) claim for the client
+        scopes:
+          type: array
+          items:
+            type: string
+          description: List of scopes granted to the client
+        webhookUrl:
+          type: string
+          description: Webhook URL to send notifications from the client
+        lastUsedAt:
           type: string
           format: date-time
-          description: Creation Date
-        updatedAt:
+          description: Last used date
+        blockedAt:
           type: string
           format: date-time
-          description: Last Updating Date
-        deletedAt:
-          type: string
-          format: date-time
-          description: Deleted Date
+          description: Blocked date
+    ApiClient:
+      allOf:
+        - $ref: "#/components/schemas/ApiClientBase"
+        - type: object
+          required:
+            - createdAt
+          properties:
+            createdAt:
+              type: string
+              format: date-time
+              description: Creation date
+            updatedAt:
+              type: string
+              format: date-time
+              description: Update date
+    ApiClientWithSecret:
+      allOf:
+        - $ref: "#/components/schemas/ApiClient"
+        - type: object
+          required:
+            - secret
+          properties:
+            secret:
+              type: string
+              description: Client secret
+    ApiClientErrorCodes:
+      type: string
+      enum:
+        - api-client:400-blocked
+        - api-client:400-code-pending
+        - api-client:400-inactive
+        - api-client:400-invalid-jwt
+        - api-client:400-not-blocked
+        - api-client:400-unsupported-grant-type
+        - api-client:400-unsupported-scope
+        - api-client:401
+        - api-client:403
+        - api-client:404
+        - api-client:404-oauth-public-key
     ActivityType:
       type: string
       description: Activity Type
@@ -1690,6 +2335,12 @@ components:
         - wordVariantVoteDeleted
         - wordReferenceCreated
         - wordReferenceDeleted
+        - normCreated
+        - normUpdated
+        - normDeleted
+        - normResourceCreated
+        - normResourceUpdated
+        - normResourceDeleted
     ActivityLog:
       type: object
       required:
@@ -1713,10 +2364,10 @@ components:
           type: string
           format: uuid
           description: Artefact ID
-        providerId:
+        clientId:
           type: string
           format: uuid
-          description: Provider ID
+          description: API Client ID
         data:
           type: object
           description: Activity Data depends on type
@@ -1835,10 +2486,10 @@ components:
           type: string
           description: Wallet Address
           example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
-        providerId:
+        clientId:
           type: string
           format: uuid
-          description: Provider ID
+          description: API Client ID
         createdAt:
           type: string
           format: date-time
@@ -1847,6 +2498,13 @@ components:
           type: string
           format: date-time
           description: Last Updating Date
+    FolderType:
+      type: string
+      description: Folder type
+      enum:
+        - norm
+        - resource
+        - word
     Folder:
       type: object
       required:
@@ -1865,6 +2523,8 @@ components:
           nullable: true
           format: uuid
           description: Folder parent ID
+        type:
+          $ref: "#/components/schemas/FolderType"
         name:
           type: string
           description: Folder name
@@ -1879,10 +2539,10 @@ components:
           type: string
           description: Wallet Address
           example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
-        providerId:
+        clientId:
           type: string
           format: uuid
-          description: Provider ID
+          description: API Client ID
         createdAt:
           type: string
           format: date-time
@@ -1934,10 +2594,10 @@ components:
           type: string
           description: Wallet Address
           example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
-        providerId:
+        clientId:
           type: string
           format: uuid
-          description: Provider ID
+          description: API Client ID
         createdAt:
           type: string
           format: date-time
@@ -1951,9 +2611,6 @@ components:
       required:
         - id
         - name
-        - createdBy
-        - createdAt
-        - updatedAt
       properties:
         id:
           type: string
@@ -1967,84 +2624,58 @@ components:
         name:
           type: string
           description: Folder name
-        order:
-          type: number
-          description: Folder order
         isPublic:
           type: boolean
           description: If `true` - shows everyone, if `null` - on review to make public,
             if `false` - shows only for creator
-        createdBy:
-          type: string
-          description: Wallet Address
-          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
-        providerId:
-          type: string
-          format: uuid
-          description: Provider ID
-        createdAt:
-          type: string
-          format: date-time
-          description: Creation Date
-        updatedAt:
-          type: string
-          format: date-time
-          description: Last Updating Date
+        hasAccess:
+          type: boolean
+          description: If `true` - has access to folder, if `false` - no access
         children:
           type: array
           items:
-            $ref: "#/components/schemas/FolderTreeItem"
+            type: string
+            format: uuid
+            description: Folder ID
     FolderFullData:
+      allOf:
+        - $ref: "#/components/schemas/Folder"
+        - type: object
+          required:
+            - filters
+          properties:
+            createdByData:
+              $ref: "#/components/schemas/User"
+            filters:
+              type: array
+              items:
+                $ref: "#/components/schemas/FolderFilter"
+    FolderReference:
       type: object
       required:
-        - id
-        - name
-        - createdBy
-        - createdAt
-        - updatedAt
-        - filters
+        - folderId
+        - isDirect
       properties:
-        id:
+        folderId:
           type: string
           format: uuid
           description: Folder ID
-        parentId:
-          type: string
-          nullable: true
-          format: uuid
-          description: Folder parent ID
-        name:
-          type: string
-          description: Folder name
-        order:
-          type: number
-          description: Folder order
-        isPublic:
+        isDirect:
           type: boolean
-          description: If `true` - shows everyone, if `null` - on review to make public,
-            if `false` - shows only for creator
-        createdBy:
-          type: string
-          description: Wallet Address
-          example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
-        providerId:
+          description: If `true` - direct reference (manual deletion), if `false` -
+            reference is smart-folder (auto-deletion by tags)
+        wordId:
           type: string
           format: uuid
-          description: Provider ID
-        createdAt:
+          description: Word ID
+        normId:
           type: string
-          format: date-time
-          description: Creation Date
-        updatedAt:
+          format: uuid
+          description: Norm ID
+        resourceId:
           type: string
-          format: date-time
-          description: Last Updating Date
-        createdByData:
-          $ref: "#/components/schemas/User"
-        filters:
-          type: array
-          items:
-            $ref: "#/components/schemas/FolderFilter"
+          format: uuid
+          description: Resource ID
     NonSystemUnit:
       type: object
       required:
@@ -2070,6 +2701,184 @@ components:
         coeff:
           type: number
           description: Coeff for transforming non-system unit into system unit
+    NormBase:
+      type: object
+      required:
+        - id
+        - name
+        - code
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Norm ID
+        name:
+          type: string
+          description: Norm name
+        code:
+          type: string
+          description: Norm code
+        workList:
+          type: array
+          items:
+            type: string
+          description: List of work items
+        unit:
+          type: string
+          description: Unit of measurement
+        systemUnit:
+          type: string
+          description: System unit of measurement
+        coeff:
+          type: number
+          description: Coefficient
+    Norm:
+      allOf:
+        - $ref: "#/components/schemas/NormBase"
+        - type: object
+          properties:
+            clientId:
+              type: string
+              format: uuid
+              description: API Client ID
+            createdBy:
+              type: string
+              description: Wallet Address
+              example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+            createdAt:
+              type: string
+              format: date-time
+              description: Creation Date
+            updatedAt:
+              type: string
+              format: date-time
+              description: Last Updating Date
+            deletedAt:
+              type: string
+              format: date-time
+              description: Deletion Date
+    NormResource:
+      type: object
+      required:
+        - normId
+        - resourceId
+        - consumption
+      properties:
+        normId:
+          type: string
+          format: uuid
+          description: Norm ID
+        resourceId:
+          type: string
+          format: uuid
+          description: Resource ID
+        consumption:
+          type: number
+          description: Consumption amount
+        wastePercent:
+          type: number
+          description: Waste percentage
+        lossPercent:
+          type: number
+          description: Loss percentage
+    NormResourceWithData:
+      allOf:
+        - $ref: "#/components/schemas/NormResource"
+        - $ref: "#/components/schemas/ResourceBase"
+    NormWithData:
+      allOf:
+        - $ref: "#/components/schemas/Norm"
+        - type: object
+          properties:
+            resources:
+              type: array
+              items:
+                $ref: "#/components/schemas/NormResourceWithData"
+              description: List of norm resources
+            createdByData:
+              $ref: "#/components/schemas/User"
+    ResourceType:
+      type: string
+      description: Resource Type
+      enum:
+        - material
+        - mechanism
+        - worker
+        - animal
+        - plant
+        - fossil
+        - workCenter
+    ResourceBase:
+      type: object
+      required:
+        - id
+        - type
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Resource ID
+        type:
+          $ref: "#/components/schemas/ResourceType"
+          description: Resource type
+        code:
+          type: string
+          description: Resource code
+        name:
+          type: string
+          description: Resource name
+        description:
+          type: string
+          description: Resource description
+        photos:
+          type: array
+          items:
+            type: string
+          description: Resource photos
+        unit:
+          type: string
+          description: Resource unit
+        systemUnit:
+          type: string
+          description: Resource system unit
+        coeff:
+          type: number
+          description: Resource coefficient
+    Resource:
+      allOf:
+        - $ref: "#/components/schemas/ResourceBase"
+        - type: object
+          required:
+            - createdAt
+          properties:
+            clientId:
+              type: string
+              format: uuid
+              description: API Client ID
+            createdBy:
+              type: string
+              description: Wallet Address
+              example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
+            createdAt:
+              type: string
+              format: date-time
+              description: Creation Date
+            updatedAt:
+              type: string
+              format: date-time
+              description: Last Updating Date
+            deletedAt:
+              type: string
+              format: date-time
+              description: Deletion Date
+    ResourceWithData:
+      allOf:
+        - $ref: "#/components/schemas/Resource"
+        - type: object
+          properties:
+            createdByData:
+              $ref: "#/components/schemas/User"
     SystemUnit:
       type: object
       required:
@@ -2110,10 +2919,10 @@ components:
           type: string
           description: Wallet Address
           example: 0:c424531feb64afeb46607e0aff5609628207213308b62c123891d817389fc35b
-        providerId:
+        clientId:
           type: string
           format: uuid
-          description: Provider ID
+          description: API Client ID
         createdAt:
           type: string
           format: date-time
@@ -2206,10 +3015,10 @@ components:
           description: Word folders
           items:
             type: string
-        providerId:
+        clientId:
           type: string
           format: uuid
-          description: Provider ID
+          description: API Client ID
         createdBy:
           type: string
           description: Wallet Address
@@ -2277,10 +3086,10 @@ components:
           description: Word folders
           items:
             type: string
-        providerId:
+        clientId:
           type: string
           format: uuid
-          description: Provider ID
+          description: API Client ID
         createdBy:
           type: string
           description: Wallet Address
@@ -2341,10 +3150,10 @@ components:
           description: Users ids who liked the variant
           items:
             type: string
-        providerId:
+        clientId:
           type: string
           format: uuid
-          description: Provider ID
+          description: API Client ID
         createdBy:
           type: string
           description: Wallet Address
@@ -2384,10 +3193,10 @@ components:
           type: string
           format: uuid
           description: Word reference ID
-        providerId:
+        clientId:
           type: string
           format: uuid
-          description: Provider ID
+          description: API Client ID
         createdBy:
           type: string
           description: Wallet Address
@@ -2436,67 +3245,149 @@ components:
         application/json:
           schema:
             type: object
-    SearchProvidersBody:
+    ApiClientRegisterBody:
       content:
         application/json:
           schema:
             type: object
+            required:
+              - name
+              - grantTypes
             properties:
-              isBlocked:
-                type: boolean
-                description: Filter by blocked status
-              limit:
-                type: number
-                description: Number of return items
-              offset:
-                type: number
-                description: Number of skip items
-              sort:
+              name:
+                type: string
+                description: Client name
+              grantTypes:
                 type: array
                 items:
-                  $ref: "#/components/schemas/SortModel"
-    RegisterProviderRequestBody:
+                  $ref: "#/components/schemas/ApiClientGrantType"
+                description: Supported grant types
+              sub:
+                type: string
+                description: Subject (sub) claim for the client
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: Allowed scopes
+              webhookUrl:
+                type: string
+                description: Webhook URL to send notifications from the client
+    ApiClientModifyBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Client name
+              grantTypes:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiClientGrantType"
+                description: Supported grant types
+              sub:
+                type: string
+                description: Subject (sub) claim for the client
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: Allowed scopes
+              webhookUrl:
+                type: string
+                description: Webhook URL to send notifications from the client
+    ApiClientsSearchBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  searchTerm:
+                    type: string
+                    description: Search term to filter clients by name
+                  isActive:
+                    type: boolean
+                    description: Filter by client active/inactive status
+                  isBlocked:
+                    type: boolean
+                    description: Filter by client blocked status
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    description: Filter by specific client IDs
+                  subs:
+                    type: array
+                    items:
+                      type: string
+                    description: Filter by client subject (sub) claims
+                  createdBy:
+                    type: array
+                    items:
+                      type: string
+                    description: Filter by creator Wallet addresses
+                  grandTypes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ApiClientGrantType"
+                    description: Filter by supported grant types
+    ApiClientExchangeTokenBody:
       content:
         application/json:
           schema:
             type: object
             required:
-              - name
-              - address
-              - callback
-              - wallet
+              - grantType
+              - clientId
             properties:
-              name:
+              grantType:
+                $ref: "#/components/schemas/ApiClientGrantType"
+                description: Grant type for token exchange
+              clientId:
                 type: string
-                description: Provider Name
-              address:
+                description: Client ID
+              clientSecret:
                 type: string
-                description: Provider URL Address
-              callback:
+                description: Client secret
+              refreshToken:
                 type: string
-                description: Provider Callback Address
-              wallet:
+                description: Refresh token
+              deviceCode:
                 type: string
-                description: TON Address who making request
-    ProviderRequestBody:
+                description: Device code
+              scope:
+                type: string
+                description: Requested scope
+    ApiClientGetDeviceCodeBody:
       content:
         application/json:
           schema:
             type: object
             required:
-              - name
-              - address
-              - callback
+              - clientId
+              - scope
             properties:
-              name:
+              clientId:
                 type: string
-                description: Provider Name
-              address:
+                description: Client ID
+              scope:
                 type: string
-                description: Provider URL Address
-              callback:
+                description: Requested scope
+    ApiClientRevokeTokenBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
                 type: string
-                description: Provider Callback Address
+                description: Token to revoke (optional). If not provided, all tokens for the
+                  client will be revoked
     SearchActivitiesBody:
       content:
         application/json:
@@ -2507,10 +3398,10 @@ components:
                 type: string
                 format: uuid
                 description: Artefact ID
-              providerId:
+              clientId:
                 type: string
                 format: uuid
-                description: Provider ID
+                description: API Client ID
               types:
                 type: array
                 items:
@@ -2609,6 +3500,39 @@ components:
               file:
                 type: string
                 format: binary
+    SearchFoldersBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    description: Folder IDs
+                  searchTerm:
+                    type: string
+                    description: Folder name
+                  parentId:
+                    type: string
+                    nullable: true
+                    format: uuid
+                    description: Folder parent ID
+                  type:
+                    $ref: "#/components/schemas/FolderType"
+                  isPublic:
+                    type: boolean
+                    description: If `true` - return only public folders
+                  isPersonal:
+                    type: boolean
+                    description: If `true` - return only personal folders
+                  isReview:
+                    type: boolean
+                    description: If `true` - return only folders on review
     CreateFolderBody:
       content:
         application/json:
@@ -2757,6 +3681,244 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/NonSystemUnit"
+    CreateNormBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - code
+            properties:
+              name:
+                type: string
+                description: Norm name
+              code:
+                type: string
+                description: Norm code
+              workList:
+                type: array
+                items:
+                  type: string
+                description: List of work items
+              unit:
+                type: string
+                description: Unit of measurement
+              systemUnit:
+                type: string
+                description: System unit of measurement
+              coeff:
+                type: number
+                description: Coefficient
+              resources:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - resourceId
+                    - consumption
+                  properties:
+                    resourceId:
+                      type: string
+                      format: uuid
+                      description: Resource ID
+                    consumption:
+                      type: number
+                      description: Consumption amount
+                    wastePercent:
+                      type: number
+                      description: Waste percentage
+                    lossPercent:
+                      type: number
+                      description: Loss percentage
+    EditNormBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Norm name
+              code:
+                type: string
+                description: Norm code
+              workList:
+                type: array
+                items:
+                  type: string
+                description: List of work items
+              unit:
+                type: string
+                description: Unit of measurement
+              systemUnit:
+                type: string
+                description: System unit of measurement
+              coeff:
+                type: number
+                description: Coefficient
+    SearchNormsBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  searchTerm:
+                    type: string
+                    description: Search term for name or code
+                  clientId:
+                    type: string
+                    format: uuid
+                    description: Client ID filter
+                  createdBy:
+                    type: string
+                    description: Created by user ID filter
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    description: List of norm IDs
+                  folders:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    description: List of folder IDs
+                  isDeleted:
+                    type: boolean
+                    description: Filter by deletion status
+    CreateNormResourceBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - consumption
+            properties:
+              consumption:
+                type: number
+                description: Consumption amount
+              wastePercent:
+                type: number
+                description: Waste percentage
+              lossPercent:
+                type: number
+                description: Loss percentage
+    EditNormResourceBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              consumption:
+                type: number
+                description: Consumption amount
+              wastePercent:
+                type: number
+                description: Waste percentage
+              lossPercent:
+                type: number
+                description: Loss percentage
+    CreateResourceBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - type
+              - name
+            properties:
+              type:
+                $ref: "#/components/schemas/ResourceType"
+              code:
+                type: string
+                description: Resource code
+              name:
+                type: string
+                description: Resource name
+              description:
+                type: string
+                description: Resource description
+              photos:
+                type: array
+                items:
+                  type: string
+                description: Resource photos
+              unit:
+                type: string
+                description: Resource unit
+              systemUnit:
+                type: string
+                description: Resource system unit
+              coeff:
+                type: number
+                description: Resource coefficient
+    EditResourceBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              type:
+                $ref: "#/components/schemas/ResourceType"
+              code:
+                type: string
+                description: Resource code
+              name:
+                type: string
+                description: Resource name
+              description:
+                type: string
+                description: Resource description
+              photos:
+                type: array
+                items:
+                  type: string
+                description: Resource photos
+              unit:
+                type: string
+                description: Resource unit
+              systemUnit:
+                type: string
+                description: Resource system unit
+              coeff:
+                type: number
+                description: Resource coefficient
+    SearchResourcesBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/SearchModel"
+              - type: object
+                properties:
+                  searchTerm:
+                    type: string
+                    description: Search term for name or description
+                  types:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ResourceType"
+                    description: Filter by resource types
+                  clientId:
+                    type: string
+                    format: uuid
+                    description: Client ID filter
+                  createdBy:
+                    type: string
+                    description: Created by user ID filter
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                    description: List of resource IDs
+                  isDeleted:
+                    type: boolean
+                    description: Filter by deletion status
     ModifySystemUnitBody:
       content:
         application/json:
@@ -3017,9 +4179,27 @@ components:
                 description: Coeff for mapping systemUnit with unit
   responses:
     InvalidData:
-      description: Invalid request data
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: norm:400
+            message: Invalid data provided
+    TooManyRequests:
+      description: Too many requests
+    NotImplemented:
+      description: Not implemented
     Unauthorized:
       description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: norm:401
+            message: Unauthorized access
     Forbidden:
       description: Forbidden
       content:
@@ -3027,14 +4207,20 @@ components:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
           example:
-            errorCode: api:403
-            message: You don't have access to this method
+            errorCode: norm:403
+            message: Access forbidden
     UserData:
       description: Successful operation
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/User"
+    UserFullData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserFull"
     UserNotFound:
       description: Not found
       content:
@@ -3044,43 +4230,142 @@ components:
           example:
             errorCode: user:404
             message: User does not exist
-    ProviderData:
+    ApiClientData:
       description: Successful operation
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Provider"
-    ProviderWithSecretData:
+            $ref: "#/components/schemas/ApiClient"
+    ApiClientWithSecretData:
       description: Successful operation
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ProviderWithSecret"
-    SearchProvidersData:
+            $ref: "#/components/schemas/ApiClientWithSecret"
+    ApiClientsListData:
       description: Successful operation
       content:
         application/json:
           schema:
             type: object
             required:
-              - total
               - items
+              - total
             properties:
-              total:
-                type: number
               items:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Provider"
-    ProviderNotFound:
+                  $ref: "#/components/schemas/ApiClientBase"
+              total:
+                type: integer
+    ApiClientExchangeTokenData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - accessToken
+              - tokenType
+              - expiresIn
+            properties:
+              accessToken:
+                type: string
+                description: Access token for the client
+              tokenType:
+                type: string
+                enum:
+                  - Bearer
+                description: Type of the token
+              expiresIn:
+                type: integer
+                description: Token expiration time in seconds
+              refreshToken:
+                type: string
+                description: Refresh token for the client
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: Granted scopes for the token
+    ApiClientGetDeviceCodeData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - deviceCode
+              - userCode
+              - verificationUrl
+              - expiresIn
+            properties:
+              deviceCode:
+                type: string
+                description: Device code for the client
+              userCode:
+                type: string
+                description: User code for the client
+              verificationUrl:
+                type: string
+                description: URL for user verification
+              expiresIn:
+                type: integer
+                description: Device code expiration time in seconds
+    ApiClientIntrospectData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - active
+              - clientId
+            properties:
+              active:
+                type: boolean
+                description: Indicates if the token is active
+              clientId:
+                type: string
+                description: Client ID associated with the token
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: Scopes granted to the token
+              iss:
+                type: string
+                description: Issuer of the token
+              aud:
+                type: string
+                description: Audience of the token
+              sub:
+                type: string
+                description: Subject (sub) claim of the token
+              iat:
+                type: integer
+                description: Token issued at time in seconds
+              exp:
+                type: integer
+                description: Token expiration time in seconds
+    ApiClientRevokeTokenData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: string
+            description: List of revoked tokens
+    ApiClientNotFound:
       description: Not found
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
           example:
-            errorCode: provider:404
-            message: Provider not found
+            errorCode: client:404
+            message: Client not found
     SearchActivitiesData:
       description: Successful operation
       content:
@@ -3223,9 +4508,20 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/FolderTreeItem"
+            type: object
+            properties:
+              total:
+                type: number
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FolderTreeItem"
+    FolderReferenceData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FolderReference"
     FolderNotFound:
       description: Not found
       content:
@@ -3311,6 +4607,117 @@ components:
           example:
             errorCode: unit:non-system:404
             message: Non system unit not found
+    NormData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Norm"
+    NormWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NormWithData"
+    NormResourceData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NormResource"
+    SearchNormsData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+                description: Total number of norms
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NormBase"
+                description: List of norms
+    NormNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: norm:404
+            message: Norm not found
+    NormResourceNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: norm:404-resource
+            message: Norm resource not found
+    NormAlreadyDeleted:
+      description: Norm is already deleted
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: norm:400-deleted
+            message: Norm is already deleted
+    ResourceAlreadyExists:
+      description: Resource already exists in this norm
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: norm:409-resource
+            message: Resource already exists in this norm
+    ResourceData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Resource"
+    ResourceWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ResourceWithData"
+    SearchResourcesData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - total
+              - items
+            properties:
+              total:
+                type: number
+                description: Total number of resources
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResourceBase"
+                description: List of resources
+    ResourceNotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errorCode: resource:404
+            message: Resource not found
     SearchSystemUnitsData:
       description: Successful operation
       content:
@@ -3528,14 +4935,13 @@ components:
                 errorCode: word:404-reference
                 message: Word reference not found
   parameters:
-    providerIdParam:
+    apiClientIdParam:
       in: path
       name: id
-      description: Provider ID
+      description: Client ID
       required: true
       schema:
         type: string
-        format: uuid
     walletParam:
       in: path
       name: wallet
@@ -3575,17 +4981,14 @@ components:
       schema:
         type: string
         format: uuid
-    folderSearchModeParam:
-      in: query
-      name: mode
+    folderRefIdParam:
+      in: path
+      name: refId
+      description: Folder reference ID
+      required: true
       schema:
         type: string
-        description: Based on mode different folders may be returned
-        default: public
-        enum:
-          - public
-          - personal
-          - review
+        format: uuid
     nonSystemUnitKeyParam:
       in: path
       name: key
@@ -3593,6 +4996,22 @@ components:
       required: true
       schema:
         type: string
+    normId:
+      name: normId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Norm ID
+    resourceId:
+      name: resId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Resource ID
     systemUnitKeyParam:
       in: path
       name: key
