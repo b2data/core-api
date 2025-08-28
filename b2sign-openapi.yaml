@@ -763,7 +763,7 @@ components:
           required:
             - createdAt
           properties:
-            publicKes:
+            publicKeys:
               type: array
               items:
                 type: string

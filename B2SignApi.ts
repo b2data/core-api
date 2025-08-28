@@ -71,7 +71,7 @@ export interface TMAUser {
 
 export type UserFull = User & {
   /** List of Public Keys */
-  publicKes?: string[];
+  publicKeys?: string[];
   tma?: TMAUser;
   /**
    * Date and time of creation
