@@ -2211,6 +2211,7 @@ components:
       type: string
       enum:
         - api:403
+        - api:403-system
         - auth:401
         - auth:403
         - auth:404
