@@ -87,6 +87,7 @@ export type UserFull = User & {
 
 export enum AuthErrorCodes {
   Api403 = "api:403",
+  Api403System = "api:403-system",
   Auth401 = "auth:401",
   Auth403 = "auth:403",
   Auth404 = "auth:404",

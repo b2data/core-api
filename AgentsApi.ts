@@ -482,5 +482,29 @@ export class AgentsApi<SecurityDataType extends unknown> {
         secure: true,
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags API Agents, Available Public
+     * @name ProcessCallback
+     * @summary Process Agent callback
+     * @request POST:/agents/callback
+     */
+    processCallback: (
+      data: {
+        clientId: string;
+        appKey: string;
+        action: string;
+        data: Record<string, string>;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<void, ErrorResponse>({
+        path: `/agents/callback`,
+        method: "POST",
+        body: data,
+        ...params,
+      }),
   };
 }

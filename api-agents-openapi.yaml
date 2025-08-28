@@ -124,6 +124,24 @@ paths:
           $ref: "#/components/responses/ApiAgentNotFound"
         "429":
           $ref: "#/components/responses/TooManyRequests"
+  /agents/callback:
+    post:
+      tags:
+        - API Agents
+        - Available Public
+      summary: Process Agent callback
+      operationId: processCallback
+      requestBody:
+        $ref: "#/components/requestBodies/ApiAgentCallbackBody"
+      responses:
+        "200":
+          description: OK
+        "400":
+          $ref: "#/components/responses/InvalidData"
+        "404":
+          $ref: "#/components/responses/ApiAgentNotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
 components:
   securitySchemes:
     BearerAuth:
@@ -390,6 +408,27 @@ components:
                 items:
                   type: string
               customHeaders:
+                type: object
+                additionalProperties:
+                  type: string
+    ApiAgentCallbackBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - clientId
+              - appKey
+              - action
+              - data
+            properties:
+              clientId:
+                type: string
+              appKey:
+                type: string
+              action:
+                type: string
+              data:
                 type: object
                 additionalProperties:
                   type: string
