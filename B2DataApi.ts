@@ -46,8 +46,48 @@ export interface User {
   avatar?: string;
 }
 
+export interface TMAUser {
+  /** Telegram User ID */
+  id: number;
+  /** First Name */
+  firstName: string;
+  /** Last Name */
+  lastName?: string;
+  /** Username */
+  username?: string;
+  /** If `true` user is a bot */
+  isBot?: boolean;
+  /** If `true` user is a premium user */
+  isPremium?: boolean;
+  /** Language Code */
+  languageCode?: string;
+  /** URL to User Photo */
+  photoUrl?: string;
+  /** If `true` user has added the bot to attachment menu */
+  addedToAttachmentMenu?: boolean;
+  /** If `true` user allows writing to PM */
+  allowsWriteToPm?: boolean;
+}
+
+export type UserFull = User & {
+  /** List of Public Keys */
+  publicKes?: string[];
+  tma?: TMAUser;
+  /**
+   * Date and time of creation
+   * @format date-time
+   */
+  createdAt: string;
+  /**
+   * Date and time of last update
+   * @format date-time
+   */
+  updatedAt?: string;
+};
+
 export enum AuthErrorCodes {
   Api403 = "api:403",
+  Api403System = "api:403-system",
   Auth401 = "auth:401",
   Auth403 = "auth:403",
   Auth404 = "auth:404",
@@ -1452,6 +1492,7 @@ export interface DocumentSignData {
 export type DocumentSignature = DocumentSignData & {
   documentId: string;
   versionId: string;
+  externalId: string;
   hash: string;
   signature?: string;
   timestamp?: number;
@@ -1949,49 +1990,6 @@ export type SpaceUserSearch = User & {
   }[];
 };
 
-export interface SpaceAgentBase {
-  id: string;
-  spaceId: string;
-  name: string;
-  domain: string;
-  authorizationType: "none" | "apikey" | "oauth";
-  createdBy?: string;
-}
-
-export type SpaceAgent = SpaceAgentBase & {
-  rawSpec: string;
-  authorizationUrl?: string;
-  authType?: "basic" | "bearer" | "custom";
-  authCustomHeaderName?: string;
-  authExtraHeaders?: Record<string, string>;
-  authTokenUrl?: string;
-  authScopes?: string;
-  actions?: SpaceAgentAction[];
-  /** @format date-time */
-  updatedAt: string;
-  /** @format date-time */
-  createdAt: string;
-};
-
-export interface SpaceAgentAction {
-  /** @format uuid */
-  id: string;
-  /** The name of the action */
-  name: string;
-  /** A brief description of the action */
-  description?: string;
-  /** The path of the action */
-  path: string;
-  /** The HTTP method of the action */
-  method: string;
-}
-
-export type SpaceAgentWithSecret = SpaceAgent & {
-  authApiKey?: string;
-  authClientId?: string;
-  authClientSecret?: string;
-};
-
 export interface SpaceWebhookEvent {
   /** @format uuid */
   id: string;
@@ -2359,7 +2357,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Auth
+     * @tags Auth, Available Public
      * @name StartAuth
      * @summary Start authentication process
      * @request POST:/auth/start
@@ -2381,7 +2379,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
     /**
      * No description
      *
-     * @tags Auth
+     * @tags Auth, Available Public
      * @name VerifyAuth
      * @summary Verify authentication wallet
      * @request POST:/auth/verify
@@ -2410,6 +2408,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @name RefreshToken
      * @summary Refresh Access Token by Refresh token
      * @request POST:/auth/refresh
+     * @secure
      */
     refreshToken: (data: RefreshTokenPayload, params: RequestParams = {}) =>
       this.http.request<
@@ -2423,6 +2422,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
         path: `/auth/refresh`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -2438,7 +2438,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @secure
      */
     getProfile: (params: RequestParams = {}) =>
-      this.http.request<User, ErrorResponse>({
+      this.http.request<UserFull, ErrorResponse>({
         path: `/auth/profile`,
         method: "GET",
         secure: true,
@@ -2455,7 +2455,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
      * @secure
      */
     updateProfile: (data: UpdateProfilePayload, params: RequestParams = {}) =>
-      this.http.request<User, ErrorResponse>({
+      this.http.request<UserFull, ErrorResponse>({
         path: `/auth/profile`,
         method: "PATCH",
         body: data,
@@ -5053,143 +5053,6 @@ export class B2DataApi<SecurityDataType extends unknown> {
         path: `/spaces/users`,
         method: "DELETE",
         query: query,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Spaces
-     * @name SearchSpaceAgents
-     * @summary Search space agents
-     * @request POST:/spaces/agents/search
-     * @secure
-     */
-    searchSpaceAgents: (
-      data: SearchModel & {
-        ids?: string[];
-        searchTerm?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<
-        {
-          total: number;
-          items: SpaceAgentBase[];
-        },
-        ErrorResponse
-      >({
-        path: `/spaces/agents/search`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Spaces
-     * @name CreateSpaceAgent
-     * @summary Create space agent
-     * @request POST:/spaces/agents
-     * @secure
-     */
-    createSpaceAgent: (
-      data: {
-        name: string;
-        domain: string;
-        rawSpec: string;
-        authorizationType: "none" | "apikey" | "oauth";
-        authorizationUrl?: string;
-        authType?: "basic" | "bearer" | "custom";
-        authCustomHeaderName?: string;
-        authExtraHeaders?: Record<string, string>;
-        authTokenUrl?: string;
-        authScopes?: string;
-        actions?: SpaceAgentAction[];
-        authApiKey?: string;
-        authClientId?: string;
-        authClientSecret?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<SpaceAgent, ErrorResponse>({
-        path: `/spaces/agents`,
-        method: "POST",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Spaces
-     * @name GetSpaceAgent
-     * @summary Get a space agent
-     * @request GET:/spaces/agents/{id}
-     * @secure
-     */
-    getSpaceAgent: (id: string, params: RequestParams = {}) =>
-      this.http.request<SpaceAgent, ErrorResponse>({
-        path: `/spaces/agents/${id}`,
-        method: "GET",
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Spaces
-     * @name EditSpaceAgent
-     * @summary Edit space agent
-     * @request PATCH:/spaces/agents/{id}
-     * @secure
-     */
-    editSpaceAgent: (
-      id: string,
-      data: {
-        name: string;
-        domain: string;
-        rawSpec: string;
-        authorizationType: "none" | "apikey" | "oauth";
-        authorizationUrl?: string;
-        authType?: "basic" | "bearer" | "custom";
-        authCustomHeaderName?: string;
-        authExtraHeaders?: Record<string, string>;
-        authTokenUrl?: string;
-        authScopes?: string;
-        actions?: SpaceAgentAction[];
-        authApiKey?: string;
-        authClientId?: string;
-        authClientSecret?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.http.request<SpaceAgent, ErrorResponse>({
-        path: `/spaces/agents/${id}`,
-        method: "PATCH",
-        body: data,
-        secure: true,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Spaces
-     * @name DeleteSpaceAgent
-     * @summary Delete space agent
-     * @request DELETE:/spaces/agents/{id}
-     * @secure
-     */
-    deleteSpaceAgent: (id: string, params: RequestParams = {}) =>
-      this.http.request<SpaceAgent, ErrorResponse>({
-        path: `/spaces/agents/${id}`,
-        method: "DELETE",
         secure: true,
         ...params,
       }),

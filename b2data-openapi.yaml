@@ -28,6 +28,7 @@ paths:
     post:
       tags:
         - Auth
+        - Available Public
       summary: Start authentication process
       operationId: startAuth
       requestBody:
@@ -48,6 +49,7 @@ paths:
     post:
       tags:
         - Auth
+        - Available Public
       summary: Verify authentication wallet
       operationId: verifyAuth
       requestBody:
@@ -141,6 +143,8 @@ paths:
     post:
       tags:
         - Auth
+      security:
+        - BearerAuth: []
       summary: Refresh Access Token by Refresh token
       operationId: refreshToken
       requestBody:
@@ -191,7 +195,7 @@ paths:
       operationId: getProfile
       responses:
         "200":
-          $ref: "#/components/responses/UserData"
+          $ref: "#/components/responses/UserFullData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -223,7 +227,7 @@ paths:
                   description: Avatar
       responses:
         "200":
-          $ref: "#/components/responses/UserData"
+          $ref: "#/components/responses/UserFullData"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -2305,99 +2309,6 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/SpaceUserNotFound"
-  /spaces/agents/search:
-    post:
-      tags:
-        - Spaces
-      security:
-        - BearerAuth: []
-      summary: Search space agents
-      operationId: searchSpaceAgents
-      requestBody:
-        $ref: "#/components/requestBodies/SearchSpaceAgentsBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchSpaceAgentsData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/DocumentNotFound"
-  /spaces/agents:
-    post:
-      tags:
-        - Spaces
-      security:
-        - BearerAuth: []
-      summary: Create space agent
-      operationId: createSpaceAgent
-      requestBody:
-        $ref: "#/components/requestBodies/ModifySpaceAgentBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SpaceAgentData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-  "/spaces/agents/{id}":
-    get:
-      tags:
-        - Spaces
-      security:
-        - BearerAuth: []
-      summary: Get a space agent
-      operationId: getSpaceAgent
-      parameters:
-        - $ref: "#/components/parameters/spaceAgentIdParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/SpaceAgentData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/SpaceAgentNotFound"
-    patch:
-      tags:
-        - Spaces
-      security:
-        - BearerAuth: []
-      summary: Edit space agent
-      operationId: editSpaceAgent
-      parameters:
-        - $ref: "#/components/parameters/spaceAgentIdParam"
-      requestBody:
-        $ref: "#/components/requestBodies/ModifySpaceAgentBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SpaceAgentData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/SpaceAgentNotFound"
-    delete:
-      tags:
-        - Spaces
-      security:
-        - BearerAuth: []
-      summary: Delete space agent
-      operationId: deleteSpaceAgent
-      parameters:
-        - $ref: "#/components/parameters/spaceAgentIdParam"
-      responses:
-        "200":
-          $ref: "#/components/responses/SpaceAgentData"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/SpaceAgentNotFound"
   /spaces/webhook/events/search:
     post:
       tags:
@@ -2477,22 +2388,12 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Authorization using Auth routes
-    ProviderClientId:
-      type: apiKey
-      name: client-id
-      in: header
-      description: Authorization for providers requests
-    ProviderClientSecret:
-      type: apiKey
-      name: client-secret
-      in: header
-      description: Authorization for providers requests
-    ProviderUserId:
-      type: apiKey
-      name: user-id
-      in: header
-      description: Authorization for providers requests
+      description: User authorization
+    ApiClientAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: API Client Authorization
   schemas:
     ErrorResponse:
       type: object
@@ -2554,10 +2455,69 @@ components:
         avatar:
           type: string
           description: Avatar
+    TMAUser:
+      type: object
+      required:
+        - id
+        - firstName
+      properties:
+        id:
+          type: number
+          description: Telegram User ID
+        firstName:
+          type: string
+          description: First Name
+        lastName:
+          type: string
+          description: Last Name
+        username:
+          type: string
+          description: Username
+        isBot:
+          type: boolean
+          description: If `true` user is a bot
+        isPremium:
+          type: boolean
+          description: If `true` user is a premium user
+        languageCode:
+          type: string
+          description: Language Code
+        photoUrl:
+          type: string
+          description: URL to User Photo
+        addedToAttachmentMenu:
+          type: boolean
+          description: If `true` user has added the bot to attachment menu
+        allowsWriteToPm:
+          type: boolean
+          description: If `true` user allows writing to PM
+    UserFull:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          required:
+            - createdAt
+          properties:
+            publicKes:
+              type: array
+              items:
+                type: string
+              description: List of Public Keys
+            tma:
+              $ref: "#/components/schemas/TMAUser"
+            createdAt:
+              type: string
+              format: date-time
+              description: Date and time of creation
+            updatedAt:
+              type: string
+              format: date-time
+              description: Date and time of last update
     AuthErrorCodes:
       type: string
       enum:
         - api:403
+        - api:403-system
         - auth:401
         - auth:403
         - auth:404
@@ -5413,6 +5373,7 @@ components:
           required:
             - documentId
             - versionId
+            - externalId
             - hash
             - createdAt
             - updatedAt
@@ -5420,6 +5381,8 @@ components:
             documentId:
               type: string
             versionId:
+              type: string
+            externalId:
               type: string
             hash:
               type: string
@@ -6419,104 +6382,6 @@ components:
                     type: boolean
                   createdBy:
                     type: string
-    SpaceAgentBase:
-      type: object
-      required:
-        - id
-        - spaceId
-        - name
-        - domain
-        - authorizationType
-      properties:
-        id:
-          type: string
-        spaceId:
-          type: string
-        name:
-          type: string
-        domain:
-          type: string
-        authorizationType:
-          type: string
-          enum:
-            - none
-            - apikey
-            - oauth
-        createdBy:
-          type: string
-    SpaceAgent:
-      allOf:
-        - $ref: "#/components/schemas/SpaceAgentBase"
-        - type: object
-          required:
-            - rawSpec
-            - updatedAt
-            - createdAt
-          properties:
-            rawSpec:
-              type: string
-            authorizationUrl:
-              type: string
-            authType:
-              type: string
-              enum:
-                - basic
-                - bearer
-                - custom
-            authCustomHeaderName:
-              type: string
-            authExtraHeaders:
-              type: object
-              additionalProperties:
-                type: string
-            authTokenUrl:
-              type: string
-            authScopes:
-              type: string
-            actions:
-              type: array
-              items:
-                $ref: "#/components/schemas/SpaceAgentAction"
-            updatedAt:
-              type: string
-              format: date-time
-            createdAt:
-              type: string
-              format: date-time
-    SpaceAgentAction:
-      type: object
-      required:
-        - id
-        - name
-        - path
-        - method
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          description: The name of the action
-        description:
-          type: string
-          description: A brief description of the action
-        path:
-          type: string
-          description: The path of the action
-        method:
-          type: string
-          description: The HTTP method of the action
-    SpaceAgentWithSecret:
-      allOf:
-        - $ref: "#/components/schemas/SpaceAgent"
-        - type: object
-          properties:
-            authApiKey:
-              type: string
-            authClientId:
-              type: string
-            authClientSecret:
-              type: string
     SpaceWebhookEvent:
       type: object
       required:
@@ -7762,71 +7627,6 @@ components:
               groupId:
                 type: string
                 nullable: true
-    SearchSpaceAgentsBody:
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: "#/components/schemas/SearchModel"
-              - type: object
-                properties:
-                  ids:
-                    type: array
-                    items:
-                      type: string
-                  searchTerm:
-                    type: string
-    ModifySpaceAgentBody:
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - name
-              - domain
-              - rawSpec
-              - authorizationType
-            properties:
-              name:
-                type: string
-              domain:
-                type: string
-              rawSpec:
-                type: string
-              authorizationType:
-                type: string
-                enum:
-                  - none
-                  - apikey
-                  - oauth
-              authorizationUrl:
-                type: string
-              authType:
-                type: string
-                enum:
-                  - basic
-                  - bearer
-                  - custom
-              authCustomHeaderName:
-                type: string
-              authExtraHeaders:
-                type: object
-                additionalProperties:
-                  type: string
-              authTokenUrl:
-                type: string
-              authScopes:
-                type: string
-              actions:
-                type: array
-                items:
-                  $ref: "#/components/schemas/SpaceAgentAction"
-              authApiKey:
-                type: string
-              authClientId:
-                type: string
-              authClientSecret:
-                type: string
     SearchSpaceWebhookEventsBody:
       content:
         application/json:
@@ -7854,6 +7654,10 @@ components:
   responses:
     InvalidData:
       description: Invalid request data
+    TooManyRequests:
+      description: Too many requests
+    NotImplemented:
+      description: Not implemented
     Unauthorized:
       description: Unauthorized
     Forbidden:
@@ -7871,6 +7675,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/User"
+    UserFullData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserFull"
     UserNotFound:
       description: Not found
       content:
@@ -8764,37 +8574,6 @@ components:
           example:
             errorCode: space:404-user
             message: Space user not found
-    SpaceAgentData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/SpaceAgent"
-    SpaceAgentNotFound:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-          example:
-            errorCode: space:404-agent
-            message: Space agent not found
-    SearchSpaceAgentsData:
-      description: Successful operation
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - total
-              - items
-            properties:
-              total:
-                type: integer
-              items:
-                type: array
-                items:
-                  $ref: "#/components/schemas/SpaceAgentBase"
     SearchSpaceWebhookEventsData:
       description: Successful operation
       content:
@@ -9049,14 +8828,6 @@ components:
       required: true
       schema:
         type: string
-    spaceAgentIdParam:
-      in: path
-      name: id
-      description: Space Agent ID
-      required: true
-      schema:
-        type: string
-        format: uuid
     spaceWebhookEventIdParam:
       in: path
       name: id
