@@ -1,7 +1,7 @@
 {
   "name": "@b2data/core-api",
   "description": "Core API interfaces",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "scripts": {
     "build": "tsc",
     "gen": "npm run gen:auth && npm run gen:agents && npm run gen:clients && npm run gen:b2dictionary && npm run gen:b2market && npm run gen:b2data && npm run gen:b2pay && npm run gen:b2wallet && npm run gen:b2sign",
