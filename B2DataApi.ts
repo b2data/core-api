@@ -882,6 +882,37 @@ export type B2ProductBatchWithData = B2ProductBatch & {
   createdByData?: User;
 };
 
+export enum B2ProjectType {
+  None = "none",
+  Construction = "construction",
+}
+
+export interface CreateB2ProjectBody {
+  type?: B2ProjectType;
+  description?: string;
+  photos?: string[];
+  /** @format date-time */
+  startDate?: string;
+  /** @format date-time */
+  dueDate?: string;
+}
+
+export interface B2ProjectData {
+  type: B2ProjectType;
+  description?: string;
+  photos?: string[];
+  /** @format date-time */
+  startDate?: string;
+  /** @format date-time */
+  dueDate?: string;
+  /** @format date-time */
+  factDueDate?: string;
+  /** @format date-time */
+  estimatedDueDate?: string;
+}
+
+export type B2ProjectWithData = DocumentDataCommon & B2ProjectData;
+
 export type B2StorageWithData = DocumentDataCommon;
 
 export enum B2StorageOperationType {
@@ -1071,19 +1102,26 @@ export interface B2TableReferenceColumn {
   refColumn?: string;
 }
 
-export enum TaskType {
-  Simple = "simple",
-  FillIdt = "fillIdt",
-  ReceiveIdt = "receiveIdt",
-  GiveOutIdt = "giveOutIdt",
-  FactoryTask = "factoryTask",
-}
+export type TaskType =
+  | "simple"
+  | "fillIdt"
+  | "receiveIdt"
+  | "giveOutIdt"
+  | "factoryTask"
+  | "requirement"
+  | "note"
+  | "requestInfo"
+  | "requestChanges"
+  | string;
 
 export enum TaskSource {
   User = "user",
   B2Process = "b2process",
   B2Market = "b2market",
   B2Doc = "b2doc",
+  B2Project = "b2project",
+  B2Product = "b2product",
+  B2Storage = "b2storage",
 }
 
 export enum TaskStatus {
@@ -1131,7 +1169,10 @@ export type TaskParticipantWithData = TaskParticipant & {
 };
 
 export interface BaseB2TaskData {
+  /** @format uuid */
+  id: string;
   source: TaskSource;
+  sourceId?: string;
   status: TaskStatus;
   priority: TaskPriority;
   priorityLevel: number;
@@ -1162,7 +1203,6 @@ export type B2TaskDataSimple = BaseB2TaskData & {
 export type B2TaskDataFillIdt = BaseB2TaskData & {
   type: "fillIdt";
   data: {
-    externalId: string;
     /** Product ID in B2Market */
     productId: string;
     /** Product Items ID in B2Market */
@@ -1186,7 +1226,6 @@ export type B2TaskDataFillIdt = BaseB2TaskData & {
 export type B2TaskDataReceiveIdt = BaseB2TaskData & {
   type: "receiveIdt";
   data: {
-    externalId: string;
     place: PlaceBase;
     fromUserId: string;
     fromUserName: string;
@@ -1197,7 +1236,6 @@ export type B2TaskDataReceiveIdt = BaseB2TaskData & {
 export type B2TaskDataGiveOutIdt = BaseB2TaskData & {
   type: "giveOutIdt";
   data: {
-    externalId: string;
     place: PlaceBase;
     toUserId: string;
     toUserName: string;
@@ -1323,6 +1361,7 @@ export interface B2TaskSearchQuery {
   ids?: string[];
   types?: TaskType[];
   source?: TaskSource[];
+  sourceId?: string;
   status?: TaskStatus[];
   notStatus?: TaskStatus[];
   priority?: TaskPriority[];
@@ -1337,6 +1376,7 @@ export interface B2TaskSearchQuery {
 export interface CreateB2TaskBody {
   type: TaskType;
   source: TaskSource;
+  sourceId?: string;
   status?: TaskStatus;
   priority: TaskPriority;
   priorityLevel?: number;
@@ -1384,6 +1424,25 @@ export interface UnitInfo {
   nonSystemUnit?: string | null;
 }
 
+export enum SystemType {
+  Product = "product",
+  Storage = "storage",
+  Project = "project",
+}
+
+export enum SystemSubType {
+  Library = "library",
+  Requirement = "requirement",
+  Note = "note",
+  RequestInfo = "requestInfo",
+  RequestChanges = "requestChanges",
+}
+
+export interface SystemData {
+  id: string;
+  name: string;
+}
+
 export interface DictionaryWord {
   id?: string;
   name?: string;
@@ -1418,16 +1477,6 @@ export enum DocumentType {
   B2Storage = "b2storage",
   B2Counterparty = "b2counterparty",
   B2Task = "b2task",
-}
-
-export enum SystemType {
-  Product = "product",
-  Storage = "storage",
-}
-
-export interface SystemData {
-  id: string;
-  name: string;
 }
 
 export interface DocumentVersionCacheData {
@@ -1555,6 +1604,7 @@ export interface Folder {
   isSystem?: boolean | null;
   systemId?: string | null;
   systemType?: SystemType | null;
+  systemSubType?: SystemSubType | null;
   createdBy: string;
   /** @format date-time */
   createdAt: string;
@@ -3165,6 +3215,54 @@ export class B2DataApi<SecurityDataType extends unknown> {
         ...params,
       }),
   };
+  b2Project = {
+    /**
+     * No description
+     *
+     * @tags B2Project
+     * @name GetB2ProjectInfo
+     * @summary Get project by version ID
+     * @request GET:/documents/b2project/{versionId}/info
+     * @secure
+     */
+    getB2ProjectInfo: (versionId: string, params: RequestParams = {}) =>
+      this.http.request<B2ProjectWithData, ErrorResponse>({
+        path: `/documents/b2project/${versionId}/info`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags B2Project
+     * @name UpdateProject
+     * @summary Update project
+     * @request PATCH:/documents/b2project/{versionId}
+     * @secure
+     */
+    updateProject: (
+      versionId: string,
+      data: {
+        type?: B2ProjectType;
+        description?: string;
+        photos?: string[];
+        /** @format date-time */
+        startDate?: string;
+        /** @format date-time */
+        dueDate?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<B2ProjectWithData, ErrorResponse>({
+        path: `/documents/b2project/${versionId}`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        ...params,
+      }),
+  };
   b2Storage = {
     /**
      * No description
@@ -3501,6 +3599,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
         types?: TaskType[];
         notTypes?: TaskType[];
         source?: TaskSource[];
+        sourceId?: string;
         status?: TaskStatus[];
         notStatus?: TaskStatus[];
         priority?: TaskPriority[];
@@ -3865,6 +3964,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
         isPublic?: boolean | null;
         systemId?: string | null;
         systemType?: SystemType | null;
+        systemSubType?: SystemSubType | null;
         tags?: EditTagContent[];
         duplicateFrom?: {
           /** @format uuid */
@@ -3875,6 +3975,7 @@ export class B2DataApi<SecurityDataType extends unknown> {
         productVersionData?: B2ProductData;
         taskVersionData?: CreateB2TaskBody;
         counterpartyVersionData?: B2CounterpartyData;
+        projectVersionData?: CreateB2ProjectBody;
       },
       params: RequestParams = {},
     ) =>
@@ -4733,9 +4834,11 @@ export class B2DataApi<SecurityDataType extends unknown> {
     checkPermissionsAccess: (query: CheckPermissionsAccessParams, params: RequestParams = {}) =>
       this.http.request<
         {
-          hasReadAccess: boolean;
+          access: PermissionAccess;
+          /** returns only if has edit access to artefact */
           hasEditAccess: boolean;
-          hasSignAccess: boolean;
+          /** returns only if has owner access to artefact (does not check if the artefact was created by user) */
+          hasOwnerAccess: boolean;
         },
         ErrorResponse
       >({

@@ -841,6 +841,46 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/ProductBatchNotFound"
+  "/documents/b2project/{versionId}/info":
+    get:
+      tags:
+        - B2Project
+      security:
+        - BearerAuth: []
+      summary: Get project by version ID
+      operationId: getB2ProjectInfo
+      parameters:
+        - $ref: "#/components/parameters/projectIdParam"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2ProjectWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
+  "/documents/b2project/{versionId}":
+    patch:
+      tags:
+        - B2Project
+      security:
+        - BearerAuth: []
+      summary: Update project
+      operationId: updateProject
+      parameters:
+        - $ref: "#/components/parameters/projectIdParam"
+      requestBody:
+        $ref: "#/components/requestBodies/EditB2ProjectBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/B2ProjectWithData"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/DocumentNotFound"
   "/documents/b2storage/{storageId}/info":
     get:
       tags:
@@ -4166,6 +4206,57 @@ components:
           properties:
             createdByData:
               $ref: "#/components/schemas/User"
+    B2ProjectType:
+      type: string
+      enum:
+        - none
+        - construction
+    CreateB2ProjectBody:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/B2ProjectType"
+        description:
+          type: string
+        photos:
+          type: array
+          items:
+            type: string
+        startDate:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+    B2ProjectData:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          $ref: "#/components/schemas/B2ProjectType"
+        description:
+          type: string
+        photos:
+          type: array
+          items:
+            type: string
+        startDate:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+        factDueDate:
+          type: string
+          format: date-time
+        estimatedDueDate:
+          type: string
+          format: date-time
+    B2ProjectWithData:
+      allOf:
+        - $ref: "#/components/schemas/DocumentDataCommon"
+        - $ref: "#/components/schemas/B2ProjectData"
     B2StorageWithData:
       allOf:
         - $ref: "#/components/schemas/DocumentDataCommon"
@@ -4500,13 +4591,19 @@ components:
         refColumn:
           type: string
     TaskType:
-      type: string
-      enum:
-        - simple
-        - fillIdt
-        - receiveIdt
-        - giveOutIdt
-        - factoryTask
+      oneOf:
+        - type: string
+          enum:
+            - simple
+            - fillIdt
+            - receiveIdt
+            - giveOutIdt
+            - factoryTask
+            - requirement
+            - note
+            - requestInfo
+            - requestChanges
+        - type: string
     TaskSource:
       type: string
       enum:
@@ -4514,6 +4611,9 @@ components:
         - b2process
         - b2market
         - b2doc
+        - b2project
+        - b2product
+        - b2storage
     TaskStatus:
       type: string
       enum:
@@ -4578,8 +4678,13 @@ components:
         - key
         - name
       properties:
+        id:
+          type: string
+          format: uuid
         source:
           $ref: "#/components/schemas/TaskSource"
+        sourceId:
+          type: string
         status:
           $ref: "#/components/schemas/TaskStatus"
         priority:
@@ -4669,8 +4774,6 @@ components:
                 - amount
                 - amountInIdt
               properties:
-                externalId:
-                  type: string
                 productId:
                   type: string
                   description: Product ID in B2Market
@@ -4724,8 +4827,6 @@ components:
                 - fromUserName
                 - idtList
               properties:
-                externalId:
-                  type: string
                 place:
                   $ref: "#/components/schemas/PlaceBase"
                 fromUserId:
@@ -4756,8 +4857,6 @@ components:
                 - toUserName
                 - idtList
               properties:
-                externalId:
-                  type: string
                 place:
                   $ref: "#/components/schemas/PlaceBase"
                 toUserId:
@@ -5007,6 +5106,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TaskSource"
+        sourceId:
+          type: string
         status:
           type: array
           items:
@@ -5053,6 +5154,8 @@ components:
           $ref: "#/components/schemas/TaskType"
         source:
           $ref: "#/components/schemas/TaskSource"
+        sourceId:
+          type: string
         status:
           $ref: "#/components/schemas/TaskStatus"
         priority:
@@ -5144,6 +5247,30 @@ components:
         nonSystemUnit:
           type: string
           nullable: true
+    SystemType:
+      type: string
+      enum:
+        - product
+        - storage
+        - project
+    SystemSubType:
+      type: string
+      enum:
+        - library
+        - requirement
+        - note
+        - requestInfo
+        - requestChanges
+    SystemData:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
     DictionaryWord:
       type: object
       properties:
@@ -5215,21 +5342,6 @@ components:
         - b2storage
         - b2counterparty
         - b2task
-    SystemType:
-      type: string
-      enum:
-        - product
-        - storage
-    SystemData:
-      type: object
-      required:
-        - id
-        - name
-      properties:
-        id:
-          type: string
-        name:
-          type: string
     DocumentVersionCacheData:
       type: object
       required:
@@ -5516,6 +5628,9 @@ components:
           nullable: true
         systemType:
           $ref: "#/components/schemas/SystemType"
+          nullable: true
+        systemSubType:
+          $ref: "#/components/schemas/SystemSubType"
           nullable: true
         createdBy:
           type: string
@@ -6678,6 +6793,26 @@ components:
                   dueDateTo:
                     type: string
                     format: date-time
+    EditB2ProjectBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              type:
+                $ref: "#/components/schemas/B2ProjectType"
+              description:
+                type: string
+              photos:
+                type: array
+                items:
+                  type: string
+              startDate:
+                type: string
+                format: date-time
+              dueDate:
+                type: string
+                format: date-time
     SearchB2StorageBalances:
       content:
         application/json:
@@ -6895,6 +7030,8 @@ components:
                     type: array
                     items:
                       $ref: "#/components/schemas/TaskSource"
+                  sourceId:
+                    type: string
                   status:
                     type: array
                     items:
@@ -7122,6 +7259,9 @@ components:
               systemType:
                 $ref: "#/components/schemas/SystemType"
                 nullable: true
+              systemSubType:
+                $ref: "#/components/schemas/SystemSubType"
+                nullable: true
               tags:
                 type: array
                 items:
@@ -7144,6 +7284,8 @@ components:
                 $ref: "#/components/schemas/CreateB2TaskBody"
               counterpartyVersionData:
                 $ref: "#/components/schemas/B2CounterpartyData"
+              projectVersionData:
+                $ref: "#/components/schemas/CreateB2ProjectBody"
     EditDocumentBody:
       content:
         application/json:
@@ -7971,6 +8113,12 @@ components:
           example:
             errorCode: document:b2product:404-batch
             message: B2Product batch not found
+    B2ProjectWithData:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/B2ProjectWithData"
     B2StorageWithData:
       description: Successful operation
       content:
@@ -8445,16 +8593,19 @@ components:
           schema:
             type: object
             required:
-              - hasReadAccess
+              - access
               - hasEditAccess
-              - hasSignAccess
+              - hasOwnerAccess
             properties:
-              hasReadAccess:
-                type: boolean
+              access:
+                $ref: "#/components/schemas/PermissionAccess"
               hasEditAccess:
                 type: boolean
-              hasSignAccess:
+                description: returns only if has edit access to artefact
+              hasOwnerAccess:
                 type: boolean
+                description: returns only if has owner access to artefact (does not check if the
+                  artefact was created by user)
     PermissionNotFound:
       description: Not found
       content:
@@ -8671,6 +8822,14 @@ components:
       in: path
       name: batchId
       description: Product Batch ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    projectIdParam:
+      in: path
+      name: versionId
+      description: Project Version ID
       required: true
       schema:
         type: string
